@@ -4,18 +4,12 @@ const {
   updateLoadedExpressMethods,
   createTemporaryBasket,
 } = require('./commons');
-const { GOOGLE_PAY } = require('./constants');
+const { GOOGLE_PAY, GOOGLE_PAY_CALLBACK_TRIGGERS } = require('./constants');
 
 let checkout;
 let googlePayButton;
 let shippingMethodsData;
 let temporaryBasketId;
-
-const CALLBACK_TRIGGERS = {
-  INITIALIZE: 'INITIALIZE',
-  SHIPPING_ADDRESS: 'SHIPPING_ADDRESS',
-  SHIPPING_OPTION: 'SHIPPING_OPTION',
-};
 
 function formatCustomerObject(customerData) {
   const shippingData = customerData.shippingAddress;
@@ -326,7 +320,7 @@ async function init(paymentMethodsResponse) {
             let onShippingAddressChangeStatus = true;
             let onShippingOptionChangeStatus = true;
 
-            if (callbackTrigger === CALLBACK_TRIGGERS.INITIALIZE) {
+            if (callbackTrigger === GOOGLE_PAY_CALLBACK_TRIGGERS.INITIALIZE) {
               await onInitTrigger();
               onShippingAddressChangeStatus = await onShippingAddressChange(
                 shippingAddress,
@@ -334,14 +328,18 @@ async function init(paymentMethodsResponse) {
               );
             }
 
-            if (callbackTrigger === CALLBACK_TRIGGERS.SHIPPING_ADDRESS) {
+            if (
+              callbackTrigger === GOOGLE_PAY_CALLBACK_TRIGGERS.SHIPPING_ADDRESS
+            ) {
               onShippingAddressChangeStatus = await onShippingAddressChange(
                 shippingAddress,
                 paymentDataRequestUpdate,
               );
             }
 
-            if (callbackTrigger === CALLBACK_TRIGGERS.SHIPPING_OPTION) {
+            if (
+              callbackTrigger === GOOGLE_PAY_CALLBACK_TRIGGERS.SHIPPING_OPTION
+            ) {
               onShippingOptionChangeStatus = await onShippingOptionChange(
                 shippingOptionData,
                 paymentDataRequestUpdate,
