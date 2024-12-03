@@ -105,7 +105,7 @@ server.post(
 server.post(
   'GetPaymentMethods',
   server.middleware.https,
-  csrf.generateToken,
+  csrf.validateRequest,
   adyen.getCheckoutPaymentMethods,
 );
 
