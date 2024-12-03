@@ -7,6 +7,14 @@ const { GOOGLE_PAY } = require('./constants');
 
 let checkout;
 let googlePayButton;
+let shippingMethodsData;
+let temporaryBasketId;
+
+const CALLBACK_TRIGGERS = {
+  INITIALIZE: 'INITIALIZE',
+  SHIPPING_ADDRESS: 'SHIPPING_ADDRESS',
+  SHIPPING_OPTION: 'SHIPPING_OPTION',
+};
 
 function formatCustomerObject(customerData) {
   const shippingData = customerData.shippingAddress;
@@ -55,6 +63,122 @@ function formatCustomerObject(customerData) {
   };
 }
 
+async function getShippingMethods(shippingAddress, basketId) {
+  const requestBody = {
+    paymentMethodType: GOOGLE_PAY,
+    basketId,
+  };
+  if (shippingAddress) {
+    requestBody.address = {
+      city: shippingAddress.locality,
+      country: shippingAddress.country,
+      countryCode: shippingAddress.countryCode,
+      stateCode: shippingAddress.administrativeArea,
+      postalCode: shippingAddress.postalCode,
+    };
+  }
+  return $.ajax({
+    type: 'POST',
+    url: window.shippingMethodsUrl,
+    data: {
+      csrf_token: $('#adyen-token').val(),
+      data: JSON.stringify(requestBody),
+    },
+    success(response) {
+      return response;
+    },
+  });
+}
+
+async function selectShippingMethod({ shipmentUUID, ID }, basketId) {
+  const requestBody = {
+    paymentMethodType: GOOGLE_PAY,
+    shipmentUUID,
+    methodID: ID,
+    basketId,
+  };
+  return $.ajax({
+    type: 'POST',
+    url: window.selectShippingMethodUrl,
+    data: {
+      csrf_token: $('#adyen-token').val(),
+      data: JSON.stringify(requestBody),
+    },
+    success(response) {
+      return response;
+    },
+  });
+}
+
+function getTransactionInfo(newCalculation) {
+  return {
+    displayItems: [
+      {
+        price: newCalculation.totals.totalShippingCost.substring(1),
+        label: 'Shipping',
+        type: 'LINE_ITEM',
+        status: 'FINAL',
+      },
+      {
+        price: newCalculation.totals.totalTax.substring(1),
+        label: 'Tax',
+        type: 'TAX',
+        status: 'FINAL',
+      },
+      {
+        price: newCalculation.totals.subTotal.substring(1),
+        label: 'Subtotal',
+        type: 'SUBTOTAL',
+        status: 'FINAL',
+      },
+    ],
+    countryCode: shippingMethodsData.locale.slice(-2),
+    currencyCode: newCalculation.grandTotalAmount.currency,
+    totalPriceStatus: 'FINAL',
+    totalPriceLabel: 'Total',
+    totalPrice: `${newCalculation.grandTotalAmount.value}`,
+  };
+}
+
+function getShippingOptionsParameters(selectedShippingMethod) {
+  return {
+    defaultSelectedOptionId: selectedShippingMethod.ID,
+    shippingOptions: shippingMethodsData.shippingMethods.map((sm) => ({
+      label: sm.displayName,
+      description: sm.description,
+      id: sm.ID,
+    })),
+  };
+}
+
+function handleAuthorised(response) {
+  document.querySelector('#result').value = JSON.stringify({
+    pspReference: response.fullResponse?.pspReference,
+    resultCode: response.fullResponse?.resultCode,
+    paymentMethod: response.fullResponse?.paymentMethod
+      ? response.fullResponse.paymentMethod
+      : response.fullResponse?.additionalData?.paymentMethod,
+    donationToken: response.fullResponse?.donationToken,
+    amount: response.fullResponse?.amount,
+  });
+  document.querySelector('#showConfirmationForm').submit();
+}
+
+function handleError() {
+  document.querySelector('#result').value = JSON.stringify({
+    error: true,
+  });
+  document.querySelector('#showConfirmationForm').submit();
+}
+
+function handleGooglePayResponse(response) {
+  if (response.resultCode === 'Authorised') {
+    handleAuthorised(response);
+  } else {
+    handleError();
+  }
+}
+
 function paymentFromComponent(data) {
   $.ajax({
     url: window.paymentFromComponentURL,
@@ -67,6 +191,13 @@ function paymentFromComponent(data) {
     success(response) {
       helpers.createShowConfirmationForm(window.showConfirmationAction);
       helpers.setOrderFormData(response);
+      document.querySelector('#additionalDetailsHidden').value = JSON.stringify(
+        {
+          ...data,
+          ...response,
+        },
+      );
+      handleGooglePayResponse(response);
     },
   });
 }
@@ -81,6 +212,52 @@ async function initializeCheckout(paymentMethodsResponse) {
       analyticsData: { applicationInfo },
     },
   });
+}
+
+async function onShippingAddressChange(
+  shippingAddress,
+  paymentDataRequestUpdate,
+) {
+  shippingMethodsData = await getShippingMethods(
+    shippingAddress,
+    temporaryBasketId,
+  );
+  if (shippingMethodsData?.shippingMethods?.length) {
+    const selectedShippingMethod = shippingMethodsData.shippingMethods[0];
+    const newCalculation = await selectShippingMethod(
+      selectedShippingMethod,
+      temporaryBasketId,
+    );
+    if (newCalculation?.grandTotalAmount) {
+      paymentDataRequestUpdate.newShippingOptionParameters =
+        getShippingOptionsParameters(selectedShippingMethod);
+      paymentDataRequestUpdate.newTransactionInfo =
+        getTransactionInfo(newCalculation);
+      return true;
+    }
+    return false;
+  }
+  return false;
+}
+
+async function onShippingOptionChange(
+  shippingOptionData,
+  paymentDataRequestUpdate,
+) {
+  const shippingMethods = shippingMethodsData?.shippingMethods;
+  const matchingShippingMethod = shippingMethods.find(
+    (sm) => sm.ID === shippingOptionData.id,
+  );
+  const newCalculation = await selectShippingMethod(
+    matchingShippingMethod,
+    temporaryBasketId,
+  );
+  if (newCalculation?.grandTotalAmount) {
+    paymentDataRequestUpdate.newTransactionInfo =
+      getTransactionInfo(newCalculation);
+    return true;
+  }
+  return false;
 }
 
 async function init(paymentMethodsResponse) {
@@ -127,38 +304,40 @@ async function init(paymentMethodsResponse) {
         },
         onSubmit: async () => {},
         paymentDataCallbacks: {
-          onPaymentDataChanged() {
-            // TODO : This callback will be replaced by actual implementation on SFI-1020
-            return new Promise((resolve) => {
-              const paymentDataRequestUpdate = {
-                newShippingOptionParameters: {
-                  defaultSelectedOptionId: 'shipping-001',
-                  shippingOptions: [
-                    {
-                      id: 'shipping-001',
-                      label: '$0.00: Free shipping',
-                      description:
-                        'Free shipping: delivered in 10 business days.',
-                    },
-                  ],
-                },
-                newTransactionInfo: {
-                  displayItems: [
-                    {
-                      label: 'Shipping',
-                      type: 'LINE_ITEM',
-                      price: '80.00',
-                      status: 'FINAL',
-                    },
-                  ],
-                  currencyCode: 'EUR',
-                  totalPriceStatus: 'FINAL',
-                  totalPrice: '80.00',
-                  totalPriceLabel: 'Total',
-                  countryCode: 'US',
-                },
-              };
-              resolve(paymentDataRequestUpdate);
+          async onPaymentDataChanged(intermediatePaymentData) {
+            const { callbackTrigger, shippingAddress, shippingOptionData } =
+              intermediatePaymentData;
+
+            const paymentDataRequestUpdate = {};
+            let onShippingAddressChangeStatus = true;
+            let onShippingOptionChangeStatus = true;
+
+            if (
+              callbackTrigger === CALLBACK_TRIGGERS.INITIALIZE ||
+              callbackTrigger === CALLBACK_TRIGGERS.SHIPPING_ADDRESS
+            ) {
+              onShippingAddressChangeStatus = await onShippingAddressChange(
+                shippingAddress,
+                paymentDataRequestUpdate,
+              );
+            }
+
+            if (callbackTrigger === CALLBACK_TRIGGERS.SHIPPING_OPTION) {
+              onShippingOptionChangeStatus = await onShippingOptionChange(
+                shippingOptionData,
+                paymentDataRequestUpdate,
+              );
+            }
+
+            return new Promise((resolve, reject) => {
+              if (
+                onShippingAddressChangeStatus &&
+                onShippingOptionChangeStatus
+              ) {
+                resolve(paymentDataRequestUpdate);
+              } else {
+                reject();
+              }
             });
           },
         },
