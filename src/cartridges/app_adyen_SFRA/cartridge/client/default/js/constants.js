@@ -14,6 +14,11 @@ module.exports = {
   PAYPAL: 'paypal',
   AMAZON_PAY: 'amazonpay',
   GOOGLE_PAY: 'googlepay',
+  GOOGLE_PAY_CALLBACK_TRIGGERS: {
+    INITIALIZE: 'INITIALIZE',
+    SHIPPING_ADDRESS: 'SHIPPING_ADDRESS',
+    SHIPPING_OPTION: 'SHIPPING_OPTION',
+  },
   ACTIONTYPE: {
     QRCODE: 'qrCode',
   },

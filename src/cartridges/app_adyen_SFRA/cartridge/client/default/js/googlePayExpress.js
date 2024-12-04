@@ -2,19 +2,14 @@ const helpers = require('./adyen_checkout/helpers');
 const {
   checkIfExpressMethodsAreReady,
   updateLoadedExpressMethods,
+  createTemporaryBasket,
 } = require('./commons');
-const { GOOGLE_PAY } = require('./constants');
+const { GOOGLE_PAY, GOOGLE_PAY_CALLBACK_TRIGGERS } = require('./constants');
 
 let checkout;
 let googlePayButton;
 let shippingMethodsData;
 let temporaryBasketId;
-
-const CALLBACK_TRIGGERS = {
-  INITIALIZE: 'INITIALIZE',
-  SHIPPING_ADDRESS: 'SHIPPING_ADDRESS',
-  SHIPPING_OPTION: 'SHIPPING_OPTION',
-};
 
 function formatCustomerObject(customerData) {
   const shippingData = customerData.shippingAddress;
@@ -162,6 +157,7 @@ function handleAuthorised(response) {
     amount: response.fullResponse?.amount,
   });
   document.querySelector('#showConfirmationForm').submit();
+  $.spinner().stop();
 }
 
 function handleError() {
@@ -169,6 +165,7 @@ function handleError() {
     error: true,
   });
   document.querySelector('#showConfirmationForm').submit();
+  $.spinner().stop();
 }
 
 function handleGooglePayResponse(response) {
@@ -180,6 +177,7 @@ function handleGooglePayResponse(response) {
 }
 
 function paymentFromComponent(data) {
+  $.spinner().start();
   $.ajax({
     url: window.paymentFromComponentURL,
     type: 'post',
@@ -199,7 +197,7 @@ function paymentFromComponent(data) {
       );
       handleGooglePayResponse(response);
     },
-  });
+  }).fail(() => $.spinner().stop());
 }
 
 async function initializeCheckout(paymentMethodsResponse) {
@@ -260,6 +258,15 @@ async function onShippingOptionChange(
   return false;
 }
 
+async function onInitTrigger() {
+  if (window.isExpressPdp) {
+    const tempBasketResponse = await createTemporaryBasket();
+    if (tempBasketResponse?.basketId) {
+      temporaryBasketId = tempBasketResponse.basketId;
+    }
+  }
+}
+
 async function init(paymentMethodsResponse) {
   initializeCheckout(paymentMethodsResponse)
     .then(async () => {
@@ -300,7 +307,11 @@ async function init(paymentMethodsResponse) {
             paymentType: 'express',
           };
           const customer = formatCustomerObject(data);
-          paymentFromComponent({ ...stateData, customer });
+          paymentFromComponent({
+            ...stateData,
+            customer,
+            basketId: temporaryBasketId,
+          });
         },
         onSubmit: async () => {},
         paymentDataCallbacks: {
@@ -312,9 +323,16 @@ async function init(paymentMethodsResponse) {
             let onShippingAddressChangeStatus = true;
             let onShippingOptionChangeStatus = true;
 
+            if (callbackTrigger === GOOGLE_PAY_CALLBACK_TRIGGERS.INITIALIZE) {
+              await onInitTrigger();
+              onShippingAddressChangeStatus = await onShippingAddressChange(
+                shippingAddress,
+                paymentDataRequestUpdate,
+              );
+            }
+
             if (
-              callbackTrigger === CALLBACK_TRIGGERS.INITIALIZE ||
-              callbackTrigger === CALLBACK_TRIGGERS.SHIPPING_ADDRESS
+              callbackTrigger === GOOGLE_PAY_CALLBACK_TRIGGERS.SHIPPING_ADDRESS
             ) {
               onShippingAddressChangeStatus = await onShippingAddressChange(
                 shippingAddress,
@@ -322,7 +340,9 @@ async function init(paymentMethodsResponse) {
               );
             }
 
-            if (callbackTrigger === CALLBACK_TRIGGERS.SHIPPING_OPTION) {
+            if (
+              callbackTrigger === GOOGLE_PAY_CALLBACK_TRIGGERS.SHIPPING_OPTION
+            ) {
               onShippingOptionChangeStatus = await onShippingOptionChange(
                 shippingOptionData,
                 paymentDataRequestUpdate,
