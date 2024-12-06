@@ -11,8 +11,12 @@ export class PaymentData {
   AmazonPay = {
     username : process.env.AMAZONPAY_USERNAME,
     password: process.env.AMAZONPAY_PASSWORD,
-  }
+  };
+  GooglePay = {
+    username : process.env.GOOGLEPAY_USERNAME,
+    password: process.env.GOOGLEPAY_PASSWORD,
+  };
   ClickToPay = {
-	email : process.env.SFCC_USERNAME,
-  }
+	  email : process.env.SFCC_USERNAME,
+  };
 }
