@@ -33,6 +33,10 @@ export class RedirectShopper {
     await this.paymentMethodsPage.initiatePayPalPayment(expressFlow, shippingChange, success, taxation);
   };
 
+  doGooglePayExpressPayment = async () => {
+    await this.paymentMethodsPage.initiateGooglePayExpressPayment();
+  };
+
   doAmazonPayment = async (normalFlow, selectedCard, success) => {
     await this.paymentMethodsPage.initiateAmazonPayment(normalFlow, selectedCard, success);
   }

@@ -4,7 +4,11 @@ const {
   updateLoadedExpressMethods,
   createTemporaryBasket,
 } = require('./commons');
-const { GOOGLE_PAY, GOOGLE_PAY_CALLBACK_TRIGGERS } = require('./constants');
+const {
+  GOOGLE_PAY,
+  PAY_WITH_GOOGLE,
+  GOOGLE_PAY_CALLBACK_TRIGGERS,
+} = require('./constants');
 
 let checkout;
 let googlePayButton;
@@ -272,7 +276,7 @@ async function init(paymentMethodsResponse) {
     .then(async () => {
       const googlePayPaymentMethod =
         paymentMethodsResponse?.AdyenPaymentMethods?.paymentMethods.find(
-          (pm) => pm.type === GOOGLE_PAY,
+          (pm) => pm.type === GOOGLE_PAY || pm.type === PAY_WITH_GOOGLE,
         );
       if (!googlePayPaymentMethod) {
         updateLoadedExpressMethods(GOOGLE_PAY);
