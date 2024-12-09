@@ -32,6 +32,20 @@ export default class PaymentMethodsPage {
     await iDealInput.click();
   };
 
+  initiateGooglePayExpressPayment = async () => {
+    const googlePayButton = this.page.locator('#gpay-button-online-api-id');
+
+    const [popup] = await Promise.all([
+      this.page.waitForEvent('popup'),
+      googlePayButton.click(),
+    ]);
+
+    await popup.waitForLoadState();
+
+    const googlePayEmailInput = popup.locator('input[type="email"]');
+    expect(googlePayEmailInput).toBeVisible();
+  }
+
   initiatePayPalPayment = async (expressFlow, shippingChange, success, taxation) => {
     // Paypal button locator on payment methods page
     const payPalButton = this.page
