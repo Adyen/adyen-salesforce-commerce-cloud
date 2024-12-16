@@ -8,6 +8,8 @@ const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
 const paypalHelper = require('*/cartridge/adyen/utils/paypalHelper');
 const constants = require('*/cartridge/adyen/config/constants');
+const setErrorType = require('*/cartridge/adyen/logs/setErrorType');
+const { AdyenError } = require('*/cartridge/adyen/logs/adyenError');
 
 function setPaymentInstrumentFields(paymentInstrument, response) {
   paymentInstrument.custom.adyenPaymentMethod =
@@ -44,7 +46,7 @@ function makeExpressPaymentDetailsCall(req, res, next) {
     const fraudDetectionStatus = { status: 'success' };
     const placeOrderResult = COHelpers.placeOrder(order, fraudDetectionStatus);
     if (placeOrderResult.error) {
-      throw new Error('Failed to place the PayPal express order');
+      throw new AdyenError('Failed to place the PayPal express order');
     }
 
     response.orderNo = order.orderNo;
@@ -61,7 +63,9 @@ function makeExpressPaymentDetailsCall(req, res, next) {
     return next();
   } catch (error) {
     AdyenLogs.error_log('Could not verify express /payment/details:', error);
-    res.redirect(URLUtils.url('Error-ErrorCode', 'err', 'general'));
+    setErrorType(error, res, {
+      redirectUrl: URLUtils.url('Error-ErrorCode', 'err', 'general').toString(),
+    });
     return next();
   }
 }

@@ -9,6 +9,8 @@ const clearForms = require('*/cartridge/adyen/utils/clearForms');
 const handleAuthorised = require('*/cartridge/adyen/scripts/showConfirmation/authorise');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
+const setErrorType = require('*/cartridge/adyen/logs/setErrorType');
+const { AdyenError } = require('*/cartridge/adyen/logs/adyenError');
 
 function getPaymentDetailsPayload(querystring) {
   const details = querystring.redirectResult
@@ -77,10 +79,16 @@ function isOrderAlreadyProcessed(order) {
  * if the payment was accepted.
  */
 function showConfirmation(req, res, next) {
-  const options = { req, res, next };
-  const { redirectResult, payload, signature, merchantReference, orderToken } =
-    req.querystring;
   try {
+    const options = { req, res, next };
+    const {
+      redirectResult,
+      payload,
+      signature,
+      merchantReference,
+      orderToken,
+    } = req.querystring;
+
     const order = OrderMgr.getOrder(merchantReference, orderToken);
     const adyenPaymentInstrument = order.getPaymentInstruments(
       AdyenHelper.getOrderMainPaymentInstrumentType(order),
@@ -123,10 +131,12 @@ function showConfirmation(req, res, next) {
         options,
       );
     }
-    throw new Error(`Incorrect signature for order ${merchantReference}`);
+    throw new AdyenError(`Incorrect signature for order ${merchantReference}`);
   } catch (error) {
     AdyenLogs.error_log('Could not verify /payment/details', error);
-    res.redirect(URLUtils.url('Error-ErrorCode', 'err', 'general'));
+    setErrorType(error, res, {
+      redirectUrl: URLUtils.url('Error-ErrorCode', 'err', 'general').toString(),
+    });
     return next();
   }
 }

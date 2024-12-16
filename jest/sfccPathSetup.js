@@ -478,3 +478,17 @@ jest.mock(
     require('../src/cartridges/int_adyen_SFRA/cartridge/adyen/analytics/constants'),
   { virtual: true },
 );
+
+jest.mock(
+  '*/cartridge/adyen/logs/adyenError',
+  () =>
+    require('../src/cartridges/int_adyen_SFRA/cartridge/adyen/logs/adyenError'),
+  { virtual: true },
+);
+
+jest.mock(
+  '*/cartridge/adyen/logs/setErrorType',
+  () =>
+    require('../src/cartridges/int_adyen_SFRA/cartridge/adyen/logs/setErrorType'),
+  { virtual: true },
+);

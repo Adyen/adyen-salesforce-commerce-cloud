@@ -71,6 +71,7 @@ describe('Shipping methods', () => {
     callGetShippingMethods(req, res, next);
     expect(res.setStatusCode).toHaveBeenCalledWith(500);
     expect(res.json).toHaveBeenCalledWith({
+      error: true,
       errorMessage: 'mocked_error.cannot.find.shipping.methods',
     });
     expect(next).toHaveBeenCalled();

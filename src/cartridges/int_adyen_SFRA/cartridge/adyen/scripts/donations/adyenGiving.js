@@ -26,12 +26,14 @@ const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
 const AdyenConfigs = require('*/cartridge/adyen/utils/adyenConfigs');
 const constants = require('*/cartridge/adyen/config/constants');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
+const setErrorType = require('*/cartridge/adyen/logs/setErrorType');
+const { AdyenError } = require('*/cartridge/adyen/logs/adyenError');
 
 // eslint-disable-next-line complexity
 function donate(donationReference, donationAmount, orderToken) {
   try {
     if (session.privacy.orderNo !== donationReference) {
-      throw new Error('Donation reference is invalid');
+      throw new AdyenError('Donation reference is invalid');
     }
 
     let paymentMethodVariant;
@@ -80,11 +82,11 @@ function donate(donationReference, donationAmount, orderToken) {
       availableDonationAmounts.indexOf(parseInt(donationAmount.value, 10)) ===
       -1
     ) {
-      throw new Error('Donation amount is invalid');
+      throw new AdyenError('Donation amount is invalid');
     }
 
     if (paymentCurrency !== donationAmount.currency) {
-      throw new Error('Donation currency is invalid');
+      throw new AdyenError('Donation currency is invalid');
     }
 
     const response = AdyenHelper.executeCall(
@@ -106,6 +108,24 @@ function donate(donationReference, donationAmount, orderToken) {
   }
 }
 
+function donation(req, res, next) {
+  try {
+    const { orderNo, orderToken } = req.form;
+    const donationAmount = {
+      value: req.form.amountValue,
+      currency: req.form.amountCurrency,
+    };
+    const donationResult = donate(orderNo, donationAmount, orderToken);
+
+    res.json(donationResult.response);
+  } catch (error) {
+    AdyenLogs.error_log('/donations call failed:', error);
+    setErrorType(error, res);
+  }
+  return next();
+}
+
 module.exports = {
   donate,
+  donation,
 };

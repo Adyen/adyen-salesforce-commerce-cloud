@@ -3,6 +3,7 @@ const Money = require('dw/value/Money');
 const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 const clearForms = require('*/cartridge/adyen/utils/clearForms');
+const setErrorType = require('*/cartridge/adyen/logs/setErrorType');
 
 function fetchGiftCards(req, res, next) {
   try {
@@ -34,7 +35,7 @@ function fetchGiftCards(req, res, next) {
     AdyenLogs.error_log('Failed to fetch gift cards:', error);
     const currentBasket = BasketMgr.getCurrentBasket();
     clearForms.clearAdyenBasketData(currentBasket);
-    res.json({ error: true });
+    setErrorType(error, res);
   }
 
   return next();

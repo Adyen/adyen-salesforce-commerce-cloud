@@ -7,6 +7,7 @@ const adyenCheckout = require('*/cartridge/adyen/scripts/payments/adyenCheckout'
 const AdyenConfigs = require('*/cartridge/adyen/utils/adyenConfigs');
 const constants = require('*/cartridge/adyen/config/constants');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
+const setErrorType = require('*/cartridge/adyen/logs/setErrorType');
 
 function getFormattedProperties(checkBalanceResponse, orderAmount) {
   if (checkBalanceResponse.resultCode === 'Success') {
@@ -77,7 +78,7 @@ function callCheckBalance(req, res, next) {
     });
   } catch (error) {
     AdyenLogs.error_log('Failed to check gift card balance:', error);
-    res.json({ error: true });
+    setErrorType(error, res);
   }
   return next();
 }
