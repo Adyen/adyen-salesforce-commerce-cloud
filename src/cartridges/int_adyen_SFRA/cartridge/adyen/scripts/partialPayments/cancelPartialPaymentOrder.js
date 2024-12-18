@@ -8,6 +8,8 @@ const constants = require('*/cartridge/adyen/config/constants');
 const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 const clearForms = require('*/cartridge/adyen/utils/clearForms');
+const setErrorType = require('*/cartridge/adyen/logs/setErrorType');
+const { AdyenError } = require('*/cartridge/adyen/logs/adyenError');
 
 function cancelPartialPaymentOrder(req, res, next) {
   try {
@@ -35,7 +37,7 @@ function cancelPartialPaymentOrder(req, res, next) {
       session.privacy.giftCardResponse = null;
       session.privacy.partialPaymentData = null;
     } else {
-      throw new Error(`received resultCode ${response.resultCode}`);
+      throw new AdyenError(`received resultCode ${response.resultCode}`);
     }
 
     const amount = {
@@ -51,8 +53,7 @@ function cancelPartialPaymentOrder(req, res, next) {
     });
   } catch (error) {
     AdyenLogs.error_log('Could not cancel partial payments order:', error);
-    res.json({
-      error: true,
+    setErrorType(error, res, {
       errorMessage: Resource.msg('error.technical', 'checkout', null),
     });
   }

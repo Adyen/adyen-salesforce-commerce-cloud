@@ -308,6 +308,20 @@ jest.mock(
       action: { type: 'mockedAction' },
     })),
     createRedirectUrl: jest.fn(() => 'mocked_RedirectUrl'),
+    getService: jest.fn(() => ({
+      getURL: jest.fn(() => 'mocked_service_url'),
+      setURL: jest.fn(),
+      addHeader: jest.fn(),
+      call: jest.fn(() => ({
+        status: 'success',
+        isOk: jest.fn(() => true),
+        object: {
+          getText: jest.fn(() =>
+            '{"data":"mocked api response"}'),
+
+        },
+      }))
+    }))
   }),
   { virtual: true },
 );
@@ -320,6 +334,7 @@ jest.mock(
     getCreditCardInstallments: jest.fn(() => true),
     getAdyenTokenisationEnabled: jest.fn(() => true),
     getAdyenClientKey: jest.fn(() => 'mocked_client_key'),
+    getAdyenApiKey: jest.fn(() => 'mocked_api_key'),
     getGoogleMerchantID: jest.fn(() => 'mocked_google_merchant_id'),
     getAdyenCardholderNameEnabled: jest.fn(() => true),
     getAdyenPayPalIntent: jest.fn(() => 'mocked_intent'),
@@ -371,27 +386,6 @@ jest.mock(
   () => ({
     processPayment: jest.fn(),
     isNotAdyen: jest.fn(() => false),
-  }),
-  { virtual: true },
-);
-
-jest.mock(
-  '*/cartridge/adyen/utils/lineItemHelper',
-  () => ({
-    getDescription: jest.fn((lineItem) => lineItem.productName),
-    getId: jest.fn((lineItem) => lineItem.productID),
-    getQuantity: jest.fn((lineItem) => lineItem.quantityValue),
-    getItemAmount: jest.fn((lineItem) => ({
-      divide: jest.fn((quantity) => ({
-        getValue: jest.fn(() => lineItem.adjustedNetPrice / quantity),
-      })),
-    })),
-    getVatAmount: jest.fn((lineItem) => ({
-      divide: jest.fn((quantity) => ({
-        getValue: jest.fn(() => lineItem.getAdjustedTax / quantity),
-      })),
-    })),
-    getAllLineItems: jest.fn((lineItem) => lineItem),
   }),
   { virtual: true },
 );
@@ -476,6 +470,17 @@ jest.mock(
     createAnalyticsEvent: jest.fn(),
     deleteAnalyticsEvent: jest.fn(),
     updateAnalyticsEvent: jest.fn(),
+  }),
+  { virtual: true },
+);
+
+jest.mock(
+  '*/cartridge/adyen/logs/adyenCustomLogs',
+  () => ({
+    fatal_log: jest.fn(),
+    error_log: jest.fn(),
+    debug_log: jest.fn(),
+    info_log: jest.fn(),
   }),
   { virtual: true },
 );

@@ -8,7 +8,8 @@ const validationHelpers = require('*/cartridge/scripts/helpers/basketValidationH
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
 const paypalHelper = require('*/cartridge/adyen/utils/paypalHelper');
-
+const setErrorType = require('*/cartridge/adyen/logs/setErrorType');
+const { AdyenError } = require('*/cartridge/adyen/logs/adyenError');
 /**
  * Sets Shipping and Billing address for the basket,
  * also updated payment method on the paymentInstrument of Basket.
@@ -41,7 +42,7 @@ function updateCurrentBasket(currentBasket, req) {
 function handleCheckoutReview(req, res, next) {
   try {
     if (!req.form.data) {
-      throw new Error('State data not present in the request');
+      throw new AdyenError('State data not present in the request');
     }
     const currentBasket = BasketMgr.getCurrentBasket();
     if (!currentBasket) {
@@ -82,7 +83,9 @@ function handleCheckoutReview(req, res, next) {
     });
   } catch (error) {
     AdyenLogs.error_log('Could not render checkout review page', error);
-    res.redirect(URLUtils.url('Error-ErrorCode', 'err', 'general'));
+    setErrorType(error, res, {
+      redirectUrl: URLUtils.url('Error-ErrorCode', 'err', 'general').toString(),
+    });
   }
   return next();
 }

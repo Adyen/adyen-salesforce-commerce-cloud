@@ -63,10 +63,8 @@ describe('AdyenCheckout', () => {
                 }
             }
         };
-
-        const response =  adyenCheckout.createPaymentRequest(args);
-        expect(Logger.error.mock.calls[0][0]).toContain("Cart has been edited after applying a gift card");
-        expect(response.error).toEqual(true);
+        const testFn = () => {adyenCheckout.createPaymentRequest(args)};
+        expect(testFn).toThrow("Cart has been edited after applying a gift card");
 
     })
 
@@ -97,9 +95,7 @@ describe('AdyenCheckout', () => {
                 }
             }
         };
-
-        const response =  adyenCheckout.createPaymentRequest(args);
-        expect(Logger.error.mock.calls[0][0]).toContain("Cart has been edited after applying a gift card");
-        expect(response.error).toEqual(true);
+        const testFn = () => {adyenCheckout.createPaymentRequest(args)};
+        expect(testFn).toThrow("Cart has been edited after applying a gift card");
     })
 })

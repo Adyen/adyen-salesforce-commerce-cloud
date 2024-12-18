@@ -8,6 +8,7 @@ const paymentMethodDescriptions = require('*/cartridge/adyen/config/paymentMetho
 const constants = require('*/cartridge/adyen/config/constants');
 const getPaymentMethods = require('*/cartridge/adyen/scripts/payments/adyenGetPaymentMethods');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
+const setErrorType = require('*/cartridge/adyen/logs/setErrorType');
 
 function getCountryCode(currentBasket, locale) {
   let countryCode;
@@ -33,7 +34,6 @@ function getCheckoutPaymentMethods(req, res, next) {
         error: true,
         redirectUrl: URLUtils.url('Cart-Show').toString(),
       });
-
       return next();
     }
     const countryCode = getCountryCode(currentBasket, req.locale);
@@ -68,7 +68,7 @@ function getCheckoutPaymentMethods(req, res, next) {
     });
   } catch (error) {
     AdyenLogs.fatal_log('Failed to fetch payment methods', error);
-    res.json({ error: true });
+    setErrorType(error, res);
   }
   return next();
 }

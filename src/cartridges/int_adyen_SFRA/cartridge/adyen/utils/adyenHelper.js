@@ -38,15 +38,13 @@ const collections = require('*/cartridge/scripts/util/collections');
 const constants = require('*/cartridge/adyen/config/constants');
 const AdyenConfigs = require('*/cartridge/adyen/utils/adyenConfigs');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
+const { AdyenError } = require('*/cartridge/adyen/logs/adyenError');
 
 /* eslint no-var: off */
 let adyenHelperObj = {
   // Create the service config used to make calls to the Adyen Checkout API (used for all services)
   getService(service) {
-    let adyenService = null;
-
-    try {
-      adyenService = LocalServiceRegistry.createService(service, {
+       const adyenService = LocalServiceRegistry.createService(service, {
         createRequest(svc, args) {
           svc.setRequestMethod('POST');
           if (args) {
@@ -62,10 +60,7 @@ let adyenHelperObj = {
         },
       });
       AdyenLogs.info_log(`Successfully retrieve service with name ${service}`);
-    } catch (error) {
-      AdyenLogs.error_log(`Can't get service instance with name ${service}`, error);
-    }
-    return adyenService;
+      return adyenService;
   },
 
   // returns SFCC customer object based on currentCustomer object

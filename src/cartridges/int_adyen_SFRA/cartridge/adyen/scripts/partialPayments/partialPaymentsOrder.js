@@ -4,6 +4,7 @@ const adyenCheckout = require('*/cartridge/adyen/scripts/payments/adyenCheckout'
 const AdyenConfigs = require('*/cartridge/adyen/utils/adyenConfigs');
 const constants = require('*/cartridge/adyen/config/constants');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
+const setErrorType = require('*/cartridge/adyen/logs/setErrorType');
 
 function addMinutes(minutes) {
   const date = new Date();
@@ -58,7 +59,7 @@ function createPartialPaymentsOrder(req, res, next) {
     res.json(responseData);
   } catch (error) {
     AdyenLogs.error_log('Failed to create partial payments order:', error);
-    res.json({ error: true });
+    setErrorType(error, res);
   }
 
   return next();

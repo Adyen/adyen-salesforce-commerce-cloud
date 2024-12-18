@@ -39,9 +39,9 @@ beforeEach(() => {
     redirect: jest.fn(),
     render: jest.fn(),
     setStatusCode: jest.fn(),
+    json: jest.fn(),
   };
   AdyenLogs.error_log = jest.fn();
-  URLUtils.url =jest.fn();
   BasketMgr.getCurrentBasket.mockReturnValueOnce(currentBasket);
 });
 
@@ -68,14 +68,12 @@ describe('Checkout Review controller', () => {
     req.form = '';
     handleCheckoutReview(req, res, next);
     expect(AdyenLogs.error_log).toHaveBeenCalledTimes(1);
-    expect(res.redirect).toHaveBeenCalledTimes(1)
     expect(URLUtils.url).toHaveBeenCalledWith("Error-ErrorCode", "err", "general");
     expect(next).toHaveBeenCalled();
   });
   it('Should redirect to Cart if there is no current Basket', () => {
     BasketMgr.getCurrentBasket = jest.fn().mockImplementationOnce(() => (''))
     handleCheckoutReview(req, res, next);
-    expect(res.redirect).toHaveBeenCalledTimes(1)
     expect(URLUtils.url).toHaveBeenCalledWith("Cart-Show");
     expect(AdyenLogs.error_log).not.toHaveBeenCalled();
     expect(next).toHaveBeenCalled();
@@ -83,7 +81,6 @@ describe('Checkout Review controller', () => {
   it('Should redirect to Cart if product validation fails', () => {
     validationHelpers.validateProducts = jest.fn(() => ({error: true}))
     handleCheckoutReview(req, res, next);
-    expect(res.redirect).toHaveBeenCalledTimes(1)
     expect(URLUtils.url).toHaveBeenCalledWith("Cart-Show");
     expect(AdyenLogs.error_log).not.toHaveBeenCalled();
     expect(next).toHaveBeenCalled();

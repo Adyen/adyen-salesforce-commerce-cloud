@@ -49,7 +49,9 @@ describe('callSelectShippingMethod', () => {
 
     expect(res.setStatusCode).toHaveBeenCalledWith(500);
     expect(res.json).toHaveBeenCalledWith({
+        error: true,
         errorMessage: 'mocked_error.cannot.select.shipping.method',
+        errorType: "AdyenError"
       });
     expect(next).toHaveBeenCalled();
   });

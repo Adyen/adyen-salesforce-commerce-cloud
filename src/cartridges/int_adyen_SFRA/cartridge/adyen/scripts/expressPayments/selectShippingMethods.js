@@ -10,6 +10,8 @@ const adyenCheckout = require('*/cartridge/adyen/scripts/payments/adyenCheckout'
 const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 const paypalHelper = require('*/cartridge/adyen/utils/paypalHelper');
+const setErrorType = require('*/cartridge/adyen/logs/setErrorType');
+const { AdyenError } = require('*/cartridge/adyen/logs/adyenError');
 
 /**
  * Make a request to Adyen to select shipping methods
@@ -40,7 +42,7 @@ function callSelectShippingMethod(req, res, next) {
       shippingHelper.selectShippingMethod(shipment, methodID);
 
       if (currentBasket && !shipment.shippingMethod) {
-        throw new Error(
+        throw new AdyenError(
           `cannot set shippingMethod: ${methodID} for shipment:${shipment?.UUID}`,
         );
       }
@@ -52,7 +54,7 @@ function callSelectShippingMethod(req, res, next) {
       const currentShippingMethodsModels =
         AdyenHelper.getApplicableShippingMethods(shipment);
       if (!currentShippingMethodsModels?.length) {
-        throw new Error('No applicable shipping methods found');
+        throw new AdyenError('No applicable shipping methods found');
       }
       const paypalUpdateOrderResponse = adyenCheckout.doPaypalUpdateOrderCall(
         paypalHelper.createPaypalUpdateOrderRequest(
@@ -77,7 +79,7 @@ function callSelectShippingMethod(req, res, next) {
   } catch (error) {
     AdyenLogs.error_log('Failed to set shipping method', error);
     res.setStatusCode(500);
-    res.json({
+    setErrorType(error, res, {
       errorMessage: Resource.msg(
         'error.cannot.select.shipping.method',
         'cart',

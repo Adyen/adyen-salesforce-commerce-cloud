@@ -60,20 +60,7 @@ server.post(
 /**
  * Complete a donation through adyenGiving
  */
-server.post('Donate', server.middleware.https, (req /* , res, next */) => {
-  const { orderNo, orderToken } = req.form;
-  const donationAmount = {
-    value: req.form.amountValue,
-    currency: req.form.amountCurrency,
-  };
-  const donationResult = adyenGiving.donate(
-    orderNo,
-    donationAmount,
-    orderToken,
-  );
-
-  return donationResult.response;
-});
+server.post('Donate', server.middleware.https, adyenGiving.donation);
 
 /**
  * Make a payment from inside a component (paypal)
