@@ -98,6 +98,10 @@ const adyenConfigsObj = {
     return getCustomPreference('Adyen_StoreId');
   },
 
+  getAdyenActiveStoreId() {
+    return getCustomPreference('Adyen_SelectedStoreID');
+  },
+
   getAdyenApiKey() {
     return getCustomPreference('Adyen_API_Key');
   },
