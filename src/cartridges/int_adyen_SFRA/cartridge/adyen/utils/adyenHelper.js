@@ -42,13 +42,13 @@ const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 /* eslint no-var: off */
 let adyenHelperObj = {
   // Create the service config used to make calls to the Adyen Checkout API (used for all services)
-  getService(service) {
+  getService(service, reqMethod = 'POST') {
     let adyenService = null;
 
     try {
       adyenService = LocalServiceRegistry.createService(service, {
         createRequest(svc, args) {
-          svc.setRequestMethod('POST');
+          svc.setRequestMethod(reqMethod);
           if (args) {
             return args;
           }

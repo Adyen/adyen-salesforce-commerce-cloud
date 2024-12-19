@@ -13,7 +13,11 @@
             <label class="form-title mb-0" for="storeID">StoreID for Terminal API <small class="text-secondary">(optional)</small></label>
             <small id="storeIDHelp" class="form-text mb-1">If you want a POS in your physical store, enter the unique <a class="text-primary" href="https://docs.adyen.com/plugins/salesforce-commerce-cloud/sfra-and-sitegenesis/set-up-the-cartridge/#set-up-in-person-payments" target="_blank">store ID.</a> Keep in mind that you can only assign your POS to a single store. </small>
             <div class="input-fields">
-               <input type="text" class="form-control" name="Adyen_StoreId" id="storeID" aria-describedby="storeIDHelp" value="${AdyenConfigs.getAdyenStoreId()  || ''}"/>
+               <input type="hidden" class="form-control" name="Adyen_StoreId" id="storeID" aria-describedby="storeIDHelp" value="${AdyenConfigs.getAdyenStoreId()  || ''}"/>
+               <input type="hidden" class="form-control" name="Adyen_SelectedStoreID" id="selectedStoreID" aria-describedby="selectedStoreIDHelp" value="${AdyenConfigs.getAdyenActiveStoreId()  || ''}"/>
+			   <select class="form-control" id="terminalDropdown" name="Adyen_SelectedStoreID" multiple>
+      				<option value="">Select Store</option>
+    			</select>
             </div>
          </div>
       </div>
