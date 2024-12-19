@@ -1,0 +1,10 @@
+[
+  {
+    "id": "Content-Security-Policy",
+    "value": "script-src 'self' 'unsafe-eval' 'unsafe-inline' *.cquotient.com *.adyen.com *.google.com *.payments-amazon.com *.paypal.com *.ratepay.com *.cash.app *.commercecloud.salesforce.com; font-src *.gstatic.com cash-f.squarecdn.com *.commercecloud.salesforce.com *.googleapis.com; style-src 'unsafe-inline' *.googleapis.com *.adyen.com *.cash.app *.commercecloud.salesforce.com; frame-src *; img-src 'self' data:  *; connect-src *; form-action *"
+  },
+  {
+    "id": "X-Content-Type-Options",
+    "value": "nosniff"
+  }
+]
