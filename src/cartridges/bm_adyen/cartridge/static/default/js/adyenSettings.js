@@ -48,14 +48,12 @@ const expressPaymentMethods = [
 ];
 
 document.addEventListener('DOMContentLoaded', async () => {
-  const response = await fetch('AdyenSettings-GetStores', {
+  await fetch('AdyenSettings-GetStores', {
     headers: {
       'Content-Type': 'application/json; charset=utf-8',
     },
     method: 'GET',
   });
-  const result = await response.json();
-  return result;
 });
 
 document.addEventListener('DOMContentLoaded', () => {
