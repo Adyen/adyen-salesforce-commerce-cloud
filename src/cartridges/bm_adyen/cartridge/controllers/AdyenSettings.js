@@ -6,6 +6,7 @@ const AdyenConfigs = require('*/cartridge/adyen/utils/adyenConfigs');
 const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
 const constants = require('*/cartridge/adyen/config/constants');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
+const bmHelper = require('*/cartridge/utils/helper');
 
 server.get('Start', (_req, res, next) => {
   if (!csrfProtection.validateRequest()) {
@@ -81,6 +82,34 @@ server.post('TestConnection', server.middleware.https, (req, res, next) => {
     });
   }
 
+  return next();
+});
+
+server.get('GetStores', server.middleware.https, (req, res, next) => {
+  try {
+    const service = bmHelper.initializeAdyenService(
+      constants.SERVICE.GETSTORES,
+      'GET',
+    );
+    const merchantAccount = AdyenConfigs.getAdyenMerchantAccount();
+    const callResult = service.call(JSON.stringify({ merchantAccount }));
+
+    if (!callResult.isOk()) {
+      throw new Error('/getStores call failed');
+    }
+    const resultObject = callResult.object;
+    const response = JSON.parse(resultObject.getText());
+    const mappedData = response.data.map((store) => ({
+      id: store.id,
+      description: store.description,
+    }));
+
+    bmHelper.saveMetadataField('Adyen_StoreId', mappedData);
+    res.json({ success: true, stores: mappedData });
+  } catch (error) {
+    AdyenLogs.error_log('Error while fetching stores:', error);
+    res.json({ success: false });
+  }
   return next();
 });
 

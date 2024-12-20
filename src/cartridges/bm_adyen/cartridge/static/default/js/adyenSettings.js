@@ -47,6 +47,15 @@ const expressPaymentMethods = [
   },
 ];
 
+document.addEventListener('DOMContentLoaded', async () => {
+  await fetch('AdyenSettings-GetStores', {
+    headers: {
+      'Content-Type': 'application/json; charset=utf-8',
+    },
+    method: 'GET',
+  });
+});
+
 document.addEventListener('DOMContentLoaded', () => {
   const form = document.querySelector('#settingsForm');
   const troubleshootingForm = document.querySelector('#troubleshootingForm');
@@ -89,11 +98,27 @@ document.addEventListener('DOMContentLoaded', () => {
   const params = 'resizable=yes,width=1000,height=500,left=100,top=100';
 
   const draggableList = document.getElementById('draggable-list');
+  const availableStores = document.getElementById('storeID').value;
+  const terminalDropdown = document.getElementById('terminalDropdown');
+  const activeSelectedStores = document.getElementById('selectedStoreID').value;
 
   let ruleCounter = 0;
   const installmentsResult = {};
   const listItems = [];
   let dragStartIndex;
+
+  function renderStores() {
+    const stores = JSON.parse(availableStores);
+    stores.forEach((store) => {
+      const option = document.createElement('option');
+      option.value = store.id;
+      option.textContent = `${store.description} (${store.id})`;
+      terminalDropdown.appendChild(option);
+      if (activeSelectedStores.includes(store.id)) {
+        option.selected = true;
+      }
+    });
+  }
 
   function settingChanged(key, value) {
     const settingIndex = changedSettings.findIndex(
@@ -563,26 +588,40 @@ document.addEventListener('DOMContentLoaded', () => {
     })();
   });
 
-  // add event listener to maintain form updates
+  function parseRadioValue(rawValue) {
+    if (rawValue === 'true') return true;
+    if (rawValue === 'false') return false;
+    return rawValue;
+  }
+
+  function getMultipleSelectValues(selectedOptions) {
+    return Array.from(selectedOptions)
+      .map((option) => option.value)
+      .join(',');
+  }
+
+  function getValueFromInput(type, rawValue, checked, selectedOptions) {
+    if (type === 'checkbox') {
+      return checked;
+    }
+    if (type === 'select-multiple') {
+      return getMultipleSelectValues(selectedOptions);
+    }
+    if (type === 'radio') {
+      return parseRadioValue(rawValue);
+    }
+    return rawValue;
+  }
+
   form.addEventListener('change', (event) => {
-    const { name } = event.target;
-    let { value } = event.target; // get checked boolean value for checkboxes
-
-    if (event.target.type === 'checkbox') {
-      value = event.target.checked;
-    }
-
-    // convert radio button strings to boolean if values are 'true' or 'false'
-    if (event.target.type === 'radio') {
-      if (event.target.value === 'true') {
-        value = true;
-      }
-
-      if (event.target.value === 'false') {
-        value = false;
-      }
-    }
-
+    const {
+      name,
+      type,
+      value: rawValue,
+      checked,
+      selectedOptions,
+    } = event.target;
+    const value = getValueFromInput(type, rawValue, checked, selectedOptions);
     settingChanged(name, value);
   });
 
@@ -648,5 +687,6 @@ document.addEventListener('DOMContentLoaded', () => {
     window.location.reload();
   });
 
+  renderStores();
   createExpressPaymentsComponent(expressPaymentMethods, draggableList);
 });
