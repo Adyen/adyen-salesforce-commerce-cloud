@@ -23,6 +23,7 @@
 const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
 const AdyenConfigs = require('*/cartridge/adyen/utils/adyenConfigs');
 const constants = require('*/cartridge/adyen/config/constants');
+const { AdyenError } = require('*/cartridge/adyen/logs/adyenError');
 
 // eslint-disable-next-line complexity
 function deleteRecurringPayment(args) {
@@ -41,7 +42,7 @@ function deleteRecurringPayment(args) {
   }
 
   if (!(customerID && recurringDetailReference)) {
-    throw new Error('No Customer ID or RecurringDetailReference provided');
+    throw new AdyenError('No Customer ID or RecurringDetailReference provided');
   }
 
   const requestObject = {
