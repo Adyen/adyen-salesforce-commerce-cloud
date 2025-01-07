@@ -15,6 +15,7 @@ function handleHmacVerification(hmacKey, req) {
 }
 
 function notify(req, res, next) {
+  try {
   const status = checkAuth.check(req);
   const hmacKey = AdyenConfigs.getAdyenHmacKey();
   const isHmacValid = handleHmacVerification(hmacKey, req);
@@ -34,5 +35,12 @@ function notify(req, res, next) {
     Transaction.rollback();
   }
   return next();
+  } catch (error) {
+    AdyenLogs.error_log('Could not process notification:', error);
+    setErrorType(error, res, {
+      redirectUrl: URLUtils.url('Error-ErrorCode', 'err', 'general').toString(),
+    });
+    return next();
+  }
 }
 module.exports = notify;

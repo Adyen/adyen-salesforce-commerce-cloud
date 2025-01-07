@@ -16,7 +16,7 @@ beforeEach(() => {
     currentCustomer: { raw: { isAuthenticated: jest.fn(() => false) } },
     session: { privacyCache: { get: jest.fn(), set: jest.fn() } },
   };
-  res = { getViewData: jest.fn(() => ({})), setViewData: jest.fn() };
+  res = { getViewData: jest.fn(() => ({})), setViewData: jest.fn(), json: jest.fn() };
 });
 
 describe('Begin', () => {
