@@ -39,8 +39,8 @@ function getOneClickPaymentMethods(customer) {
   if (storedPaymentMethods) {
     storedPaymentMethods?.forEach((storedPaymentMethod) => {
       if (
-        storedPaymentMethod.supportedShopperInteractions &&
-        storedPaymentMethod.supportedShopperInteractions.indexOf('Ecommerce') >
+        storedPaymentMethod?.supportedShopperInteractions &&
+        storedPaymentMethod?.supportedShopperInteractions.indexOf('Ecommerce') >
           -1
       ) {
         oneClickPaymentMethods.push(storedPaymentMethod);
