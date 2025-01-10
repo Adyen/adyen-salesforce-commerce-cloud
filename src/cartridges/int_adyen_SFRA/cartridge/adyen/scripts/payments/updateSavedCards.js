@@ -22,6 +22,7 @@
 /* API Includes */
 const PaymentInstrument = require('dw/order/PaymentInstrument');
 const Transaction = require('dw/system/Transaction');
+const collections = require('*/cartridge/scripts/util/collections');
 const constants = require('*/cartridge/adyen/config/constants');
 
 /* Script Modules */
@@ -37,7 +38,7 @@ function getOneClickPaymentMethods(customer) {
   );
   const oneClickPaymentMethods = [];
   if (storedPaymentMethods) {
-    storedPaymentMethods?.forEach((storedPaymentMethod) => {
+    collections.forEach(storedPaymentMethods, (storedPaymentMethod) => {
       if (
         storedPaymentMethod?.supportedShopperInteractions &&
         storedPaymentMethod?.supportedShopperInteractions.indexOf('Ecommerce') >
@@ -74,16 +75,16 @@ function updateSavedCards(args) {
 
       Transaction.wrap(() => {
         // remove all current METHOD_CREDIT_CARD PaymentInstruments
-        savedCreditCards?.forEach((savedCreditCard) => {
+        collections.forEach(savedCreditCards, (savedCreditCard) => {
           customer.getProfile().getWallet().removePaymentInstrument(savedCreditCard);
         })
         // remove all current METHOD_ADYEN_COMPONENT PaymentInstruments
-        savedCreditCardsComponent?.forEach((savedCreditCard) => {
+        collections.forEach(savedCreditCardsComponent, (savedCreditCard) => {
           customer.getProfile().getWallet().removePaymentInstrument(savedCreditCard);
         })
 
         // Create from existing cards a paymentInstrument
-        oneClickPaymentMethods?.forEach((payment) => {
+        collections.forEach(oneClickPaymentMethods, (payment) => {
           const expiryMonth = payment.expiryMonth ? payment.expiryMonth : '';
           const expiryYear = payment.expiryYear ? payment.expiryYear : '';
           const holderName = payment.holderName ? payment.holderName : '';
