@@ -38,7 +38,7 @@ function getOneClickPaymentMethods(customer) {
   );
   const oneClickPaymentMethods = [];
   if (storedPaymentMethods) {
-    collections.forEach(storedPaymentMethods, (storedPaymentMethod) => {
+    storedPaymentMethods?.forEach((storedPaymentMethod) => {
       if (
         storedPaymentMethod?.supportedShopperInteractions &&
         storedPaymentMethod?.supportedShopperInteractions.indexOf('Ecommerce') >
@@ -84,7 +84,7 @@ function updateSavedCards(args) {
         })
 
         // Create from existing cards a paymentInstrument
-        collections.forEach(oneClickPaymentMethods, (payment) => {
+        oneClickPaymentMethods?.forEach((payment) => {
           const expiryMonth = payment.expiryMonth ? payment.expiryMonth : '';
           const expiryYear = payment.expiryYear ? payment.expiryYear : '';
           const holderName = payment.holderName ? payment.holderName : '';
