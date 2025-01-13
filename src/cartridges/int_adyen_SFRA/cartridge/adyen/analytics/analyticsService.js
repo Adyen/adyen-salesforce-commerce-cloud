@@ -4,6 +4,7 @@ const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
 const AdyenConfigs = require('*/cartridge/adyen/utils/adyenConfigs');
 const constants = require('*/cartridge/adyen/config/constants');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
+const analyticsConstants = require('*/cartridge/adyen/analytics/constants');
 
 function execute(serviceType, requestObject, checkoutAttemptID = '') {
   const service = AdyenHelper.getService(serviceType);
@@ -42,6 +43,7 @@ function createCheckoutAttemptId() {
       applicationInfo: AdyenHelper.getApplicationInfo(),
       channel: 'Web',
       platform: 'Web',
+      pluginType: analyticsConstants.pluginType,
     };
 
     const response = execute(constants.SERVICE.ADYEN_ANALYTICS, requestObject);
