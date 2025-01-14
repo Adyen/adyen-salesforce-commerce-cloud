@@ -89,6 +89,7 @@ server.post(
   'PaymentFromComponent',
   server.middleware.https,
   csrf.validateRequest,
+  adyen.validatePaymentDataFromRequest,
   adyen.paymentFromComponent,
 );
 
@@ -171,6 +172,7 @@ server.post(
   'MakeExpressPaymentsCall',
   server.middleware.https,
   csrf.validateRequest,
+  adyen.validatePaymentDataFromRequest,
   adyen.makeExpressPaymentsCall,
 );
 
