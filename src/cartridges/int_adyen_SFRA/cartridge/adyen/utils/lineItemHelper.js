@@ -128,11 +128,15 @@ const __LineItemHelper = {
 
   getAllLineItems(allLineItems) {
     const lineItems = [];
-    allLineItems.forEach((lineItem) => {
-      if (this.isValidLineItem(lineItem)) {
-        lineItems.push(lineItem);
+    // eslint-disable-next-line no-restricted-syntax
+    for (const item in allLineItems) {
+      if (item) {
+        const lineItem = allLineItems[item];
+        if (this.isValidLineItem(lineItem)) {
+          lineItems.push(lineItem);
+        }
       }
-    });
+    }
     return lineItems;
   },
 };
