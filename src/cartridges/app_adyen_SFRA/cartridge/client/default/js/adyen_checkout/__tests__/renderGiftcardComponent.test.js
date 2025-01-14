@@ -62,14 +62,6 @@ describe.only('Render gift card', () => {
       },
     };
 
-    const data = {
-      resultCode: 'Received',
-    };
-    $.ajax = jest.fn(({ success }) => {
-      success(data);
-      return { fail: jest.fn() };
-    });
-
     expect(document.querySelector('#biggerContainer').innerHTML).toContain(
       'cancelGiftCardContainer',
     );
