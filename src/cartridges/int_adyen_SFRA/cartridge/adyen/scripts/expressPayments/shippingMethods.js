@@ -26,15 +26,19 @@ function updateShippingAddress(currentBasket, address) {
   }
 }
 
+function getBasket(basketId) {
+  return basketId
+    ? BasketMgr.getTemporaryBasket(basketId)
+    : BasketMgr.getCurrentBasket();
+}
 /**
  * Make a request to Adyen to get shipping methods
  */
 function callGetShippingMethods(req, res, next) {
   try {
-    const { address, currentPaymentData, paymentMethodType } = JSON.parse(
-      req.body,
-    );
-    const currentBasket = BasketMgr.getCurrentBasket();
+    const { address, currentPaymentData, paymentMethodType, basketId } =
+      JSON.parse(req.form.data);
+    const currentBasket = getBasket(basketId);
     if (!currentBasket) {
       res.json({
         error: true,
