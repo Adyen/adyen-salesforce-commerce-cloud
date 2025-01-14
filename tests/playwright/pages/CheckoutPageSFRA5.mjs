@@ -104,9 +104,6 @@ export default class CheckoutPageSFRA5 {
     await this.successMessage.waitFor({ visible: true });
 
     await this.navigateToCheckout(locale);
-    if (this.consentButton.isVisible()) {
-		this.consentButton.click();
-	  }
     await this.checkoutGuest.click();
   };
 

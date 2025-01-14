@@ -18,7 +18,6 @@
             };
             window.redirectUrl = "${URLUtils.url('PaymentInstruments-List')}";
             window.paymentsDetailsURL = "${URLUtils.https('Adyen-PaymentsDetails')}";
-            window.getPaymentMethodsURL = "${URLUtils.https('Adyen-GetPaymentMethods')}";
         </script>
         <form
             action="${URLUtils.url('PaymentInstruments-SavePayment', 'UUID', pdict.UUID)}"
