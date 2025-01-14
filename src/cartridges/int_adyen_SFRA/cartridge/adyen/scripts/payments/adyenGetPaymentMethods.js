@@ -27,12 +27,27 @@ const blockedPayments = require('*/cartridge/adyen/config/blockedPaymentMethods.
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 
 // eslint-disable-next-line complexity
-function getMethods(paymentAmount, customer, countryCode) {
+function getMethods(basket, customer, countryCode) {
   try {
+    let paymentAmount;
+    let currencyCode;
+
+    // paymentMethods call from checkout
+    if (basket) {
+      currencyCode = basket.currencyCode;
+      paymentAmount = basket.getTotalGrossPrice().isAvailable()
+        ? AdyenHelper.getCurrencyValueForApi(basket.getTotalGrossPrice())
+        : new dw.value.Money(1000, currencyCode);
+    } else {
+      // paymentMethods call from My Account
+      currencyCode = session.currency.currencyCode;
+      paymentAmount = new dw.value.Money(0, currencyCode);
+    }
+
     const paymentMethodsRequest = {
       merchantAccount: AdyenConfigs.getAdyenMerchantAccount(),
       amount: {
-        currency: paymentAmount.currencyCode,
+        currency: currencyCode,
         value: paymentAmount.value,
       },
     };

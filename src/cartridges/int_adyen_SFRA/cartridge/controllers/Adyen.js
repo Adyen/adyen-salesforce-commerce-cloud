@@ -205,16 +205,6 @@ server.post(
   adyen.fetchGiftCards,
 );
 
-/**
- * Called by Adyen to create temporary basket for express payment on pdp.
- */
-server.post(
-  'CreateTemporaryBasket',
-  server.middleware.https,
-  csrf.validateRequest,
-  adyen.createTemporaryBasket,
-);
-
 function getExternalPlatformVersion() {
   return EXTERNAL_PLATFORM_VERSION;
 }

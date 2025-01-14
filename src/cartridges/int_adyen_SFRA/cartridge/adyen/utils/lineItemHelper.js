@@ -99,12 +99,28 @@ const __LineItemHelper = {
     return new dw.value.Money(0, lineItem.getPrice().getCurrencyCode());
   },
 
+  isProductLineItem(lineItem) {
+    return lineItem instanceof dw.order.ProductLineItem;
+  },
+
+  isBonusProductLineItem(lineItem) {
+    return lineItem.bonusProductLineItem;
+  },
+
+  isShippingLineItem(lineItem) {
+    return lineItem instanceof dw.order.ShippingLineItem;
+  },
+
+  isPriceAdjustment(lineItem) {
+    return lineItem instanceof dw.order.PriceAdjustment;
+  },
+
   isValidLineItem(lineItem) {
     return (
-      (lineItem instanceof dw.order.ProductLineItem &&
-        !lineItem.bonusProductLineItem) ||
-      lineItem instanceof dw.order.ShippingLineItem ||
-      (lineItem instanceof dw.order.PriceAdjustment &&
+      (this.isProductLineItem(lineItem) &&
+        !this.isBonusProductLineItem(lineItem)) ||
+      this.isShippingLineItem(lineItem) ||
+      (this.isPriceAdjustment(lineItem) &&
         lineItem.promotion.promotionClass ===
           dw.campaign.Promotion.PROMOTION_CLASS_ORDER)
     );
@@ -112,14 +128,11 @@ const __LineItemHelper = {
 
   getAllLineItems(allLineItems) {
     const lineItems = [];
-    for (const item in allLineItems) {
-      if (item) {
-        const lineItem = allLineItems[item];
-        if (this.isValidLineItem(lineItem)) {
-          lineItems.push(lineItem);
-        }
+    allLineItems.forEach((lineItem) => {
+      if (this.isValidLineItem(lineItem)) {
+        lineItems.push(lineItem);
       }
-    }
+    });
     return lineItems;
   },
 };

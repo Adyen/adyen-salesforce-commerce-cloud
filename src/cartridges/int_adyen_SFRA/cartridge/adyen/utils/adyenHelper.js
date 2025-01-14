@@ -770,8 +770,7 @@ let adyenHelperObj = {
   // get the fraction digits based on the currency code used to convert amounts of currency for the Adyen Checkout API
   getFractionDigits(currencyCode) {
     let format;
-    let currency = currencyCode || session.currency.currencyCode;
-    switch (currency) {
+    switch (currencyCode) {
       case 'CVE':
       case 'DJF':
       case 'GNF':

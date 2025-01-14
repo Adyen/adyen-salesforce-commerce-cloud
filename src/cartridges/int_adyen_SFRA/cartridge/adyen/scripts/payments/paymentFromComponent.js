@@ -164,13 +164,11 @@ function canSkipSummaryPage(reqDataObj) {
  * Make a payment from inside a component, skipping the summary page. (paypal, QRcodes, MBWay)
  */
 function paymentFromComponent(req, res, next) {
-  const { basketId, ...reqDataObj } = JSON.parse(req.form.data);
+  const reqDataObj = JSON.parse(req.form.data);
   if (reqDataObj.cancelTransaction) {
     return handleCancellation(res, next, reqDataObj);
   }
-  const currentBasket = basketId
-    ? BasketMgr.getTemporaryBasket(basketId)
-    : BasketMgr.getCurrentBasket();
+  const currentBasket = BasketMgr.getCurrentBasket();
   let paymentInstrument;
   Transaction.wrap(() => {
     collections.forEach(currentBasket.getPaymentInstruments(), (item) => {
