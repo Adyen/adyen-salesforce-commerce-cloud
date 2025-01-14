@@ -146,20 +146,18 @@ function handlePartialPaymentSuccess() {
 }
 
 async function makeGiftcardPaymentRequest(
-  giftCardData,
+  paymentMethod,
   giftcardBalance,
   reject,
 ) {
   const brandSelect = document.getElementById('giftCardSelect');
   const selectedBrandIndex = brandSelect.selectedIndex;
   const giftcardBrand = brandSelect.options[selectedBrandIndex].text;
+  const { encryptedCardNumber, encryptedSecurityCode, brand } = paymentMethod;
   const partialPaymentRequest = {
-    paymentMethod: giftCardData,
-    amount: giftcardBalance,
-    partialPaymentsOrder: {
-      pspReference: store.adyenOrderData.pspReference,
-      orderData: store.adyenOrderData.orderData,
-    },
+    encryptedCardNumber,
+    encryptedSecurityCode,
+    brand,
     giftcardBrand,
   };
   const partialPaymentResponse = await makePartialPayment(
@@ -247,9 +245,9 @@ function getGiftCardConfig() {
     onOrderRequest: (resolve, reject, requestData) => {
       // Make a POST /orders request
       // Create an order for the total transaction amount
-      const giftCardData = requestData.paymentMethod;
-      if (store.adyenOrderData) {
-        makeGiftcardPaymentRequest(giftCardData, giftcardBalance, reject);
+      const { paymentMethod } = requestData;
+      if (store.adyenOrderDataCreated) {
+        makeGiftcardPaymentRequest(paymentMethod, giftcardBalance, reject);
       } else {
         $.ajax({
           type: 'POST',
@@ -261,9 +259,13 @@ function getGiftCardConfig() {
           async: false,
           success: (data) => {
             if (data.resultCode === 'Success') {
-              store.adyenOrderData = data;
+              store.adyenOrderDataCreated = true;
               // make payments call including giftcard data and order data
-              makeGiftcardPaymentRequest(giftCardData, giftcardBalance, reject);
+              makeGiftcardPaymentRequest(
+                paymentMethod,
+                giftcardBalance,
+                reject,
+              );
             }
           },
         });

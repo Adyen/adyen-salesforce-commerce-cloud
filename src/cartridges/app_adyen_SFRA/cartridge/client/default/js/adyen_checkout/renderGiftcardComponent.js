@@ -52,64 +52,58 @@ function showGiftCardCancelButton(show) {
 }
 
 function removeGiftCards() {
-  store.addedGiftCards?.forEach((card) => {
-    $.ajax({
-      type: 'POST',
-      url: window.cancelPartialPaymentOrderUrl,
-      data: {
-        csrf_token: $('#adyen-token').val(),
-        data: JSON.stringify(card),
-      },
-      async: false,
-      success(res) {
-        const adyenPartialPaymentsOrder = document.querySelector(
-          '#adyenPartialPaymentsOrder',
-        );
+  $.ajax({
+    type: 'POST',
+    url: window.cancelPartialPaymentOrderUrl,
+    data: {
+      csrf_token: $('#adyen-token').val(),
+    },
+    async: false,
+    success(res) {
+      const adyenPartialPaymentsOrder = document.querySelector(
+        '#adyenPartialPaymentsOrder',
+      );
 
-        const {
-          giftCardsList,
-          giftCardAddButton,
-          giftCardSelect,
-          giftCardUl,
-          giftCardsInfoMessageContainer,
-          giftCardSelectContainer,
-          cancelMainPaymentGiftCard,
-          giftCardInformation,
-        } = getGiftCardElements();
+      const {
+        giftCardsList,
+        giftCardAddButton,
+        giftCardSelect,
+        giftCardUl,
+        giftCardsInfoMessageContainer,
+        giftCardSelectContainer,
+        cancelMainPaymentGiftCard,
+        giftCardInformation,
+      } = getGiftCardElements();
 
-        adyenPartialPaymentsOrder.value = null;
-        giftCardsList.innerHTML = '';
-        giftCardAddButton.style.display = 'block';
-        giftCardSelect.value = null;
-        giftCardSelectContainer.classList.add('invisible');
-        giftCardSelect.classList.remove('invisible');
-        giftCardUl.innerHTML = '';
+      adyenPartialPaymentsOrder.value = null;
+      giftCardsList.innerHTML = '';
+      giftCardAddButton.style.display = 'block';
+      giftCardSelect.value = null;
+      giftCardSelectContainer.classList.add('invisible');
+      giftCardSelect.classList.remove('invisible');
+      giftCardUl.innerHTML = '';
 
-        cancelMainPaymentGiftCard.classList.add('invisible');
-        showGiftCardCancelButton(false);
-        giftCardInformation?.remove();
+      cancelMainPaymentGiftCard.classList.add('invisible');
+      showGiftCardCancelButton(false);
+      giftCardInformation?.remove();
 
-        store.checkout.options.amount = res.amount;
-        store.partialPaymentsOrderObj = null;
-        store.addedGiftCards = null;
-        store.adyenOrderData = null;
+      store.checkout.options.amount = res.amount;
+      store.partialPaymentsOrderObj = null;
+      store.addedGiftCards = null;
+      store.adyenOrderDataCreated = false;
 
-        giftCardsInfoMessageContainer.innerHTML = '';
-        giftCardsInfoMessageContainer.classList.remove(
-          'gift-cards-info-message-container',
-        );
-        document.querySelector('button[value="submit-payment"]').disabled =
-          false;
+      giftCardsInfoMessageContainer.innerHTML = '';
+      giftCardsInfoMessageContainer.classList.remove(
+        'gift-cards-info-message-container',
+      );
+      document.querySelector('button[value="submit-payment"]').disabled = false;
 
-        if (res.resultCode === constants.RECEIVED) {
-          document
-            .querySelector('#cancelGiftCardContainer')
-            ?.parentNode.remove();
-          store.componentsObj?.giftcard?.node.unmount('component_giftcard');
-        }
-        initializeCheckout();
-      },
-    });
+      if (res.resultCode === constants.RECEIVED) {
+        document.querySelector('#cancelGiftCardContainer')?.parentNode.remove();
+        store.componentsObj?.giftcard?.node.unmount('component_giftcard');
+      }
+      initializeCheckout();
+    },
   });
 }
 

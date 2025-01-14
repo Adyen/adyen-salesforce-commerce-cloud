@@ -19,14 +19,21 @@ function makePartialPayment(req, res, next) {
     const request = JSON.parse(req.form.data);
     const currentBasket = BasketMgr.getCurrentBasket();
 
-    const { paymentMethod, partialPaymentsOrder, amount, giftcardBrand } =
+    const { encryptedCardNumber, encryptedSecurityCode, brand, giftcardBrand } =
       request;
+    const paymentMethod = {
+      encryptedCardNumber,
+      encryptedSecurityCode,
+      brand,
+      type: 'giftcard',
+    };
+    const { order } = JSON.parse(session.privacy.partialPaymentData);
     const partialPaymentRequest = {
       merchantAccount: AdyenConfigs.getAdyenMerchantAccount(),
-      amount,
+      amount: JSON.parse(session.privacy.giftCardBalance),
       reference: currentBasket.custom.adyenGiftCardsOrderNo,
       paymentMethod,
-      order: partialPaymentsOrder,
+      order,
     };
 
     const response = adyenCheckout.doPaymentsCall(
@@ -95,7 +102,6 @@ function makePartialPayment(req, res, next) {
         ...response.paymentMethod,
         amount: response.amount,
         name: giftcardBrand,
-        pspReference: response.pspReference,
       },
       orderAmount: {
         currency: currentBasket.currencyCode,
@@ -103,10 +109,7 @@ function makePartialPayment(req, res, next) {
           currentBasket.getTotalGrossPrice(),
         ).value,
       },
-      partialPaymentsOrder: {
-        orderData: response.order.orderData,
-        pspReference: response.order.pspReference,
-      },
+      orderCreated: !!response?.order?.orderData,
       remainingAmount: response.order.remainingAmount,
       remainingAmountFormatted,
     };
