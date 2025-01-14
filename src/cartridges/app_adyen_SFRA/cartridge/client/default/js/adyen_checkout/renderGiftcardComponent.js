@@ -96,7 +96,13 @@ function removeGiftCards() {
       giftCardsInfoMessageContainer.classList.remove(
         'gift-cards-info-message-container',
       );
-      document.querySelector('button[value="submit-payment"]').disabled = false;
+      const submitButton = document.querySelector(
+        'button[value="submit-payment"]',
+      );
+      if (submitButton) {
+        document.querySelector('button[value="submit-payment"]').disabled =
+          false;
+      }
 
       if (res.resultCode === constants.RECEIVED) {
         document.querySelector('#cancelGiftCardContainer')?.parentNode.remove();

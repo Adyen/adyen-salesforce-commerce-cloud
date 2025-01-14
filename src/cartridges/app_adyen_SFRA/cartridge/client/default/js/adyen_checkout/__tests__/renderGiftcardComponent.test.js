@@ -21,6 +21,9 @@ beforeEach(() => {
         <div id="giftCardSelectContainer"></div>
         <button id="giftCardAddButton"></button>
         <div id="adyenPartialPaymentsOrder"></div>
+        <div id="cancelGiftCardButton"></div>
+        <div id="giftCardsCancelContainer"></div>
+        <div id="giftCardsInfoMessage"></div>
       `;
   window.AdyenCheckout = jest.fn(async () => ({
     create: jest.fn(),

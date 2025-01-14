@@ -13,6 +13,7 @@ function makePartialPayment(requestData) {
       },
     })
       .done((response) => {
+        console.log(response);
         if (response.error) {
           reject(new Error(`Partial payment error ${response?.error}`));
         } else {
