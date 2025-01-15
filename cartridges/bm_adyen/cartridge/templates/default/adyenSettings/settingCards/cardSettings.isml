@@ -1,0 +1,38 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<isset name="AdyenConfigs" value="${require('*/cartridge/adyen/utils/adyenConfigs')}" scope="page"/>
+<script>
+    window.binIcon = "${URLUtils.staticURL('icons/bin.svg')}";
+</script>
+<div id="cardSettings" class="card bg-white mt-4">
+   <div class="card-body">
+      <h5 class="card-title mb-0">
+         Card settings
+      </h5>
+      <h7 class="card-subtitle">
+         <div class="first-subtitle">Choose additional payment features you want to offer to your shoppers.</div>
+      </h7>
+      <div class="mt-2">
+         <div class="form-group">
+            <div class='row'>
+               <div class="switch-button">
+                  <div class="form-check form-switch">
+                     <input class="form-check-input" type="checkbox" name="AdyenInstallments_enabled" id="flexSwitchCheckChecked" data-bs-toggle="collapse" data-bs-target=".adyen-installments-settings" ${AdyenConfigs.getAdyenInstallmentsEnabled() ? 'checked': 'unchecked'}>
+                  </div>
+               </div>
+            </div>
+            <label class="form-title mb-0" for="installments">Enable credit card installments <small class="text-secondary">(optional)</small></label>
+            <small class="form-text mb-1" id="installmentsHelp">If you’re offering an installments option to your shoppers, please configure them below.</small>
+         </div>
+         <div class="input-fields">
+            <input type="hidden" class="form-control" name="AdyenCreditCardInstallments" id="installments" value="${AdyenConfigs.getCreditCardInstallments() || ''}">    
+         </div>
+         <div class="adyen-installments-settings collapse ${AdyenConfigs.getAdyenInstallmentsEnabled() ? 'show': ''}">
+            <div class="input-fields" id="adyen_installments_div">
+               <div class="d-grid gap-2 d-md-flex justify-content-md-end form-buttons">
+                  <button type="button" id="addRuleButton" class="btn btn-primary border formButton">Add Rule</button>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+</div>

@@ -1,0 +1,78 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<isset name="AdyenConfigs" value="${require('*/cartridge/adyen/utils/adyenConfigs')}" scope="page"/>
+<div id="optionalSettings" class="card bg-white mt-4">
+   <div class="card-body">
+      <h5 class="card-title mb-0">
+         Additional settings <small class="text-secondary">(optional)</small>
+      </h5>
+      <h7 class="card-subtitle">
+         <div class="first-subtitle">Improve your business’s transparency and security.</div>
+      </h7>
+      <div class="mt-2">
+         <div class="form-group">
+            <label class="form-title mb-0" for="level23DataAuthorisation">Level 2/3 Data</label>
+            <small id="level23DataAuthorisationHelp" class="form-text mb-1">
+            2/3 Data gives you interchange discounts on US domestic transactions. Your shoppers will also see additional data about their purchases on their credit card statements. 
+            <a class="text-primary" href="https://ca-live.adyen.com/ca/ca/contactUs/support.shtml" target="_blank">Check if your business is eligible for Level 2/3 Data.</a>
+            </small>
+            <div class="radio-buttons">
+               <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" name="AdyenLevel23DataEnabled" id="level23DataYes" value=true ${AdyenConfigs.getAdyenLevel23DataEnabled() ? 'checked': ''}>
+                  <label class="form-check-label" for="level23DataYes">Enable</label>
+               </div>
+               <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" name="AdyenLevel23DataEnabled" id="level23DataNo" value=false ${!AdyenConfigs.getAdyenLevel23DataEnabled() ? 'checked': ''}>
+                  <label class="form-check-label" for="level23DataNo">Disable</label>
+               </div>
+            </div>
+         </div>
+         <div class="form-group">
+            <label class="form-title mb-0" for="commodityCode">Commodity code</label>
+            <small id="commodityCodeHelp" class="form-text mb-1">Enter the <a class="text-primary" href="https://www.unspsc.org/faqs" target="_blank">UNSPSC commodity code</a> to classify your products or services.</small>
+            <div class="input-fields">
+               <input type="text" class="form-control" name="AdyenLevel23_CommodityCode" id="commodityCode" aria-describedby="commodityCodeHelp" value="${AdyenConfigs.getAdyenLevel23CommodityCode() || ''}">
+            </div>
+         </div>
+         <div class="form-group border-top mt-4">
+            <label class="form-title mt-4" for="basketFields">Basket fields</label>
+            <small id="basketFieldsHelp" class="form-text mb-1">
+            We got you covered with our Revenue protect, risk engine. But if you want to create specific basket fields items in your risk set up, you can.
+            Please <a class="text-primary" href="https://docs.adyen.com/risk-management/configure-manual-risk/configure-custom-risk-rules#adyen-provided-fields" target="_blank">set up</a> these custom fields in the Adyen Customer Area and enable this setting.
+            </small>
+            <div class="radio-buttons">
+               <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" name="AdyenBasketFieldsEnabled" id="basketFieldsYes" value=true ${AdyenConfigs.getAdyenBasketFieldsEnabled() ? 'checked': ''}>
+                  <label class="form-check-label" for="basketFieldsYes">Enable</label>
+               </div>
+               <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" name="AdyenBasketFieldsEnabled" id="basketFieldsNo" value=false ${!AdyenConfigs.getAdyenBasketFieldsEnabled() ? 'checked': ''}>
+                  <label class="form-check-label" for="basketFieldsNo">Disable</label>
+               </div>
+            </div>
+         </div>
+         <div class="form-group border-top mt-4">
+            <label class="form-title mt-4" for="adyenTokenisation">Tokenisation</label>
+            <small id="applePayHelp" class="form-text mb-1">
+            To tokenize payment details for all payment methods, make sure you have this feature enabled.
+            </small>
+            <div class="radio-buttons">
+               <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" name="AdyenTokenisationEnabled" id="AdyenTokenisationYes" value=true ${AdyenConfigs.getAdyenTokenisationEnabled() ? 'checked': ''}>
+                  <label class="form-check-label" for="AdyenTokenisationYes">Enable</label>
+               </div>
+               <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" name="AdyenTokenisationEnabled" id="AdyenTokenisationNo" value=false ${!AdyenConfigs.getAdyenTokenisationEnabled() ? 'checked': ''}>
+                  <label class="form-check-label" for="AdyenTokenisationNo">Disable</label>
+               </div>
+            </div>
+         </div>
+         <div class="form-group">
+            <label class="form-title mb-0" for="systemIntegrator">System integrator</label>
+            <small id="systemIntegratorHelp" class="form-text mb-1">Let us know the name of the company that built your integration with Adyen to get custom support.</small>
+            <div class="input-fields">
+               <input type="text" class="form-control" name="Adyen_IntegratorName" id="systemIntegrator" aria-describedby="systemIntegratorHelp" value="${AdyenConfigs.getSystemIntegratorName() || ''}">
+            </div>
+         </div>
+      </div>
+   </div>
+</div>

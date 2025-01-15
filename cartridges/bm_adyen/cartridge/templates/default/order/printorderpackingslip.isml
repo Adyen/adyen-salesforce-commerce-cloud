@@ -1,0 +1,163 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<ismodule template = "inc/AddressInfoSmall_52.isml" name="AddressInfo" attribute="address">
+
+<html>
+<head>
+    <title>Packing Slip <isprint value="${pdict.LineItemGroup.shipmentNo}"> For Order <isprint value="${pdict.Order.orderNo}"></title>
+    <link rel="STYLESHEET" type="text/css" href="${URLUtils.webRoot()}/css/enterprisesite.css"/>
+    <isinclude template="inc/GlobalJavaScript">
+    <link rel="shortcut icon"  href="${URLUtils.webRoot()}/images/favicon.ico" />
+</head>
+
+<body id="print_packing_slip" onload="window.print();">
+    <table width="600" border="0" cellspacing="0" cellpadding="4">
+        <tr height="100">
+            <td colspan="5" class="left"><h2>Packing Slip <isprint value="${pdict.LineItemGroup.shipmentNo}">  For Order <isprint value="${pdict.Order.orderNo}"></h2></td>
+        </tr>
+
+        <tr>
+            <td class="table_detail w e n" colspan="4">&nbsp;</td>
+        </tr>
+
+        <tr>
+            <td class="fielditem2 w right top" width="100">Ship To:</td>
+            <td class="table_detail top" width="200">
+                <table border="0" cellpadding="0" cellspacing="0">
+                    <tr>
+                        <td>
+                            <table border="0" cellpadding="0" cellspacing="2">
+                                <tr>
+                                    <td class="infobox_item" nowrap="nowrap">${pdict.LineItemGroup.shippingAddress.firstName}&nbsp;${pdict.LineItemGroup.shippingAddress.lastName}</td>
+                                </tr>
+                                <tr>
+                                    <td class="infobox_item" nowrap="nowrap">${pdict.LineItemGroup.shippingAddress.address1}</td>
+                                </tr>
+                                <tr>
+                                    <td class="infobox_item" nowrap="nowrap">${pdict.LineItemGroup.shippingAddress.address2}</td>
+                                </tr>
+                                <tr>
+                                    <td class="infobox_item" nowrap="nowrap">${pdict.LineItemGroup.shippingAddress.city},&nbsp;${pdict.LineItemGroup.shippingAddress.stateCode}&nbsp;${pdict.LineItemGroup.shippingAddress.postalCode}</td>
+                                </tr>
+                                <tr>
+                                    <td class="infobox_item" nowrap="nowrap">${pdict.Order.customerEmail}</td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+
+
+            <td class="fielditem2 right top" width="100">Ship From:</td>
+            <td class="table_detail e top" width="200">
+                <table border="0" cellpadding="0" cellspacing="0">
+                    <tr>
+                        <td>
+                            <table border="0" cellpadding="0" cellspacing="2">
+                                <tr>
+                                    <td class="infobox_item" nowrap="nowrap">SiteGenesis</td>
+                                </tr>
+                                <tr>
+                                    <td class="infobox_item" nowrap="nowrap">5 Wall Street</td>
+                                </tr>
+                                <tr>
+                                    <td class="infobox_item" nowrap="nowrap">Burlington, MA 01803 USA</td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+
+        <tr>
+            <td class="table_detail s w e" colspan="4">&nbsp;</td>
+        </tr>
+
+        <tr>
+            <td class="table_detail w e" colspan="4">&nbsp;</td>
+        </tr>
+
+        <tr>
+            <td colspan="4" class="fielditem2 e w ">Shipping Method:&nbsp;
+                <isif condition="${pdict.LineItemGroup.productLineItems.size() > 0}">
+                        <isif condition="${empty(pdict.LineItemGroup.shippingMethod)}">
+                            Shipping (<isprint value="${pdict.LineItemGroup.shippingMethodID}">)
+                        <iselse>
+                            <isif condition="${empty(pdict.LineItemGroup.shippingMethod.displayName)}">
+                                Shipping (<isprint value="${pdict.LineItemGroup.shippingMethod.ID}">)
+                            <iselse>
+                                Shipping (<isprint value="${pdict.LineItemGroup.shippingMethod.displayName}">)
+                            </isif>
+                        </isif>
+                <iselseif condition="${pdict.LineItemGroup.giftCertificateLineItems.size() > 0}">
+                        Not Applicable (Email Delivery of Gift Certificate)
+                <iselse>
+                        Not Applicable
+                </isif>
+            </td>
+        </tr>
+
+        <tr>
+            <td class="table_detail s w e" colspan="4">&nbsp;</td>
+        </tr>
+
+        <tr>
+            <td class="table_detail w e" colspan="4">&nbsp;</td>
+        </tr>
+
+    <isif condition="${pdict.LineItemGroup.productLineItems.size() > 0}">
+        <tr>
+            <td colspan="4" class="fielditem2 e w ">This package includes:</td>
+        </tr>
+
+        <tr>
+            <td class="table_detail w e" colspan="4">&nbsp;</td>
+        </tr>
+
+        <!-- ProductLineItems -->
+
+        <isloop iterator="${pdict.LineItemGroup.productLineItems}" alias="li">
+            <tr>
+                <td class="table_detail center w"><isprint value="${li.quantity}">&nbsp;</td>
+                <td class="table_detail">
+                <!-- If the line item does not have a product, use the product ID of the line item -->
+                <isif condition="${empty(li.product)}">
+                    <isprint value="${li.productID}">
+                <iselse>
+                    <isprint value="${li.product.ID}">
+                </isif>
+                </td>
+                <td class="table_detail e" colspan="2"><isprint value="${li.productName}">&nbsp;</td>
+            </tr>
+            <isif condition="${li.optionProductLineItems}">
+                <isloop iterator="${li.optionProductLineItems}" alias="Option">
+                    <tr>
+                        <td class="table_detail center w">+&nbsp;</td>
+                        <td class="table_detail">&nbsp;</td>
+                        <td class="table_detail e" colspan="2"><isprint value="${Option.quantity}"> of <isprint value="${Option.productName}"></td>
+                    </tr>
+                </isloop>
+            </isif>
+            <isif condition="${li.bundledProductLineItems}">
+                <isloop iterator="${li.bundledProductLineItems}" alias="bli">
+                    <tr>
+                        <td class="table_detail center w">+&nbsp;</td>
+                        <td class="table_detail"><isprint value="${bli.product.ID}"></td>
+                        <td class="table_detail e" colspan="2"><isprint value="${bli.quantity}"> of <isprint value="${bli.productName}"></td>
+                    </tr>
+                </isloop>
+            </isif>
+            <tr>
+                <td class="table_detail w e" colspan="4">&nbsp;</td>
+            </tr>
+        </isloop>
+        <!-- EO ProductLineItems -->
+    </isif>
+        <tr><td colspan="4" class="table_detail w e s">&nbsp;</td></tr>
+    </table>
+
+</body>
+</html>

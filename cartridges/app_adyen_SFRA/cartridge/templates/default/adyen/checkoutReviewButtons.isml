@@ -1,0 +1,24 @@
+<isscript>
+  var assets = require('*/cartridge/scripts/assets.js');
+  assets.addJs('/js/checkoutReviewButtons.js');
+  assets.addCss('/css/checkout/checkout.css');
+</isscript>
+<script type="text/javascript">
+  window.makeExpressPaymentDetailsCall = "${URLUtils.https('Adyen-MakeExpressPaymentDetailsCall')}";
+</script>
+<div class="row">
+  <div class="col-12 next-step-button">
+    <div class="mb-sm-3">
+      <button class="btn btn-primary btn-block" type="submit" name="place-order" value="place-order">
+        ${Resource.msg('button.submit.checkout.review', 'adyen', null)}
+      </button>
+      <form method="post" id="showConfirmationForm" name="showConfirmationForm" action="${pdict.showConfirmationUrl}">
+        <input type="hidden" id="additionalDetailsHidden" name="additionalDetailsHidden" value="${pdict.data}"/>
+        <input type="hidden" id="merchantReference" name="merchantReference"/>
+        <input type="hidden" id="orderToken" name="orderToken"/>
+        <input type="hidden" id="result" name="result" value="null"/>
+        <input type="hidden" id="adyen-token" name="${dw.web.CSRFProtection.getTokenName()}" value="${dw.web.CSRFProtection.generateToken()}"/>
+      </form>
+    </div>
+  </div>
+</div>
