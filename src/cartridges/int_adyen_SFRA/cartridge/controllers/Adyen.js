@@ -89,6 +89,7 @@ server.post(
   'PaymentFromComponent',
   server.middleware.https,
   csrf.validateRequest,
+  adyen.validatePaymentDataFromRequest,
   adyen.paymentFromComponent,
 );
 
@@ -171,6 +172,7 @@ server.post(
   'MakeExpressPaymentsCall',
   server.middleware.https,
   csrf.validateRequest,
+  adyen.validatePaymentDataFromRequest,
   adyen.makeExpressPaymentsCall,
 );
 
@@ -201,16 +203,6 @@ server.post(
   server.middleware.https,
   csrf.validateRequest,
   adyen.fetchGiftCards,
-);
-
-/**
- * Called by Adyen to create temporary basket for express payment on pdp.
- */
-server.post(
-  'CreateTemporaryBasket',
-  server.middleware.https,
-  csrf.validateRequest,
-  adyen.createTemporaryBasket,
 );
 
 function getExternalPlatformVersion() {

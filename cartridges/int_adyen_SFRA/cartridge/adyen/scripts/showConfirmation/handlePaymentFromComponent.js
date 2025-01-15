@@ -92,7 +92,7 @@ function handlePaymentResult(result, order, adyenPaymentInstrument, options) {
 function handlePayment(stateData, order, options) {
   var _options$req$form;
   var paymentInstruments = order.getPaymentInstruments(AdyenHelper.getOrderMainPaymentInstrumentType(order));
-  var result = (_options$req$form = options.req.form) === null || _options$req$form === void 0 ? void 0 : _options$req$form.result;
+  var result = JSON.parse((_options$req$form = options.req.form) === null || _options$req$form === void 0 ? void 0 : _options$req$form.result);
   var adyenPaymentInstrument = paymentInstruments[0];
   var hasStateData = (stateData === null || stateData === void 0 ? void 0 : stateData.paymentData) && (stateData === null || stateData === void 0 ? void 0 : stateData.details);
   if (result !== null && result !== void 0 && result.error || order.status.value === Order.ORDER_STATUS_FAILED) {
@@ -102,7 +102,7 @@ function handlePayment(stateData, order, options) {
   var finalResult;
   if (!hasStateData) {
     if (result && (JSON.stringify(result).indexOf('amazonpay') > -1 || JSON.stringify(result).indexOf('applepay') > -1 || JSON.stringify(result).indexOf('cashapp') > -1)) {
-      finalResult = JSON.parse(result);
+      finalResult = result;
     } else {
       return handlePaymentError(order, adyenPaymentInstrument, options);
     }

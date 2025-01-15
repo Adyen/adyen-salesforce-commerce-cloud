@@ -1,14 +1,6 @@
 <iscontent type="text/html" charset="UTF-8" compact="true">
 
 <div class="card bg-white mt-4">
-    <div style="margin: 10px 15px">
-        <div id="logos">
-           <img src="${URLUtils.staticURL('icons/adyen.svg')}" class ="img-fluid" id="adyen-logo" alt="adyen-logo" width="170" height="30" />
-        </div>
-        <div class="sec-group">
-           <button type="button" id="classicButton" class="btn btn-light">View classic page</button>
-        </div>
-    </div>
     <div id="navigationList" class="card-body list-group">
         <a class="list-group-item navigation-item border-0" href="#requiredSettings">
         <img src="${URLUtils.staticURL('icons/rules.svg')}" width="20" height="20" class="rounded float-start mr-3"/>

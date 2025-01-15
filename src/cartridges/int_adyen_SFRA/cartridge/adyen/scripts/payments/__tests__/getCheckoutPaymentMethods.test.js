@@ -11,7 +11,6 @@ beforeEach(() => {
       locale: {
          id: 'en_US',
       },
-      body: JSON.stringify({isExpressPdp: false})
    };
    res = {
       json: jest.fn(),
@@ -40,8 +39,7 @@ describe('getCheckoutPaymentMethods', () => {
          getTotalGrossPrice: jest.fn(() => {
             return {
                currencyCode: 'EUR',
-               value: '1000',
-               isAvailable: jest.fn(() => true)
+               value: '1000'
             }
          })
       };
