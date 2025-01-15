@@ -37,15 +37,13 @@ const collections = require('*/cartridge/scripts/util/collections');
 const constants = require('*/cartridge/adyen/config/constants');
 const AdyenConfigs = require('*/cartridge/adyen/utils/adyenConfigs');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
+const { AdyenError } = require('*/cartridge/adyen/logs/adyenError');
 
 /* eslint no-var: off */
 const adyenHelperObj = {
   // Create the service config used to make calls to the Adyen Checkout API (used for all services)
   getService(service, reqMethod = 'POST') {
-    let adyenService = null;
-
-    try {
-      adyenService = LocalServiceRegistry.createService(service, {
+       const adyenService = LocalServiceRegistry.createService(service, {
         createRequest(svc, args) {
           svc.setRequestMethod(reqMethod);
           if (args) {
@@ -61,13 +59,7 @@ const adyenHelperObj = {
         },
       });
       AdyenLogs.info_log(`Successfully retrieve service with name ${service}`);
-    } catch (error) {
-      AdyenLogs.error_log(
-        `Can't get service instance with name ${service}`,
-        error,
-      );
-    }
-    return adyenService;
+      return adyenService;
   },
 
   // returns SFCC customer object based on currentCustomer object
@@ -676,7 +668,7 @@ const adyenHelperObj = {
   getSfccCardType(cardType) {
     const cardTypeMapping = require('*/cartridge/adyen/config/card-type-mapping.json');
     if (empty(cardType)) {
-      throw new Error(
+      throw new AdyenError(
         'cardType argument is not passed to getSfccCardType function',
       );
     }
@@ -920,7 +912,7 @@ const adyenHelperObj = {
   executeCall(serviceType, requestObject, checkoutAttemptID = '') {
     const service = this.getService(serviceType);
     if (service === null) {
-      throw new Error(`Could not create ${serviceType} service object`);
+      throw new AdyenError(`Could not create ${serviceType} service object`);
     }
 
     const serviceApiVersion = service
@@ -955,7 +947,7 @@ const adyenHelperObj = {
     }
 
     if (!callResult.isOk()) {
-      throw new Error(
+      throw new AdyenError(
         `${serviceType} service call error code${callResult
           .getError()
           .toString()} Error => ResponseStatus: ${callResult.getStatus()} | ResponseErrorText: ${callResult.getErrorMessage()} | ResponseText: ${callResult.getMsg()}`,
@@ -964,7 +956,7 @@ const adyenHelperObj = {
 
     const resultObject = callResult.object;
     if (!resultObject || !resultObject.getText()) {
-      throw new Error(`No correct response from ${serviceType} service call`);
+      throw new AdyenError(`No correct response from ${serviceType} service call`);
     }
     return JSON.parse(resultObject.getText());
   },

@@ -4,6 +4,7 @@ const Transaction = require('dw/system/Transaction');
 const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
 const adyenCheckout = require('*/cartridge/adyen/scripts/payments/adyenCheckout');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
+const setErrorType = require('*/cartridge/adyen/logs/setErrorType');
 
 function getRedirectUrl(paymentInstruments, orderNo, orderToken) {
   const redirectUrl = AdyenHelper.createRedirectUrl(
@@ -67,12 +68,13 @@ function paymentsDetails(req, res, next) {
     }
 
     res.json(response);
-    return next();
   } catch (error) {
     AdyenLogs.error_log('Could not verify /payment/details:', error);
-    res.redirect(URLUtils.url('Error-ErrorCode', 'err', 'general'));
-    return next();
+    setErrorType(error, res, {
+      redirectUrl: URLUtils.url('Error-ErrorCode', 'err', 'general').toString(),
+    });
   }
+  return next();
 }
 
 module.exports = paymentsDetails;

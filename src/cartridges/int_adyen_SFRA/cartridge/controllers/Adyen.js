@@ -66,20 +66,7 @@ server.post(
   'Donate',
   server.middleware.https,
   csrf.validateRequest,
-  (req, res, next) => {
-    const { orderNo, orderToken } = req.form;
-    const donationAmount = {
-      value: req.form.amountValue,
-      currency: req.form.amountCurrency,
-    };
-    const donationResult = adyenGiving.donate(
-      orderNo,
-      donationAmount,
-      orderToken,
-    );
-    res.json(donationResult);
-    return next();
-  },
+  adyenGiving.donation,
 );
 
 /**

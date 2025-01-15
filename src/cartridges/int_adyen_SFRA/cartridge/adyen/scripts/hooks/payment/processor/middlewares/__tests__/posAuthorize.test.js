@@ -3,16 +3,16 @@ let posAuthorize;
 let orderNumber;
 let paymentInstrument;
 let paymentProcessor;
-let Logger;
+let AdyenLogs
 
 beforeEach(() => {
+  AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
   posAuthorize = require('../posAuthorize');
   orderNumber = 'mockedNum';
   paymentInstrument = {
     paymentTransaction: {},
   };
   paymentProcessor = 'mockedPaymentProcessor';
-  Logger = require('dw/system/Logger');
   jest.clearAllMocks();
 });
 
@@ -35,7 +35,7 @@ describe('POS Authorize', () => {
       paymentProcessor,
     );
     expect(authorizeResult).toMatchSnapshot();
-    expect(Logger.fatal.mock.calls.length).toBe(1);
+    expect(AdyenLogs.fatal_log).toHaveBeenCalled();
   });
 
   it('should return error if createTerminalPayment fails', () => {
@@ -51,7 +51,7 @@ describe('POS Authorize', () => {
       paymentInstrument,
       paymentProcessor,
     );
-    expect(Logger.fatal.mock.calls.length).toBe(1);
+    expect(AdyenLogs.fatal_log).toHaveBeenCalled();
     expect(authorizeResult).toMatchSnapshot();
   });
 

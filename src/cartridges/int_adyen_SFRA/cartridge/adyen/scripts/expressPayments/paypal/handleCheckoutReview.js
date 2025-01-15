@@ -5,6 +5,7 @@ const AccountModel = require('*/cartridge/models/account');
 const OrderModel = require('*/cartridge/models/order');
 const validationHelpers = require('*/cartridge/scripts/helpers/basketValidationHelpers');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
+const setErrorType = require('*/cartridge/adyen/logs/setErrorType');
 
 /**
  * Controller for the checkout review page for express payment methods
@@ -57,7 +58,9 @@ function handleCheckoutReview(req, res, next) {
     });
   } catch (error) {
     AdyenLogs.error_log('Could not render checkout review page', error);
-    res.redirect(URLUtils.url('Error-ErrorCode', 'err', 'general'));
+    setErrorType(error, res, {
+      redirectUrl: URLUtils.url('Error-ErrorCode', 'err', 'general').toString(),
+    });
   }
   return next();
 }

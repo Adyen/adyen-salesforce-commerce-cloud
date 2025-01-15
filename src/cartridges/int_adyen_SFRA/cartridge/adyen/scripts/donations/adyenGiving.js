@@ -26,6 +26,8 @@ const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
 const AdyenConfigs = require('*/cartridge/adyen/utils/adyenConfigs');
 const constants = require('*/cartridge/adyen/config/constants');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
+const setErrorType = require('*/cartridge/adyen/logs/setErrorType');
+const { AdyenError } = require('*/cartridge/adyen/logs/adyenError');
 
 function getActiveCampaigns() {
   try {
@@ -49,88 +51,101 @@ function getActiveCampaigns() {
 
 // eslint-disable-next-line complexity
 function donate(donationReference, donationAmount, orderToken) {
+  if (session.privacy.orderNo !== donationReference) {
+    throw new AdyenError('Donation reference is invalid');
+  }
+
+  let paymentMethodVariant;
+  const order = OrderMgr.getOrder(donationReference, orderToken);
+  const orderAmount = AdyenHelper.getCurrencyValueForApi(
+    order.getTotalGrossPrice(),
+  );
+  const paymentInstrument = order.getPaymentInstruments(
+    AdyenHelper.getOrderMainPaymentInstrumentType(order),
+  )[0];
+  const donationToken =
+    paymentInstrument.paymentTransaction.custom.Adyen_donationToken;
+  const originalReference =
+    paymentInstrument.paymentTransaction.custom.Adyen_pspReference;
+  const paymentData = JSON.parse(
+    paymentInstrument.paymentTransaction.custom.Adyen_log,
+  );
+  paymentMethodVariant =
+    paymentData.paymentMethod?.type ||
+    paymentData.fullResponse?.paymentMethod?.type;
+
+  const donationCampaign = getActiveCampaigns().donationCampaigns[0];
+  const donationCampaignId = donationCampaign.id;
+  const donationCampaignType = donationCampaign.donation?.type;
+
+  // for iDeal donations, the payment method variant needs to be set to sepadirectdebit
+  if (paymentMethodVariant === constants.PAYMENTMETHODS.IDEAL) {
+    paymentMethodVariant = constants.PAYMENTMETHODS.SEPADIRECTDEBIT;
+  }
+  // for Apple Pay donations, the payment method variant needs to be the brand
+  if (
+    [
+      constants.PAYMENTMETHODS.APPLEPAY,
+      constants.PAYMENTMETHODS.GOOGLEPAY,
+      constants.PAYMENTMETHODS.PAYWITHGOOGLE,
+    ].includes(paymentMethodVariant)
+  ) {
+    paymentMethodVariant = constants.PAYMENTMETHODS.SCHEME;
+  }
+  const requestObject = {
+    merchantAccount: AdyenConfigs.getAdyenMerchantAccount(),
+    donationCampaignId,
+    amount: donationAmount,
+    reference: `${AdyenConfigs.getAdyenMerchantAccount()}-${donationReference}`,
+    donationOriginalPspReference: originalReference,
+    donationToken,
+    paymentMethod: {
+      type: paymentMethodVariant,
+    },
+  };
+
+  if (donationCampaignType === 'roundup') {
+    const { maxRoundupAmount } = donationCampaign.donation;
+    const roundUpAmount = maxRoundupAmount - (orderAmount % maxRoundupAmount);
+    if (roundUpAmount !== parseInt(donationAmount.value, 10)) {
+      throw new AdyenError('Donation amount does not match the roundup amount');
+    }
+  }
+
+  const response = AdyenHelper.executeCall(
+    constants.SERVICE.ADYENGIVING,
+    requestObject,
+  );
+
+  Transaction.wrap(() => {
+    order.custom.Adyen_donationAmount = JSON.stringify(donationAmount);
+    // Donation token is deleted in case the donation is completed once
+    if (response.status === constants.DONATION_RESULT.COMPLETED) {
+      paymentInstrument.paymentTransaction.custom.Adyen_donationToken = null;
+    }
+  });
+  return response;
+}
+
+function donation(req, res, next) {
   try {
-    if (session.privacy.orderNo !== donationReference) {
-      throw new Error('Donation reference is invalid');
-    }
-
-    let paymentMethodVariant;
-    const order = OrderMgr.getOrder(donationReference, orderToken);
-    const orderAmount = AdyenHelper.getCurrencyValueForApi(
-      order.getTotalGrossPrice(),
-    );
-    const paymentInstrument = order.getPaymentInstruments(
-      AdyenHelper.getOrderMainPaymentInstrumentType(order),
-    )[0];
-    const donationToken =
-      paymentInstrument.paymentTransaction.custom.Adyen_donationToken;
-    const originalReference =
-      paymentInstrument.paymentTransaction.custom.Adyen_pspReference;
-    const paymentData = JSON.parse(
-      paymentInstrument.paymentTransaction.custom.Adyen_log,
-    );
-    paymentMethodVariant =
-      paymentData.paymentMethod?.type ||
-      paymentData.fullResponse?.paymentMethod?.type;
-
-    const donationCampaign = getActiveCampaigns().donationCampaigns[0];
-    const donationCampaignId = donationCampaign.id;
-    const donationCampaignType = donationCampaign.donation?.type;
-
-    // for iDeal donations, the payment method variant needs to be set to sepadirectdebit
-    if (paymentMethodVariant === constants.PAYMENTMETHODS.IDEAL) {
-      paymentMethodVariant = constants.PAYMENTMETHODS.SEPADIRECTDEBIT;
-    }
-    // for Apple Pay donations, the payment method variant needs to be the brand
-    if (
-      [
-        constants.PAYMENTMETHODS.APPLEPAY,
-        constants.PAYMENTMETHODS.GOOGLEPAY,
-        constants.PAYMENTMETHODS.PAYWITHGOOGLE,
-      ].includes(paymentMethodVariant)
-    ) {
-      paymentMethodVariant = constants.PAYMENTMETHODS.SCHEME;
-    }
-    const requestObject = {
-      merchantAccount: AdyenConfigs.getAdyenMerchantAccount(),
-      donationCampaignId,
-      amount: donationAmount,
-      reference: `${AdyenConfigs.getAdyenMerchantAccount()}-${donationReference}`,
-      donationOriginalPspReference: originalReference,
-      donationToken,
-      paymentMethod: {
-        type: paymentMethodVariant,
-      },
+    const { orderNo, orderToken } = req.form;
+    const donationAmount = {
+      value: req.form.amountValue,
+      currency: req.form.amountCurrency,
     };
+    const donationResult = donate(orderNo, donationAmount, orderToken);
 
-    if (donationCampaignType === 'roundup') {
-      const { maxRoundupAmount } = donationCampaign.donation;
-      const roundUpAmount = maxRoundupAmount - (orderAmount % maxRoundupAmount);
-      if (roundUpAmount !== parseInt(donationAmount.value, 10)) {
-        throw new Error('Donation amount does not match the roundup amount');
-      }
-    }
-
-    const response = AdyenHelper.executeCall(
-      constants.SERVICE.ADYENGIVING,
-      requestObject,
-    );
-
-    Transaction.wrap(() => {
-      order.custom.Adyen_donationAmount = JSON.stringify(donationAmount);
-      // Donation token is deleted in case the donation is completed once
-      if (response.status === constants.DONATION_RESULT.COMPLETED) {
-        paymentInstrument.paymentTransaction.custom.Adyen_donationToken = null;
-      }
-    });
-    return response;
+    res.json(donationResult.response);
   } catch (error) {
     AdyenLogs.error_log('/donations call failed:', error);
-    return { error: true };
+    setErrorType(error, res);
   }
+  return next();
 }
 
 module.exports = {
   getActiveCampaigns,
   donate,
+  donation,
 };
