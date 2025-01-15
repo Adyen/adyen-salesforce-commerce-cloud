@@ -8,6 +8,7 @@ const constants = require('*/cartridge/adyen/config/constants');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
 const paypalHelper = require('*/cartridge/adyen/utils/paypalHelper');
+const setErrorType = require('*/cartridge/adyen/logs/setErrorType');
 
 function makeExpressPaymentsCall(req, res, next) {
   try {
@@ -59,7 +60,7 @@ function makeExpressPaymentsCall(req, res, next) {
   } catch (error) {
     AdyenLogs.fatal_log('Paypal express payments request failed', error);
     res.setStatusCode(500);
-    res.json({
+    setErrorType(error, res, {
       errorMessage: Resource.msg('error.express.paypal.payments', 'cart', null),
     });
   }

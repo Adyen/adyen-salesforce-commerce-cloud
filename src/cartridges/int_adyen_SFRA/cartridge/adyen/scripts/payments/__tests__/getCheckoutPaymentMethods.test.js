@@ -1,11 +1,12 @@
 /* eslint-disable global-require */
 const BasketMgr = require('dw/order/BasketMgr');
+const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 const getCheckoutPaymentMethods = require('*/cartridge/adyen/scripts/payments/getCheckoutPaymentMethods');
 const getPaymentMethods = require('*/cartridge/adyen/scripts/payments/adyenGetPaymentMethods');
 let req;
 let res;
 let next;
-let Logger;
+
 beforeEach(() => {
    req = {
       locale: {
@@ -16,7 +17,6 @@ beforeEach(() => {
       json: jest.fn(),
    };
    next = jest.fn();
-   Logger = require('dw/system/Logger');
 });
 
 afterEach(() => {
@@ -76,14 +76,12 @@ describe('getCheckoutPaymentMethods', () => {
    });
 
    it('does not return AdyenPaymentMethods', () => {
-      getPaymentMethods.getMethods = jest.fn(
-         new Logger.error('error'),
-      );
+      getPaymentMethods.getMethods.mockImplementationOnce(() => {throw new Error('mock error')});
       getCheckoutPaymentMethods(req, res, next);
       expect(res.json).toHaveBeenCalledWith({
          error: true,
        });
-      expect(Logger.fatal.mock.calls.length).toBe(1);
+      expect(AdyenLogs.fatal_log).toHaveBeenCalled();
       expect(next).toHaveBeenCalled();
    });
 });

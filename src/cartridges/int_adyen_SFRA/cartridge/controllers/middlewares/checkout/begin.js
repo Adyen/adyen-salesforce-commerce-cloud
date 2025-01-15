@@ -9,6 +9,7 @@ const {
   updateSavedCards,
 } = require('*/cartridge/adyen/scripts/payments/updateSavedCards');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
+const setErrorType = require('*/cartridge/adyen/logs/setErrorType');
 
 function shouldRestoreBasket(cachedOrderNumber) {
   // restore cart if order number was cached
@@ -23,42 +24,21 @@ function shouldRestoreBasket(cachedOrderNumber) {
 }
 
 function restoreBasket(cachedOrderNumber, cachedOrderToken) {
-  try {
-    const currentOrder = OrderMgr.getOrder(cachedOrderNumber, cachedOrderToken);
-    // if order status is CREATED we can fail it and restore basket
-    if (currentOrder.status.value === Order.ORDER_STATUS_CREATED) {
-      Transaction.wrap(() => {
-        currentOrder.trackOrderChange(
-          'Failing order so cart can be restored; Shopper navigated back to checkout during payment redirection',
-        );
-        OrderMgr.failOrder(currentOrder, true);
-      });
-      return true;
-    }
-  } catch (error) {
-    AdyenLogs.error_log('Failed to restore cart', error);
+  const currentOrder = OrderMgr.getOrder(cachedOrderNumber, cachedOrderToken);
+  // if order status is CREATED we can fail it and restore basket
+  if (currentOrder.status.value === Order.ORDER_STATUS_CREATED) {
+    Transaction.wrap(() => {
+      currentOrder.trackOrderChange(
+        'Failing order so cart can be restored; Shopper navigated back to checkout during payment redirection',
+      );
+      OrderMgr.failOrder(currentOrder, true);
+    });
+    return true;
   }
   return false;
 }
 
-function begin(req, res, next) {
-  if (req.currentCustomer.raw.isAuthenticated()) {
-    updateSavedCards({
-      CurrentCustomer: req.currentCustomer.raw,
-    });
-  }
-
-  const cachedOrderNumber = req.session.privacyCache.get('currentOrderNumber');
-  const cachedOrderToken = req.session.privacyCache.get('currentOrderToken');
-  if (shouldRestoreBasket(cachedOrderNumber)) {
-    if (restoreBasket(cachedOrderNumber, cachedOrderToken)) {
-      const emit = (route) => this.emit(route, req, res);
-      res.redirect(URLUtils.url('Checkout-Begin', 'stage', 'shipping'));
-      emit('route:Complete');
-      return true;
-    }
-  }
-
+function getAdyenViewData() {
   const clientKey = AdyenConfigs.getAdyenClientKey();
   const environment = AdyenHelper.getCheckoutEnvironment();
   const installments = AdyenConfigs.getAdyenInstallmentsEnabled()
@@ -68,9 +48,7 @@ function begin(req, res, next) {
   const googleMerchantID = AdyenConfigs.getGoogleMerchantID();
   const merchantAccount = AdyenConfigs.getAdyenMerchantAccount();
   const SFRA6Enabled = AdyenConfigs.getAdyenSFRA6Compatibility();
-
-  const viewData = res.getViewData();
-  viewData.adyen = {
+  return {
     clientKey,
     environment,
     installments,
@@ -79,9 +57,38 @@ function begin(req, res, next) {
     adyenClientKey,
     SFRA6Enabled,
   };
+}
 
-  res.setViewData(viewData);
-  return next();
+function begin(req, res, next) {
+  try {
+    if (req.currentCustomer.raw.isAuthenticated()) {
+      updateSavedCards({
+        CurrentCustomer: req.currentCustomer.raw,
+      });
+    }
+
+    const cachedOrderNumber =
+      req.session.privacyCache.get('currentOrderNumber');
+    const cachedOrderToken = req.session.privacyCache.get('currentOrderToken');
+    if (shouldRestoreBasket(cachedOrderNumber)) {
+      if (restoreBasket(cachedOrderNumber, cachedOrderToken)) {
+        const emit = (route) => this.emit(route, req, res);
+        res.redirect(URLUtils.url('Checkout-Begin', 'stage', 'shipping'));
+        emit('route:Complete');
+        return true;
+      }
+    }
+    const viewData = res.getViewData();
+    viewData.adyen = getAdyenViewData();
+    res.setViewData(viewData);
+    return next();
+  } catch (error) {
+    AdyenLogs.error_log('Could not begin checkout:', error);
+    setErrorType(error, res, {
+      redirectUrl: URLUtils.url('Error-ErrorCode', 'err', 'general').toString(),
+    });
+    return next();
+  }
 }
 
 module.exports = begin;

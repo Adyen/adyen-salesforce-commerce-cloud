@@ -39,7 +39,10 @@ describe('Express Payments controller', () => {
     adyenCheckout.doPaymentsCall = jest.fn(() => {throw new Error('unexpected mock error')});
     makeExpressPaymentsCall(req, res, next);
     expect(AdyenLogs.fatal_log).toHaveBeenCalledTimes(1);
-    expect(res.json).toHaveBeenCalledWith({"errorMessage": "mocked_error.express.paypal.payments"})
+    expect(res.json).toHaveBeenCalledWith({
+      error: true,
+      errorMessage: 'mocked_error.express.paypal.payments',
+    })
     expect(res.setStatusCode).toHaveBeenCalledWith(500);
     expect(next).toHaveBeenCalled();
   });

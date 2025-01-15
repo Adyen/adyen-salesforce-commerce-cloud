@@ -1,24 +1,6 @@
+const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
+const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 const { createCheckoutAttemptId } = require('../analyticsService');
-
-const AdyenHelper = {
-  getApplicationInfo: jest.fn(),
-};
-
-const execute = jest.fn();
-const constants = {
-  SERVICE: {
-    ADYEN_ANALYTICS: 'ADYEN_ANALYTICS',
-  },
-};
-
-const AdyenLogs = {
-  error_log: jest.fn(),
-};
-
-global.AdyenHelper = AdyenHelper;
-global.execute = execute;
-global.constants = constants;
-global.AdyenLogs = AdyenLogs;
 
 describe('createCheckoutAttemptId', () => {
   beforeEach(() => {
@@ -27,40 +9,47 @@ describe('createCheckoutAttemptId', () => {
 
   it('should return checkoutAttemptId when the execute function is successful', () => {
     const mockCheckoutAttemptId = 'test-checkout-attempt-id';
-    const mockApplicationInfo = { name: 'testApp' };
+    AdyenHelper.getService.mockImplementationOnce(() => ({
+      getURL: jest.fn(() => 'mocked_service_url'),
+      setURL: jest.fn(),
+      addHeader: jest.fn(),
+      call: jest.fn(() => ({
+        status: '200',
+        isOk: jest.fn(() => true),
+        object: {
+          getText: jest.fn(() =>
+            `{"checkoutAttemptId":"${mockCheckoutAttemptId}"}`),
 
-    AdyenHelper.getApplicationInfo.mockReturnValue(mockApplicationInfo);
-    execute.mockReturnValue({ checkoutAttemptId: mockCheckoutAttemptId });
+        },
+      }))
+    }));
 
     const result = createCheckoutAttemptId();
-
-    setTimeout(() => {
-      expect(AdyenHelper.getApplicationInfo).toHaveBeenCalled();
-      expect(execute).toHaveBeenCalledWith(constants.SERVICE.ADYEN_ANALYTICS, {
-        applicationInfo: mockApplicationInfo,
-        channel: 'Web',
-        platform: 'Web',
-      });
-      expect(result).toEqual({ data: mockCheckoutAttemptId });
-    }, 0)
+    expect(result).toEqual({ data: mockCheckoutAttemptId });
   });
 
   it('should return an error object and log error when execute throws an error', () => {
-    const mockError = new Error('Execution failed');
-    AdyenHelper.getApplicationInfo.mockReturnValue({});
-    execute.mockImplementation(() => {
-      throw mockError;
-    });
-
+    AdyenHelper.getService.mockImplementationOnce(() => ({
+      getURL: jest.fn(() => 'mocked_service_url'),
+      setURL: jest.fn(),
+      addHeader: jest.fn(),
+      call: jest.fn(() => ({
+        status: 'failed',
+        isOk: jest.fn(() => false),
+        getError: jest.fn(() => ({
+          toString: jest.fn(() => '500')
+        })),
+        getStatus: jest.fn(() => 'failed'),
+        getErrorMessage: jest.fn(() => 'Service error'),
+        getMsg: jest.fn(() => 'Service error'),
+      }))
+    }));
+    const mockError = new Error('AdyenAnalytics service call error code 500 Error => ResponseStatus: failed | ResponseErrorText: Service error | ResponseText: Service error');
     const result = createCheckoutAttemptId();
 
-    setTimeout(() => {
-      expect(AdyenHelper.getApplicationInfo).toHaveBeenCalled();
       expect(AdyenLogs.error_log).toHaveBeenCalledWith(
-        'createCheckoutAttemptId for /analytics call failed:',
-        mockError
+        'createCheckoutAttemptId for /analytics call failed:', mockError
       );
       expect(result).toEqual({ error: true });
-    }, 0)
   });
 });

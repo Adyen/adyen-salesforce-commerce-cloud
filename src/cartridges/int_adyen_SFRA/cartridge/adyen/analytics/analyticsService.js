@@ -26,7 +26,7 @@ function execute(serviceType, requestObject, checkoutAttemptID = '') {
   const callResult = service.call(JSON.stringify(requestObject));
   if (!callResult.isOk()) {
     throw new Error(
-      `${serviceType} service call error code${callResult
+      `${serviceType} service call error code ${callResult
         .getError()
         .toString()} Error => ResponseStatus: ${callResult.getStatus()} | ResponseErrorText: ${callResult.getErrorMessage()} | ResponseText: ${callResult.getMsg()}`,
     );
