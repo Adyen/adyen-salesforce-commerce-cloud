@@ -52,7 +52,7 @@ function callCheckBalance(req, res, next) {
       ? giftCardsAdded[giftCardsAdded.length - 1].remainingAmount
       : orderAmount;
 
-    const request = JSON.parse(req.body);
+    const request = JSON.parse(req.form.data);
     const paymentMethod = request.paymentMethod
       ? request.paymentMethod
       : constants.ACTIONTYPES.GIFTCARD;
@@ -71,8 +71,13 @@ function callCheckBalance(req, res, next) {
       currentBasket.custom.adyenGiftCardsOrderNo = orderNo;
     });
 
+    session.privacy.giftCardBalance = JSON.stringify(
+      checkBalanceResponse.balance,
+    );
+
     res.json({
-      ...checkBalanceResponse,
+      resultCode: checkBalanceResponse.resultCode,
+      balance: checkBalanceResponse.balance,
       ...getFormattedProperties(checkBalanceResponse, orderAmount),
     });
   } catch (error) {

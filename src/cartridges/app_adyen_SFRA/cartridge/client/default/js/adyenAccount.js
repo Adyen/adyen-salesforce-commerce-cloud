@@ -33,11 +33,16 @@ function handleAction(action) {
 
 // confirm onAdditionalDetails event and paymentsDetails response
 store.checkoutConfiguration.onAdditionalDetails = (state) => {
+  const requestData = JSON.stringify({
+    data: state.data,
+  });
   $.ajax({
     type: 'POST',
-    url: 'Adyen-PaymentsDetails',
-    data: JSON.stringify({ data: state.data }),
-    contentType: 'application/json; charset=utf-8',
+    url: window.paymentsDetailsURL,
+    data: {
+      csrf_token: $('#adyen-token').val(),
+      data: requestData,
+    },
     async: false,
     success(data) {
       if (data.isSuccessful) {

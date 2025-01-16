@@ -7,8 +7,10 @@ function makePartialPayment(requestData) {
     $.ajax({
       url: window.partialPaymentUrl,
       type: 'POST',
-      data: JSON.stringify(requestData),
-      contentType: 'application/json; charset=utf-8',
+      data: {
+        csrf_token: $('#adyen-token').val(),
+        data: JSON.stringify(requestData),
+      },
     })
       .done((response) => {
         if (response.error) {
@@ -16,7 +18,7 @@ function makePartialPayment(requestData) {
         } else {
           const { giftCards, ...rest } = response;
           store.checkout.options.amount = rest.remainingAmount;
-          store.adyenOrderData = rest.partialPaymentsOrder;
+          store.adyenOrderDataCreated = rest.orderCreated;
           store.partialPaymentsOrderObj = rest;
           sessionStorage.setItem('partialPaymentsObj', JSON.stringify(rest));
           store.addedGiftCards = giftCards;

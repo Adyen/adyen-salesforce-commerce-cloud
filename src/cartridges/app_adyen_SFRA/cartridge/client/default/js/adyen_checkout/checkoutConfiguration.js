@@ -146,20 +146,18 @@ function handlePartialPaymentSuccess() {
 }
 
 async function makeGiftcardPaymentRequest(
-  giftCardData,
+  paymentMethod,
   giftcardBalance,
   reject,
 ) {
   const brandSelect = document.getElementById('giftCardSelect');
   const selectedBrandIndex = brandSelect.selectedIndex;
   const giftcardBrand = brandSelect.options[selectedBrandIndex].text;
+  const { encryptedCardNumber, encryptedSecurityCode, brand } = paymentMethod;
   const partialPaymentRequest = {
-    paymentMethod: giftCardData,
-    amount: giftcardBalance,
-    partialPaymentsOrder: {
-      pspReference: store.adyenOrderData.pspReference,
-      orderData: store.adyenOrderData.orderData,
-    },
+    encryptedCardNumber,
+    encryptedSecurityCode,
+    brand,
     giftcardBrand,
   };
   const partialPaymentResponse = await makePartialPayment(
@@ -181,11 +179,14 @@ function getGiftCardConfig() {
       store.updateSelectedPayment(constants.GIFTCARD, 'stateData', state.data);
     },
     onBalanceCheck: (resolve, reject, requestData) => {
+      const payload = {
+        csrf_token: $('#adyen-token').val(),
+        data: JSON.stringify(requestData),
+      };
       $.ajax({
         type: 'POST',
         url: window.checkBalanceUrl,
-        data: JSON.stringify(requestData),
-        contentType: 'application/json; charset=utf-8',
+        data: payload,
         async: false,
         success: (data) => {
           giftcardBalance = data.balance;
@@ -227,7 +228,10 @@ function getGiftCardConfig() {
             store.partialPaymentsOrderObj.totalDiscountedAmount =
               data.totalAmountFormatted;
             resolve(data);
-          } else if (data.resultCode === constants.NOTENOUGHBALANCE) {
+          } else if (
+            data.resultCode === constants.NOTENOUGHBALANCE &&
+            data.balance.value > 0
+          ) {
             resolve(data);
           } else {
             reject();
@@ -241,21 +245,27 @@ function getGiftCardConfig() {
     onOrderRequest: (resolve, reject, requestData) => {
       // Make a POST /orders request
       // Create an order for the total transaction amount
-      const giftCardData = requestData.paymentMethod;
-      if (store.adyenOrderData) {
-        makeGiftcardPaymentRequest(giftCardData, giftcardBalance, reject);
+      const { paymentMethod } = requestData;
+      if (store.adyenOrderDataCreated) {
+        makeGiftcardPaymentRequest(paymentMethod, giftcardBalance, reject);
       } else {
         $.ajax({
           type: 'POST',
           url: window.partialPaymentsOrderUrl,
-          data: JSON.stringify(requestData),
-          contentType: 'application/json; charset=utf-8',
+          data: {
+            csrf_token: $('#adyen-token').val(),
+            data: JSON.stringify(requestData),
+          },
           async: false,
           success: (data) => {
             if (data.resultCode === 'Success') {
-              store.adyenOrderData = data;
+              store.adyenOrderDataCreated = true;
               // make payments call including giftcard data and order data
-              makeGiftcardPaymentRequest(giftCardData, giftcardBalance, reject);
+              makeGiftcardPaymentRequest(
+                paymentMethod,
+                giftcardBalance,
+                reject,
+              );
             }
           },
         });
@@ -271,7 +281,7 @@ function getGiftCardConfig() {
   };
 }
 
-function handleOnChange(state) {
+async function handleOnChange(state) {
   const { type } = state.data.paymentMethod;
   store.isValid = state.isValid;
   if (!store.componentsObj[type]) {
@@ -293,14 +303,17 @@ const actionHandler = async (action) => {
 };
 
 function handleOnAdditionalDetails(state) {
+  const requestData = JSON.stringify({
+    data: state.data,
+    orderToken: window.orderToken,
+  });
   $.ajax({
     type: 'POST',
     url: window.paymentsDetailsURL,
-    data: JSON.stringify({
-      data: state.data,
-      orderToken: window.orderToken,
-    }),
-    contentType: 'application/json; charset=utf-8',
+    data: {
+      csrf_token: $('#adyen-token').val(),
+      data: requestData,
+    },
     async: false,
     success(data) {
       if (!data.isFinal && typeof data.action === 'object') {

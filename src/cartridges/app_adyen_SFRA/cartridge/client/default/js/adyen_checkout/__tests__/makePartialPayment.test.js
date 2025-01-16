@@ -57,6 +57,7 @@ beforeEach(() => {
       currency: 'USD',
       value: '50',
     },
+    orderCreated: true,
     partialPaymentsOrder: {
       pspReference: 'store.adyenOrderData.pspReference',
       orderData: 'store.adyenOrderData.orderData',
@@ -77,7 +78,7 @@ describe('Make partial payment request', () => {
       fail: jest.fn(),
     }));
     await makePartialPayment(data);
-    expect(store.adyenOrderData).toEqual(data.partialPaymentsOrder);
+    expect(store.adyenOrderDataCreated).toBeTruthy();
   });
 
   it('should handle partial payment with error', async () => {

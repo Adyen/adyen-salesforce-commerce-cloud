@@ -12,6 +12,9 @@ function Money(isAvailable) {
     getCurrencyCode() {
       return 'USD';
     },
+    divide() {
+      return new Money(isAvailable);
+    },
     subtract() {
       return new Money(isAvailable);
     },
