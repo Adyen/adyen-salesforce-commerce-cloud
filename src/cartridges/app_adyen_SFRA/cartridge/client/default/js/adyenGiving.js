@@ -10,6 +10,7 @@ function handleOnDonate(state, component) {
     amountCurrency: selectedAmount.currency,
     orderNo: window.orderNo,
     orderToken: window.orderToken,
+    csrf_token: $('#adyen-token').val(),
   };
 
   $.ajax({

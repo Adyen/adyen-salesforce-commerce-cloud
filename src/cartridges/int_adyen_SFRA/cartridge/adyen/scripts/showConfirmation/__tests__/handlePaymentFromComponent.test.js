@@ -9,7 +9,7 @@ let req;
 let order;
 beforeEach(() => {
   jest.clearAllMocks();
-  req = { locale: { id: 'mocked_locale' } };
+  req = { locale: { id: 'mocked_locale' }, form: { result: "123" }};
   res = { redirect: jest.fn() };
   order = OrderMgr.getOrder();
   next = jest.fn();

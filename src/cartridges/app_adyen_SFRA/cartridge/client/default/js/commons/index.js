@@ -1,3 +1,4 @@
+const $ = require('jquery');
 const store = require('../../../../store');
 const { PAYPAL, APPLE_PAY, AMAZON_PAY } = require('../constants');
 
@@ -18,7 +19,10 @@ module.exports.onBrand = function onBrand(brandObject) {
 module.exports.fetchGiftCards = async function fetchGiftCards() {
   return $.ajax({
     url: window.fetchGiftCardsUrl,
-    type: 'get',
+    type: 'post',
+    data: {
+      csrf_token: $('#adyen-token').val(),
+    },
   });
 };
 
@@ -28,7 +32,10 @@ module.exports.fetchGiftCards = async function fetchGiftCards() {
 module.exports.getPaymentMethods = async function getPaymentMethods() {
   return $.ajax({
     url: window.getPaymentMethodsURL,
-    type: 'get',
+    type: 'post',
+    data: {
+      csrf_token: $('#adyen-token').val(),
+    },
   });
 };
 

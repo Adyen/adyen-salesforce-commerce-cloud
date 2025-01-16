@@ -1,6 +1,6 @@
 const { checkIfExpressMethodsAreReady } = require('./commons');
 
-async function handleExpressPaymentsVisibility() {
+function handleExpressPaymentsVisibility() {
   const { expressMethodsOrder } = window;
   if (expressMethodsOrder) {
     const sortOrder = expressMethodsOrder.split(',');

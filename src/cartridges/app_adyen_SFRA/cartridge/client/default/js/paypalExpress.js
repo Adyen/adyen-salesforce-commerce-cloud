@@ -1,5 +1,4 @@
 const {
-  getPaymentMethods,
   updateLoadedExpressMethods,
   checkIfExpressMethodsAreReady,
 } = require('./commons');
@@ -9,19 +8,26 @@ const { PAYPAL } = require('./constants');
 async function callPaymentFromComponent(data, component) {
   try {
     $.spinner().start();
-    const response = await fetch(window.makeExpressPaymentsCall, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
+
+    $.ajax({
+      type: 'POST',
+      url: window.makeExpressPaymentsCall,
+      data: {
+        csrf_token: $('#adyen-token').val(),
+        data: JSON.stringify(data),
+      }, // Send the data as a JSON string
+      success(response) {
+        const { action, errorMessage = '' } = response;
+        if (action) {
+          component.handleAction(action);
+        } else {
+          throw new Error(errorMessage);
+        }
       },
-      body: JSON.stringify(data),
+      error() {
+        component.handleError();
+      },
     });
-    const { action, errorMessage = '' } = await response.json();
-    if (response.ok && action) {
-      component.handleAction(action);
-    } else {
-      throw new Error(errorMessage);
-    }
   } catch (e) {
     component.handleError();
   }
@@ -33,6 +39,7 @@ async function saveShopperDetails(details, actions) {
     type: 'post',
     data: {
       shopperDetails: JSON.stringify(details),
+      csrf_token: $('#adyen-token').val(),
     },
     success() {
       actions.resolve();
@@ -55,6 +62,13 @@ function redirectToReviewPage(data) {
       value: JSON.stringify(data),
     });
 
+  $('<input>')
+    .appendTo(redirect)
+    .attr({
+      name: 'csrf_token',
+      value: $('#adyen-token').val(),
+    });
+
   redirect.submit();
 }
 
@@ -62,8 +76,10 @@ function makeExpressPaymentDetailsCall(data) {
   return $.ajax({
     type: 'POST',
     url: window.makeExpressPaymentDetailsCall,
-    data: JSON.stringify({ data }),
-    contentType: 'application/json; charset=utf-8',
+    data: {
+      csrf_token: $('#adyen-token').val(),
+      data: JSON.stringify({ data }),
+    },
     async: false,
     success(response) {
       helpers.createShowConfirmationForm(window.showConfirmationAction);
@@ -75,20 +91,21 @@ function makeExpressPaymentDetailsCall(data) {
   });
 }
 
-async function updateComponent(response, component) {
-  if (response.ok) {
-    const { paymentData, status, errorMessage = '' } = await response.json();
+function updateComponent(response, component) {
+  if (response) {
+    const { paymentData, status, errorMessage = '' } = response;
     if (!paymentData || status !== 'success') {
       throw new Error(errorMessage);
     }
     // Update the Component paymentData value with the new one.
     component.updatePaymentData(paymentData);
   } else {
-    const { errorMessage = '' } = await response.json();
+    const { errorMessage = '' } = response;
     throw new Error(errorMessage);
   }
   return false;
 }
+
 async function handleShippingAddressChange(data, actions, component) {
   try {
     const { shippingAddress, errors } = data;
@@ -96,7 +113,7 @@ async function handleShippingAddressChange(data, actions, component) {
     if (!shippingAddress) {
       throw new Error(errors?.ADDRESS_ERROR);
     }
-    const request = {
+    const requestBody = {
       paymentMethodType: PAYPAL,
       currentPaymentData,
       address: {
@@ -107,14 +124,21 @@ async function handleShippingAddressChange(data, actions, component) {
         postalCode: shippingAddress.postalCode,
       },
     };
-    const response = await fetch(window.shippingMethodsUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json; charset=utf-8',
+    $.ajax({
+      type: 'POST',
+      url: window.shippingMethodsUrl,
+      data: {
+        csrf_token: $('#adyen-token').val(),
+        data: JSON.stringify(requestBody),
       },
-      body: JSON.stringify(request),
+      async: false,
+      success(response) {
+        updateComponent(response, component);
+      },
+      error() {
+        actions.reject();
+      },
     });
-    await updateComponent(response, component);
   } catch (e) {
     actions.reject();
   }
@@ -128,19 +152,26 @@ async function handleShippingOptionChange(data, actions, component) {
     if (!selectedShippingOption) {
       throw new Error(errors?.METHOD_UNAVAILABLE);
     }
-    const request = {
+    const requestBody = {
       paymentMethodType: PAYPAL,
       currentPaymentData,
       methodID: selectedShippingOption?.id,
     };
-    const response = await fetch(window.selectShippingMethodUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json; charset=utf-8',
+    $.ajax({
+      type: 'POST',
+      url: window.selectShippingMethodUrl,
+      data: {
+        csrf_token: $('#adyen-token').val(),
+        data: JSON.stringify(requestBody),
       },
-      body: JSON.stringify(request),
+      async: false,
+      success(response) {
+        updateComponent(response, component);
+      },
+      error() {
+        actions.reject();
+      },
     });
-    await updateComponent(response, component);
   } catch (e) {
     actions.reject();
   }
@@ -184,15 +215,18 @@ function getPaypalButtonConfig(paypalConfig) {
   };
 }
 
-async function mountPaypalComponent() {
+async function init(paymentMethodsResponse) {
   try {
-    const paymentMethod = await getPaymentMethods();
-    const paymentMethodsResponse = paymentMethod?.AdyenPaymentMethods;
-    const applicationInfo = paymentMethod?.applicationInfo;
-    const paypalConfig = paymentMethodsResponse?.paymentMethods.find(
-      (pm) => pm.type === PAYPAL,
-    )?.configuration;
-    if (!paypalConfig) return;
+    const applicationInfo = paymentMethodsResponse?.applicationInfo;
+    const paypalConfig =
+      paymentMethodsResponse?.AdyenPaymentMethods?.paymentMethods.find(
+        (pm) => pm.type === PAYPAL,
+      )?.configuration;
+    if (!paypalConfig) {
+      updateLoadedExpressMethods(PAYPAL);
+      checkIfExpressMethodsAreReady();
+      return;
+    }
     const checkout = await AdyenCheckout({
       environment: window.environment,
       clientKey: window.clientKey,
@@ -211,16 +245,12 @@ async function mountPaypalComponent() {
   }
 }
 
-mountPaypalComponent();
-
 module.exports = {
   callPaymentFromComponent,
   saveShopperDetails,
-  redirectToReviewPage,
   makeExpressPaymentDetailsCall,
-  updateComponent,
   handleShippingAddressChange,
   handleShippingOptionChange,
   getPaypalButtonConfig,
-  mountPaypalComponent,
+  init,
 };

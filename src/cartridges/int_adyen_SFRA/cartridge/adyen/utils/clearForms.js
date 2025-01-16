@@ -13,6 +13,7 @@ function clearCustomSessionFields() {
   session.privacy.giftCardResponse = null;
   session.privacy.partialPaymentData = null;
   session.privacy.amazonExpressShopperDetail = null;
+  session.privacy.giftCardBalance = null;
 }
 
 /**

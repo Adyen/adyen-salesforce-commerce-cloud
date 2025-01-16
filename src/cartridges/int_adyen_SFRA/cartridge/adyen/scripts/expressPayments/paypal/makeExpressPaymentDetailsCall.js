@@ -27,7 +27,7 @@ function setPaymentInstrumentFields(paymentInstrument, response) {
  */
 function makeExpressPaymentDetailsCall(req, res, next) {
   try {
-    const request = JSON.parse(req.body);
+    const request = JSON.parse(req.form.data);
     const currentBasket = BasketMgr.getCurrentBasket();
 
     const response = adyenCheckout.doPaymentsDetailsCall(request.data);

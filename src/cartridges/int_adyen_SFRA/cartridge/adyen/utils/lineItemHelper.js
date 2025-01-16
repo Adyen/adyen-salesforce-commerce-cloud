@@ -99,19 +99,42 @@ const __LineItemHelper = {
     return new dw.value.Money(0, lineItem.getPrice().getCurrencyCode());
   },
 
+  isProductLineItem(lineItem) {
+    return lineItem instanceof dw.order.ProductLineItem;
+  },
+
+  isBonusProductLineItem(lineItem) {
+    return lineItem.bonusProductLineItem;
+  },
+
+  isShippingLineItem(lineItem) {
+    return lineItem instanceof dw.order.ShippingLineItem;
+  },
+
+  isPriceAdjustment(lineItem) {
+    return lineItem instanceof dw.order.PriceAdjustment;
+  },
+
+  isValidLineItem(lineItem) {
+    return (
+      (this.isProductLineItem(lineItem) &&
+        !this.isBonusProductLineItem(lineItem)) ||
+      this.isShippingLineItem(lineItem) ||
+      (this.isPriceAdjustment(lineItem) &&
+        lineItem.promotion.promotionClass ===
+          dw.campaign.Promotion.PROMOTION_CLASS_ORDER)
+    );
+  },
+
   getAllLineItems(allLineItems) {
     const lineItems = [];
+    // eslint-disable-next-line no-restricted-syntax
     for (const item in allLineItems) {
-      const lineItem = allLineItems[item];
-      if (
-        (lineItem instanceof dw.order.ProductLineItem &&
-          !lineItem.bonusProductLineItem) ||
-        lineItem instanceof dw.order.ShippingLineItem ||
-        (lineItem instanceof dw.order.PriceAdjustment &&
-          lineItem.promotion.promotionClass ===
-            dw.campaign.Promotion.PROMOTION_CLASS_ORDER)
-      ) {
-        lineItems.push(lineItem);
+      if (item) {
+        const lineItem = allLineItems[item];
+        if (this.isValidLineItem(lineItem)) {
+          lineItems.push(lineItem);
+        }
       }
     }
     return lineItems;

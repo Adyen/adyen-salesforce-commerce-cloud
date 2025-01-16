@@ -11,6 +11,7 @@ function saveShopperDetails(details) {
     url: window.saveShopperDetailsURL,
     type: 'post',
     data: {
+      csrf_token: $('#adyen-token').val(),
       shopperDetails: JSON.stringify(details),
       paymentMethod: 'amazonpay'
     },
@@ -73,7 +74,7 @@ function mountAmazonPayComponent() {
 }
 function _mountAmazonPayComponent() {
   _mountAmazonPayComponent = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
-    var _paymentMethodsRespon, amazonPayNode, data, paymentMethodsResponse, applicationInfo, checkout, amazonPayConfig, amazonConfig, amazonPayComponent, shopperDetails;
+    var _paymentMethodsRespon, amazonPayNode, paymentMethodsData, paymentMethodsResponse, applicationInfo, checkout, amazonPayConfig, amazonConfig, amazonPayComponent, shopperDetails;
     return _regeneratorRuntime().wrap(function _callee$(_context) {
       while (1) switch (_context.prev = _context.next) {
         case 0:
@@ -82,9 +83,9 @@ function _mountAmazonPayComponent() {
           _context.next = 4;
           return getPaymentMethods();
         case 4:
-          data = _context.sent;
-          paymentMethodsResponse = data === null || data === void 0 ? void 0 : data.AdyenPaymentMethods;
-          applicationInfo = data === null || data === void 0 ? void 0 : data.applicationInfo;
+          paymentMethodsData = _context.sent;
+          paymentMethodsResponse = paymentMethodsData === null || paymentMethodsData === void 0 ? void 0 : paymentMethodsData.AdyenPaymentMethods;
+          applicationInfo = paymentMethodsData === null || paymentMethodsData === void 0 ? void 0 : paymentMethodsData.applicationInfo;
           _context.next = 9;
           return AdyenCheckout({
             environment: window.Configuration.environment,

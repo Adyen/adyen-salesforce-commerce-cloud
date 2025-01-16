@@ -147,33 +147,31 @@ function makeGiftcardPaymentRequest(_x, _x2, _x3) {
   return _makeGiftcardPaymentRequest.apply(this, arguments);
 }
 function _makeGiftcardPaymentRequest() {
-  _makeGiftcardPaymentRequest = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee2(giftCardData, giftcardBalance, reject) {
-    var brandSelect, selectedBrandIndex, giftcardBrand, partialPaymentRequest, partialPaymentResponse;
+  _makeGiftcardPaymentRequest = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee2(paymentMethod, giftcardBalance, reject) {
+    var brandSelect, selectedBrandIndex, giftcardBrand, encryptedCardNumber, encryptedSecurityCode, brand, partialPaymentRequest, partialPaymentResponse;
     return _regeneratorRuntime().wrap(function _callee2$(_context2) {
       while (1) switch (_context2.prev = _context2.next) {
         case 0:
           brandSelect = document.getElementById('giftCardSelect');
           selectedBrandIndex = brandSelect.selectedIndex;
           giftcardBrand = brandSelect.options[selectedBrandIndex].text;
+          encryptedCardNumber = paymentMethod.encryptedCardNumber, encryptedSecurityCode = paymentMethod.encryptedSecurityCode, brand = paymentMethod.brand;
           partialPaymentRequest = {
-            paymentMethod: giftCardData,
-            amount: giftcardBalance,
-            partialPaymentsOrder: {
-              pspReference: store.adyenOrderData.pspReference,
-              orderData: store.adyenOrderData.orderData
-            },
+            encryptedCardNumber: encryptedCardNumber,
+            encryptedSecurityCode: encryptedSecurityCode,
+            brand: brand,
             giftcardBrand: giftcardBrand
           };
-          _context2.next = 6;
+          _context2.next = 7;
           return makePartialPayment(partialPaymentRequest);
-        case 6:
+        case 7:
           partialPaymentResponse = _context2.sent;
           if (partialPaymentResponse !== null && partialPaymentResponse !== void 0 && partialPaymentResponse.error) {
             reject();
           } else {
             handlePartialPaymentSuccess();
           }
-        case 8:
+        case 9:
         case "end":
           return _context2.stop();
       }
@@ -190,11 +188,14 @@ function getGiftCardConfig() {
       store.updateSelectedPayment(constants.GIFTCARD, 'stateData', state.data);
     },
     onBalanceCheck: function onBalanceCheck(resolve, reject, requestData) {
+      var payload = {
+        csrf_token: $('#adyen-token').val(),
+        data: JSON.stringify(requestData)
+      };
       $.ajax({
         type: 'POST',
         url: window.checkBalanceUrl,
-        data: JSON.stringify(requestData),
-        contentType: 'application/json; charset=utf-8',
+        data: payload,
         async: false,
         success: function success(data) {
           giftcardBalance = data.balance;
@@ -225,7 +226,7 @@ function getGiftCardConfig() {
             store.partialPaymentsOrderObj.remainingAmountFormatted = data.remainingAmountFormatted;
             store.partialPaymentsOrderObj.totalDiscountedAmount = data.totalAmountFormatted;
             resolve(data);
-          } else if (data.resultCode === constants.NOTENOUGHBALANCE) {
+          } else if (data.resultCode === constants.NOTENOUGHBALANCE && data.balance.value > 0) {
             resolve(data);
           } else {
             reject();
@@ -239,21 +240,23 @@ function getGiftCardConfig() {
     onOrderRequest: function onOrderRequest(resolve, reject, requestData) {
       // Make a POST /orders request
       // Create an order for the total transaction amount
-      var giftCardData = requestData.paymentMethod;
-      if (store.adyenOrderData) {
-        makeGiftcardPaymentRequest(giftCardData, giftcardBalance, reject);
+      var paymentMethod = requestData.paymentMethod;
+      if (store.adyenOrderDataCreated) {
+        makeGiftcardPaymentRequest(paymentMethod, giftcardBalance, reject);
       } else {
         $.ajax({
           type: 'POST',
           url: window.partialPaymentsOrderUrl,
-          data: JSON.stringify(requestData),
-          contentType: 'application/json; charset=utf-8',
+          data: {
+            csrf_token: $('#adyen-token').val(),
+            data: JSON.stringify(requestData)
+          },
           async: false,
           success: function success(data) {
             if (data.resultCode === 'Success') {
-              store.adyenOrderData = data;
+              store.adyenOrderDataCreated = true;
               // make payments call including giftcard data and order data
-              makeGiftcardPaymentRequest(giftCardData, giftcardBalance, reject);
+              makeGiftcardPaymentRequest(paymentMethod, giftcardBalance, reject);
             }
           }
         });
@@ -268,14 +271,29 @@ function getGiftCardConfig() {
     }
   };
 }
-function handleOnChange(state) {
-  var type = state.data.paymentMethod.type;
-  store.isValid = state.isValid;
-  if (!store.componentsObj[type]) {
-    store.componentsObj[type] = {};
-  }
-  store.componentsObj[type].isValid = store.isValid;
-  store.componentsObj[type].stateData = state.data;
+function handleOnChange(_x4) {
+  return _handleOnChange.apply(this, arguments);
+}
+function _handleOnChange() {
+  _handleOnChange = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee3(state) {
+    var type;
+    return _regeneratorRuntime().wrap(function _callee3$(_context3) {
+      while (1) switch (_context3.prev = _context3.next) {
+        case 0:
+          type = state.data.paymentMethod.type;
+          store.isValid = state.isValid;
+          if (!store.componentsObj[type]) {
+            store.componentsObj[type] = {};
+          }
+          store.componentsObj[type].isValid = store.isValid;
+          store.componentsObj[type].stateData = state.data;
+        case 5:
+        case "end":
+          return _context3.stop();
+      }
+    }, _callee3);
+  }));
+  return _handleOnChange.apply(this, arguments);
 }
 var actionHandler = /*#__PURE__*/function () {
   var _ref = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee(action) {
@@ -301,19 +319,22 @@ var actionHandler = /*#__PURE__*/function () {
       }
     }, _callee);
   }));
-  return function actionHandler(_x4) {
+  return function actionHandler(_x5) {
     return _ref.apply(this, arguments);
   };
 }();
 function handleOnAdditionalDetails(state) {
+  var requestData = JSON.stringify({
+    data: state.data,
+    orderToken: window.orderToken
+  });
   $.ajax({
     type: 'POST',
     url: window.paymentsDetailsURL,
-    data: JSON.stringify({
-      data: state.data,
-      orderToken: window.orderToken
-    }),
-    contentType: 'application/json; charset=utf-8',
+    data: {
+      csrf_token: $('#adyen-token').val(),
+      data: requestData
+    },
     async: false,
     success: function success(data) {
       if (!data.isFinal && _typeof(data.action) === 'object') {

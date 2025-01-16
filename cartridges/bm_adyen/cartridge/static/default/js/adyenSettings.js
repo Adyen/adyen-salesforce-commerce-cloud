@@ -292,6 +292,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <option class="dropdown-option" value="hipercard" id="hipercardCard">Hipercard</option>
                 <option class="dropdown-option" value="mc" id="mcCard">Master Card</option>
                 <option class="dropdown-option" value="visa" id="visaCard">Visa</option>
+                <option class="dropdown-option" value="jcb" id="jcbCard">Jcb</option>
               </select>
             </div>
           </td>
