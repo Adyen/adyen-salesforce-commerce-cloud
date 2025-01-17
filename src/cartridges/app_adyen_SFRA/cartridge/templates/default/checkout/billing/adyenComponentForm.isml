@@ -24,7 +24,7 @@
       window.klarnaWidgetEnabled = ${adyenKlarnaWidgetEnabled};
       window.adyenRecurringPaymentsEnabled = ${adyenRecurringPaymentsEnabled};
       window.getPaymentMethodsURL = "${URLUtils.https('Adyen-GetPaymentMethods')}";
-	  window.getConnectedTerminalsURL = "${URLUtils.https('Adyen-GetConnectedTerminals')}";
+      window.getConnectedTerminalsURL = "${URLUtils.https('Adyen-GetConnectedTerminals')}";
       window.checkBalanceUrl = "${URLUtils.https('Adyen-CheckBalance')}";
       window.partialPaymentsOrderUrl = "${URLUtils.https('Adyen-PartialPaymentsOrder')}";
       window.partialPaymentUrl = "${URLUtils.https('Adyen-partialPayment')}";
