@@ -31,7 +31,6 @@ function getBasket(basketId) {
     ? BasketMgr.getTemporaryBasket(basketId)
     : BasketMgr.getCurrentBasket();
 }
-
 /**
  * Make a request to Adyen to get shipping methods
  */
