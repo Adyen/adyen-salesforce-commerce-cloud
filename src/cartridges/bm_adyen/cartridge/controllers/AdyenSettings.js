@@ -101,7 +101,7 @@ server.get('GetStores', server.middleware.https, (req, res, next) => {
     const response = JSON.parse(resultObject.getText());
     const mappedData = response.data.map((store) => ({
       id: store.id,
-      description: store.description,
+      reference: store.reference,
     }));
 
     bmHelper.saveMetadataField('Adyen_StoreId', mappedData);

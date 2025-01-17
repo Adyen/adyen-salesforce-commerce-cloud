@@ -69,7 +69,6 @@ beforeEach(() => {
     countryCode: 'mocked_countrycode',
   };
   getPaymentMethods.mockReturnValue({
-    adyenConnectedTerminals: { uniqueTerminalIds: ['mocked_id'] },
     imagePath: 'example.com',
     adyenDescriptions: {},
   });

@@ -36,6 +36,19 @@ module.exports.getPaymentMethods = async function getPaymentMethods() {
   });
 };
 
+module.exports.getConnectedTerminals = async function getConnectedTerminals() {
+  return $.ajax({
+    url: window.getConnectedTerminalsURL,
+    type: 'post',
+    data: {
+      csrf_token: $('#adyen-token').val(),
+      data: JSON.stringify({
+        storeId: $('#storeList').val(),
+      }),
+    },
+  });
+};
+
 /**
  * Makes an ajax call to the controller function createTemporaryBasket
  */

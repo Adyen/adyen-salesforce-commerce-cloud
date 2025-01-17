@@ -109,6 +109,12 @@ server.post(
   adyen.getCheckoutPaymentMethods,
 );
 
+server.post(
+  'GetConnectedTerminals',
+  server.middleware.https,
+  adyen.getConnectedTerminals,
+);
+
 /**
  * Show the review page template.
  */
