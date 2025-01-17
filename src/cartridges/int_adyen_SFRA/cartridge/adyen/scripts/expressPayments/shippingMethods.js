@@ -31,13 +31,14 @@ function getBasket(basketId) {
     ? BasketMgr.getTemporaryBasket(basketId)
     : BasketMgr.getCurrentBasket();
 }
+
 /**
  * Make a request to Adyen to get shipping methods
  */
 function callGetShippingMethods(req, res, next) {
   try {
     const { address, currentPaymentData, paymentMethodType, basketId } =
-      JSON.parse(req.body);
+      JSON.parse(req.form.data);
     const currentBasket = getBasket(basketId);
     if (!currentBasket) {
       res.json({

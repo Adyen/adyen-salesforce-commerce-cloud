@@ -45,7 +45,7 @@ function callCheckBalance(req, res, next) {
       value: AdyenHelper.getCurrencyValueForApi(currentBasket.getTotalGrossPrice()).value
     };
     var amount = giftCardsAdded ? giftCardsAdded[giftCardsAdded.length - 1].remainingAmount : orderAmount;
-    var request = JSON.parse(req.body);
+    var request = JSON.parse(req.form.data);
     var paymentMethod = request.paymentMethod ? request.paymentMethod : constants.ACTIONTYPES.GIFTCARD;
     var checkBalanceRequest = {
       merchantAccount: AdyenConfigs.getAdyenMerchantAccount(),
@@ -57,7 +57,11 @@ function callCheckBalance(req, res, next) {
     Transaction.wrap(function () {
       currentBasket.custom.adyenGiftCardsOrderNo = orderNo;
     });
-    res.json(_objectSpread(_objectSpread({}, checkBalanceResponse), getFormattedProperties(checkBalanceResponse, orderAmount)));
+    session.privacy.giftCardBalance = JSON.stringify(checkBalanceResponse.balance);
+    res.json(_objectSpread({
+      resultCode: checkBalanceResponse.resultCode,
+      balance: checkBalanceResponse.balance
+    }, getFormattedProperties(checkBalanceResponse, orderAmount)));
   } catch (error) {
     AdyenLogs.error_log('Failed to check gift card balance:', error);
     res.json({

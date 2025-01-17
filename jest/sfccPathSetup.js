@@ -71,10 +71,10 @@ jest.mock(
 );
 
 jest.mock(
-	'*/cartridge/models/shipping/shippingMethod',
-	() => require('../cartridge/models/shipping/shippingMethod'),
-	{ virtual: true },
-  );
+  '*/cartridge/models/shipping/shippingMethod',
+  () => require('../cartridge/models/shipping/shippingMethod'),
+  { virtual: true },
+);
 
 jest.mock(
   '*/cartridge/adyen/scripts/partialPayments/partialPaymentsOrder',
@@ -287,6 +287,13 @@ jest.mock(
   '*/cartridge/adyen/utils/clearForms',
   () =>
     require('../src/cartridges/int_adyen_SFRA/cartridge/adyen/utils/clearForms'),
+  { virtual: true },
+);
+
+jest.mock(
+  '*/cartridge/adyen/utils/validatePaymentData',
+  () =>
+    require('../src/cartridges/int_adyen_SFRA/cartridge/adyen/utils/validatePaymentData'),
   { virtual: true },
 );
 

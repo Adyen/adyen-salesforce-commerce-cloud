@@ -1,3 +1,4 @@
+const $ = require('jquery');
 const store = require('../../../../store');
 const { PAYPAL, APPLE_PAY, AMAZON_PAY } = require('../constants');
 
@@ -18,7 +19,10 @@ module.exports.onBrand = function onBrand(brandObject) {
 module.exports.fetchGiftCards = async function fetchGiftCards() {
   return $.ajax({
     url: window.fetchGiftCardsUrl,
-    type: 'get',
+    type: 'post',
+    data: {
+      csrf_token: $('#adyen-token').val(),
+    },
   });
 };
 
@@ -26,23 +30,12 @@ module.exports.fetchGiftCards = async function fetchGiftCards() {
  * Makes an ajax call to the controller function GetPaymentMethods
  */
 module.exports.getPaymentMethods = async function getPaymentMethods() {
-  return fetch(window.getPaymentMethodsURL, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json; charset=utf-8',
+  return $.ajax({
+    url: window.getPaymentMethodsURL,
+    type: 'post',
+    data: {
+      csrf_token: $('#adyen-token').val(),
     },
-  });
-};
-
-/**
- * Makes an ajax call to the controller function createTemporaryBasket
- */
-module.exports.createTemporaryBasket = async function createTemporaryBasket() {
-  const productForm = document.getElementById('express-product-form');
-
-  return fetch(window.createTemporaryBasketUrl, {
-    method: 'POST',
-    body: new FormData(productForm),
   });
 };
 

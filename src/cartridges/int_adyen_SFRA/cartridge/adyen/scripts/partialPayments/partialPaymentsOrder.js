@@ -51,7 +51,9 @@ function createPartialPaymentsOrder(req, res, next) {
     });
 
     const responseData = {
-      ...response,
+      resultCode: response?.resultCode,
+      remainingAmount: response?.remainingAmount,
+      amount: orderAmount,
       expiresAt: date.toISOString(),
     };
 

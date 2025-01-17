@@ -2,12 +2,17 @@
 
 var server = require('server');
 var Transaction = require('dw/system/Transaction');
-var csrfProtection = require('*/cartridge/scripts/middleware/csrf');
+var csrfProtection = require('dw/web/CSRFProtection');
+var URLUtils = require('dw/web/URLUtils');
 var AdyenConfigs = require('*/cartridge/adyen/utils/adyenConfigs');
 var AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
 var constants = require('*/cartridge/adyen/config/constants');
 var AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
-server.get('Start', csrfProtection.generateToken, function (_req, res, next) {
+server.get('Start', function (_req, res, next) {
+  if (!csrfProtection.validateRequest()) {
+    res.redirect(URLUtils.url('CSRF-Fail'));
+    return next();
+  }
   res.render('adyenSettings/settings');
   return next();
 });

@@ -9,12 +9,7 @@ const EXTERNAL_PLATFORM_VERSION = 'SFRA';
 /**
  * Show confirmation after return from Adyen
  */
-server.get(
-  'ShowConfirmation',
-  server.middleware.https,
-  csrf.generateToken,
-  adyen.showConfirmation,
-);
+server.get('ShowConfirmation', server.middleware.https, adyen.showConfirmation);
 
 /**
  *  Confirm payment status after receiving redirectResult from Adyen
@@ -52,7 +47,6 @@ server.post(
 server.get(
   'Redirect3DS1Response',
   server.middleware.https,
-  csrf.generateToken,
   adyen.redirect3ds1Response,
 );
 
@@ -95,6 +89,7 @@ server.post(
   'PaymentFromComponent',
   server.middleware.https,
   csrf.validateRequest,
+  adyen.validatePaymentDataFromRequest,
   adyen.paymentFromComponent,
 );
 
@@ -111,7 +106,7 @@ server.post(
 server.post(
   'GetPaymentMethods',
   server.middleware.https,
-  csrf.generateToken,
+  csrf.validateRequest,
   adyen.getCheckoutPaymentMethods,
 );
 
@@ -177,6 +172,7 @@ server.post(
   'MakeExpressPaymentsCall',
   server.middleware.https,
   csrf.validateRequest,
+  adyen.validatePaymentDataFromRequest,
   adyen.makeExpressPaymentsCall,
 );
 
@@ -202,10 +198,10 @@ server.post(
 /**
  * Called by Adyen to fetch applied giftcards
  */
-server.get(
+server.post(
   'fetchGiftCards',
   server.middleware.https,
-  csrf.generateToken,
+  csrf.validateRequest,
   adyen.fetchGiftCards,
 );
 

@@ -6,27 +6,21 @@ function asyncGeneratorStep(n, t, e, r, o, a, c) { try { var i = n[a](c), u = i.
 function _asyncToGenerator(n) { return function () { var t = this, e = arguments; return new Promise(function (r, o) { var a = n.apply(t, e); function _next(n) { asyncGeneratorStep(a, r, o, _next, _throw, "next", n); } function _throw(n) { asyncGeneratorStep(a, r, o, _next, _throw, "throw", n); } _next(void 0); }); }; }
 var _require = require('./commons'),
   checkIfExpressMethodsAreReady = _require.checkIfExpressMethodsAreReady,
-  updateLoadedExpressMethods = _require.updateLoadedExpressMethods,
-  getPaymentMethods = _require.getPaymentMethods;
+  updateLoadedExpressMethods = _require.updateLoadedExpressMethods;
 var _require2 = require('./constants'),
   AMAZON_PAY = _require2.AMAZON_PAY;
-function mountAmazonPayComponent() {
-  return _mountAmazonPayComponent.apply(this, arguments);
+function init(_x) {
+  return _init.apply(this, arguments);
 }
-function _mountAmazonPayComponent() {
-  _mountAmazonPayComponent = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
-    var _paymentMethodsRespon, data, paymentMethodsResponse, applicationInfo, checkout, amazonPayConfig, amazonPayButtonConfig, amazonPayButton;
+function _init() {
+  _init = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee(paymentMethodsResponse) {
+    var _paymentMethodsRespon, _paymentMethodsRespon2, applicationInfo, checkout, amazonPayConfig, amazonPayButtonConfig, amazonPayButton;
     return _regeneratorRuntime().wrap(function _callee$(_context) {
       while (1) switch (_context.prev = _context.next) {
         case 0:
           _context.prev = 0;
-          _context.next = 3;
-          return getPaymentMethods();
-        case 3:
-          data = _context.sent;
-          paymentMethodsResponse = data === null || data === void 0 ? void 0 : data.AdyenPaymentMethods;
-          applicationInfo = data === null || data === void 0 ? void 0 : data.applicationInfo;
-          _context.next = 8;
+          applicationInfo = paymentMethodsResponse === null || paymentMethodsResponse === void 0 ? void 0 : paymentMethodsResponse.applicationInfo;
+          _context.next = 4;
           return AdyenCheckout({
             environment: window.environment,
             clientKey: window.clientKey,
@@ -37,17 +31,19 @@ function _mountAmazonPayComponent() {
               }
             }
           });
-        case 8:
+        case 4:
           checkout = _context.sent;
-          amazonPayConfig = paymentMethodsResponse === null || paymentMethodsResponse === void 0 ? void 0 : (_paymentMethodsRespon = paymentMethodsResponse.paymentMethods.find(function (pm) {
+          amazonPayConfig = paymentMethodsResponse === null || paymentMethodsResponse === void 0 ? void 0 : (_paymentMethodsRespon = paymentMethodsResponse.AdyenPaymentMethods) === null || _paymentMethodsRespon === void 0 ? void 0 : (_paymentMethodsRespon2 = _paymentMethodsRespon.paymentMethods.find(function (pm) {
             return pm.type === AMAZON_PAY;
-          })) === null || _paymentMethodsRespon === void 0 ? void 0 : _paymentMethodsRespon.configuration;
+          })) === null || _paymentMethodsRespon2 === void 0 ? void 0 : _paymentMethodsRespon2.configuration;
           if (amazonPayConfig) {
-            _context.next = 12;
+            _context.next = 10;
             break;
           }
+          updateLoadedExpressMethods(AMAZON_PAY);
+          checkIfExpressMethodsAreReady();
           return _context.abrupt("return");
-        case 12:
+        case 10:
           amazonPayButtonConfig = {
             showPayButton: true,
             productType: 'PayAndShip',
@@ -59,17 +55,19 @@ function _mountAmazonPayComponent() {
           amazonPayButton.mount('#amazonpay-container');
           updateLoadedExpressMethods(AMAZON_PAY);
           checkIfExpressMethodsAreReady();
-          _context.next = 21;
+          _context.next = 19;
           break;
-        case 19:
-          _context.prev = 19;
+        case 17:
+          _context.prev = 17;
           _context.t0 = _context["catch"](0);
-        case 21:
+        case 19:
         case "end":
           return _context.stop();
       }
-    }, _callee, null, [[0, 19]]);
+    }, _callee, null, [[0, 17]]);
   }));
-  return _mountAmazonPayComponent.apply(this, arguments);
+  return _init.apply(this, arguments);
 }
-mountAmazonPayComponent();
+module.exports = {
+  init: init
+};
