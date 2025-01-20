@@ -154,7 +154,11 @@ function getShippingMethod(shippingContact, basketId, reject) {
     success(response) {
       return response;
     },
-  }).fail(() => reject());
+  }).fail(() => {
+    if (reject) {
+      reject();
+    }
+  });
 }
 
 async function initializeCheckout(paymentMethodsResponse) {

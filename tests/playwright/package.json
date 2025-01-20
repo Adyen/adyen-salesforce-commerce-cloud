@@ -77,7 +77,7 @@
     "picomatch": "^2.3.1",
     "pirates": "^4.0.4",
     "pixelmatch": "^5.2.1",
-    "playwright-core": "^1.21.0",
+    "playwright-core": "^1.45.0",
     "pngjs": "^6.0.0",
     "pretty-format": "^27.5.1",
     "progress": "^2.0.3",
@@ -106,7 +106,7 @@
     "yazl": "^2.5.1"
   },
   "devDependencies": {
-    "@playwright/test": "^1.42.1"
+    "@playwright/test": "^1.45.0"
   },
   "scripts": {
     "test": "npx playwright test",
