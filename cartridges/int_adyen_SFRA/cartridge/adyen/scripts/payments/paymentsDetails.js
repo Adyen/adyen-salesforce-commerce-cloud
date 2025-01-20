@@ -25,7 +25,7 @@ function getRedirectUrl(paymentsDetailsResponse, orderToken) {
 function paymentsDetails(req, res, next) {
   try {
     var _request$data;
-    var request = JSON.parse(req.body);
+    var request = JSON.parse(req.form.data);
     var isAmazonpay = (request === null || request === void 0 ? void 0 : (_request$data = request.data) === null || _request$data === void 0 ? void 0 : _request$data.paymentMethod) === 'amazonpay';
     if (request.data) {
       request.data.paymentMethod = undefined;

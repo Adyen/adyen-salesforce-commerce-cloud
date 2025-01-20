@@ -18,7 +18,7 @@ function makePartialPayment(requestData) {
         } else {
           const { giftCards, ...rest } = response;
           store.checkout.options.amount = rest.remainingAmount;
-          store.adyenOrderData = rest.partialPaymentsOrder;
+          store.adyenOrderDataCreated = rest.orderCreated;
           store.partialPaymentsOrderObj = rest;
           sessionStorage.setItem('partialPaymentsObj', JSON.stringify(rest));
           store.addedGiftCards = giftCards;

@@ -33,28 +33,8 @@ module.exports.getPaymentMethods = async function getPaymentMethods() {
   return $.ajax({
     url: window.getPaymentMethodsURL,
     type: 'post',
-  });
-};
-
-/**
- * Makes an ajax call to the controller function createTemporaryBasket
- */
-module.exports.createTemporaryBasket = async function createTemporaryBasket() {
-  const productForm = document.getElementById('express-product-form');
-  const data = new FormData(productForm);
-  const dataFromEntries = Object.fromEntries(data.entries());
-  const parsedData = JSON.parse(dataFromEntries['selected-express-product']);
-  return $.ajax({
-    url: window.createTemporaryBasketUrl,
-    type: 'post',
     data: {
       csrf_token: $('#adyen-token').val(),
-      data: JSON.stringify({
-        id: parsedData.id,
-        bundledProducts: parsedData.bundledProducts,
-        options: parsedData.options,
-        selectedQuantity: parsedData.selectedQuantity,
-      }),
     },
   });
 };

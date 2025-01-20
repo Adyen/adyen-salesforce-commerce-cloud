@@ -117,7 +117,7 @@ function handlePayment(stateData, order, options) {
   const paymentInstruments = order.getPaymentInstruments(
     AdyenHelper.getOrderMainPaymentInstrumentType(order),
   );
-  const result = options.req.form?.result;
+  const result = JSON.parse(options.req.form?.result);
 
   const adyenPaymentInstrument = paymentInstruments[0];
   const hasStateData = stateData?.paymentData && stateData?.details;
@@ -138,7 +138,7 @@ function handlePayment(stateData, order, options) {
         JSON.stringify(result).indexOf('googlepay') > -1 ||
         JSON.stringify(result).indexOf('cashapp') > -1)
     ) {
-      finalResult = JSON.parse(result);
+      finalResult = result;
     } else {
       return handlePaymentError(order, adyenPaymentInstrument, options);
     }

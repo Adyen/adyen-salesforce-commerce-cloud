@@ -91,6 +91,7 @@ server.post(
   'PaymentFromComponent',
   server.middleware.https,
   csrf.validateRequest,
+  adyen.validatePaymentDataFromRequest,
   adyen.paymentFromComponent,
 );
 
@@ -107,7 +108,7 @@ server.post(
 server.post(
   'GetPaymentMethods',
   server.middleware.https,
-  csrf.generateToken,
+  csrf.validateRequest,
   adyen.getCheckoutPaymentMethods,
 );
 
@@ -173,6 +174,7 @@ server.post(
   'MakeExpressPaymentsCall',
   server.middleware.https,
   csrf.validateRequest,
+  adyen.validatePaymentDataFromRequest,
   adyen.makeExpressPaymentsCall,
 );
 
@@ -211,7 +213,6 @@ server.post(
 server.post(
   'CreateTemporaryBasket',
   server.middleware.https,
-  csrf.validateRequest,
   adyen.createTemporaryBasket,
 );
 
