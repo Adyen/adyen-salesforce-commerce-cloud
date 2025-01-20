@@ -1,8 +1,10 @@
 /**
  * @jest-environment jsdom
  */
+jest.mock('../../commons');
 const { makePartialPayment } = require('../makePartialPayment');
 const store = require('../../../../../store');
+const {getPaymentMethods, fetchGiftCards} = require("../../commons");
 let data;
 const giftCardHtml = `
       <div id="paymentMethodsList"></div>
@@ -64,6 +66,28 @@ beforeEach(() => {
     },
     giftcardBrand: 'Givex',
   };
+  getPaymentMethods.mockReturnValue({
+    json: jest.fn().mockReturnValue({
+      adyenConnectedTerminals: { uniqueTerminalIds: ['mocked_id'] },
+      imagePath: 'example.com',
+      adyenDescriptions: {},
+    }),
+  });
+  const availableGiftCards = {
+    giftCards: [
+      {
+        orderAmount: {
+          currency: 'EUR',
+          value: 15,
+        },
+        remainingAmount: {
+          currency: 'EUR',
+          value: 100,
+        },
+      },
+    ],
+  }
+  fetchGiftCards.mockReturnValue(availableGiftCards);
 });
 
 afterEach(() => {
@@ -93,7 +117,7 @@ describe('Make partial payment request', () => {
       fail();
     } catch (error) {
       expect(error.message).toBe('Partial payment error true');
-    }  
+    }
   });
 
   it('should fail to make partial payment', async () => {
