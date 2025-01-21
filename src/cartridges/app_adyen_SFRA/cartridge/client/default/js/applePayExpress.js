@@ -181,12 +181,14 @@ async function onAuthorized(resolve, reject, event, amountValue, merchantName) {
     const customerData = event.payment.shippingContact;
     const billingData = event.payment.billingContact;
     const customer = formatCustomerObject(customerData, billingData);
-    const stateData = {
+    const requestData = {
       paymentMethod: {
         type: APPLE_PAY,
         applePayToken: event.payment.token.paymentData,
       },
       paymentType: 'express',
+      customer,
+      isExpressPdp: true,
     };
 
     const resolveApplePay = () => {
@@ -202,11 +204,7 @@ async function onAuthorized(resolve, reject, event, amountValue, merchantName) {
       resolve(finalPriceUpdate);
     };
 
-    await callPaymentFromComponent(
-      { ...stateData, customer, isExpressPdp: true },
-      resolveApplePay,
-      reject,
-    );
+    await callPaymentFromComponent(requestData, resolveApplePay, reject);
   } catch (error) {
     reject(error);
   }

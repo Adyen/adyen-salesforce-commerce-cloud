@@ -13,7 +13,6 @@ const {
 let checkout;
 let googlePayButton;
 let shippingMethodsData;
-let temporaryBasketId;
 
 function formatCustomerObject(customerData) {
   const shippingData = customerData.shippingAddress;
@@ -62,10 +61,10 @@ function formatCustomerObject(customerData) {
   };
 }
 
-async function getShippingMethods(shippingAddress, basketId) {
+async function getShippingMethods(shippingAddress) {
   const requestBody = {
     paymentMethodType: GOOGLE_PAY,
-    basketId,
+    isExpressPdp: true,
   };
   if (shippingAddress) {
     requestBody.address = {
@@ -89,12 +88,12 @@ async function getShippingMethods(shippingAddress, basketId) {
   });
 }
 
-async function selectShippingMethod({ shipmentUUID, ID }, basketId) {
+async function selectShippingMethod({ shipmentUUID, ID }) {
   const requestBody = {
     paymentMethodType: GOOGLE_PAY,
     shipmentUUID,
     methodID: ID,
-    basketId,
+    isExpressPdp: true,
   };
   return $.ajax({
     type: 'POST',
@@ -220,16 +219,10 @@ async function onShippingAddressChange(
   shippingAddress,
   paymentDataRequestUpdate,
 ) {
-  shippingMethodsData = await getShippingMethods(
-    shippingAddress,
-    temporaryBasketId,
-  );
+  shippingMethodsData = await getShippingMethods(shippingAddress);
   if (shippingMethodsData?.shippingMethods?.length) {
     const selectedShippingMethod = shippingMethodsData.shippingMethods[0];
-    const newCalculation = await selectShippingMethod(
-      selectedShippingMethod,
-      temporaryBasketId,
-    );
+    const newCalculation = await selectShippingMethod(selectedShippingMethod);
     if (newCalculation?.grandTotalAmount) {
       paymentDataRequestUpdate.newShippingOptionParameters =
         getShippingOptionsParameters(selectedShippingMethod);
@@ -250,25 +243,13 @@ async function onShippingOptionChange(
   const matchingShippingMethod = shippingMethods.find(
     (sm) => sm.ID === shippingOptionData.id,
   );
-  const newCalculation = await selectShippingMethod(
-    matchingShippingMethod,
-    temporaryBasketId,
-  );
+  const newCalculation = await selectShippingMethod(matchingShippingMethod);
   if (newCalculation?.grandTotalAmount) {
     paymentDataRequestUpdate.newTransactionInfo =
       getTransactionInfo(newCalculation);
     return true;
   }
   return false;
-}
-
-async function onInitTrigger() {
-  if (window.isExpressPdp) {
-    const tempBasketResponse = await createTemporaryBasket();
-    if (tempBasketResponse?.basketId) {
-      temporaryBasketId = tempBasketResponse.basketId;
-    }
-  }
 }
 
 async function init(paymentMethodsResponse) {
@@ -306,16 +287,17 @@ async function init(paymentMethodsResponse) {
         amount: JSON.parse(window.basketAmount),
         onAuthorized: async (data) => {
           const componentData = googlePayButton.data;
-          const stateData = {
-            paymentMethod: componentData.paymentMethod,
-            paymentType: 'express',
-          };
           const customer = formatCustomerObject(data);
-          paymentFromComponent({
-            ...stateData,
+          const requestData = {
+            paymentMethod: {
+              type: GOOGLE_PAY,
+              googlePayToken: componentData.paymentMethod.googlePayToken,
+            },
+            paymentType: 'express',
             customer,
-            basketId: temporaryBasketId,
-          });
+            isExpressPdp: true,
+          };
+          paymentFromComponent(requestData);
         },
         onSubmit: async () => {},
         paymentDataCallbacks: {
@@ -328,7 +310,9 @@ async function init(paymentMethodsResponse) {
             let onShippingOptionChangeStatus = true;
 
             if (callbackTrigger === GOOGLE_PAY_CALLBACK_TRIGGERS.INITIALIZE) {
-              await onInitTrigger();
+              if (window.isExpressPdp) {
+                await createTemporaryBasket();
+              }
               onShippingAddressChangeStatus = await onShippingAddressChange(
                 shippingAddress,
                 paymentDataRequestUpdate,
