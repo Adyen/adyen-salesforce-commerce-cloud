@@ -7,6 +7,7 @@ const {getTransactionInfo} = require('../googlePayExpress'); // Adjust the path 
 describe('getTransactionInfo', () => {
   it('should correctly format transaction information', () => {
     const newCalculation = {
+      locale: 'en-US',
       totals: {
         totalShippingCost: '$10.00',
         totalTax: '$5.00',
@@ -18,44 +19,21 @@ describe('getTransactionInfo', () => {
       },
     };
 
-    const shippingMethodsData = {
-      locale: 'en-US', // Example locale
-    };
-
     const expectedOutput = {
-      displayItems: [
-        {
-          price: '10.00',
-          label: 'Shipping',
-          type: 'LINE_ITEM',
-          status: 'FINAL',
-        },
-        {
-          price: '5.00',
-          label: 'Tax',
-          type: 'TAX',
-          status: 'FINAL',
-        },
-        {
-          price: '50.00',
-          label: 'Subtotal',
-          type: 'SUBTOTAL',
-          status: 'FINAL',
-        },
-      ],
-      countryCode: 'US', // Extracted from locale
-      currencyCode: 'USD', // From grandTotalAmount
+      countryCode: 'US',
+      currencyCode: 'USD',
       totalPriceStatus: 'FINAL',
       totalPriceLabel: 'Total',
-      totalPrice: '65.00', // From grandTotalAmount
+      totalPrice: '65.00',
     };
 
-    const result = getTransactionInfo(newCalculation, shippingMethodsData);
+    const result = getTransactionInfo(newCalculation);
     expect(result).toEqual(expectedOutput);
   });
 
   it('should handle missing or empty fields', () => {
     const newCalculation = {
+      locale: 'fr-FR',
       totals: {
         totalShippingCost: '$0.00',
         totalTax: '$0.00',
@@ -67,39 +45,15 @@ describe('getTransactionInfo', () => {
       },
     };
 
-    const shippingMethodsData = {
-      locale: 'fr-FR',
-    };
-
     const expectedOutput = {
-      displayItems: [
-        {
-          price: '0.00',
-          label: 'Shipping',
-          type: 'LINE_ITEM',
-          status: 'FINAL',
-        },
-        {
-          price: '0.00',
-          label: 'Tax',
-          type: 'TAX',
-          status: 'FINAL',
-        },
-        {
-          price: '0.00',
-          label: 'Subtotal',
-          type: 'SUBTOTAL',
-          status: 'FINAL',
-        },
-      ],
-      countryCode: 'FR', // Extracted from locale
-      currencyCode: 'EUR', // From grandTotalAmount
+      countryCode: 'FR',
+      currencyCode: 'EUR',
       totalPriceStatus: 'FINAL',
       totalPriceLabel: 'Total',
-      totalPrice: '0.00', // From grandTotalAmount
+      totalPrice: '0.00',
     };
 
-    const result = getTransactionInfo(newCalculation, shippingMethodsData);
+    const result = getTransactionInfo(newCalculation);
     expect(result).toEqual(expectedOutput);
   });
 });
@@ -112,7 +66,7 @@ describe('formatCustomerObject', () => {
         address1: '123 Main St',
         address2: 'Apt 4B',
         locality: 'New York',
-        country: 'USA',
+        countryCode: 'USA',
         administrativeArea: 'NY',
         postalCode: '10001',
         phoneNumber: '123-456-7890',
@@ -123,7 +77,7 @@ describe('formatCustomerObject', () => {
             address1: '456 Elm St',
             address2: null,
             locality: 'Brooklyn',
-            country: 'USA',
+            countryCode: 'USA',
             administrativeArea: 'NY',
             postalCode: '11201',
           },
@@ -141,7 +95,7 @@ describe('formatCustomerObject', () => {
           city: 'New York',
           countryCode: {
             displayValue: 'USA',
-            value: 'NY',
+            value: 'USA',
           },
           firstName: 'John',
           lastName: 'Doe',
@@ -156,7 +110,7 @@ describe('formatCustomerObject', () => {
         city: 'Brooklyn',
         countryCode: {
           displayValue: 'USA',
-          value: 'NY',
+          value: 'USA',
         },
         firstName: 'John',
         lastName: 'Doe',

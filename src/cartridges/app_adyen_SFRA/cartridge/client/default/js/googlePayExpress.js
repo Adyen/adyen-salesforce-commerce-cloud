@@ -27,8 +27,8 @@ function formatCustomerObject(customerData) {
         address2: shippingData.address2 ? shippingData.address2 : null,
         city: shippingData.locality,
         countryCode: {
-          displayValue: shippingData.country,
-          value: shippingData.administrativeArea,
+          displayValue: shippingData.countryCode,
+          value: shippingData.countryCode,
         },
         firstName,
         lastName,
@@ -42,8 +42,8 @@ function formatCustomerObject(customerData) {
       address2: billingData.address2 ? billingData.address2 : null,
       city: billingData.locality,
       countryCode: {
-        displayValue: billingData.country,
-        value: billingData.administrativeArea,
+        displayValue: billingData.countryCode,
+        value: billingData.countryCode,
       },
       firstName,
       lastName,
@@ -107,29 +107,9 @@ async function selectShippingMethod({ shipmentUUID, ID }) {
   });
 }
 
-function getTransactionInfo(newCalculation, shippingMethodsData) {
+function getTransactionInfo(newCalculation) {
   return {
-    displayItems: [
-      {
-        price: newCalculation?.totals?.totalShippingCost?.substring(1),
-        label: 'Shipping',
-        type: 'LINE_ITEM',
-        status: 'FINAL',
-      },
-      {
-        price: newCalculation?.totals?.totalTax?.substring(1),
-        label: 'Tax',
-        type: 'TAX',
-        status: 'FINAL',
-      },
-      {
-        price: newCalculation?.totals?.subTotal?.substring(1),
-        label: 'Subtotal',
-        type: 'SUBTOTAL',
-        status: 'FINAL',
-      },
-    ],
-    countryCode: shippingMethodsData?.locale?.slice(-2),
+    countryCode: newCalculation?.locale?.slice(-2),
     currencyCode: newCalculation?.grandTotalAmount?.currency,
     totalPriceStatus: 'FINAL',
     totalPriceLabel: 'Total',
@@ -217,36 +197,34 @@ async function initializeCheckout(paymentMethodsResponse) {
   });
 }
 
-async function onShippingAddressChange(
-  shippingAddress,
-  paymentDataRequestUpdate,
-) {
+async function onShippingAddressChange(shippingAddress) {
   const shippingMethodsData = await getShippingMethods(shippingAddress);
   if (shippingMethodsData?.shippingMethods?.length) {
     const selectedShippingMethod = shippingMethodsData.shippingMethods[0];
     const newCalculation = await selectShippingMethod(selectedShippingMethod);
     if (newCalculation?.grandTotalAmount) {
-      paymentDataRequestUpdate.newShippingOptionParameters =
-        getShippingOptionsParameters(
+      return {
+        newShippingOptionParameters: getShippingOptionsParameters(
           selectedShippingMethod,
           shippingMethodsData,
-        );
-      paymentDataRequestUpdate.newTransactionInfo = getTransactionInfo(
-        newCalculation,
-        shippingMethodsData,
-      );
-      return true;
+        ),
+        newTransactionInfo: getTransactionInfo(
+          newCalculation,
+          shippingMethodsData,
+        ),
+      };
     }
-    return false;
   }
-  return false;
+  return {
+    error: {
+      reason: 'SHIPPING_ADDRESS_UNSERVICEABLE',
+      message: 'Cannot ship to the selected address',
+      intent: 'SHIPPING_ADDRESS',
+    },
+  };
 }
 
-async function onShippingOptionChange(
-  shippingAddress,
-  shippingOptionData,
-  paymentDataRequestUpdate,
-) {
+async function onShippingOptionChange(shippingAddress, shippingOptionData) {
   const shippingMethodsData = await getShippingMethods(shippingAddress);
   const shippingMethods = shippingMethodsData?.shippingMethods;
   const matchingShippingMethod = shippingMethods.find(
@@ -254,13 +232,20 @@ async function onShippingOptionChange(
   );
   const newCalculation = await selectShippingMethod(matchingShippingMethod);
   if (newCalculation?.grandTotalAmount) {
-    paymentDataRequestUpdate.newTransactionInfo = getTransactionInfo(
-      newCalculation,
-      shippingMethodsData,
-    );
-    return true;
+    return {
+      newTransactionInfo: getTransactionInfo(
+        newCalculation,
+        shippingMethodsData,
+      ),
+    };
   }
-  return false;
+  return {
+    error: {
+      reason: 'SHIPPING_ADDRESS_UNSERVICEABLE',
+      message: 'Cannot ship to the selected address',
+      intent: 'SHIPPING_OPTION',
+    },
+  };
 }
 
 async function init(paymentMethodsResponse) {
@@ -316,48 +301,34 @@ async function init(paymentMethodsResponse) {
             const { callbackTrigger, shippingAddress, shippingOptionData } =
               intermediatePaymentData;
 
-            const paymentDataRequestUpdate = {};
-            let onShippingAddressChangeStatus = true;
-            let onShippingOptionChangeStatus = true;
+            let paymentDataRequestUpdate = {};
 
             if (callbackTrigger === GOOGLE_PAY_CALLBACK_TRIGGERS.INITIALIZE) {
               if (window.isExpressPdp) {
                 await createTemporaryBasket();
               }
-              onShippingAddressChangeStatus = await onShippingAddressChange(
-                shippingAddress,
-                paymentDataRequestUpdate,
-              );
+              paymentDataRequestUpdate =
+                await onShippingAddressChange(shippingAddress);
             }
 
             if (
               callbackTrigger === GOOGLE_PAY_CALLBACK_TRIGGERS.SHIPPING_ADDRESS
             ) {
-              onShippingAddressChangeStatus = await onShippingAddressChange(
-                shippingAddress,
-                paymentDataRequestUpdate,
-              );
+              paymentDataRequestUpdate =
+                await onShippingAddressChange(shippingAddress);
             }
 
             if (
               callbackTrigger === GOOGLE_PAY_CALLBACK_TRIGGERS.SHIPPING_OPTION
             ) {
-              onShippingOptionChangeStatus = await onShippingOptionChange(
+              paymentDataRequestUpdate = await onShippingOptionChange(
                 shippingAddress,
                 shippingOptionData,
-                paymentDataRequestUpdate,
               );
             }
 
-            return new Promise((resolve, reject) => {
-              if (
-                onShippingAddressChangeStatus &&
-                onShippingOptionChangeStatus
-              ) {
-                resolve(paymentDataRequestUpdate);
-              } else {
-                reject();
-              }
+            return new Promise((resolve) => {
+              resolve(paymentDataRequestUpdate);
             });
           },
         },
