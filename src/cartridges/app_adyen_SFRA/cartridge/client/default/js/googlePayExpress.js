@@ -112,29 +112,29 @@ function getTransactionInfo(newCalculation) {
   return {
     displayItems: [
       {
-        price: newCalculation.totals.totalShippingCost.substring(1),
+        price: newCalculation?.totals?.totalShippingCost?.substring(1),
         label: 'Shipping',
         type: 'LINE_ITEM',
         status: 'FINAL',
       },
       {
-        price: newCalculation.totals.totalTax.substring(1),
+        price: newCalculation?.totals?.totalTax?.substring(1),
         label: 'Tax',
         type: 'TAX',
         status: 'FINAL',
       },
       {
-        price: newCalculation.totals.subTotal.substring(1),
+        price: newCalculation?.totals?.subTotal?.substring(1),
         label: 'Subtotal',
         type: 'SUBTOTAL',
         status: 'FINAL',
       },
     ],
-    countryCode: shippingMethodsData.locale.slice(-2),
-    currencyCode: newCalculation.grandTotalAmount.currency,
+    countryCode: shippingMethodsData?.locale?.slice(-2),
+    currencyCode: newCalculation?.grandTotalAmount?.currency,
     totalPriceStatus: 'FINAL',
     totalPriceLabel: 'Total',
-    totalPrice: `${newCalculation.grandTotalAmount.value}`,
+    totalPrice: `${newCalculation?.grandTotalAmount?.value}`,
   };
 }
 
@@ -364,4 +364,6 @@ async function init(paymentMethodsResponse) {
 
 module.exports = {
   init,
+  formatCustomerObject,
+  getTransactionInfo,
 };
