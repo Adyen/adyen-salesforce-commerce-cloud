@@ -56,11 +56,10 @@ function createTemporaryBasket(req, res, next) {
     if (!tempBasket) {
       throw new Error('Temporary basket not created');
     }
-    const { id, bundledProducts, options, selectedQuantity } = req.form[
-      'selected-express-product'
-    ]
-      ? JSON.parse(req.form['selected-express-product'])
-      : {};
+    const { id, bundledProducts, options, selectedQuantity } = JSON.parse(
+      req.form.data,
+    );
+
     addProductToBasket(
       tempBasket,
       id,
@@ -72,8 +71,9 @@ function createTemporaryBasket(req, res, next) {
       value: tempBasket.getTotalGrossPrice().value,
       currency: tempBasket.getTotalGrossPrice().currencyCode,
     };
+    session.privacy.temporaryBasketId = tempBasket.UUID;
     res.json({
-      basketId: tempBasket.UUID,
+      temporaryBasketCreated: true,
       amount,
     });
   } catch (error) {
