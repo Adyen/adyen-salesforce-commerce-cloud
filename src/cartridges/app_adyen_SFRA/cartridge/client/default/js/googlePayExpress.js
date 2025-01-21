@@ -12,7 +12,6 @@ const {
 
 let checkout;
 let googlePayButton;
-let shippingMethodsData;
 
 function formatCustomerObject(customerData) {
   const shippingData = customerData.shippingAddress;
@@ -108,7 +107,7 @@ async function selectShippingMethod({ shipmentUUID, ID }) {
   });
 }
 
-function getTransactionInfo(newCalculation) {
+function getTransactionInfo(newCalculation, shippingMethodsData) {
   return {
     displayItems: [
       {
@@ -138,7 +137,10 @@ function getTransactionInfo(newCalculation) {
   };
 }
 
-function getShippingOptionsParameters(selectedShippingMethod) {
+function getShippingOptionsParameters(
+  selectedShippingMethod,
+  shippingMethodsData,
+) {
   return {
     defaultSelectedOptionId: selectedShippingMethod.ID,
     shippingOptions: shippingMethodsData.shippingMethods.map((sm) => ({
@@ -219,15 +221,20 @@ async function onShippingAddressChange(
   shippingAddress,
   paymentDataRequestUpdate,
 ) {
-  shippingMethodsData = await getShippingMethods(shippingAddress);
+  const shippingMethodsData = await getShippingMethods(shippingAddress);
   if (shippingMethodsData?.shippingMethods?.length) {
     const selectedShippingMethod = shippingMethodsData.shippingMethods[0];
     const newCalculation = await selectShippingMethod(selectedShippingMethod);
     if (newCalculation?.grandTotalAmount) {
       paymentDataRequestUpdate.newShippingOptionParameters =
-        getShippingOptionsParameters(selectedShippingMethod);
-      paymentDataRequestUpdate.newTransactionInfo =
-        getTransactionInfo(newCalculation);
+        getShippingOptionsParameters(
+          selectedShippingMethod,
+          shippingMethodsData,
+        );
+      paymentDataRequestUpdate.newTransactionInfo = getTransactionInfo(
+        newCalculation,
+        shippingMethodsData,
+      );
       return true;
     }
     return false;
@@ -236,17 +243,21 @@ async function onShippingAddressChange(
 }
 
 async function onShippingOptionChange(
+  shippingAddress,
   shippingOptionData,
   paymentDataRequestUpdate,
 ) {
+  const shippingMethodsData = await getShippingMethods(shippingAddress);
   const shippingMethods = shippingMethodsData?.shippingMethods;
   const matchingShippingMethod = shippingMethods.find(
     (sm) => sm.ID === shippingOptionData.id,
   );
   const newCalculation = await selectShippingMethod(matchingShippingMethod);
   if (newCalculation?.grandTotalAmount) {
-    paymentDataRequestUpdate.newTransactionInfo =
-      getTransactionInfo(newCalculation);
+    paymentDataRequestUpdate.newTransactionInfo = getTransactionInfo(
+      newCalculation,
+      shippingMethodsData,
+    );
     return true;
   }
   return false;
@@ -332,6 +343,7 @@ async function init(paymentMethodsResponse) {
               callbackTrigger === GOOGLE_PAY_CALLBACK_TRIGGERS.SHIPPING_OPTION
             ) {
               onShippingOptionChangeStatus = await onShippingOptionChange(
+                shippingAddress,
                 shippingOptionData,
                 paymentDataRequestUpdate,
               );

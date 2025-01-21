@@ -104,7 +104,6 @@ describe('getTransactionInfo', () => {
   });
 });
 
-
 describe('formatCustomerObject', () => {
   it('should correctly format customer data', () => {
     const customerData = {
