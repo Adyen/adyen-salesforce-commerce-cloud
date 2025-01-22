@@ -44,6 +44,7 @@ const Order = require('dw/order/Order');
 const constants = require('*/cartridge/adyen/config/constants');
 const adyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
+const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 
 function execute(args) {
   const result = handle(args.CustomObj);
@@ -152,6 +153,8 @@ function handle(customObj) {
               `Partial amount ${customObj.custom.value} received for order number ${order.orderNo} with total amount ${totalAmount}`,
             );
           } else {
+			const fraudDetectionStatus = { status: 'success' };
+			COHelpers.placeOrder(order, fraudDetectionStatus);
             order.setPaymentStatus(Order.PAYMENT_STATUS_PAID);
             order.setExportStatus(Order.EXPORT_STATUS_READY);
             order.setConfirmationStatus(Order.CONFIRMATION_STATUS_CONFIRMED);
