@@ -1,7 +1,4 @@
-const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 const handleOrderConfirm = require('*/cartridge/adyen/scripts/showConfirmation/order');
-const payment = require('*/cartridge/adyen/scripts/showConfirmation/handlePayment');
-const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
 
 function handleAuthorised(
   adyenPaymentInstrument,
@@ -10,13 +7,13 @@ function handleAuthorised(
   options,
 ) {
   // custom fraudDetection
-  const fraudDetectionStatus = { status: 'success' };
+  //   const fraudDetectionStatus = { status: 'success' };
 
   // Places the order
-//   const placeOrderResult = COHelpers.placeOrder(order, fraudDetectionStatus);
-//   if (placeOrderResult.error) {
-//     return payment.handlePaymentError(order, 'placeOrder', options);
-//   }
+  //   const placeOrderResult = COHelpers.placeOrder(order, fraudDetectionStatus);
+  //   if (placeOrderResult.error) {
+  //     return payment.handlePaymentError(order, 'placeOrder', options);
+  //   }
   return handleOrderConfirm(
     adyenPaymentInstrument,
     detailsResult,
