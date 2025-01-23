@@ -8,6 +8,7 @@ function createRequestObjectForAllReferenceIds(groupedObjects) {
   const requestObject = {
     channel: 'Web',
     platform: 'Web',
+    pluginType: constants.pluginType,
   };
 
   // Iterate over all referenceIds and group events into one requestObject
@@ -17,20 +18,20 @@ function createRequestObjectForAllReferenceIds(groupedObjects) {
     events.forEach((event) => {
       const eventObject = {
         timestamp: new Date(event.creationDate).getTime().toString(),
-        type: 'focus', // this has to be changed once API accepts our event types
+        type: event.eventType,
         target: event.eventStatus,
         id: event.eventId,
         component: event.eventSource,
       };
 
       const eventCode = event.eventCode.toLowerCase();
-      const eventTypes = [
+      const eventCodeList = [
         constants.eventCode.INFO,
         constants.eventCode.ERROR,
         constants.eventCode.LOG,
       ];
 
-      if (eventTypes.includes(eventCode)) {
+      if (eventCodeList.includes(eventCode)) {
         if (!requestObject[eventCode]) {
           requestObject[eventCode] = [];
         }

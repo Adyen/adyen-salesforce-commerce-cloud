@@ -60,7 +60,7 @@ function onStartHandler(req) {
     analyticsEvent.createAnalyticsEvent(
       session.sessionID,
       path.join('-'),
-      analyticsConstants.eventType.START,
+      analyticsConstants.eventType.EXPECTED_START,
       analyticsConstants.eventStatus.EXPECTED,
       analyticsConstants.eventCode.INFO,
     );
@@ -75,7 +75,7 @@ function onCompleteHandler(req, res) {
       analyticsEvent.createAnalyticsEvent(
         session.sessionID,
         path.join('-'),
-        analyticsConstants.eventType.END,
+        analyticsConstants.eventType.UNEXPECTED_END,
         analyticsConstants.eventStatus.UNEXPECTED,
         analyticsConstants.eventCode.INFO,
       );
@@ -83,7 +83,7 @@ function onCompleteHandler(req, res) {
       analyticsEvent.createAnalyticsEvent(
         session.sessionID,
         path.join('-'),
-        analyticsConstants.eventType.END,
+        analyticsConstants.eventType.EXPECTED_END,
         analyticsConstants.eventStatus.EXPECTED,
         analyticsConstants.eventCode.INFO,
       );
