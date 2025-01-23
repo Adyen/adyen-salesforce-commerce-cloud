@@ -132,25 +132,36 @@ function getShippingOptionsParameters(
 }
 
 function handleAuthorised(response) {
-  document.querySelector('#result').value = JSON.stringify({
-    pspReference: response.fullResponse?.pspReference,
-    resultCode: response.fullResponse?.resultCode,
-    paymentMethod: response.fullResponse?.paymentMethod
-      ? response.fullResponse.paymentMethod
-      : response.fullResponse?.additionalData?.paymentMethod,
-    donationToken: response.fullResponse?.donationToken,
-    amount: response.fullResponse?.amount,
-  });
-  document.querySelector('#showConfirmationForm').submit();
-  $.spinner().stop();
+  if (document.querySelector('#result')) {
+    document.querySelector('#result').value = JSON.stringify({
+      pspReference: response.fullResponse?.pspReference,
+      resultCode: response.fullResponse?.resultCode,
+      paymentMethod: response.fullResponse?.paymentMethod
+        ? response.fullResponse.paymentMethod
+        : response.fullResponse?.additionalData?.paymentMethod,
+      donationToken: response.fullResponse?.donationToken,
+      amount: response.fullResponse?.amount,
+    });
+  }
+  document.querySelector('#showConfirmationForm')?.submit();
+  if ($?.spinner) {
+    $.spinner()?.stop();
+  }
 }
 
 function handleError() {
-  document.querySelector('#result').value = JSON.stringify({
-    error: true,
-  });
-  document.querySelector('#showConfirmationForm').submit();
-  $.spinner().stop();
+  if (document.querySelector('#result')) {
+    document.querySelector('#result').value = JSON.stringify({
+      error: true,
+    });
+  }
+  document.querySelector('#showConfirmationForm')?.submit();
+  if ($?.spinner) {
+    const spinnerFn = $.spinner();
+    if (spinnerFn.stop) {
+      $.spinner()?.stop();
+    }
+  }
 }
 
 function handleGooglePayResponse(response) {
@@ -182,7 +193,7 @@ function paymentFromComponent(data) {
       );
       handleGooglePayResponse(response);
     },
-  }).fail(() => $.spinner().stop());
+  });
 }
 
 async function initializeCheckout(paymentMethodsResponse) {
@@ -349,4 +360,12 @@ module.exports = {
   init,
   formatCustomerObject,
   getTransactionInfo,
+  getShippingOptionsParameters,
+  onShippingAddressChange,
+  onShippingOptionChange,
+  getShippingMethods,
+  selectShippingMethod,
+  handleAuthorised,
+  handleError,
+  paymentFromComponent,
 };
