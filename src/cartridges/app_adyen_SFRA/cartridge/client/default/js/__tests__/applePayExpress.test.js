@@ -449,7 +449,7 @@ describe('getShippingMethod', () => {
   it('should handle fetch rejection', async () => {
     fetch.mockRejectedValue(new Error('Fetch failed'));
     try {
-      await getShippingMethod(null, mockBasketId);
+      await getShippingMethod(null);
     } catch (error) {
       expect(error.message).toBe('Fetch failed');
     }
