@@ -63,7 +63,7 @@ function formatCustomerObject(customerData) {
 async function getShippingMethods(shippingAddress) {
   const requestBody = {
     paymentMethodType: GOOGLE_PAY,
-    isExpressPdp: true,
+    isExpressPdp: window.isExpressPdp,
   };
   if (shippingAddress) {
     requestBody.address = {
@@ -92,7 +92,7 @@ async function selectShippingMethod({ shipmentUUID, ID }) {
     paymentMethodType: GOOGLE_PAY,
     shipmentUUID,
     methodID: ID,
-    isExpressPdp: true,
+    isExpressPdp: window.isExpressPdp,
   };
   return $.ajax({
     type: 'POST',
@@ -259,7 +259,8 @@ async function onShippingOptionChange(shippingAddress, shippingOptionData) {
   };
 }
 
-async function init(paymentMethodsResponse) {
+async function init(paymentMethodsResponse, isExpressPdp) {
+  window.isExpressPdp = isExpressPdp;
   initializeCheckout(paymentMethodsResponse)
     .then(async () => {
       const googlePayPaymentMethod =
@@ -302,7 +303,7 @@ async function init(paymentMethodsResponse) {
             },
             paymentType: 'express',
             customer,
-            isExpressPdp: true,
+            isExpressPdp: window.isExpressPdp,
           };
           paymentFromComponent(requestData);
         },

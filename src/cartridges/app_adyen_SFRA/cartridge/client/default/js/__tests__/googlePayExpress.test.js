@@ -255,7 +255,6 @@ describe('getShippingMethods', () => {
         csrf_token: undefined,
         data: JSON.stringify({
           paymentMethodType: 'googlepay',
-          isExpressPdp: true,
           address: {
             city: 'New York',
             country: 'United States',
@@ -282,7 +281,6 @@ describe('getShippingMethods', () => {
         csrf_token: undefined,
         data: JSON.stringify({
           paymentMethodType: 'googlepay',
-          isExpressPdp: true
         })
       },
       success: expect.any(Function)
@@ -320,7 +318,6 @@ describe('selectShippingMethod', () => {
           paymentMethodType: 'googlepay',
           shipmentUUID: 'test-shipment-uuid',
           methodID: 'test-method-id',
-          isExpressPdp: true
         })
       },
       success: expect.any(Function)
