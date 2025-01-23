@@ -44,6 +44,7 @@ function createTemporaryBasket(req, res, next) {
   try {
     // Delete any existing open temporary baskets
     Transaction.wrap(() => {
+      session.privacy.temporaryBasketId = null;
       BasketMgr.getTemporaryBaskets()
         .toArray()
         .forEach((basket) => {
@@ -56,6 +57,8 @@ function createTemporaryBasket(req, res, next) {
     if (!tempBasket) {
       throw new Error('Temporary basket not created');
     }
+    session.privacy.temporaryBasketId = tempBasket.UUID;
+
     const { id, bundledProducts, options, selectedQuantity } = JSON.parse(
       req.form.data,
     );
@@ -71,13 +74,13 @@ function createTemporaryBasket(req, res, next) {
       value: tempBasket.getTotalGrossPrice().value,
       currency: tempBasket.getTotalGrossPrice().currencyCode,
     };
-    session.privacy.temporaryBasketId = tempBasket.UUID;
     res.json({
       temporaryBasketCreated: true,
       amount,
     });
   } catch (error) {
     AdyenLogs.error_log('Failed to create temporary basket', error);
+    session.privacy.temporaryBasketId = null;
     res.setStatusCode(500);
     res.json({
       errorMessage: Resource.msg(
