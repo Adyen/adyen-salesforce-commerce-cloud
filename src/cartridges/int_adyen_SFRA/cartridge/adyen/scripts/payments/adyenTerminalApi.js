@@ -27,26 +27,6 @@ const Order = require('dw/order/Order');
 const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
 const AdyenConfigs = require('*/cartridge/adyen/utils/adyenConfigs');
 const constants = require('*/cartridge/adyen/config/constants');
-const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
-
-function getTerminals() {
-  try {
-    const requestObject = {};
-    const getTerminalRequest = {};
-    getTerminalRequest.merchantAccount = AdyenConfigs.getAdyenMerchantAccount();
-
-    // storeId is optional
-    if (AdyenConfigs.getAdyenStoreId() !== null) {
-      getTerminalRequest.store = AdyenConfigs.getAdyenStoreId();
-    }
-
-    requestObject.request = getTerminalRequest;
-    return executeCall(constants.SERVICE.CONNECTEDTERMINALS, requestObject);
-  } catch (error) {
-    AdyenLogs.fatal_log('/getTerminals call failed', error);
-    return { error: true, response: '{}' };
-  }
-}
 
 function createTerminalPayment(order, paymentInstrument, terminalId) {
   try {
@@ -238,6 +218,6 @@ function executeCall(serviceType, requestObject) {
 }
 
 module.exports = {
-  getTerminals,
   createTerminalPayment,
+  executeCall,
 };

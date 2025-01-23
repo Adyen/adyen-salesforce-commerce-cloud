@@ -111,10 +111,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const stores = JSON.parse(availableStores);
     stores.forEach((store) => {
       const option = document.createElement('option');
-      option.value = store.id;
-      option.textContent = `${store.description} (${store.id})`;
+      option.value = store.reference;
+      option.textContent = `${store.reference} (${store.id})`;
       terminalDropdown.appendChild(option);
-      if (activeSelectedStores.includes(store.id)) {
+      if (activeSelectedStores.includes(store.reference)) {
         option.selected = true;
       }
     });
