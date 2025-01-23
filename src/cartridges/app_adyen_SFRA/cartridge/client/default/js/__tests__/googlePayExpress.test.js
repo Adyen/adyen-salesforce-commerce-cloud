@@ -150,7 +150,7 @@ describe('formatCustomerObject', () => {
   it('should handle single-word names correctly', () => {
     const customerData = {
       shippingAddress: {
-        name: 'Alice', // Single-word name
+        name: 'Alice',
         address1: '789 Pine St',
         locality: 'Los Angeles',
         country: 'USA',
@@ -229,94 +229,6 @@ describe('getShippingOptionsParameters', () => {
   });
 });
 
-// describe('onShippingAddressChange', () => {
-//   // Mock dependencies
-//   const getShippingMethods = jest.fn();
-//   const selectShippingMethod = jest.fn();
-//   const getShippingOptionsParameters = jest.fn();
-//   const getTransactionInfo = jest.fn();
-//
-//   beforeEach(() => {
-//     // Reset mocks before each test
-//     jest.clearAllMocks();
-//   });
-// 1
-//   it('should return new shipping option parameters and transaction info when successful', async () => {
-//     const shippingAddress = { address: '123 Test St' };
-//     const shippingMethodsData = {
-//       shippingMethods: [{ id: 'method1' }],
-//     };
-//     const newCalculation = { grandTotalAmount: 100 };
-//     const expectedShippingOptionParameters = { param: 'value' };
-//     const expectedTransactionInfo = { info: 'data' };
-//
-//     getShippingMethods.mockResolvedValue(shippingMethodsData);
-//     selectShippingMethod.mockResolvedValue(newCalculation);
-//     getShippingOptionsParameters.mockReturnValue(expectedShippingOptionParameters);
-//     getTransactionInfo.mockReturnValue(expectedTransactionInfo);
-//
-//     const result = await onShippingAddressChange(shippingAddress);
-//
-//     expect(getShippingMethods).toHaveBeenCalledWith(shippingAddress);
-//     expect(selectShippingMethod).toHaveBeenCalledWith(shippingMethodsData.shippingMethods[0]);
-//     expect(getShippingOptionsParameters).toHaveBeenCalledWith(shippingMethodsData.shippingMethods[0], shippingMethodsData);
-//     expect(getTransactionInfo).toHaveBeenCalledWith(newCalculation, shippingMethodsData);
-//
-//     expect(result).toEqual({
-//       newShippingOptionParameters: expectedShippingOptionParameters,
-//       newTransactionInfo: expectedTransactionInfo,
-//     });
-//   });
-//
-//   it('should return an error when no shipping methods are available', async () => {
-//     const shippingAddress = { address: '123 Test St' };
-//     const shippingMethodsData = { shippingMethods: [] };
-//
-//     getShippingMethods.mockResolvedValue(shippingMethodsData);
-//
-//     const result = await onShippingAddressChange(shippingAddress);
-//
-//     expect(getShippingMethods).toHaveBeenCalledWith(shippingAddress);
-//     expect(selectShippingMethod).not.toHaveBeenCalled();
-//     expect(getShippingOptionsParameters).not.toHaveBeenCalled();
-//     expect(getTransactionInfo).not.toHaveBeenCalled();
-//
-//     expect(result).toEqual({
-//       error: {
-//         reason: 'SHIPPING_ADDRESS_UNSERVICEABLE',
-//         message: 'Cannot ship to the selected address',
-//         intent: 'SHIPPING_ADDRESS',
-//       },
-//     });
-//   });
-//
-//   it('should return an error when selectShippingMethod does not return grandTotalAmount', async () => {
-//     const shippingAddress = { address: '123 Test St' };
-//     const shippingMethodsData = {
-//       shippingMethods: [{ id: 'method1' }],
-//     };
-//     const newCalculation = { };
-//
-//     getShippingMethods.mockResolvedValue(shippingMethodsData);
-//     selectShippingMethod.mockResolvedValue(newCalculation);
-//
-//     const result = await onShippingAddressChange(shippingAddress);
-//
-//     expect(getShippingMethods).toHaveBeenCalledWith(shippingAddress);
-//     expect(selectShippingMethod).toHaveBeenCalledWith(shippingMethodsData.shippingMethods[0]);
-//     expect(getShippingOptionsParameters).not.toHaveBeenCalled();
-//     expect(getTransactionInfo).not.toHaveBeenCalled();
-//
-//     expect(result).toEqual({
-//       error: {
-//         reason: 'SHIPPING_ADDRESS_UNSERVICEABLE',
-//         message: 'Cannot ship to the selected address',
-//         intent: 'SHIPPING_ADDRESS',
-//       },
-//     });
-//   });
-// });
-
 describe('getShippingMethods', () => {
   beforeEach(() => {
     global.$.ajax = jest.fn().mockImplementation(({ success }) => {
@@ -325,10 +237,7 @@ describe('getShippingMethods', () => {
     jest.clearAllMocks();
   });
 
-  test('should make AJAX call with correct parameters when shipping address is provided', async () => {
-    const mockResponse = { success: true };
-    // $.ajax.mockResolvedValue(mockResponse);
-
+  it('should make AJAX call with correct parameters when shipping address is provided', async () => {
     const shippingAddress = {
       locality: 'New York',
       country: 'United States',
@@ -360,7 +269,7 @@ describe('getShippingMethods', () => {
     });
   });
 
-  test('should make AJAX call without address when shipping address is not provided', async () => {
+  it('should make AJAX call without address when shipping address is not provided', async () => {
     const mockResponse = { success: true };
     $.ajax.mockResolvedValue(mockResponse);
 
@@ -380,7 +289,7 @@ describe('getShippingMethods', () => {
     });
   });
 
-  test('should handle AJAX errors', async () => {
+  it('should handle AJAX errors', async () => {
     const mockError = new Error('AJAX request failed');
     $.ajax.mockRejectedValue(mockError);
 
@@ -390,7 +299,6 @@ describe('getShippingMethods', () => {
 
 describe('selectShippingMethod', () => {
   beforeEach(() => {
-    // Reset mocks before each test
     jest.clearAllMocks();
   });
 
@@ -435,7 +343,6 @@ describe('selectShippingMethod', () => {
 });
 
 describe('handleAuthorised', () => {
-  // Mock DOM elements
   beforeEach(() => {
     document.body.innerHTML = `
       <input id="result" />
@@ -493,7 +400,6 @@ describe('handleAuthorised', () => {
 });
 
 describe('handleError', () => {
-  // Mock DOM elements
   beforeEach(() => {
     document.body.innerHTML = `
       <input id="result" />
@@ -514,7 +420,7 @@ describe('handleError', () => {
 
   it('submits #showConfirmationForm form', () => {
     const form = document.querySelector('#showConfirmationForm');
-    form.submit = jest.fn(); // Mock the submit method
+    form.submit = jest.fn();
 
     handleError();
 
@@ -522,11 +428,10 @@ describe('handleError', () => {
   });
 
   it('handles missing #result element gracefully', () => {
-    document.body.innerHTML = '<form id="showConfirmationForm"></form>'; // Remove #result
+    document.body.innerHTML = '<form id="showConfirmationForm"></form>';
 
     handleError();
 
-    // No errors should occur, and other functionality should still work
     const form = document.querySelector('#showConfirmationForm');
     form.submit = jest.fn();
 
@@ -562,66 +467,3 @@ describe('paymentFromComponent', () => {
     expect(start).toHaveBeenCalledTimes(1);
   })
 });
-
-// describe('onShippingOptionChange', () => {
-//   const {getShippingMethods, selectShippingMethod, getTransactionInfo} = require('../googlePayExpress');
-//
-//   beforeEach(() => {
-//     jest.clearAllMocks(); // Clear mocks before each test
-//   });
-//
-//   it('returns new transaction info when shipping method is valid', async () => {
-//     const mockShippingAddress = {country: 'US', postalCode: '12345'};
-//     const mockShippingOptionData = {id: 'method1'};
-//     const mockShippingMethodsData = {
-//       shippingMethods: [{ID: 'method1', name: 'Standard Shipping'}],
-//     };
-//     const mockCalculation = {grandTotalAmount: 100};
-//     const mockTransactionInfo = {totalPrice: '100.00', currencyCode: 'USD'};
-//
-//     // Mock the dependent functions
-//     getShippingMethods.mockResolvedValue(mockShippingMethodsData);
-//     selectShippingMethod.mockResolvedValue(mockCalculation);
-//     getTransactionInfo.mockReturnValue(mockTransactionInfo);
-//
-//     const result = await onShippingOptionChange(
-//       mockShippingAddress,
-//       mockShippingOptionData,
-//     );
-//
-//     expect(getShippingMethods).toHaveBeenCalledWith(mockShippingAddress);
-//     expect(selectShippingMethod).toHaveBeenCalledWith(
-//       mockShippingMethodsData.shippingMethods[0],
-//     );
-//     expect(getTransactionInfo).toHaveBeenCalledWith(
-//       mockCalculation,
-//       mockShippingMethodsData,
-//     );
-//     expect(result).toEqual({newTransactionInfo: mockTransactionInfo});
-//   });
-//
-//   // it('returns error when no matching shipping method is found', async () => {
-//   //   const mockShippingAddress = {country: 'US', postalCode: '12345'};
-//   //   const mockShippingOptionData = {id: 'invalid-method'};
-//   //   const mockShippingMethodsData = {
-//   //     shippingMethods: [{ID: 'method1', name: 'Standard Shipping'}],
-//   //   };
-//   //
-//   //   // Mock the dependent functions
-//   //   getShippingMethods.mockResolvedValue(mockShippingMethodsData);
-//   //
-//   //   const result = await onShippingOptionChange(
-//   //     mockShippingAddress,
-//   //     mockShippingOptionData,
-//   //   );
-//   //
-//   //   expect(getShippingMethods).toHaveBeenCalledWith(mockShippingAddress);
-//   //   expect(result).toEqual({
-//   //     error: {
-//   //       reason: 'SHIPPING_ADDRESS_UNSERVICEABLE',
-//   //       message: 'Cannot ship to the selected address',
-//   //       intent: 'SHIPPING_OPTION',
-//   //     },
-//   //   });
-//   // });
-// });
