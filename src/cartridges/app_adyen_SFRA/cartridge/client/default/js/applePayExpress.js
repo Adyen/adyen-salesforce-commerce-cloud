@@ -9,7 +9,6 @@ const { APPLE_PAY } = require('./constants');
 
 let checkout;
 let shippingMethodsData;
-let temporaryBasketId;
 
 function formatCustomerObject(customerData, billingData) {
   return {
@@ -110,12 +109,12 @@ function callPaymentFromComponent(data, resolveApplePay, rejectApplePay) {
   });
 }
 
-async function selectShippingMethod({ shipmentUUID, ID }, basketId, reject) {
+async function selectShippingMethod({ shipmentUUID, ID }, reject) {
   const requestBody = {
     paymentMethodType: APPLE_PAY,
     shipmentUUID,
     methodID: ID,
-    basketId,
+    isExpressPdp: true,
   };
   return $.ajax({
     type: 'POST',
@@ -130,10 +129,10 @@ async function selectShippingMethod({ shipmentUUID, ID }, basketId, reject) {
   }).fail(() => reject());
 }
 
-function getShippingMethod(shippingContact, basketId, reject) {
+function getShippingMethod(shippingContact, reject) {
   const requestBody = {
     paymentMethodType: APPLE_PAY,
-    basketId,
+    isExpressPdp: true,
   };
   if (shippingContact) {
     requestBody.address = {
@@ -204,7 +203,7 @@ async function onAuthorized(resolve, reject, event, amountValue, merchantName) {
     };
 
     await callPaymentFromComponent(
-      { ...stateData, customer, basketId: temporaryBasketId },
+      { ...stateData, customer, isExpressPdp: true },
       resolveApplePay,
       reject,
     );
@@ -229,7 +228,6 @@ async function onShippingMethodSelected(
   );
   const calculationResponse = await selectShippingMethod(
     matchingShippingMethod,
-    temporaryBasketId,
     reject,
   );
   if (calculationResponse?.grandTotalAmount) {
@@ -252,16 +250,11 @@ async function onShippingMethodSelected(
 
 async function onShippingContactSelected(resolve, reject, event, merchantName) {
   const { shippingContact } = event;
-  shippingMethodsData = await getShippingMethod(
-    shippingContact,
-    temporaryBasketId,
-    reject,
-  );
+  shippingMethodsData = await getShippingMethod(shippingContact, reject);
   if (shippingMethodsData?.shippingMethods?.length) {
     const selectedShippingMethod = shippingMethodsData.shippingMethods[0];
     const newCalculation = await selectShippingMethod(
       selectedShippingMethod,
-      temporaryBasketId,
       reject,
     );
     if (newCalculation?.grandTotalAmount) {
@@ -327,8 +320,7 @@ async function init(paymentMethodsResponse) {
         onClick: async (resolve, reject) => {
           if (window.isExpressPdp) {
             const tempBasketResponse = await createTemporaryBasket();
-            if (tempBasketResponse?.basketId) {
-              temporaryBasketId = tempBasketResponse.basketId;
+            if (tempBasketResponse?.temporaryBasketCreated) {
               applePayButtonConfig.amount = {
                 value: tempBasketResponse.amount.value,
                 currency: tempBasketResponse.amount.currency,
