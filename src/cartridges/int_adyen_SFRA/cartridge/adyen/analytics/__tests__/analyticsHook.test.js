@@ -25,7 +25,7 @@ describe('analyticsHook', () => {
     };
     onStartHandler(req);
     expect(createAnalyticsEvent).toHaveBeenCalled();
-    expect(createAnalyticsEvent).toHaveBeenCalledWith('mocked_sessionID','Adyen-GetPaymentMethods', 'START', 'EXPECTED', 'info');
+    expect(createAnalyticsEvent).toHaveBeenCalledWith('mocked_sessionID','Adyen-GetPaymentMethods', 'expectedStart', 'EXPECTED', 'info');
   })
   it('should not create Start event when adyen analytics is disabled in BM', () => {
     const req = {
@@ -51,7 +51,7 @@ describe('analyticsHook', () => {
     };
     onCompleteHandler(req, res);
     expect(createAnalyticsEvent).toHaveBeenCalled();
-    expect(createAnalyticsEvent).toHaveBeenCalledWith('mocked_sessionID','Adyen-GetPaymentMethods', 'END', 'EXPECTED', 'info');
+    expect(createAnalyticsEvent).toHaveBeenCalledWith('mocked_sessionID','Adyen-GetPaymentMethods', 'expectedEnd', 'EXPECTED', 'info');
   })
   it('should create End event with unexpected status when onCompleteHandler is called for error in route', () => {
     const req = {
@@ -62,7 +62,7 @@ describe('analyticsHook', () => {
     };
     onCompleteHandler(req, res);
     expect(createAnalyticsEvent).toHaveBeenCalled();
-    expect(createAnalyticsEvent).toHaveBeenCalledWith('mocked_sessionID','Adyen-GetPaymentMethods', 'END', 'UNEXPECTED', 'info');
+    expect(createAnalyticsEvent).toHaveBeenCalledWith('mocked_sessionID','Adyen-GetPaymentMethods', 'unexpectedEnd', 'UNEXPECTED', 'info');
   })
   it('should not create End event when adyen analytics is disabled in BM', () => {
     const req = {
