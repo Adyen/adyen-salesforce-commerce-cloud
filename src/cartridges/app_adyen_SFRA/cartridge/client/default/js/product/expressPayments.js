@@ -45,11 +45,11 @@ function getExpressPaymentButtons(product) {
 }
 
 function renderApplePayButton(paymentMethods) {
-  applePayExpressModule.init(paymentMethods);
+  applePayExpressModule.init(paymentMethods, true);
 }
 
 function renderGooglePayButton(paymentMethods) {
-  googlePayExpressModule.init(paymentMethods);
+  googlePayExpressModule.init(paymentMethods, true);
 }
 
 function renderExpressPaymentButtons() {

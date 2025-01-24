@@ -12,7 +12,6 @@ const {
 
 let checkout;
 let googlePayButton;
-let shippingMethodsData;
 
 function formatCustomerObject(customerData) {
   const shippingData = customerData.shippingAddress;
@@ -28,8 +27,8 @@ function formatCustomerObject(customerData) {
         address2: shippingData.address2 ? shippingData.address2 : null,
         city: shippingData.locality,
         countryCode: {
-          displayValue: shippingData.country,
-          value: shippingData.administrativeArea,
+          displayValue: shippingData.countryCode,
+          value: shippingData.countryCode,
         },
         firstName,
         lastName,
@@ -43,8 +42,8 @@ function formatCustomerObject(customerData) {
       address2: billingData.address2 ? billingData.address2 : null,
       city: billingData.locality,
       countryCode: {
-        displayValue: billingData.country,
-        value: billingData.administrativeArea,
+        displayValue: billingData.countryCode,
+        value: billingData.countryCode,
       },
       firstName,
       lastName,
@@ -64,7 +63,7 @@ function formatCustomerObject(customerData) {
 async function getShippingMethods(shippingAddress) {
   const requestBody = {
     paymentMethodType: GOOGLE_PAY,
-    isExpressPdp: true,
+    isExpressPdp: window.isExpressPdp,
   };
   if (shippingAddress) {
     requestBody.address = {
@@ -93,7 +92,7 @@ async function selectShippingMethod({ shipmentUUID, ID }) {
     paymentMethodType: GOOGLE_PAY,
     shipmentUUID,
     methodID: ID,
-    isExpressPdp: true,
+    isExpressPdp: window.isExpressPdp,
   };
   return $.ajax({
     type: 'POST',
@@ -110,35 +109,18 @@ async function selectShippingMethod({ shipmentUUID, ID }) {
 
 function getTransactionInfo(newCalculation) {
   return {
-    displayItems: [
-      {
-        price: newCalculation.totals.totalShippingCost.substring(1),
-        label: 'Shipping',
-        type: 'LINE_ITEM',
-        status: 'FINAL',
-      },
-      {
-        price: newCalculation.totals.totalTax.substring(1),
-        label: 'Tax',
-        type: 'TAX',
-        status: 'FINAL',
-      },
-      {
-        price: newCalculation.totals.subTotal.substring(1),
-        label: 'Subtotal',
-        type: 'SUBTOTAL',
-        status: 'FINAL',
-      },
-    ],
-    countryCode: shippingMethodsData.locale.slice(-2),
-    currencyCode: newCalculation.grandTotalAmount.currency,
+    countryCode: newCalculation?.locale?.slice(-2),
+    currencyCode: newCalculation?.grandTotalAmount?.currency,
     totalPriceStatus: 'FINAL',
     totalPriceLabel: 'Total',
-    totalPrice: `${newCalculation.grandTotalAmount.value}`,
+    totalPrice: `${newCalculation?.grandTotalAmount?.value}`,
   };
 }
 
-function getShippingOptionsParameters(selectedShippingMethod) {
+function getShippingOptionsParameters(
+  selectedShippingMethod,
+  shippingMethodsData,
+) {
   return {
     defaultSelectedOptionId: selectedShippingMethod.ID,
     shippingOptions: shippingMethodsData.shippingMethods.map((sm) => ({
@@ -150,25 +132,36 @@ function getShippingOptionsParameters(selectedShippingMethod) {
 }
 
 function handleAuthorised(response) {
-  document.querySelector('#result').value = JSON.stringify({
-    pspReference: response.fullResponse?.pspReference,
-    resultCode: response.fullResponse?.resultCode,
-    paymentMethod: response.fullResponse?.paymentMethod
-      ? response.fullResponse.paymentMethod
-      : response.fullResponse?.additionalData?.paymentMethod,
-    donationToken: response.fullResponse?.donationToken,
-    amount: response.fullResponse?.amount,
-  });
-  document.querySelector('#showConfirmationForm').submit();
-  $.spinner().stop();
+  if (document.querySelector('#result')) {
+    document.querySelector('#result').value = JSON.stringify({
+      pspReference: response.fullResponse?.pspReference,
+      resultCode: response.fullResponse?.resultCode,
+      paymentMethod: response.fullResponse?.paymentMethod
+        ? response.fullResponse.paymentMethod
+        : response.fullResponse?.additionalData?.paymentMethod,
+      donationToken: response.fullResponse?.donationToken,
+      amount: response.fullResponse?.amount,
+    });
+  }
+  document.querySelector('#showConfirmationForm')?.submit();
+  if ($?.spinner) {
+    $.spinner()?.stop();
+  }
 }
 
 function handleError() {
-  document.querySelector('#result').value = JSON.stringify({
-    error: true,
-  });
-  document.querySelector('#showConfirmationForm').submit();
-  $.spinner().stop();
+  if (document.querySelector('#result')) {
+    document.querySelector('#result').value = JSON.stringify({
+      error: true,
+    });
+  }
+  document.querySelector('#showConfirmationForm')?.submit();
+  if ($?.spinner) {
+    const spinnerFn = $.spinner();
+    if (spinnerFn.stop) {
+      $.spinner()?.stop();
+    }
+  }
 }
 
 function handleGooglePayResponse(response) {
@@ -200,7 +193,7 @@ function paymentFromComponent(data) {
       );
       handleGooglePayResponse(response);
     },
-  }).fail(() => $.spinner().stop());
+  });
 }
 
 async function initializeCheckout(paymentMethodsResponse) {
@@ -215,44 +208,59 @@ async function initializeCheckout(paymentMethodsResponse) {
   });
 }
 
-async function onShippingAddressChange(
-  shippingAddress,
-  paymentDataRequestUpdate,
-) {
-  shippingMethodsData = await getShippingMethods(shippingAddress);
+async function onShippingAddressChange(shippingAddress) {
+  const shippingMethodsData = await getShippingMethods(shippingAddress);
   if (shippingMethodsData?.shippingMethods?.length) {
     const selectedShippingMethod = shippingMethodsData.shippingMethods[0];
     const newCalculation = await selectShippingMethod(selectedShippingMethod);
     if (newCalculation?.grandTotalAmount) {
-      paymentDataRequestUpdate.newShippingOptionParameters =
-        getShippingOptionsParameters(selectedShippingMethod);
-      paymentDataRequestUpdate.newTransactionInfo =
-        getTransactionInfo(newCalculation);
-      return true;
+      return {
+        newShippingOptionParameters: getShippingOptionsParameters(
+          selectedShippingMethod,
+          shippingMethodsData,
+        ),
+        newTransactionInfo: getTransactionInfo(
+          newCalculation,
+          shippingMethodsData,
+        ),
+      };
     }
-    return false;
   }
-  return false;
+  return {
+    error: {
+      reason: 'SHIPPING_ADDRESS_UNSERVICEABLE',
+      message: 'Cannot ship to the selected address',
+      intent: 'SHIPPING_ADDRESS',
+    },
+  };
 }
 
-async function onShippingOptionChange(
-  shippingOptionData,
-  paymentDataRequestUpdate,
-) {
+async function onShippingOptionChange(shippingAddress, shippingOptionData) {
+  const shippingMethodsData = await getShippingMethods(shippingAddress);
   const shippingMethods = shippingMethodsData?.shippingMethods;
   const matchingShippingMethod = shippingMethods.find(
     (sm) => sm.ID === shippingOptionData.id,
   );
   const newCalculation = await selectShippingMethod(matchingShippingMethod);
   if (newCalculation?.grandTotalAmount) {
-    paymentDataRequestUpdate.newTransactionInfo =
-      getTransactionInfo(newCalculation);
-    return true;
+    return {
+      newTransactionInfo: getTransactionInfo(
+        newCalculation,
+        shippingMethodsData,
+      ),
+    };
   }
-  return false;
+  return {
+    error: {
+      reason: 'SHIPPING_ADDRESS_UNSERVICEABLE',
+      message: 'Cannot ship to the selected address',
+      intent: 'SHIPPING_OPTION',
+    },
+  };
 }
 
-async function init(paymentMethodsResponse) {
+async function init(paymentMethodsResponse, isExpressPdp) {
+  window.isExpressPdp = isExpressPdp;
   initializeCheckout(paymentMethodsResponse)
     .then(async () => {
       const googlePayPaymentMethod =
@@ -295,7 +303,7 @@ async function init(paymentMethodsResponse) {
             },
             paymentType: 'express',
             customer,
-            isExpressPdp: true,
+            isExpressPdp: window.isExpressPdp,
           };
           paymentFromComponent(requestData);
         },
@@ -305,47 +313,34 @@ async function init(paymentMethodsResponse) {
             const { callbackTrigger, shippingAddress, shippingOptionData } =
               intermediatePaymentData;
 
-            const paymentDataRequestUpdate = {};
-            let onShippingAddressChangeStatus = true;
-            let onShippingOptionChangeStatus = true;
+            let paymentDataRequestUpdate = {};
 
             if (callbackTrigger === GOOGLE_PAY_CALLBACK_TRIGGERS.INITIALIZE) {
               if (window.isExpressPdp) {
                 await createTemporaryBasket();
               }
-              onShippingAddressChangeStatus = await onShippingAddressChange(
-                shippingAddress,
-                paymentDataRequestUpdate,
-              );
+              paymentDataRequestUpdate =
+                await onShippingAddressChange(shippingAddress);
             }
 
             if (
               callbackTrigger === GOOGLE_PAY_CALLBACK_TRIGGERS.SHIPPING_ADDRESS
             ) {
-              onShippingAddressChangeStatus = await onShippingAddressChange(
-                shippingAddress,
-                paymentDataRequestUpdate,
-              );
+              paymentDataRequestUpdate =
+                await onShippingAddressChange(shippingAddress);
             }
 
             if (
               callbackTrigger === GOOGLE_PAY_CALLBACK_TRIGGERS.SHIPPING_OPTION
             ) {
-              onShippingOptionChangeStatus = await onShippingOptionChange(
+              paymentDataRequestUpdate = await onShippingOptionChange(
+                shippingAddress,
                 shippingOptionData,
-                paymentDataRequestUpdate,
               );
             }
 
-            return new Promise((resolve, reject) => {
-              if (
-                onShippingAddressChangeStatus &&
-                onShippingOptionChangeStatus
-              ) {
-                resolve(paymentDataRequestUpdate);
-              } else {
-                reject();
-              }
+            return new Promise((resolve) => {
+              resolve(paymentDataRequestUpdate);
             });
           },
         },
@@ -364,4 +359,14 @@ async function init(paymentMethodsResponse) {
 
 module.exports = {
   init,
+  formatCustomerObject,
+  getTransactionInfo,
+  getShippingOptionsParameters,
+  onShippingAddressChange,
+  onShippingOptionChange,
+  getShippingMethods,
+  selectShippingMethod,
+  handleAuthorised,
+  handleError,
+  paymentFromComponent,
 };
