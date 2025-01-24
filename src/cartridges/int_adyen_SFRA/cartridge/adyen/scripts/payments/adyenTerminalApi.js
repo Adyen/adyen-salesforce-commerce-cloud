@@ -28,6 +28,26 @@ const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
 const AdyenConfigs = require('*/cartridge/adyen/utils/adyenConfigs');
 const constants = require('*/cartridge/adyen/config/constants');
 
+function pspReferenceFromResponse(paymentResponse) {
+  return paymentResponse?.POIData?.POITransactionID?.TransactionID?.split(
+    '.',
+  )[1];
+}
+
+function parsePaymentReceipt(paymentResponse) {
+  return paymentResponse?.PaymentReceipt[0]?.OutputContent?.OutputText?.reduce((receipt, item) => {
+    const params = decodeURIComponent(item.Text).split('&').reduce((paramObj, text) => {
+      const param= text.split('=');
+      paramObj[param[0]?.trim()] = param[1]?.trim();
+      return paramObj;
+    }, {});
+    if(params.hasOwnProperty('key')) {
+      receipt[params['key']] = params['value'];
+    }
+    return receipt
+  },{})
+}
+
 function createTerminalPayment(order, paymentInstrument, terminalId) {
   try {
     Transaction.begin();
@@ -102,33 +122,33 @@ function createTerminalPayment(order, paymentInstrument, terminalId) {
       let paymentResponse = '';
       if (terminalResponse.SaleToPOIResponse) {
         paymentResponse = terminalResponse.SaleToPOIResponse.PaymentResponse;
+        const pspReference = pspReferenceFromResponse(paymentResponse);
         if (paymentResponse.Response.Result === 'Success') {
+          const paymentReceipt = parsePaymentReceipt(paymentResponse);
+
+          // Set attributes for OMS
           order.custom.Adyen_eventCode = 'AUTHORISATION';
-          let pspReference = '';
-          if (
-            !empty(
-              paymentResponse.PaymentResult.PaymentAcquirerData
-                .AcquirerTransactionID.TransactionID,
-            )
-          ) {
-            pspReference =
-              paymentResponse.PaymentResult.PaymentAcquirerData
-                .AcquirerTransactionID.TransactionID;
-          } else if (
-            !empty(paymentResponse.POIData.POITransactionID.TransactionID)
-          ) {
-            pspReference =
-              paymentResponse.POIData.POITransactionID.TransactionID.split(
-                '.',
-              )[1];
-          }
-          // Save full response to transaction custom attribute
-          paymentInstrument.paymentTransaction.transactionID = pspReference;
           order.custom.Adyen_pspReference = pspReference;
-          order.setPaymentStatus(Order.PAYMENT_STATUS_PAID);
-          order.setExportStatus(Order.EXPORT_STATUS_READY);
+          order.custom.Adyen_paymentMethod = paymentReceipt.paymentMethod;
+          paymentInstrument.custom.adyenMainPaymentInstrument = paymentResponse?.PaymentResult?.PaymentInstrumentData?.PaymentInstrumentType;
+          paymentInstrument.custom.adyenPaymentMethod = paymentReceipt.paymentMethod;
+          paymentInstrument.custom.Adyen_Payment_Method_Variant = paymentReceipt.paymentMethodVariant;
+          paymentInstrument.custom[`${constants.OMS_NAMESPACE}__Adyen_Payment_Method`] = paymentReceipt.paymentMethod;
+          paymentInstrument.custom[`${constants.OMS_NAMESPACE}__Adyen_Payment_Method_Variant`] = paymentReceipt.paymentMethodVariant;
+          paymentInstrument.paymentTransaction.transactionID = pspReference;
+          paymentInstrument.paymentTransaction.custom.Adyen_pspReference = pspReference;
+          paymentInstrument.paymentTransaction.custom.Adyen_paymentMethod = paymentReceipt.paymentMethod;
+          paymentInstrument.paymentTransaction.custom.authCode = 'AUTHORISATION';
+
+
+          // Save full response to transaction custom attribute
           paymentInstrument.paymentTransaction.custom.Adyen_log =
             JSON.stringify(paymentResponse);
+
+          // Set payment status and export status
+          order.setPaymentStatus(Order.PAYMENT_STATUS_PAID);
+          order.setConfirmationStatus(Order.CONFIRMATION_STATUS_CONFIRMED);
+          order.setExportStatus(Order.EXPORT_STATUS_READY);
           Transaction.commit();
           return { error: false, authorized: true };
         }
@@ -140,6 +160,7 @@ function createTerminalPayment(order, paymentInstrument, terminalId) {
     }
   } catch (e) {
     Transaction.rollback();
+    AdyenLogs.error_log('POS payment failed:', e);
     return { error: true, response: e.toString() };
   }
 }
