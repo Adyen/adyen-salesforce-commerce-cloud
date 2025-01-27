@@ -159,8 +159,8 @@ function createTerminalPayment(order, paymentInstrument, terminalId) {
       );
     }
   } catch (e) {
-    Transaction.rollback();
     AdyenLogs.error_log('POS payment failed:', e);
+    Transaction.rollback();
     return { error: true, response: e.toString() };
   }
 }
