@@ -18,8 +18,6 @@ const {
   showGiftCardCancelButton,
 } = require('./renderGiftcardComponent');
 
-const INIT_CHECKOUT_EVENT = 'INIT_CHECKOUT_EVENT';
-
 function addPosTerminals(terminals) {
   const ddTerminals = document.createElement('select');
   ddTerminals.id = 'terminalList';
@@ -281,30 +279,6 @@ export async function initializeCheckout() {
   );
 }
 
-document.getElementById('email')?.addEventListener('change', (e) => {
-  const emailPattern = /^[\w.%+-]+@[\w.-]+\.[\w]{2,6}$/;
-  if (emailPattern.test(e.target.value)) {
-    const { paymentMethodsConfiguration } = store.checkoutConfiguration;
-    paymentMethodsConfiguration.card.clickToPayConfiguration.shopperEmail =
-      e.target.value;
-    const event = new Event(INIT_CHECKOUT_EVENT);
-    document.dispatchEvent(event);
-  }
-});
-
-// used by renderGiftCardComponent.js
-document.addEventListener(INIT_CHECKOUT_EVENT, () => {
-  const handleCheckoutEvent = async () => {
-    if (Object.keys(store.componentsObj).length !== 0) {
-      await unmountComponents();
-    }
-
-    await initializeCheckout();
-  };
-
-  handleCheckoutEvent();
-});
-
 /**
  * Calls getPaymentMethods and then renders the retrieved payment methods (including card component)
  */
@@ -335,5 +309,4 @@ module.exports = {
   renderGiftCardLogo,
   setGiftCardContainerVisibility,
   applyGiftCards,
-  INIT_CHECKOUT_EVENT,
 };
