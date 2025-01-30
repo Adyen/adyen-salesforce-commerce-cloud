@@ -26,10 +26,10 @@
     "check-branch-name": "chmod 755 ./branching.sh && sh ./branching.sh",
     "prepare": "husky install",
     "preinstall": "npx npm-force-resolutions",
-    "init:isml":  "./node_modules/.bin/isml-linter --init",
-    "lint:isml":  "./node_modules/.bin/isml-linter",
+    "init:isml": "./node_modules/.bin/isml-linter --init",
+    "lint:isml": "./node_modules/.bin/isml-linter",
     "build:isml": "./node_modules/.bin/isml-linter --build",
-    "fix:isml":   "./node_modules/.bin/isml-linter --autofix"
+    "fix:isml": "./node_modules/.bin/isml-linter --autofix"
   },
   "engines": {
     "node": ">=14.0"

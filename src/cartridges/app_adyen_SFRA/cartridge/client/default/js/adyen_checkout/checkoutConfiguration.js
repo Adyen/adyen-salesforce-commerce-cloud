@@ -388,28 +388,28 @@ function getKlarnaConfig() {
   return null;
 }
 
-function getUpiConfig() {
-  return {
-    showPayButton: true,
-    onSubmit: (state, component) => {
-      $('#dwfrm_billing').trigger('submit');
-      helpers.assignPaymentMethodValue();
-      helpers.paymentFromComponent(state.data, component);
-    },
-    onAdditionalDetails: (state) => {
-      document.querySelector('#additionalDetailsHidden').value = JSON.stringify(
-        state.data,
-      );
-      document.querySelector('#showConfirmationForm').submit();
-    },
-    onError: (component) => {
-      if (component) {
-        component.setStatus('ready');
-      }
-      document.querySelector('#showConfirmationForm').submit();
-    },
-  };
-}
+// function getUpiConfig() {
+//   return {
+//     showPayButton: true,
+//     onSubmit: (state, component) => {
+//       $('#dwfrm_billing').trigger('submit');
+//       helpers.assignPaymentMethodValue();
+//       helpers.paymentFromComponent(state.data, component);
+//     },
+//     onAdditionalDetails: (state) => {
+//       document.querySelector('#additionalDetailsHidden').value = JSON.stringify(
+//         state.data,
+//       );
+//       document.querySelector('#showConfirmationForm').submit();
+//     },
+//     onError: (component) => {
+//       if (component) {
+//         component.setStatus('ready');
+//       }
+//       document.querySelector('#showConfirmationForm').submit();
+//     },
+//   };
+// }
 
 function setCheckoutConfiguration() {
   store.checkoutConfiguration.onChange = handleOnChange;
@@ -417,30 +417,31 @@ function setCheckoutConfiguration() {
   store.checkoutConfiguration.showPayButton = false;
   store.checkoutConfiguration.clientKey = window.adyenClientKey;
 
-  store.checkoutConfiguration.paymentMethodsConfiguration = {
-    card: getCardConfig(),
-    bcmc: getCardConfig(),
-    storedCard: {
-      ...getCardConfig(),
-      holderNameRequired: false,
-    },
-    boletobancario: {
-      personalDetailsRequired: true, // turn personalDetails section on/off
-      billingAddressRequired: false, // turn billingAddress section on/off
-      showEmailAddress: false, // allow shopper to specify their email address
-    },
-    paywithgoogle: getGooglePayConfig(),
-    googlepay: getGooglePayConfig(),
-    paypal: getPaypalConfig(),
-    amazonpay: getAmazonpayConfig(),
-    giftcard: getGiftCardConfig(),
-    applepay: getApplePayConfig(),
-    klarna: getKlarnaConfig(),
-    klarna_account: getKlarnaConfig(),
-    klarna_paynow: getKlarnaConfig(),
-    cashapp: getCashAppConfig(),
-    upi: getUpiConfig(),
-  };
+  // TODO: Move to separate configuration and load when creating components
+  // store.checkoutConfiguration.paymentMethodsConfiguration = {
+  //   card: getCardConfig(),
+  //   bcmc: getCardConfig(),
+  //   storedCard: {
+  //     ...getCardConfig(),
+  //     holderNameRequired: false,
+  //   },
+  //   boletobancario: {
+  //     personalDetailsRequired: true, // turn personalDetails section on/off
+  //     billingAddressRequired: false, // turn billingAddress section on/off
+  //     showEmailAddress: false, // allow shopper to specify their email address
+  //   },
+  //   paywithgoogle: getGooglePayConfig(),
+  //   googlepay: getGooglePayConfig(),
+  //   paypal: getPaypalConfig(),
+  //   amazonpay: getAmazonpayConfig(),
+  //   giftcard: getGiftCardConfig(),
+  //   applepay: getApplePayConfig(),
+  //   klarna: getKlarnaConfig(),
+  //   klarna_account: getKlarnaConfig(),
+  //   klarna_paynow: getKlarnaConfig(),
+  //   cashapp: getCashAppConfig(),
+  //   upi: getUpiConfig(),
+  // };
 }
 
 module.exports = {

@@ -226,7 +226,9 @@ export async function initializeCheckout() {
     ...paymentMethodsResponse.AdyenPaymentMethods,
     imagePath: paymentMethodsResponse.imagePath,
   };
-  store.checkout = await AdyenCheckout(store.checkoutConfiguration);
+  store.checkout = await window.AdyenWeb.AdyenCheckout(
+    store.checkoutConfiguration,
+  );
   setGiftCardContainerVisibility();
   const { totalDiscountedAmount, giftCards } = giftCardsData;
   if (giftCards?.length) {
@@ -280,16 +282,17 @@ export async function initializeCheckout() {
   );
 }
 
-document.getElementById('email')?.addEventListener('change', (e) => {
-  const emailPattern = /^[\w.%+-]+@[\w.-]+\.[\w]{2,6}$/;
-  if (emailPattern.test(e.target.value)) {
-    const { paymentMethodsConfiguration } = store.checkoutConfiguration;
-    paymentMethodsConfiguration.card.clickToPayConfiguration.shopperEmail =
-      e.target.value;
-    const event = new Event(INIT_CHECKOUT_EVENT);
-    document.dispatchEvent(event);
-  }
-});
+// TODO: Click To Pay
+// document.getElementById('email')?.addEventListener('change', (e) => {
+//   const emailPattern = /^[\w.%+-]+@[\w.-]+\.[\w]{2,6}$/;
+//   if (emailPattern.test(e.target.value)) {
+//     const { paymentMethodsConfiguration } = store.checkoutConfiguration;
+//     paymentMethodsConfiguration.card.clickToPayConfiguration.shopperEmail =
+//       e.target.value;
+//     const event = new Event(INIT_CHECKOUT_EVENT);
+//     document.dispatchEvent(event);
+//   }
+// });
 
 // used by renderGiftCardComponent.js
 document.addEventListener(INIT_CHECKOUT_EVENT, () => {
