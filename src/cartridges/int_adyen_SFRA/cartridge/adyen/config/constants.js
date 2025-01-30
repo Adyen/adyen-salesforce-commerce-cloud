@@ -38,6 +38,18 @@ module.exports = {
 
   CAN_SKIP_SUMMARY_PAGE: ['applepay', 'cashapp', 'upi', 'googlepay'],
 
+  OPEN_INVOICE_METHODS: [
+    'afterpay',
+    'klarna',
+    'ratepay',
+    'facilypay',
+    'riverty',
+    'atome',
+    'zip',
+    'affirm',
+    'clearpay',
+  ],
+
   SERVICE: {
     PAYMENT: 'AdyenPayment',
     PAYMENTDETAILS: 'AdyenPaymentDetails',
