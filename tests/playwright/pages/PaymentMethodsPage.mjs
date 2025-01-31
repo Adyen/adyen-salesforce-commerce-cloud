@@ -34,9 +34,7 @@ export default class PaymentMethodsPage {
 
   initiateGooglePayExpressPayment = async () => {
     const googlePayButton = this.page.locator('#gpay-button-online-api-id');
-    setTimeout(() => {
-      expect(googlePayButton).toBeVisible();
-    }, 300)
+    expect(googlePayButton).toBeVisible();
     //
     // const [popup] = await Promise.all([
     //   this.page.waitForEvent('popup'),
