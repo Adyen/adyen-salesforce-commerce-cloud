@@ -24,9 +24,11 @@ export default class PaymentMethodsPage {
 
   initiatePayPalPayment = async (expressFlow, shippingChange, success, taxation) => {
     const consentButton = this.page.locator('.affirm');
-    if (consentButton.isVisible() && environment.name.indexOf('v5') !== -1) {
-		consentButton.click();
-	}
+	for (const environment of environments) {
+		if (consentButton.isVisible() && environment.name.indexOf('v5') !== -1) {
+			consentButton.click();
+		}
+	};
     // Paypal button locator on payment methods page
     const payPalButton = this.page
       .frameLocator('.adyen-checkout__paypal__button--paypal iframe.visible')
