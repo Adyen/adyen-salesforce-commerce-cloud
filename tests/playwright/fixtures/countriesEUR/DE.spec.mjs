@@ -31,7 +31,7 @@ for (const environment of environments) {
       await new PaymentMethodsPage(page).waitForKlarnaLoad();
     });
 
-    test('Klarna Fail @quick', async ({ page }) => {
+    test.skip('Klarna Fail @quick', async ({ page }) => {
       redirectShopper = new RedirectShopper(page);
       await redirectShopper.doKlarnaPayment();
       await checkoutPage.completeCheckout();

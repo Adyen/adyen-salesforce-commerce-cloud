@@ -15,24 +15,17 @@ export default class PaymentMethodsPage {
     return await this.page.url();
   };
 
-  initiateIdealPayment = async (testSuccess) => {
+  initiateIdealPayment = async () => {
     const iDealInput = this.page.locator('input[value="ideal"]');
-    const iDealDropDown = this.page.locator(
-      '#component_ideal .adyen-checkout__dropdown__button',
-    );
-    const issuer = testSuccess
-      ? this.page.locator(
-        '#component_ideal .adyen-checkout__dropdown__list li [alt="Test Issuer"]',
-      )
-      : this.page.locator(
-        '#component_ideal .adyen-checkout__dropdown__list li [alt="Test Issuer Refused"]',
-      );
-
     await this.page.locator('#rb_ideal').click();
     await iDealInput.click();
   };
 
   initiatePayPalPayment = async (expressFlow, shippingChange, success, taxation) => {
+    const consentButton = this.page.locator('.affirm');
+    if (consentButton.isVisible()) {
+		consentButton.click();
+	}
     // Paypal button locator on payment methods page
     const payPalButton = this.page
       .frameLocator('.adyen-checkout__paypal__button--paypal iframe.visible')
