@@ -419,12 +419,6 @@ export default class PaymentMethodsPage {
     await this.continueOnKlarna(skipModal);
   };
 
-  cancelKlarnaDirectEBankingPayment = async () => {
-    // await t
-    //   .click(Selector('.back-to-merchant cancel-transaction'))
-    //   .click(Selector('#CancelTransaction'));
-  };
-
   confirmKlarnaPaymentWithIDNumber = async () => {
     this.klarnaBuyButton = this.page.locator('#buy-button');
     this.klarnaFullScreenIframe = this.page.frameLocator(
