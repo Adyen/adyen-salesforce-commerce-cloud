@@ -34,6 +34,7 @@ function makePartialPayment(req, res, next) {
       reference: currentBasket.custom.adyenGiftCardsOrderNo,
       paymentMethod,
       order,
+      shopperInteraction: constants.SHOPPER_INTERACTIONS.ECOMMERCE,
     };
 
     const response = adyenCheckout.doPaymentsCall(
