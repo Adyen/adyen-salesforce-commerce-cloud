@@ -24,6 +24,7 @@ module.exports = {
     REFUSED: 'Refused',
     SUCCESS: 'Success',
     AUTHORISATION: 'AUTHORISATION',
+    FAILURE: 'Failure',
   },
   ACTIONTYPES: {
     VOUCHER: 'voucher',
