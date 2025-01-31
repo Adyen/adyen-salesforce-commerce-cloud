@@ -26,12 +26,57 @@ const Transaction = require('dw/system/Transaction');
 const Order = require('dw/order/Order');
 const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
 const AdyenConfigs = require('*/cartridge/adyen/utils/adyenConfigs');
+const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 const constants = require('*/cartridge/adyen/config/constants');
+
+function parsePaymentResponse(paymentResult) {
+  const terminalResponse = JSON.parse(paymentResult.response);
+  const {SaleToPOIResponse : {
+    PaymentResponse : {
+      POIData: {
+        POITransactionID: {
+          TransactionID
+        }
+      },
+      PaymentResult: {
+        PaymentInstrumentData: {
+          PaymentInstrumentType
+        }
+      },
+        Response: {
+          AdditionalResponse,
+          Result,
+          ErrorCondition
+        },
+    }
+  }} = terminalResponse;
+  const pspReference = TransactionID.split('.').pop();
+  const {additionalData : {
+    paymentMethod,
+    paymentMethodVariant
+  },
+    message,
+    refusalReason
+  } = JSON.parse(StringUtils.decodeBase64(AdditionalResponse));
+  return {
+    pspReference,
+    paymentMethod,
+    paymentMethodVariant,
+    paymentInstrumentType: PaymentInstrumentType,
+    result: Result,
+    error: {
+      errorCondition: ErrorCondition,
+      message,
+      refusalReason
+    }
+  }
+}
 
 function createTerminalPayment(order, paymentInstrument, terminalId) {
   try {
     Transaction.begin();
     const terminalRequestObject = {};
+    let result = {};
     if (!order || !paymentInstrument) {
       throw new Error(
         `Could not retrieve payment data, order = ${JSON.stringify(
@@ -98,47 +143,47 @@ function createTerminalPayment(order, paymentInstrument, terminalId) {
         )}`,
       );
     } else {
-      const terminalResponse = JSON.parse(paymentResult.response);
-      let paymentResponse = '';
-      if (terminalResponse.SaleToPOIResponse) {
-        paymentResponse = terminalResponse.SaleToPOIResponse.PaymentResponse;
-        if (paymentResponse.Response.Result === 'Success') {
-          order.custom.Adyen_eventCode = 'AUTHORISATION';
-          let pspReference = '';
-          if (
-            !empty(
-              paymentResponse.PaymentResult.PaymentAcquirerData
-                .AcquirerTransactionID.TransactionID,
-            )
-          ) {
-            pspReference =
-              paymentResponse.PaymentResult.PaymentAcquirerData
-                .AcquirerTransactionID.TransactionID;
-          } else if (
-            !empty(paymentResponse.POIData.POITransactionID.TransactionID)
-          ) {
-            pspReference =
-              paymentResponse.POIData.POITransactionID.TransactionID.split(
-                '.',
-              )[1];
-          }
-          // Save full response to transaction custom attribute
-          paymentInstrument.paymentTransaction.transactionID = pspReference;
-          order.custom.Adyen_pspReference = pspReference;
-          order.setPaymentStatus(Order.PAYMENT_STATUS_PAID);
-          order.setExportStatus(Order.EXPORT_STATUS_READY);
-          paymentInstrument.paymentTransaction.custom.Adyen_log =
-            JSON.stringify(paymentResponse);
-          Transaction.commit();
-          return { error: false, authorized: true };
-        }
-      }
+      // Save full response to transaction custom attribute
+      paymentInstrument.paymentTransaction.custom.Adyen_log = paymentResult.response
 
-      throw new Error(
-        `No correct response: ${JSON.stringify(paymentResponse.Response)}`,
-      );
+      const paymentResponse = parsePaymentResponse(paymentResult);
+      paymentInstrument.custom.adyenMainPaymentInstrument = paymentResponse.paymentInstrumentType;
+      paymentInstrument.paymentTransaction.custom.authCode = paymentResponse.result;
+      // Set attributes for OMS
+      if (paymentResponse.pspReference) {
+        order.custom.Adyen_pspReference = paymentResponse.pspReference;
+        paymentInstrument.paymentTransaction.transactionID = paymentResponse.pspReference;
+        paymentInstrument.paymentTransaction.custom.Adyen_pspReference = paymentResponse.pspReference;
+      }
+      if(paymentResponse.paymentMethod) {
+        order.custom.Adyen_paymentMethod = paymentResponse.paymentMethod;
+        paymentInstrument.custom.adyenPaymentMethod = paymentResponse.paymentMethod;
+        paymentInstrument.custom[`${constants.OMS_NAMESPACE}__Adyen_Payment_Method`] = paymentResponse.paymentMethod;
+        paymentInstrument.paymentTransaction.custom.Adyen_paymentMethod = paymentResponse.paymentMethod;
+      }
+      if(paymentResponse.paymentMethodVariant) {
+        paymentInstrument.custom.Adyen_Payment_Method_Variant = paymentResponse.paymentMethodVariant;
+        paymentInstrument.custom[`${constants.OMS_NAMESPACE}__Adyen_Payment_Method_Variant`] = paymentResponse.paymentMethodVariant;
+      }
+      if (paymentResponse.result === 'Success') {
+        order.custom.Adyen_eventCode = 'AUTHORISATION';
+        // Set payment status and export status
+        order.setPaymentStatus(Order.PAYMENT_STATUS_PAID);
+        order.setConfirmationStatus(Order.CONFIRMATION_STATUS_CONFIRMED);
+        order.setExportStatus(Order.EXPORT_STATUS_READY);
+        result = { error: false, authorized: true };
+      } else if(paymentResponse.result === 'Failure') {
+        order.custom.Adyen_eventCode = 'Failure';
+        order.setPaymentStatus(Order.PAYMENT_STATUS_NOTPAID);
+        order.setConfirmationStatus(Order.CONFIRMATION_STATUS_NOTCONFIRMED);
+        result = { error: true, authorized: false };
+        AdyenLogs.error_log('POS payment failed:', JSON.stringify(paymentResponse.error));
+      }
+      Transaction.commit();
+      return result;
     }
   } catch (e) {
+    AdyenLogs.error_log('POS payment failed:', e);
     Transaction.rollback();
     return { error: true, response: e.toString() };
   }
