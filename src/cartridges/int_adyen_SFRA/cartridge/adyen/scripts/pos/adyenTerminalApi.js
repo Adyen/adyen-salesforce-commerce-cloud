@@ -56,12 +56,12 @@ function createTerminalPayment(order, paymentInstrument, terminalId) {
     terminalRequestObject.request = {
       SaleToPOIRequest: {
         MessageHeader: {
-          ProtocolVersion: '3.0',
-          MessageClass: 'Service',
-          MessageCategory: 'Payment',
-          MessageType: 'Request',
+          ProtocolVersion: constants.POS_PROTOCOL_VERSION,
+          MessageClass: constants.POS_MESSAGE_CLASS.SERVICE,
+          MessageCategory: constants.POS_MESSAGE_CATEGORY.PAYMENT,
+          MessageType: constants.POS_MESSAGE_TYPE.REQUEST,
           ServiceID: serviceId,
-          SaleID: 'SalesforceCommerceCloud',
+          SaleID: constants.EXTERNAL_PLATFORM_NAME,
           POIID: terminalId,
         },
         PaymentRequest: {
@@ -70,7 +70,7 @@ function createTerminalPayment(order, paymentInstrument, terminalId) {
               TransactionID: order.getOrderNo(),
               TimeStamp: new Date(),
             },
-            SaleReferenceID: 'SalesforceCommerceCloudPOS',
+            SaleReferenceID: constants.POS_REFERENCE_ID,
             SaleToAcquirerData: applicationInfoBase64,
           },
           PaymentTransaction: {
@@ -102,8 +102,8 @@ function createTerminalPayment(order, paymentInstrument, terminalId) {
       let paymentResponse = '';
       if (terminalResponse.SaleToPOIResponse) {
         paymentResponse = terminalResponse.SaleToPOIResponse.PaymentResponse;
-        if (paymentResponse.Response.Result === 'Success') {
-          order.custom.Adyen_eventCode = 'AUTHORISATION';
+        if (paymentResponse.Response.Result === constants.RESULTCODES.SUCCESS) {
+          order.custom.Adyen_eventCode = constants.RESULTCODES.AUTHORISATION;
           let pspReference = '';
           if (
             !empty(
@@ -152,21 +152,21 @@ function sendAbortRequest(serviceId, terminalId) {
   abortRequestObject.request = {
     SaleToPOIRequest: {
       AbortRequest: {
-        AbortReason: 'MerchantAbort',
+        AbortReason: constants.POS_ABORT_REASON.MERCHANT_ABORT,
         MessageReference: {
-          SaleID: 'SalesforceCommerceCloud',
+          SaleID: constants.EXTERNAL_PLATFORM_NAME,
           ServiceID: serviceId,
-          MessageCategory: 'Payment',
+          MessageCategory: constants.POS_MESSAGE_CATEGORY.PAYMENT,
         },
       },
       MessageHeader: {
-        MessageType: 'Request',
-        MessageCategory: 'Abort',
-        MessageClass: 'Service',
+        MessageType: constants.POS_MESSAGE_TYPE.REQUEST,
+        MessageCategory: constants.POS_MESSAGE_CATEGORY.ABORT,
+        MessageClass: constants.POS_MESSAGE_CLASS.SERVICE,
         ServiceID: newServiceId,
-        SaleID: 'SalesforceCommerceCloud',
+        SaleID: constants.EXTERNAL_PLATFORM_NAME,
         POIID: terminalId,
-        ProtocolVersion: '3.0',
+        ProtocolVersion: constants.ProtocolVersion,
       },
     },
   };
@@ -183,10 +183,15 @@ function executeCall(serviceType, requestObject) {
   service.addHeader('Content-type', 'application/json');
   service.addHeader('charset', 'UTF-8');
   service.addHeader('X-API-KEY', apiKey);
-  if (AdyenConfigs.getAdyenEnvironment() === constants.MODE.LIVE && serviceType === constants.SERVICE.POSPAYMENT) {
-	const regionEndpoint = AdyenHelper.getTerminalApiEnvironment();
-	const serviceUrl = service.getURL().replace(`[ADYEN-REGION]`, regionEndpoint);
-	service.setURL(serviceUrl);
+  if (
+    AdyenConfigs.getAdyenEnvironment() === constants.MODE.LIVE &&
+    serviceType === constants.SERVICE.POSPAYMENT
+  ) {
+    const regionEndpoint = AdyenHelper.getTerminalApiEnvironment();
+    const serviceUrl = service
+      .getURL()
+      .replace('[ADYEN-REGION]', regionEndpoint);
+    service.setURL(serviceUrl);
   }
   const callResult = service.call(JSON.stringify(requestObject.request));
 

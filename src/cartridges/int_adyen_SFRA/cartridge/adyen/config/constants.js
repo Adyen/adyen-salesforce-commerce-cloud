@@ -22,6 +22,8 @@ module.exports = {
     RECEIVED: 'Received',
     REDIRECTSHOPPER: 'RedirectShopper',
     REFUSED: 'Refused',
+    SUCCESS: 'Success',
+    AUTHORISATION: 'AUTHORISATION',
   },
   ACTIONTYPES: {
     VOUCHER: 'voucher',
@@ -106,6 +108,21 @@ module.exports = {
   POS_ENVIRONMENT_LIVE_US: 'live-us',
   POS_ENVIRONMENT_LIVE_AU: 'live-au',
   POS_ENVIRONMENT_LIVE_APSE: 'live-apse',
+  POS_REFERENCE_ID: 'SalesforceCommerceCloudPOS',
+  POS_PROTOCOL_VERSION: '3.0',
+  POS_MESSAGE_CLASS: {
+    SERVICE: 'Service',
+  },
+  POS_MESSAGE_CATEGORY: {
+    PAYMENT: 'Payment',
+    ABORT: 'Abort',
+  },
+  POS_MESSAGE_TYPE: {
+    REQUEST: 'Request',
+  },
+  POS_ABORT_REASON: {
+    MERCHANT_ABORT: 'MerchantAbort',
+  },
 
   MERCHANT_APPLICATION_NAME: 'adyen-salesforce-commerce-cloud',
   EXTERNAL_PLATFORM_NAME: 'SalesforceCommerceCloud',

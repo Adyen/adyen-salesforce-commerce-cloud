@@ -1,5 +1,5 @@
 const PaymentMgr = require('dw/order/PaymentMgr');
-const adyenTerminalApi = require('*/cartridge/adyen/scripts/payments/adyenTerminalApi');
+const adyenTerminalApi = require('*/cartridge/adyen/scripts/pos/adyenTerminalApi');
 const constants = require('*/cartridge/adyen/config/constants');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 const AdyenConfigs = require('*/cartridge/adyen/utils/adyenConfigs');

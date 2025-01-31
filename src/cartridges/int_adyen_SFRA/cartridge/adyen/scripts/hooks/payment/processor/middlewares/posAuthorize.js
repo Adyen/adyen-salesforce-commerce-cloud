@@ -1,7 +1,7 @@
 const server = require('server');
 const Resource = require('dw/web/Resource');
 const Transaction = require('dw/system/Transaction');
-const adyenTerminalApi = require('*/cartridge/adyen/scripts/payments/adyenTerminalApi');
+const adyenTerminalApi = require('*/cartridge/adyen/scripts/pos/adyenTerminalApi');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 
 /**

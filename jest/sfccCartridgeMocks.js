@@ -83,7 +83,7 @@ jest.mock(
 );
 
 jest.mock(
-  '*/cartridge/adyen/scripts/payments/adyenTerminalApi',
+  '*/cartridge/adyen/scripts/pos/adyenTerminalApi',
   () => ({
     getTerminals: jest.fn(() => ({
       response: JSON.stringify({ foo: 'bar' }),

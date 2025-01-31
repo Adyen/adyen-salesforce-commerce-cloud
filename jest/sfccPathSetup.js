@@ -452,9 +452,9 @@ jest.mock(
 );
 
 jest.mock(
-	'*/cartridge/adyen/scripts/payments/getConnectedTerminals',
+	'*/cartridge/adyen/scripts/pos/getConnectedTerminals',
 	() =>
-	  require('../src/cartridges/int_adyen_SFRA/cartridge/adyen/scripts/payments/getConnectedTerminals'),
+	  require('../src/cartridges/int_adyen_SFRA/cartridge/adyen/scripts/pos/getConnectedTerminals'),
 	{ virtual: true },
   );
 
