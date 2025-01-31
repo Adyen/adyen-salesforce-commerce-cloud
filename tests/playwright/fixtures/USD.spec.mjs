@@ -308,7 +308,7 @@ for (const environment of environments) {
       await expect(page.locator('.tax-total')).toContainText('$5.98');
     });
 
-    test.only('Google Pay Express @quick', async ({page}) => {
+    test('Google Pay Express @quick', async ({page}) => {
       checkoutPage = new environment.CheckoutPage(page);
       await checkoutPage.addProductToCart();
       await checkoutPage.navigateToCart(regionsEnum.US);
