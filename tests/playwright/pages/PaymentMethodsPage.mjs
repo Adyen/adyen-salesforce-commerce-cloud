@@ -1,6 +1,7 @@
 import { expect } from '@playwright/test';
 import { ShopperData } from '../data/shopperData.mjs';
 import { PaymentData } from '../data/paymentData.mjs';
+import { environments } from '../data/environments.mjs';
 
 const shopperData = new ShopperData();
 const paymentData = new PaymentData();
@@ -23,7 +24,7 @@ export default class PaymentMethodsPage {
 
   initiatePayPalPayment = async (expressFlow, shippingChange, success, taxation) => {
     const consentButton = this.page.locator('.affirm');
-    if (consentButton.isVisible()) {
+    if (consentButton.isVisible() && environment.name.indexOf('v5') !== -1) {
 		consentButton.click();
 	}
     // Paypal button locator on payment methods page
