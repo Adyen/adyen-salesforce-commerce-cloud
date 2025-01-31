@@ -95,7 +95,8 @@ var adyenConfigsObj = {
     return getCustomPreference('AdyenLevel23_CommodityCode');
   },
   getAdyenSalePaymentMethods: function getAdyenSalePaymentMethods() {
-    return getCustomPreference('AdyenSalePaymentMethods') ? getCustomPreference('AdyenSalePaymentMethods').replace(/\s/g, '').toString().split(',') : [];
+    var adyenSalePaymentMethods = getCustomPreference('AdyenSalePaymentMethods');
+    return adyenSalePaymentMethods ? adyenSalePaymentMethods.replace(/\s/g, '').toString().split(',') : [];
   },
   getAdyenGivingEnabled: function getAdyenGivingEnabled() {
     return getCustomPreference('AdyenGiving_enabled');

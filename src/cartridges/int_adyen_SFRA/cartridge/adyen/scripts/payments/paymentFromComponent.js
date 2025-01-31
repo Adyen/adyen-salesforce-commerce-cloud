@@ -164,12 +164,12 @@ function canSkipSummaryPage(reqDataObj) {
  * Make a payment from inside a component, skipping the summary page. (paypal, QRcodes, MBWay)
  */
 function paymentFromComponent(req, res, next) {
-  const { basketId, ...reqDataObj } = JSON.parse(req.form.data);
+  const { isExpressPdp, ...reqDataObj } = JSON.parse(req.form.data);
   if (reqDataObj.cancelTransaction) {
     return handleCancellation(res, next, reqDataObj);
   }
-  const currentBasket = basketId
-    ? BasketMgr.getTemporaryBasket(basketId)
+  const currentBasket = isExpressPdp
+    ? BasketMgr.getTemporaryBasket(session.privacy.temporaryBasketId)
     : BasketMgr.getCurrentBasket();
   let paymentInstrument;
   Transaction.wrap(() => {
@@ -177,17 +177,20 @@ function paymentFromComponent(req, res, next) {
       currentBasket.removePaymentInstrument(item);
     });
 
+    const paymentInstrumentType = constants.METHOD_ADYEN_COMPONENT;
+
     paymentInstrument = currentBasket.createPaymentInstrument(
-      constants.METHOD_ADYEN_COMPONENT,
+      paymentInstrumentType,
       currentBasket.totalGrossPrice,
     );
     const { paymentProcessor } = PaymentMgr.getPaymentMethod(
       paymentInstrument.paymentMethod,
     );
     paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
+    paymentInstrument.custom.adyenMainPaymentInstrument = paymentInstrumentType;
     paymentInstrument.custom.adyenPaymentData = req.form.data;
 
-    if (reqDataObj.partialPaymentsOrder) {
+    if (session.privacy.partialPaymentData) {
       paymentInstrument.custom.adyenPartialPaymentsOrder =
         session.privacy.partialPaymentData;
     }
@@ -210,7 +213,6 @@ function paymentFromComponent(req, res, next) {
   if (currentBasket.custom?.adyenGiftCards) {
     const giftCardsOrderNo = currentBasket.custom.adyenGiftCardsOrderNo;
     order = OrderMgr.createOrder(currentBasket, giftCardsOrderNo);
-    handleGiftCardPayment(currentBasket, order);
   } else {
     order = COHelpers.createOrder(currentBasket);
   }
@@ -229,6 +231,8 @@ function paymentFromComponent(req, res, next) {
   if (result.resultCode === constants.RESULTCODES.REFUSED) {
     handleRefusedResultCode(result, reqDataObj, order);
   }
+
+  handleGiftCardPayment(currentBasket, order);
 
   // Check if summary page can be skipped in case payment is already authorized
   result.skipSummaryPage = canSkipSummaryPage(reqDataObj);

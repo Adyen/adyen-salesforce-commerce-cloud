@@ -71,8 +71,13 @@ function callCheckBalance(req, res, next) {
       currentBasket.custom.adyenGiftCardsOrderNo = orderNo;
     });
 
+    session.privacy.giftCardBalance = JSON.stringify(
+      checkBalanceResponse.balance,
+    );
+
     res.json({
-      ...checkBalanceResponse,
+      resultCode: checkBalanceResponse.resultCode,
+      balance: checkBalanceResponse.balance,
       ...getFormattedProperties(checkBalanceResponse, orderAmount),
     });
   } catch (error) {
