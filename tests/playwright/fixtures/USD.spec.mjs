@@ -312,7 +312,6 @@ for (const environment of environments) {
       checkoutPage = new environment.CheckoutPage(page);
       await checkoutPage.addProductToCart();
       await checkoutPage.navigateToCart(regionsEnum.US);
-      await checkoutPage.waitForTimeout(5000);
       redirectShopper = new RedirectShopper(page);
       await redirectShopper.doGooglePayExpressPayment();
     });
@@ -320,7 +319,6 @@ for (const environment of environments) {
     test('Google Pay Express PDP @quick', async ({page}) => {
       checkoutPage = new environment.CheckoutPage(page);
       await checkoutPage.addProductToCart(regionsEnum.US);
-      await checkoutPage.waitForTimeout(5000);
       redirectShopper = new RedirectShopper(page);
       await redirectShopper.doGooglePayExpressPayment();
     });

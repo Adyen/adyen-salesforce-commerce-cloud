@@ -33,6 +33,7 @@ export default class PaymentMethodsPage {
   };
 
   initiateGooglePayExpressPayment = async () => {
+    await this.page.waitForTimeout(5000);
     const googlePayButton = this.page.locator('#gpay-button-online-api-id');
     expect(googlePayButton).toBeVisible();
   }
