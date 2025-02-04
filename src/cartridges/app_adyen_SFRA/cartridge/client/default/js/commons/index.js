@@ -1,6 +1,6 @@
-const $ = require('jquery');
 const store = require('../../../../store');
 const { PAYPAL, APPLE_PAY, AMAZON_PAY, GOOGLE_PAY } = require('../constants');
+const { httpClient } = require('./httpClient');
 
 module.exports.onFieldValid = function onFieldValid(data) {
   if (data.endDigits) {
@@ -17,12 +17,9 @@ module.exports.onBrand = function onBrand(brandObject) {
  * Makes an ajax call to the controller function FetchGiftCards
  */
 module.exports.fetchGiftCards = async function fetchGiftCards() {
-  return $.ajax({
+  return httpClient({
+    method: 'POST',
     url: window.fetchGiftCardsUrl,
-    type: 'post',
-    data: {
-      csrf_token: $('#adyen-token').val(),
-    },
   });
 };
 
@@ -30,12 +27,9 @@ module.exports.fetchGiftCards = async function fetchGiftCards() {
  * Makes an ajax call to the controller function GetPaymentMethods
  */
 module.exports.getPaymentMethods = async function getPaymentMethods() {
-  return $.ajax({
+  return httpClient({
+    method: 'POST',
     url: window.getPaymentMethodsURL,
-    type: 'post',
-    data: {
-      csrf_token: $('#adyen-token').val(),
-    },
   });
 };
 
@@ -47,11 +41,10 @@ module.exports.createTemporaryBasket = async function createTemporaryBasket() {
   const data = new FormData(productForm);
   const dataFromEntries = Object.fromEntries(data.entries());
   const parsedData = JSON.parse(dataFromEntries['selected-express-product']);
-  return $.ajax({
+  return httpClient({
+    method: 'POST',
     url: window.createTemporaryBasketUrl,
-    type: 'post',
     data: {
-      csrf_token: $('#adyen-token').val(),
       data: JSON.stringify({
         id: parsedData.id,
         bundledProducts: parsedData.bundledProducts,
