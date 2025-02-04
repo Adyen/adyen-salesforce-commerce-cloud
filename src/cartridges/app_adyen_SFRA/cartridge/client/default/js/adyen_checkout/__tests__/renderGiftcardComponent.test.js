@@ -21,6 +21,9 @@ beforeEach(() => {
         <div id="giftCardSelectContainer"></div>
         <button id="giftCardAddButton"></button>
         <div id="adyenPartialPaymentsOrder"></div>
+        <div id="cancelGiftCardButton"></div>
+        <div id="giftCardsCancelContainer"></div>
+        <div id="giftCardsInfoMessage"></div>
       `;
   window.AdyenCheckout = jest.fn(async () => ({
     create: jest.fn(),
@@ -58,14 +61,6 @@ describe.only('Render gift card', () => {
         ]),
       },
     };
-
-    const data = {
-      resultCode: 'Received',
-    };
-    $.ajax = jest.fn(({ success }) => {
-      success(data);
-      return { fail: jest.fn() };
-    });
 
     expect(document.querySelector('#biggerContainer').innerHTML).toContain(
       'cancelGiftCardContainer',

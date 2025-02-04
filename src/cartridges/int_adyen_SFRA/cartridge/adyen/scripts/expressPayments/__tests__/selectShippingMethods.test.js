@@ -33,9 +33,9 @@ describe('callSelectShippingMethod', () => {
     currentBasket = BasketMgr.getCurrentBasket.mockReturnValueOnce(null);
     callSelectShippingMethod(req, res, next);
     expect(res.json).toHaveBeenCalledWith({
-        error: true,
-        redirectUrl: URLUtils.url('Cart-Show').toString(),
-      });
+      error: true,
+      redirectUrl: URLUtils.url('Cart-Show').toString(),
+    });
     expect(next).toHaveBeenCalled();
   });
 
@@ -51,8 +51,8 @@ describe('callSelectShippingMethod', () => {
 
     expect(res.setStatusCode).toHaveBeenCalledWith(500);
     expect(res.json).toHaveBeenCalledWith({
-        errorMessage: 'mocked_error.cannot.select.shipping.method',
-      });
+      errorMessage: 'mocked_error.cannot.select.shipping.method',
+    });
     expect(next).toHaveBeenCalled();
   });
 

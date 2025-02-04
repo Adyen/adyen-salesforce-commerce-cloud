@@ -41,7 +41,7 @@ describe('POS Authorize', () => {
   it('should return error if createTerminalPayment fails', () => {
     const {
       createTerminalPayment,
-    } = require('*/cartridge/adyen/scripts/payments/adyenTerminalApi');
+    } = require('*/cartridge/adyen/scripts/pos/adyenTerminalApi');
     const mockError = new Error('API error');
     createTerminalPayment.mockImplementation(() => {
 		throw mockError;

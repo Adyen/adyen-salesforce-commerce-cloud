@@ -79,12 +79,30 @@ var __LineItemHelper = {
     }
     return new dw.value.Money(0, lineItem.getPrice().getCurrencyCode());
   },
+  isProductLineItem: function isProductLineItem(lineItem) {
+    return lineItem instanceof dw.order.ProductLineItem;
+  },
+  isBonusProductLineItem: function isBonusProductLineItem(lineItem) {
+    return lineItem.bonusProductLineItem;
+  },
+  isShippingLineItem: function isShippingLineItem(lineItem) {
+    return lineItem instanceof dw.order.ShippingLineItem;
+  },
+  isPriceAdjustment: function isPriceAdjustment(lineItem) {
+    return lineItem instanceof dw.order.PriceAdjustment;
+  },
+  isValidLineItem: function isValidLineItem(lineItem) {
+    return this.isProductLineItem(lineItem) && !this.isBonusProductLineItem(lineItem) || this.isShippingLineItem(lineItem) || this.isPriceAdjustment(lineItem) && lineItem.promotion.promotionClass === dw.campaign.Promotion.PROMOTION_CLASS_ORDER;
+  },
   getAllLineItems: function getAllLineItems(allLineItems) {
     var lineItems = [];
+    // eslint-disable-next-line no-restricted-syntax
     for (var item in allLineItems) {
-      var lineItem = allLineItems[item];
-      if (lineItem instanceof dw.order.ProductLineItem && !lineItem.bonusProductLineItem || lineItem instanceof dw.order.ShippingLineItem || lineItem instanceof dw.order.PriceAdjustment && lineItem.promotion.promotionClass === dw.campaign.Promotion.PROMOTION_CLASS_ORDER) {
-        lineItems.push(lineItem);
+      if (item) {
+        var lineItem = allLineItems[item];
+        if (this.isValidLineItem(lineItem)) {
+          lineItems.push(lineItem);
+        }
       }
     }
     return lineItems;

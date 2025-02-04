@@ -2,6 +2,7 @@
     <isset name="AdyenHelper" value="${require('*/cartridge/adyen/utils/adyenHelper')}" scope="pdict"/>
     <link rel="stylesheet" type="text/css" href="${pdict.AdyenHelper.getCheckoutCSS()}"/>
     <script src="${pdict.AdyenHelper.getCheckoutUrl()}" type="text/javascript"></script>
+    <input type="hidden" id="adyen-token" name="${pdict.csrf.tokenName}" value="${pdict.csrf.token}"/>
     <isscript>
         var assets = require('*/cartridge/scripts/assets.js');
         assets.addJs('/js/adyenGiving.js');

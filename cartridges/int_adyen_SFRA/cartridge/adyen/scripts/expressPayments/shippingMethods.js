@@ -32,16 +32,20 @@ function updateShippingAddress(currentBasket, address) {
     });
   }
 }
+function getBasket(basketId) {
+  return basketId ? BasketMgr.getTemporaryBasket(basketId) : BasketMgr.getCurrentBasket();
+}
 /**
  * Make a request to Adyen to get shipping methods
  */
 function callGetShippingMethods(req, res, next) {
   try {
-    var _JSON$parse = JSON.parse(req.body),
+    var _JSON$parse = JSON.parse(req.form.data),
       address = _JSON$parse.address,
       currentPaymentData = _JSON$parse.currentPaymentData,
-      paymentMethodType = _JSON$parse.paymentMethodType;
-    var currentBasket = BasketMgr.getCurrentBasket();
+      paymentMethodType = _JSON$parse.paymentMethodType,
+      basketId = _JSON$parse.basketId;
+    var currentBasket = getBasket(basketId);
     if (!currentBasket) {
       res.json({
         error: true,

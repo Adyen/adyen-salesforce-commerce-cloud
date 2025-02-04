@@ -8,13 +8,16 @@ var helpers = require('./adyen_checkout/helpers');
  * @return {undefined}
  */
 function makeExpressPaymentDetailsCall(data) {
+  var csrfToken = document.querySelector('#showConfirmationForm input[id="adyen-token"]').value;
   $.ajax({
     type: 'POST',
     url: window.makeExpressPaymentDetailsCall,
-    data: JSON.stringify({
-      data: data
-    }),
-    contentType: 'application/json; charset=utf-8',
+    data: {
+      csrf_token: csrfToken,
+      data: JSON.stringify({
+        data: data
+      })
+    },
     async: false,
     success: function success(response) {
       helpers.setOrderFormData(response);

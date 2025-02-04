@@ -1,4 +1,4 @@
-const { onFieldValid, onBrand } = require('./commons');
+const { onFieldValid, onBrand, getPaymentMethods } = require('./commons');
 const store = require('../../../store');
 
 let checkout;
@@ -10,20 +10,35 @@ store.checkoutConfiguration.amount = {
   currency: 'EUR',
 };
 
-store.checkoutConfiguration.paymentMethodsConfiguration = {
-  card: {
-    enableStoreDetails: false,
-    hasHolderName: true,
-    holderNameRequired: true,
-    installments: [],
-    onBrand,
-    onFieldValid,
-    onChange(state) {
-      store.isValid = state.isValid;
-      store.componentState = state;
+async function initializeStoreConfiguration() {
+  const paymentMethodsData = await getPaymentMethods();
+  const paymentMethodsResponse = paymentMethodsData.AdyenPaymentMethods;
+  const cardBrands = paymentMethodsResponse.paymentMethods
+    .filter((method) => method.type === 'scheme')
+    .flatMap((method) => method.brands || []);
+
+  store.checkoutConfiguration.paymentMethodsConfiguration = {
+    card: {
+      enableStoreDetails: false,
+      hasHolderName: true,
+      holderNameRequired: true,
+      installments: [],
+      onBrand,
+      onFieldValid,
+      brands: cardBrands,
+      onChange(state) {
+        store.isValid = state.isValid;
+        store.componentState = state;
+      },
     },
-  },
-};
+  };
+}
+
+async function initializeCardComponent() {
+  const cardNode = document.getElementById('card');
+  checkout = await AdyenCheckout(store.checkoutConfiguration);
+  card = checkout.create('card').mount(cardNode);
+}
 
 // Handle Payment action
 function handleAction(action) {
@@ -31,11 +46,8 @@ function handleAction(action) {
   $('#action-modal').modal({ backdrop: 'static', keyboard: false });
 }
 
-// confirm onAdditionalDetails event and paymentsDetails response
 store.checkoutConfiguration.onAdditionalDetails = (state) => {
-  const requestData = JSON.stringify({
-    data: state.data,
-  });
+  const requestData = JSON.stringify({ data: state.data });
   $.ajax({
     type: 'POST',
     url: window.paymentsDetailsURL,
@@ -56,12 +68,6 @@ store.checkoutConfiguration.onAdditionalDetails = (state) => {
     },
   });
 };
-
-async function initializeCardComponent() {
-  const cardNode = document.getElementById('card');
-  checkout = await AdyenCheckout(store.checkoutConfiguration);
-  card = checkout.create('card').mount(cardNode);
-}
 
 let formErrorsExist = false;
 
@@ -84,9 +90,11 @@ function submitAddCard() {
   });
 }
 
-initializeCardComponent();
+(async () => {
+  await initializeStoreConfiguration();
+  await initializeCardComponent();
+})();
 
-// Add Payment Button event handler
 $('button[value="add-new-payment"]').on('click', (event) => {
   if (store.isValid) {
     document.querySelector('#adyenStateData').value = JSON.stringify(

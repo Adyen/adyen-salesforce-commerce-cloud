@@ -15,12 +15,12 @@ beforeEach(() => {
   req = {
     form: {
       data: JSON.stringify({address:{
-        city: 'Amsterdam',
-        countryCode: 'NL',
-        stateCode: 'AMS',
-        postalCode: '1001',
-        shipmentUUID: 'mocked_uuid',
-      }})
+          city: 'Amsterdam',
+          countryCode: 'NL',
+          stateCode: 'AMS',
+          postalCode: '1001',
+          shipmentUUID: 'mocked_uuid',
+        }})
     },
   };
 
@@ -79,28 +79,27 @@ describe('Shipping methods', () => {
   });
 });
 
-  it('Should update shipping address for the basket', () => {
-    const Logger = require('../../../../../../../../jest/__mocks__/dw/system/Logger');
-    const setCityMock = jest.fn()
-    const setPostalCodeMock = jest.fn()
-    const setStateCodeMock = jest.fn()
-    const setCountryCodeMock = jest.fn()
-    const currentBasketMock = {
-      getDefaultShipment: jest.fn(() =>({
-        createShippingAddress: jest.fn(() => ({
-          setCity: setCityMock,
-          setPostalCode: setPostalCodeMock,
-          setStateCode: setStateCodeMock,
-          setCountryCode: setCountryCodeMock
-        }))
-      })),
-    };
-    BasketMgr.getCurrentBasket.mockReturnValueOnce(currentBasketMock);
-    callGetShippingMethods(req, res, next);
-    expect(setCityMock).toHaveBeenCalledWith('Amsterdam');
-    expect(setPostalCodeMock).toHaveBeenCalledWith('1001');
-    expect(setStateCodeMock).toHaveBeenCalledWith('AMS');
-    expect(setCountryCodeMock).toHaveBeenCalledWith('NL');
-    expect(Logger.error.mock.calls.length).toBe(0);
-  });
-
+it('Should update shipping address for the basket', () => {
+  const Logger = require('../../../../../../../../jest/__mocks__/dw/system/Logger');
+  const setCityMock = jest.fn()
+  const setPostalCodeMock = jest.fn()
+  const setStateCodeMock = jest.fn()
+  const setCountryCodeMock = jest.fn()
+  const currentBasketMock = {
+    getDefaultShipment: jest.fn(() =>({
+      createShippingAddress: jest.fn(() => ({
+        setCity: setCityMock,
+        setPostalCode: setPostalCodeMock,
+        setStateCode: setStateCodeMock,
+        setCountryCode: setCountryCodeMock
+      }))
+    })),
+  };
+  BasketMgr.getCurrentBasket.mockReturnValueOnce(currentBasketMock);
+  callGetShippingMethods(req, res, next);
+  expect(setCityMock).toHaveBeenCalledWith('Amsterdam');
+  expect(setPostalCodeMock).toHaveBeenCalledWith('1001');
+  expect(setStateCodeMock).toHaveBeenCalledWith('AMS');
+  expect(setCountryCodeMock).toHaveBeenCalledWith('NL');
+  expect(Logger.error.mock.calls.length).toBe(0);
+});

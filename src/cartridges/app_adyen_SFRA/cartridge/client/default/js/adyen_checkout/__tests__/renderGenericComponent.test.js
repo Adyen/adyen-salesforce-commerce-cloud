@@ -62,7 +62,7 @@ beforeEach(() => {
   }));
   window.installments = '[[0,2,["amex","hipercard"]]]';
   store.checkout = {
-   options: {}
+    options: {}
   };
   store.checkoutConfiguration = {
     amount: {value : 'mocked_amount', currency : 'mocked_currency'},
@@ -92,7 +92,7 @@ describe('Render Generic Component', () => {
     expect(getPaymentMethods).toBeCalled();
     expect(store.checkoutConfiguration).toMatchSnapshot();
     expect(
-        document.querySelector('input[type=radio][name=brandCode]').value,
+      document.querySelector('input[type=radio][name=brandCode]').value,
     ).toBeTruthy();
   });
 
@@ -230,7 +230,7 @@ describe('Render Generic Component', () => {
     expect(giftCardSelection.style.display).toBe('none');
     expect(giftCardSeparator.style.display).toBe('none');
   });
-  
+
   it('should call removeGiftCards with isPartialPaymentExpired', () => {
     const renderGiftCardComponent = require('*/cartridge/client/default/js/adyen_checkout/renderGiftcardComponent');
     const now = new Date().toISOString();
@@ -239,7 +239,7 @@ describe('Render Generic Component', () => {
     }
     store.partialPaymentsOrderObj = {
       orderAmount : { currency: 'USD', value: 100 }
-    }   
+    }
     store.addedGiftCards = [
       {
         orderAmount: { currency: 'USD', value: 30 },
@@ -258,7 +258,7 @@ describe('Render Generic Component', () => {
       expect(renderGiftCardComponent.removeGiftCards).toHaveBeenCalled();
       done();
     }); // Timeout needed for completition of the test
-  }); 
+  });
 
   it('should call removeGiftCards with cartModified', () => {
     const renderGiftCardComponent = require('*/cartridge/client/default/js/adyen_checkout/renderGiftcardComponent');
@@ -267,7 +267,7 @@ describe('Render Generic Component', () => {
     }
     store.partialPaymentsOrderObj = {
       orderAmount : { currency: 'USD', value: 100 }
-    }   
+    }
     store.addedGiftCards = [
       {
         orderAmount: { currency: 'USD', value: 30 },
@@ -284,8 +284,8 @@ describe('Render Generic Component', () => {
       expect(renderGiftCardComponent.removeGiftCards).toHaveBeenCalled();
       expect(renderGiftCardComponent.showGiftCardWarningMessage).toHaveBeenCalled();
       done();
-    }); // Timeout needed for completition of the test 
-  }); 
+    }); // Timeout needed for completition of the test
+  });
 
   it('should handle the else part correctly', () => {
     const renderGiftCardComponent = require('*/cartridge/client/default/js/adyen_checkout/renderGiftcardComponent');
@@ -297,7 +297,7 @@ describe('Render Generic Component', () => {
     };
     store.partialPaymentsOrderObj = {
       orderAmount : { currency: 'USD', value: 50 },
-    }   
+    }
     store.addedGiftCards = [
       {
         giftCard : {brand : 'givex'},

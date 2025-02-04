@@ -10,7 +10,6 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
 function asyncGeneratorStep(n, t, e, r, o, a, c) { try { var i = n[a](c), u = i.value; } catch (n) { return void e(n); } i.done ? t(u) : Promise.resolve(u).then(r, o); }
 function _asyncToGenerator(n) { return function () { var t = this, e = arguments; return new Promise(function (r, o) { var a = n.apply(t, e); function _next(n) { asyncGeneratorStep(a, r, o, _next, _throw, "next", n); } function _throw(n) { asyncGeneratorStep(a, r, o, _next, _throw, "throw", n); } _next(void 0); }); }; }
 var _require = require('./commons'),
-  getPaymentMethods = _require.getPaymentMethods,
   updateLoadedExpressMethods = _require.updateLoadedExpressMethods,
   checkIfExpressMethodsAreReady = _require.checkIfExpressMethodsAreReady;
 var helpers = require('./adyen_checkout/helpers');
@@ -21,50 +20,41 @@ function callPaymentFromComponent(_x, _x2) {
 }
 function _callPaymentFromComponent() {
   _callPaymentFromComponent = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee6(data, component) {
-    var response, _yield$response$json, action, _yield$response$json$, errorMessage;
     return _regeneratorRuntime().wrap(function _callee6$(_context6) {
       while (1) switch (_context6.prev = _context6.next) {
         case 0:
-          _context6.prev = 0;
-          $.spinner().start();
-          _context6.next = 4;
-          return fetch(window.makeExpressPaymentsCall, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data)
-          });
-        case 4:
-          response = _context6.sent;
-          _context6.next = 7;
-          return response.json();
-        case 7:
-          _yield$response$json = _context6.sent;
-          action = _yield$response$json.action;
-          _yield$response$json$ = _yield$response$json.errorMessage;
-          errorMessage = _yield$response$json$ === void 0 ? '' : _yield$response$json$;
-          if (!(response.ok && action)) {
-            _context6.next = 15;
-            break;
+          try {
+            $.spinner().start();
+            $.ajax({
+              type: 'POST',
+              url: window.makeExpressPaymentsCall,
+              data: {
+                csrf_token: $('#adyen-token').val(),
+                data: JSON.stringify(data)
+              },
+              // Send the data as a JSON string
+              success: function success(response) {
+                var action = response.action,
+                  _response$errorMessag3 = response.errorMessage,
+                  errorMessage = _response$errorMessag3 === void 0 ? '' : _response$errorMessag3;
+                if (action) {
+                  component.handleAction(action);
+                } else {
+                  throw new Error(errorMessage);
+                }
+              },
+              error: function error() {
+                component.handleError();
+              }
+            });
+          } catch (e) {
+            component.handleError();
           }
-          component.handleAction(action);
-          _context6.next = 16;
-          break;
-        case 15:
-          throw new Error(errorMessage);
-        case 16:
-          _context6.next = 21;
-          break;
-        case 18:
-          _context6.prev = 18;
-          _context6.t0 = _context6["catch"](0);
-          component.handleError();
-        case 21:
+        case 1:
         case "end":
           return _context6.stop();
       }
-    }, _callee6, null, [[0, 18]]);
+    }, _callee6);
   }));
   return _callPaymentFromComponent.apply(this, arguments);
 }
@@ -80,7 +70,8 @@ function _saveShopperDetails() {
             url: window.saveShopperData,
             type: 'post',
             data: {
-              shopperDetails: JSON.stringify(details)
+              shopperDetails: JSON.stringify(details),
+              csrf_token: $('#adyen-token').val()
             },
             success: function success() {
               actions.resolve();
@@ -106,16 +97,22 @@ function redirectToReviewPage(data) {
     name: 'data',
     value: JSON.stringify(data)
   });
+  $('<input>').appendTo(redirect).attr({
+    name: 'csrf_token',
+    value: $('#adyen-token').val()
+  });
   redirect.submit();
 }
 function makeExpressPaymentDetailsCall(data) {
   return $.ajax({
     type: 'POST',
     url: window.makeExpressPaymentDetailsCall,
-    data: JSON.stringify({
-      data: data
-    }),
-    contentType: 'application/json; charset=utf-8',
+    data: {
+      csrf_token: $('#adyen-token').val(),
+      data: JSON.stringify({
+        data: data
+      })
+    },
     async: false,
     success: function success(response) {
       helpers.createShowConfirmationForm(window.showConfirmationAction);
@@ -126,74 +123,43 @@ function makeExpressPaymentDetailsCall(data) {
     }
   });
 }
-function updateComponent(_x5, _x6) {
-  return _updateComponent.apply(this, arguments);
+function updateComponent(response, component) {
+  if (response) {
+    var paymentData = response.paymentData,
+      status = response.status,
+      _response$errorMessag = response.errorMessage,
+      errorMessage = _response$errorMessag === void 0 ? '' : _response$errorMessag;
+    if (!paymentData || status !== 'success') {
+      throw new Error(errorMessage);
+    }
+    // Update the Component paymentData value with the new one.
+    component.updatePaymentData(paymentData);
+  } else {
+    var _response$errorMessag2 = response.errorMessage,
+      _errorMessage = _response$errorMessag2 === void 0 ? '' : _response$errorMessag2;
+    throw new Error(_errorMessage);
+  }
+  return false;
 }
-function _updateComponent() {
-  _updateComponent = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee8(response, component) {
-    var _yield$response$json2, paymentData, status, _yield$response$json3, errorMessage, _yield$response$json4, _yield$response$json5, _errorMessage;
-    return _regeneratorRuntime().wrap(function _callee8$(_context8) {
-      while (1) switch (_context8.prev = _context8.next) {
-        case 0:
-          if (!response.ok) {
-            _context8.next = 13;
-            break;
-          }
-          _context8.next = 3;
-          return response.json();
-        case 3:
-          _yield$response$json2 = _context8.sent;
-          paymentData = _yield$response$json2.paymentData;
-          status = _yield$response$json2.status;
-          _yield$response$json3 = _yield$response$json2.errorMessage;
-          errorMessage = _yield$response$json3 === void 0 ? '' : _yield$response$json3;
-          if (!(!paymentData || status !== 'success')) {
-            _context8.next = 10;
-            break;
-          }
-          throw new Error(errorMessage);
-        case 10:
-          // Update the Component paymentData value with the new one.
-          component.updatePaymentData(paymentData);
-          _context8.next = 19;
-          break;
-        case 13:
-          _context8.next = 15;
-          return response.json();
-        case 15:
-          _yield$response$json4 = _context8.sent;
-          _yield$response$json5 = _yield$response$json4.errorMessage;
-          _errorMessage = _yield$response$json5 === void 0 ? '' : _yield$response$json5;
-          throw new Error(_errorMessage);
-        case 19:
-          return _context8.abrupt("return", false);
-        case 20:
-        case "end":
-          return _context8.stop();
-      }
-    }, _callee8);
-  }));
-  return _updateComponent.apply(this, arguments);
-}
-function handleShippingAddressChange(_x7, _x8, _x9) {
+function handleShippingAddressChange(_x5, _x6, _x7) {
   return _handleShippingAddressChange.apply(this, arguments);
 }
 function _handleShippingAddressChange() {
-  _handleShippingAddressChange = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee9(data, actions, component) {
-    var shippingAddress, errors, currentPaymentData, request, response;
-    return _regeneratorRuntime().wrap(function _callee9$(_context9) {
-      while (1) switch (_context9.prev = _context9.next) {
+  _handleShippingAddressChange = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee8(data, actions, component) {
+    var shippingAddress, errors, currentPaymentData, requestBody;
+    return _regeneratorRuntime().wrap(function _callee8$(_context8) {
+      while (1) switch (_context8.prev = _context8.next) {
         case 0:
-          _context9.prev = 0;
+          _context8.prev = 0;
           shippingAddress = data.shippingAddress, errors = data.errors;
           currentPaymentData = component.paymentData;
           if (shippingAddress) {
-            _context9.next = 5;
+            _context8.next = 5;
             break;
           }
           throw new Error(errors === null || errors === void 0 ? void 0 : errors.ADDRESS_ERROR);
         case 5:
-          request = {
+          requestBody = {
             paymentMethodType: PAYPAL,
             currentPaymentData: currentPaymentData,
             address: {
@@ -204,84 +170,88 @@ function _handleShippingAddressChange() {
               postalCode: shippingAddress.postalCode
             }
           };
-          _context9.next = 8;
-          return fetch(window.shippingMethodsUrl, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json; charset=utf-8'
+          $.ajax({
+            type: 'POST',
+            url: window.shippingMethodsUrl,
+            data: {
+              csrf_token: $('#adyen-token').val(),
+              data: JSON.stringify(requestBody)
             },
-            body: JSON.stringify(request)
+            async: false,
+            success: function success(response) {
+              updateComponent(response, component);
+            },
+            error: function error() {
+              actions.reject();
+            }
           });
-        case 8:
-          response = _context9.sent;
-          _context9.next = 11;
-          return updateComponent(response, component);
-        case 11:
-          _context9.next = 16;
+          _context8.next = 12;
           break;
-        case 13:
-          _context9.prev = 13;
-          _context9.t0 = _context9["catch"](0);
+        case 9:
+          _context8.prev = 9;
+          _context8.t0 = _context8["catch"](0);
           actions.reject();
-        case 16:
-          return _context9.abrupt("return", false);
-        case 17:
+        case 12:
+          return _context8.abrupt("return", false);
+        case 13:
         case "end":
-          return _context9.stop();
+          return _context8.stop();
       }
-    }, _callee9, null, [[0, 13]]);
+    }, _callee8, null, [[0, 9]]);
   }));
   return _handleShippingAddressChange.apply(this, arguments);
 }
-function handleShippingOptionChange(_x10, _x11, _x12) {
+function handleShippingOptionChange(_x8, _x9, _x10) {
   return _handleShippingOptionChange.apply(this, arguments);
 }
 function _handleShippingOptionChange() {
-  _handleShippingOptionChange = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee10(data, actions, component) {
-    var selectedShippingOption, errors, currentPaymentData, request, response;
-    return _regeneratorRuntime().wrap(function _callee10$(_context10) {
-      while (1) switch (_context10.prev = _context10.next) {
+  _handleShippingOptionChange = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee9(data, actions, component) {
+    var selectedShippingOption, errors, currentPaymentData, requestBody;
+    return _regeneratorRuntime().wrap(function _callee9$(_context9) {
+      while (1) switch (_context9.prev = _context9.next) {
         case 0:
-          _context10.prev = 0;
+          _context9.prev = 0;
           selectedShippingOption = data.selectedShippingOption, errors = data.errors;
           currentPaymentData = component.paymentData;
           if (selectedShippingOption) {
-            _context10.next = 5;
+            _context9.next = 5;
             break;
           }
           throw new Error(errors === null || errors === void 0 ? void 0 : errors.METHOD_UNAVAILABLE);
         case 5:
-          request = {
+          requestBody = {
             paymentMethodType: PAYPAL,
             currentPaymentData: currentPaymentData,
             methodID: selectedShippingOption === null || selectedShippingOption === void 0 ? void 0 : selectedShippingOption.id
           };
-          _context10.next = 8;
-          return fetch(window.selectShippingMethodUrl, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json; charset=utf-8'
+          $.ajax({
+            type: 'POST',
+            url: window.selectShippingMethodUrl,
+            data: {
+              csrf_token: $('#adyen-token').val(),
+              data: JSON.stringify(requestBody)
             },
-            body: JSON.stringify(request)
+            async: false,
+            success: function success(response) {
+              updateComponent(response, component);
+            },
+            error: function error() {
+              actions.reject();
+            }
           });
-        case 8:
-          response = _context10.sent;
-          _context10.next = 11;
-          return updateComponent(response, component);
-        case 11:
-          _context10.next = 16;
+          _context9.next = 12;
           break;
-        case 13:
-          _context10.prev = 13;
-          _context10.t0 = _context10["catch"](0);
+        case 9:
+          _context9.prev = 9;
+          _context9.t0 = _context9["catch"](0);
           actions.reject();
-        case 16:
-          return _context10.abrupt("return", false);
-        case 17:
+        case 12:
+          return _context9.abrupt("return", false);
+        case 13:
         case "end":
-          return _context10.stop();
+          return _context9.stop();
       }
-    }, _callee10, null, [[0, 13]]);
+    }, _callee9, null, [[0, 9]]);
   }));
   return _handleShippingOptionChange.apply(this, arguments);
 }
@@ -310,7 +280,7 @@ function getPaypalButtonConfig(paypalConfig) {
           }
         }, _callee);
       }));
-      function onSubmit(_x13, _x14) {
+      function onSubmit(_x11, _x12) {
         return _onSubmit.apply(this, arguments);
       }
       return onSubmit;
@@ -345,7 +315,7 @@ function getPaypalButtonConfig(paypalConfig) {
           }
         }, _callee3);
       }));
-      function onShopperDetails(_x15, _x16, _x17) {
+      function onShopperDetails(_x13, _x14, _x15) {
         return _onShopperDetails.apply(this, arguments);
       }
       return onShopperDetails;
@@ -372,7 +342,7 @@ function getPaypalButtonConfig(paypalConfig) {
           }
         }, _callee4);
       }));
-      function onShippingAddressChange(_x18, _x19, _x20) {
+      function onShippingAddressChange(_x16, _x17, _x18) {
         return _onShippingAddressChange.apply(this, arguments);
       }
       return onShippingAddressChange;
@@ -390,39 +360,36 @@ function getPaypalButtonConfig(paypalConfig) {
           }
         }, _callee5);
       }));
-      function onShippingOptionsChange(_x21, _x22, _x23) {
+      function onShippingOptionsChange(_x19, _x20, _x21) {
         return _onShippingOptionsChange.apply(this, arguments);
       }
       return onShippingOptionsChange;
     }()
   });
 }
-function mountPaypalComponent() {
-  return _mountPaypalComponent.apply(this, arguments);
+function init(_x22) {
+  return _init.apply(this, arguments);
 }
-function _mountPaypalComponent() {
-  _mountPaypalComponent = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee11() {
-    var _paymentMethodsRespon, paymentMethod, paymentMethodsResponse, applicationInfo, paypalConfig, checkout, paypalButtonConfig, paypalExpressButton;
-    return _regeneratorRuntime().wrap(function _callee11$(_context11) {
-      while (1) switch (_context11.prev = _context11.next) {
+function _init() {
+  _init = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee10(paymentMethodsResponse) {
+    var _paymentMethodsRespon, _paymentMethodsRespon2, applicationInfo, paypalConfig, checkout, paypalButtonConfig, paypalExpressButton;
+    return _regeneratorRuntime().wrap(function _callee10$(_context10) {
+      while (1) switch (_context10.prev = _context10.next) {
         case 0:
-          _context11.prev = 0;
-          _context11.next = 3;
-          return getPaymentMethods();
-        case 3:
-          paymentMethod = _context11.sent;
-          paymentMethodsResponse = paymentMethod === null || paymentMethod === void 0 ? void 0 : paymentMethod.AdyenPaymentMethods;
-          applicationInfo = paymentMethod === null || paymentMethod === void 0 ? void 0 : paymentMethod.applicationInfo;
-          paypalConfig = paymentMethodsResponse === null || paymentMethodsResponse === void 0 ? void 0 : (_paymentMethodsRespon = paymentMethodsResponse.paymentMethods.find(function (pm) {
+          _context10.prev = 0;
+          applicationInfo = paymentMethodsResponse === null || paymentMethodsResponse === void 0 ? void 0 : paymentMethodsResponse.applicationInfo;
+          paypalConfig = paymentMethodsResponse === null || paymentMethodsResponse === void 0 ? void 0 : (_paymentMethodsRespon = paymentMethodsResponse.AdyenPaymentMethods) === null || _paymentMethodsRespon === void 0 ? void 0 : (_paymentMethodsRespon2 = _paymentMethodsRespon.paymentMethods.find(function (pm) {
             return pm.type === PAYPAL;
-          })) === null || _paymentMethodsRespon === void 0 ? void 0 : _paymentMethodsRespon.configuration;
+          })) === null || _paymentMethodsRespon2 === void 0 ? void 0 : _paymentMethodsRespon2.configuration;
           if (paypalConfig) {
-            _context11.next = 9;
+            _context10.next = 7;
             break;
           }
-          return _context11.abrupt("return");
-        case 9:
-          _context11.next = 11;
+          updateLoadedExpressMethods(PAYPAL);
+          checkIfExpressMethodsAreReady();
+          return _context10.abrupt("return");
+        case 7:
+          _context10.next = 9;
           return AdyenCheckout({
             environment: window.environment,
             clientKey: window.clientKey,
@@ -433,35 +400,32 @@ function _mountPaypalComponent() {
               }
             }
           });
-        case 11:
-          checkout = _context11.sent;
+        case 9:
+          checkout = _context10.sent;
           paypalButtonConfig = getPaypalButtonConfig(paypalConfig);
           paypalExpressButton = checkout.create(PAYPAL, paypalButtonConfig);
           paypalExpressButton.mount('#paypal-container');
           updateLoadedExpressMethods(PAYPAL);
           checkIfExpressMethodsAreReady();
-          _context11.next = 21;
+          _context10.next = 19;
           break;
+        case 17:
+          _context10.prev = 17;
+          _context10.t0 = _context10["catch"](0);
         case 19:
-          _context11.prev = 19;
-          _context11.t0 = _context11["catch"](0);
-        case 21:
         case "end":
-          return _context11.stop();
+          return _context10.stop();
       }
-    }, _callee11, null, [[0, 19]]);
+    }, _callee10, null, [[0, 17]]);
   }));
-  return _mountPaypalComponent.apply(this, arguments);
+  return _init.apply(this, arguments);
 }
-mountPaypalComponent();
 module.exports = {
   callPaymentFromComponent: callPaymentFromComponent,
   saveShopperDetails: saveShopperDetails,
-  redirectToReviewPage: redirectToReviewPage,
   makeExpressPaymentDetailsCall: makeExpressPaymentDetailsCall,
-  updateComponent: updateComponent,
   handleShippingAddressChange: handleShippingAddressChange,
   handleShippingOptionChange: handleShippingOptionChange,
   getPaypalButtonConfig: getPaypalButtonConfig,
-  mountPaypalComponent: mountPaypalComponent
+  init: init
 };

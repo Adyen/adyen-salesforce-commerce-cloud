@@ -20,7 +20,7 @@ function makeExpressPaymentsCall(req, res, next) {
       var _PaymentMgr$getPaymen = PaymentMgr.getPaymentMethod(paymentInstrument.paymentMethod),
         paymentProcessor = _PaymentMgr$getPaymen.paymentProcessor;
       paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
-      paymentInstrument.custom.adyenPaymentData = req.body;
+      paymentInstrument.custom.adyenPaymentData = req.form.data;
     });
     // Creates order number to be utilized for PayPal express
     var paypalExpressOrderNo = OrderMgr.createOrderNo();

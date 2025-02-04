@@ -384,19 +384,7 @@ let adyenHelperObj = {
   },
 
   isOpenInvoiceMethod(paymentMethod) {
-    if (
-      paymentMethod.indexOf('afterpay') > - 1 ||
-      paymentMethod.indexOf('klarna') > -1 ||
-      paymentMethod.indexOf('ratepay') > -1 ||
-      paymentMethod.indexOf('facilypay') > -1 ||
-      paymentMethod.indexOf('riverty') > -1 ||
-      paymentMethod === 'zip' ||
-      paymentMethod === 'affirm' ||
-      paymentMethod === 'clearpay'
-    ) {
-      return true;
-    }
-    return false;
+    return constants.OPEN_INVOICE_METHODS.some(method => paymentMethod.indexOf(method) > -1);
   },
 
   isMolpayMethod(paymentMethod) {

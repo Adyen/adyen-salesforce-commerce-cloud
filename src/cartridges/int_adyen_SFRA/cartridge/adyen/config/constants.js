@@ -22,6 +22,9 @@ module.exports = {
     RECEIVED: 'Received',
     REDIRECTSHOPPER: 'RedirectShopper',
     REFUSED: 'Refused',
+    SUCCESS: 'Success',
+    AUTHORISATION: 'AUTHORISATION',
+    FAILURE: 'Failure',
   },
   ACTIONTYPES: {
     VOUCHER: 'voucher',
@@ -36,6 +39,18 @@ module.exports = {
   },
 
   CAN_SKIP_SUMMARY_PAGE: ['applepay', 'cashapp', 'upi'],
+
+  OPEN_INVOICE_METHODS: [
+    'afterpay',
+    'klarna',
+    'ratepay',
+    'facilypay',
+    'riverty',
+    'atome',
+    'zip',
+    'affirm',
+    'clearpay',
+  ],
 
   SERVICE: {
     PAYMENT: 'AdyenPayment',
@@ -106,6 +121,21 @@ module.exports = {
   POS_ENVIRONMENT_LIVE_US: 'live-us',
   POS_ENVIRONMENT_LIVE_AU: 'live-au',
   POS_ENVIRONMENT_LIVE_APSE: 'live-apse',
+  POS_REFERENCE_ID: 'SalesforceCommerceCloudPOS',
+  POS_PROTOCOL_VERSION: '3.0',
+  POS_MESSAGE_CLASS: {
+    SERVICE: 'Service',
+  },
+  POS_MESSAGE_CATEGORY: {
+    PAYMENT: 'Payment',
+    ABORT: 'Abort',
+  },
+  POS_MESSAGE_TYPE: {
+    REQUEST: 'Request',
+  },
+  POS_ABORT_REASON: {
+    MERCHANT_ABORT: 'MerchantAbort',
+  },
 
   MERCHANT_APPLICATION_NAME: 'adyen-salesforce-commerce-cloud',
   EXTERNAL_PLATFORM_NAME: 'SalesforceCommerceCloud',

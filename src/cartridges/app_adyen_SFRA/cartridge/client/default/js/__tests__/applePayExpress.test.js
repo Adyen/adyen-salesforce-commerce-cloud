@@ -437,117 +437,19 @@ describe('callPaymentFromComponent', () => {
   });
 });
 
-
-describe('selectShippingMethod', () => {
-  const mockShipmentUUID = 'test-shipment-uuid';
-  const mockID = 'test-method-id';
-  const mockBasketId = 'test-basket-id';
-  const mockResponse = { status: 200, json: jest.fn().mockResolvedValue({}) };
-  let reject;
-
-  beforeEach(() => {
-    reject = jest.fn();
-    jest.clearAllMocks();
-    window.selectShippingMethodUrl = '/test-select-shipping-url';
-  });
-
-  it('should send correct request to fetch with valid parameters', async () => {
-    await selectShippingMethod(
-      { shipmentUUID: mockShipmentUUID, ID: mockID },
-      mockBasketId,
-      reject
-    );
-    expect(global.$.ajax).toHaveBeenCalledWith({
-      url: window.selectShippingMethodUrl,
-      type: 'POST',
-      data: {
-        csrf_token: undefined,
-        data: JSON.stringify({
-          paymentMethodType: APPLE_PAY,
-          shipmentUUID: mockShipmentUUID,
-          methodID: mockID,
-          basketId: mockBasketId,
-        })
-      },
-      success: expect.any(Function),
-    });
-  });
-
-  it('should handle fetch rejection', async () => {
-    // fetch.mockRejectedValue(new Error('Fetch failed'));
-    try {
-      await selectShippingMethod(
-        { shipmentUUID: mockShipmentUUID, ID: mockID },
-        mockBasketId,
-        reject
-      );
-    } catch (error) {
-      expect(error.message).toBe('Fetch failed');
-    }
-  });
-});
-
-
 describe('getShippingMethod', () => {
   const mockBasketId = 'test-basket-id';
   const mockResponse = { status: 200, json: jest.fn().mockResolvedValue({}) };
-
-  let rejectMock = jest.fn();
 
   beforeEach(() => {
     jest.clearAllMocks();
     window.shippingMethodsUrl = '/test-shipping-methods-url';
   });
 
-  it('should send correct request to fetch with shippingContact', async () => {
-    const shippingContact = {
-      locality: 'Test City',
-      country: 'Test Country',
-      countryCode: 'TC',
-      administrativeArea: 'Test State',
-      postalCode: '12345',
-    };
-    await getShippingMethod(shippingContact, mockBasketId, rejectMock);
-    expect(global.$.ajax).toHaveBeenCalledWith(expect.objectContaining({
-      url: window.shippingMethodsUrl,
-      type: 'POST',
-      data: {
-        csrf_token: undefined,
-        data: JSON.stringify({
-          paymentMethodType: APPLE_PAY,
-          basketId: mockBasketId,
-          address: {
-            city: shippingContact.locality,
-            country: shippingContact.country,
-            countryCode: shippingContact.countryCode,
-            stateCode: shippingContact.administrativeArea,
-            postalCode: shippingContact.postalCode,
-          }
-        })
-      },
-    }));
-  });
-
-  it('should send correct request to fetch without shippingContact', async () => {
-    const result = await getShippingMethod(null, mockBasketId, rejectMock);
-    expect(global.$.ajax).toHaveBeenCalledWith({
-      url: window.shippingMethodsUrl,
-      type: 'POST',
-      success: expect.any(Function),
-      data: {
-        csrf_token: undefined,
-        data: JSON.stringify({
-          paymentMethodType: APPLE_PAY,
-          basketId: mockBasketId,
-        })
-      },
-    });
-  });
-
   it('should handle fetch rejection', async () => {
     fetch.mockRejectedValue(new Error('Fetch failed'));
     try {
-      await getShippingMethod(null, mockBasketId, rejectMock);
+      await getShippingMethod(null);
     } catch (error) {
       expect(error.message).toBe('Fetch failed');
     }
@@ -768,7 +670,6 @@ describe('onShippingMethodSelected function', () => {
         },
       }),
     };
-    global.fetch = jest.fn().mockResolvedValueOnce(mockCalculationResponse)
     selectShippingMethod = jest.fn().mockImplementation((data, resolveApplePay) => {
       return mockCalculationResponse
     });

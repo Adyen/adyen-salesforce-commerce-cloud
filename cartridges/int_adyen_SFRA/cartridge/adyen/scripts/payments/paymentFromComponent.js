@@ -129,12 +129,14 @@ function paymentFromComponent(req, res, next) {
     collections.forEach(currentBasket.getPaymentInstruments(), function (item) {
       currentBasket.removePaymentInstrument(item);
     });
-    paymentInstrument = currentBasket.createPaymentInstrument(constants.METHOD_ADYEN_COMPONENT, currentBasket.totalGrossPrice);
+    var paymentInstrumentType = constants.METHOD_ADYEN_COMPONENT;
+    paymentInstrument = currentBasket.createPaymentInstrument(paymentInstrumentType, currentBasket.totalGrossPrice);
     var _PaymentMgr$getPaymen = PaymentMgr.getPaymentMethod(paymentInstrument.paymentMethod),
       paymentProcessor = _PaymentMgr$getPaymen.paymentProcessor;
     paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
+    paymentInstrument.custom.adyenMainPaymentInstrument = paymentInstrumentType;
     paymentInstrument.custom.adyenPaymentData = req.form.data;
-    if (reqDataObj.partialPaymentsOrder) {
+    if (session.privacy.partialPaymentData) {
       paymentInstrument.custom.adyenPartialPaymentsOrder = session.privacy.partialPaymentData;
     }
     paymentInstrument.custom.adyenPaymentMethod = AdyenHelper.getAdyenComponentType(req.form.paymentMethod);
@@ -148,7 +150,6 @@ function paymentFromComponent(req, res, next) {
   if ((_currentBasket$custom2 = currentBasket.custom) !== null && _currentBasket$custom2 !== void 0 && _currentBasket$custom2.adyenGiftCards) {
     var giftCardsOrderNo = currentBasket.custom.adyenGiftCardsOrderNo;
     order = OrderMgr.createOrder(currentBasket, giftCardsOrderNo);
-    handleGiftCardPayment(currentBasket, order);
   } else {
     order = COHelpers.createOrder(currentBasket);
   }
@@ -164,6 +165,7 @@ function paymentFromComponent(req, res, next) {
   if (result.resultCode === constants.RESULTCODES.REFUSED) {
     handleRefusedResultCode(result, reqDataObj, order);
   }
+  handleGiftCardPayment(currentBasket, order);
 
   // Check if summary page can be skipped in case payment is already authorized
   result.skipSummaryPage = canSkipSummaryPage(reqDataObj);

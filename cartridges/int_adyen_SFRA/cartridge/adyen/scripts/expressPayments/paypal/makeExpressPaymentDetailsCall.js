@@ -23,7 +23,7 @@ function setPaymentInstrumentFields(paymentInstrument, response) {
  */
 function makeExpressPaymentDetailsCall(req, res, next) {
   try {
-    var request = JSON.parse(req.body);
+    var request = JSON.parse(req.form.data);
     var currentBasket = BasketMgr.getCurrentBasket();
     var response = adyenCheckout.doPaymentsDetailsCall(request.data);
     paypalHelper.setBillingAndShippingAddress(currentBasket);

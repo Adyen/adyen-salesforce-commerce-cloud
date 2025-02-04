@@ -71,10 +71,10 @@ jest.mock(
 );
 
 jest.mock(
-	'*/cartridge/models/shipping/shippingMethod',
-	() => require('../cartridge/models/shipping/shippingMethod'),
-	{ virtual: true },
-  );
+  '*/cartridge/models/shipping/shippingMethod',
+  () => require('../cartridge/models/shipping/shippingMethod'),
+  { virtual: true },
+);
 
 jest.mock(
   '*/cartridge/adyen/scripts/partialPayments/partialPaymentsOrder',
@@ -290,6 +290,13 @@ jest.mock(
   { virtual: true },
 );
 
+jest.mock(
+  '*/cartridge/adyen/utils/validatePaymentData',
+  () =>
+    require('../src/cartridges/int_adyen_SFRA/cartridge/adyen/utils/validatePaymentData'),
+  { virtual: true },
+);
+
 // controllers/middlewares/checkout_services subclasses
 jest.mock(
   '*/cartridge/controllers/middlewares/checkout_services/placeOrder',
@@ -452,9 +459,9 @@ jest.mock(
 );
 
 jest.mock(
-	'*/cartridge/adyen/scripts/payments/getConnectedTerminals',
+	'*/cartridge/adyen/scripts/pos/getConnectedTerminals',
 	() =>
-	  require('../src/cartridges/int_adyen_SFRA/cartridge/adyen/scripts/payments/getConnectedTerminals'),
+	  require('../src/cartridges/int_adyen_SFRA/cartridge/adyen/scripts/pos/getConnectedTerminals'),
 	{ virtual: true },
   );
 

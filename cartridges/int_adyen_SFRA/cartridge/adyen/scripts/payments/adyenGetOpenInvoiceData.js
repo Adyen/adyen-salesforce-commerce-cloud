@@ -17,7 +17,7 @@
  * Copyright (c) 2021 Adyen B.V.
  * This file is open source and available under the MIT license.
  * See the LICENSE file for more info.
- * * 
+ * *
  */
 
 // script include
@@ -45,7 +45,7 @@ function getLineItems(_ref) {
     lineItemObject.description = description;
     lineItemObject.id = id;
     lineItemObject.quantity = quantity;
-    lineItemObject.taxPercentage = addTaxPercentage ? (new Number(vatPercentage) * 10000).toFixed() : 0;
+    lineItemObject.taxPercentage = addTaxPercentage ? (Number(vatPercentage) * 10000).toFixed() : 0;
     return lineItemObject;
   });
 }

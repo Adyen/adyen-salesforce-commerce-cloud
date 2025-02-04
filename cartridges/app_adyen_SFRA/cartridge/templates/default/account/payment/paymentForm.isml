@@ -17,6 +17,7 @@
                 environment: '${pdict.adyen.environment}'
             };
             window.redirectUrl = "${URLUtils.url('PaymentInstruments-List')}";
+            window.paymentsDetailsURL = "${URLUtils.https('Adyen-PaymentsDetails')}";
         </script>
         <form
             action="${URLUtils.url('PaymentInstruments-SavePayment', 'UUID', pdict.UUID)}"
@@ -64,4 +65,5 @@
     </isif>
 </div>
 <isinclude template="adyenActionModal" />
+<input type="hidden" id="adyen-token" name="${pdict.csrf.tokenName}" value="${pdict.csrf.token}"/>
 <iscomment> ### Custom Adyen cartridge end ### </iscomment>

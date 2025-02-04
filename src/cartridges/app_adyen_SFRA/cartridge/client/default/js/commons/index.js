@@ -33,6 +33,9 @@ module.exports.getPaymentMethods = async function getPaymentMethods() {
   return $.ajax({
     url: window.getPaymentMethodsURL,
     type: 'post',
+    data: {
+      csrf_token: $('#adyen-token').val(),
+    },
   });
 };
 

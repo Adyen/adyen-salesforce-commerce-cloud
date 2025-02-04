@@ -459,8 +459,7 @@ input:checked + .slider:before {
 }
 
 .hidden {
-    visibility: hidden;
-    height: 0;
+    display: none;
 }
 
 .adyen-checkout__amazonpay__button {

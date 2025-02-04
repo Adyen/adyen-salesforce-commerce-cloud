@@ -20,19 +20,27 @@ function responseContainsErrors(response) {
 }
 function makePartialPayment(req, res, next) {
   try {
-    var _response$order, _response$order2, _response$order3, _currentBasket$custom, _currentBasket$custom2;
-    var request = JSON.parse(req.body);
+    var _response$order, _response$order2, _response$order3, _currentBasket$custom, _currentBasket$custom2, _response$order4;
+    var request = JSON.parse(req.form.data);
     var currentBasket = BasketMgr.getCurrentBasket();
-    var paymentMethod = request.paymentMethod,
-      partialPaymentsOrder = request.partialPaymentsOrder,
-      amount = request.amount,
+    var encryptedCardNumber = request.encryptedCardNumber,
+      encryptedSecurityCode = request.encryptedSecurityCode,
+      brand = request.brand,
       giftcardBrand = request.giftcardBrand;
+    var paymentMethod = {
+      encryptedCardNumber: encryptedCardNumber,
+      encryptedSecurityCode: encryptedSecurityCode,
+      brand: brand,
+      type: 'giftcard'
+    };
+    var _JSON$parse = JSON.parse(session.privacy.partialPaymentData),
+      order = _JSON$parse.order;
     var partialPaymentRequest = {
       merchantAccount: AdyenConfigs.getAdyenMerchantAccount(),
-      amount: amount,
+      amount: JSON.parse(session.privacy.giftCardBalance),
       reference: currentBasket.custom.adyenGiftCardsOrderNo,
       paymentMethod: paymentMethod,
-      order: partialPaymentsOrder
+      order: order
     };
     var response = adyenCheckout.doPaymentsCall(null, null, partialPaymentRequest); // no order created yet and no PI needed (for giftcards it will be created on Order level)
 
@@ -71,17 +79,13 @@ function makePartialPayment(req, res, next) {
       expiresAt: response.order.expiresAt,
       giftCard: _objectSpread(_objectSpread({}, response.paymentMethod), {}, {
         amount: response.amount,
-        name: giftcardBrand,
-        pspReference: response.pspReference
+        name: giftcardBrand
       }),
       orderAmount: {
         currency: currentBasket.currencyCode,
         value: AdyenHelper.getCurrencyValueForApi(currentBasket.getTotalGrossPrice()).value
       },
-      partialPaymentsOrder: {
-        orderData: response.order.orderData,
-        pspReference: response.order.pspReference
-      },
+      orderCreated: !!(response !== null && response !== void 0 && (_response$order4 = response.order) !== null && _response$order4 !== void 0 && _response$order4.orderData),
       remainingAmount: response.order.remainingAmount,
       remainingAmountFormatted: remainingAmountFormatted
     };
