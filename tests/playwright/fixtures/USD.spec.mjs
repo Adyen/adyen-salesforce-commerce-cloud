@@ -307,5 +307,20 @@ for (const environment of environments) {
       }
       await expect(page.locator('.tax-total')).toContainText('$5.98');
     });
+
+    test('Google Pay Express @quick', async ({page}) => {
+      checkoutPage = new environment.CheckoutPage(page);
+      await checkoutPage.addProductToCart();
+      await checkoutPage.navigateToCart(regionsEnum.US);
+      redirectShopper = new RedirectShopper(page);
+      await redirectShopper.doGooglePayExpressPayment();
+    });
+
+    test('Google Pay Express PDP @quick', async ({page}) => {
+      checkoutPage = new environment.CheckoutPage(page);
+      await checkoutPage.addProductToCart(regionsEnum.US);
+      redirectShopper = new RedirectShopper(page);
+      await redirectShopper.doGooglePayExpressPayment();
+    });
   });
 }
