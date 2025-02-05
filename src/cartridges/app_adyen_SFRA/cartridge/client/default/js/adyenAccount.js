@@ -1,5 +1,6 @@
 const { onFieldValid, onBrand, getPaymentMethods } = require('./commons');
 const store = require('../../../store');
+const { httpClient } = require('./commons/httpClient');
 
 let checkout;
 let card;
@@ -46,48 +47,58 @@ function handleAction(action) {
   $('#action-modal').modal({ backdrop: 'static', keyboard: false });
 }
 
-store.checkoutConfiguration.onAdditionalDetails = (state) => {
+function handleError() {
+  $('#action-modal')?.modal('hide');
+  document.getElementById('cardError').style.display = 'block';
+}
+
+store.checkoutConfiguration.onAdditionalDetails = async (state) => {
   const requestData = JSON.stringify({ data: state.data });
-  $.ajax({
-    type: 'POST',
+  const data = await httpClient({
+    method: 'POST',
     url: window.paymentsDetailsURL,
     data: {
-      csrf_token: $('#adyen-token').val(),
       data: requestData,
     },
-    async: false,
-    success(data) {
-      if (data.isSuccessful) {
-        window.location.href = window.redirectUrl;
-      } else if (!data.isFinal && typeof data.action === 'object') {
-        handleAction(data.action);
-      } else {
-        $('#action-modal').modal('hide');
-        document.getElementById('cardError').style.display = 'block';
-      }
-    },
   });
+  if (data.isSuccessful) {
+    window.location.href = window.redirectUrl;
+  } else if (!data.isFinal && typeof data.action === 'object') {
+    handleAction(data.action);
+  } else {
+    handleError();
+  }
 };
-
-let formErrorsExist = false;
 
 function submitAddCard() {
   const form = $(document.getElementById('payment-form'));
-  $.ajax({
-    type: 'POST',
+  const formDataObject = form.serializeArray().reduce((obj, item) => {
+    obj[item.name] = item.value;
+    return obj;
+  }, {});
+  return httpClient({
+    method: 'POST',
     url: form.attr('action'),
-    data: form.serialize(),
-    async: false,
-    success(data) {
-      if (data.redirectAction) {
-        handleAction(data.redirectAction);
-      } else if (data.redirectUrl) {
-        window.location.href = data.redirectUrl;
-      } else if (data.error) {
-        formErrorsExist = true;
-      }
-    },
+    data: formDataObject,
   });
+}
+
+async function handleAddNewPayment() {
+  if (store.isValid) {
+    document.querySelector('#adyenStateData').value = JSON.stringify(
+      store.componentState.data,
+    );
+    const data = await submitAddCard();
+    if (data.redirectAction) {
+      handleAction(data.redirectAction);
+    } else if (data.redirectUrl) {
+      window.location.href = data.redirectUrl;
+    } else if (data.error) {
+      handleError();
+    }
+  } else {
+    card?.showValidation();
+  }
 }
 
 (async () => {
@@ -95,22 +106,13 @@ function submitAddCard() {
   await initializeCardComponent();
 })();
 
-$('button[value="add-new-payment"]').on('click', (event) => {
-  if (store.isValid) {
-    document.querySelector('#adyenStateData').value = JSON.stringify(
-      store.componentState.data,
-    );
-    submitAddCard();
-    if (formErrorsExist) {
-      return;
-    }
-    event.preventDefault();
-  } else {
-    card?.showValidation();
-  }
+$('button[value="add-new-payment"]').on('click', async (event) => {
+  event.preventDefault();
+  await handleAddNewPayment();
 });
 
 module.exports = {
   initializeCardComponent,
-  submitAddCard,
+  handleAction,
+  handleAddNewPayment,
 };
