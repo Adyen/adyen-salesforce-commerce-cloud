@@ -2,6 +2,7 @@ const applePayExpressModule = require('../applePayExpress');
 const googlePayExpressModule = require('../googlePayExpress');
 const { APPLE_PAY, GOOGLE_PAY } = require('../constants');
 const { getPaymentMethods } = require('../commons');
+const { httpClient } = require('../commons/httpClient');
 
 let paymentMethodsResponse;
 
@@ -88,9 +89,9 @@ async function init() {
   $(document).ready(async () => {
     $.spinner().start();
     const dataUrl = $('.quantity-select').find('option:selected').data('url');
-    const productVariation = await $.ajax({
+    const productVariation = await httpClient({
       url: dataUrl,
-      method: 'get',
+      method: 'GET',
     });
     if (productVariation?.product) {
       $('body').trigger('product:renderExpressPaymentButtons', {
