@@ -22,10 +22,7 @@ describe('Helpers', () => {
       fullResponse: { action: 'mocked_action' },
       paymentMethod: 'mocked_paymentMethod',
     };
-    $.ajax = jest.fn(({ success }) => {
-      success(data);
-      return { fail: jest.fn() };
-    });
+    $.ajax = jest.fn().mockReturnValue(data);
     await paymentFromComponent(data, component);
     expect(component.handleAction).toBeCalledWith(data.fullResponse.action);
   });
@@ -37,10 +34,7 @@ describe('Helpers', () => {
       `;
     window.HTMLFormElement.prototype.submit = jest.fn();
     const data = { data: {}, paymentMethod: 'mocked_paymentMethod' };
-    $.ajax = jest.fn(({ success }) => {
-      success({});
-      return { fail: jest.fn() };
-    });
+    $.ajax = jest.fn().mockReturnValue({});
     await paymentFromComponent(data, component);
     expect(data).toMatchSnapshot();
   });

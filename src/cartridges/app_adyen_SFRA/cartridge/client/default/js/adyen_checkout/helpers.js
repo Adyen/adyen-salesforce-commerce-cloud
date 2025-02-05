@@ -1,5 +1,6 @@
 const store = require('../../../../store');
 const constants = require('../constants');
+const { httpClient } = require('../commons/httpClient');
 
 function assignPaymentMethodValue() {
   const adyenPaymentMethod = document.querySelector('#adyenPaymentMethodName');
@@ -21,34 +22,35 @@ function setOrderFormData(response) {
   }
 }
 
+function handleComponentChanges(response, component) {
+  if (response.fullResponse?.action) {
+    component.handleAction(response.fullResponse.action);
+  } else if (response.skipSummaryPage) {
+    document.querySelector('#result').value = JSON.stringify(response);
+    document.querySelector('#showConfirmationForm').submit();
+  } else if (response.paymentError || response.error) {
+    component.handleError();
+  }
+}
+
 /**
  * Makes an ajax call to the controller function PaymentFromComponent.
  * Used by certain payment methods like paypal
  */
-function paymentFromComponent(data, component = {}) {
+async function paymentFromComponent(data, component = {}) {
   const requestData = store.partialPaymentsOrderObj
     ? { ...data, partialPaymentsOrder: store.partialPaymentsOrderObj }
     : data;
-  $.ajax({
+  const response = await httpClient({
     url: window.paymentFromComponentURL,
-    type: 'post',
+    method: 'POST',
     data: {
-      csrf_token: $('#adyen-token').val(),
       data: JSON.stringify(requestData),
       paymentMethod: document.querySelector('#adyenPaymentMethodName').value,
     },
-    success(response) {
-      setOrderFormData(response);
-      if (response.fullResponse?.action) {
-        component.handleAction(response.fullResponse.action);
-      } else if (response.skipSummaryPage) {
-        document.querySelector('#result').value = JSON.stringify(response);
-        document.querySelector('#showConfirmationForm').submit();
-      } else if (response.paymentError || response.error) {
-        component.handleError();
-      }
-    },
   });
+  setOrderFormData(response);
+  handleComponentChanges(response, component);
 }
 
 function resetPaymentMethod() {
