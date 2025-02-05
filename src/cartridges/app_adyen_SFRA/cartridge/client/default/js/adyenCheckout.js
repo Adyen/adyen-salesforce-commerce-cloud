@@ -12,22 +12,25 @@ const {
   paymentFromComponent,
 } = require('./adyen_checkout/helpers');
 const { validateComponents } = require('./adyen_checkout/validateComponents');
+const { httpClient } = require('./commons/httpClient');
 
-$('#dwfrm_billing').submit(function apiRequest(e) {
+$('#dwfrm_billing').submit(async function apiRequest(e) {
   e.preventDefault();
 
   const form = $(this);
+  const formDataObject = form.serializeArray().reduce((obj, item) => {
+    obj[item.name] = item.value;
+    return obj;
+  }, {});
   const url = form.attr('action');
 
-  $.ajax({
-    type: 'POST',
+  const data = await httpClient({
+    method: 'POST',
     url,
-    data: form.serialize(),
-    async: false,
-    success(data) {
-      store.formErrorsExist = 'fieldErrors' in data;
-    },
+    data: formDataObject,
   });
+
+  store.formErrorsExist = 'fieldErrors' in data;
 });
 
 setCheckoutConfiguration();
