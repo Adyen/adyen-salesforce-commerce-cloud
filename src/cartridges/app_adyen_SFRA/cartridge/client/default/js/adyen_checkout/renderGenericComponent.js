@@ -74,7 +74,8 @@ function renderGiftCardLogo(imagePath) {
     headingImg.src = `${imagePath}genericgiftcard.png`;
   }
 }
-function applyGiftCards() {
+
+async function applyGiftCards() {
   const now = new Date().toISOString();
   const { amount } = store.checkoutConfiguration;
   const { orderAmount } = store.partialPaymentsOrderObj;
@@ -85,9 +86,9 @@ function applyGiftCards() {
   const cartModified = isCartModified(amount, orderAmount);
 
   if (isPartialPaymentExpired) {
-    removeGiftCards();
+    await removeGiftCards();
   } else if (cartModified) {
-    removeGiftCards();
+    await removeGiftCards();
     showGiftCardWarningMessage();
   } else {
     clearGiftCardsContainer();
@@ -315,7 +316,7 @@ async function renderGenericComponent() {
   await initializeCheckout();
 
   if (store.addedGiftCards?.length) {
-    applyGiftCards();
+    await applyGiftCards();
   }
 
   attachGiftCardAddButtonListener();
