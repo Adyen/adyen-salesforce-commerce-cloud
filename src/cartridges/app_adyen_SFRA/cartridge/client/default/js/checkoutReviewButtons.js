@@ -8,10 +8,14 @@ const { httpClient } = require('./commons/httpClient');
  */
 async function makeExpressPaymentDetailsCall(data) {
   try {
+    const csrfToken = document.querySelector(
+      '#showConfirmationForm input[id="adyen-token"]',
+    ).value;
     const response = await httpClient({
       method: 'POST',
       url: window.makeExpressPaymentDetailsCall,
       data: {
+        csrf_token: csrfToken,
         data: JSON.stringify({ data }),
       },
     });

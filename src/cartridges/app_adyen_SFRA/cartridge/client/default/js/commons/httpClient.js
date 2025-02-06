@@ -9,10 +9,12 @@ function httpClient(config) {
 
   const settings = $.extend({}, defaults, config);
 
-  settings.data = {
-    ...settings.data,
-    csrf_token: $('#adyen-token').val(),
-  };
+  if (!config?.data?.csrf_token) {
+    settings.data = {
+      ...settings.data,
+      csrf_token: $('#adyen-token').val(),
+    };
+  }
 
   return $.ajax(settings);
 }

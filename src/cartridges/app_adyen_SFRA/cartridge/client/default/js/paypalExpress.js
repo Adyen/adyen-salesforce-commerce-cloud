@@ -25,7 +25,6 @@ async function callPaymentFromComponent(data, component) {
   } catch (e) {
     component.handleError();
   }
-  $.spinner().stop();
 }
 
 async function saveShopperDetails(details, actions) {
