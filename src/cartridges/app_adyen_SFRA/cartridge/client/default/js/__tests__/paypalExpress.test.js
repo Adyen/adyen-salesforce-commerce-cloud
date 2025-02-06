@@ -22,12 +22,12 @@ describe('paypal express', () => {
   });
   it('should make successful payments call for express', async () => {
     const start = jest.fn();
+    const stop = jest.fn();
     global.$.spinner = jest.fn(() => {return {
-      start: start
+      start: start,
+      stop: stop,
     }})
-    global.$.ajax = jest.fn().mockImplementation(({ success }) => {
-		success({ action : {}})
-    });
+    global.$.ajax = jest.fn().mockReturnValue({ action : {}})
     const component = {
       handleError: jest.fn(),
       handleAction: jest.fn()
@@ -39,12 +39,12 @@ describe('paypal express', () => {
   })
   it('should handle failed payments call for express when response is not ok', async () => {
     const start = jest.fn();
+    const stop = jest.fn();
     global.$.spinner = jest.fn(() => {return {
-      start: start
+      start: start,
+      stop: stop
     }})
-    global.$.ajax = jest.fn().mockImplementation(({ success }) => {
-		success({})
-    });
+    global.$.ajax = jest.fn().mockReturnValue({});
     const component = {
       handleError: jest.fn(),
       handleAction: jest.fn()
@@ -56,8 +56,10 @@ describe('paypal express', () => {
   })
   it('should handle failed payments call for express when response is ok but there is no "action" in response', async () => {
     const start = jest.fn();
+    const stop = jest.fn();
     global.$.spinner = jest.fn(() => {return {
-      start: start
+      start: start,
+      stop: stop
     }})
     global.fetch = jest.fn().mockRejectedValueOnce({})
     const component = {
@@ -82,7 +84,7 @@ describe('paypal express', () => {
       global.$.spinner = jest.fn(() => {return {
         stop: stop
       }})
-      $.ajax = jest.fn().mockImplementation(({success}) => Promise.resolve(success()));
+      $.ajax = jest.fn().mockReturnValue(true);
       const actions = {
         resolve: jest.fn()
       }
@@ -120,7 +122,7 @@ describe('paypal express', () => {
       }})
       helpers.setOrderFormData = setOrderFormData;
       helpers.createShowConfirmationForm = createShowConfirmationForm;
-      $.ajax = jest.fn().mockImplementation(({success}) => Promise.resolve(success()));
+      $.ajax = jest.fn().mockReturnValue();
 
       await makeExpressPaymentDetailsCall({});
       expect(createShowConfirmationForm).toHaveBeenCalledTimes(1);
@@ -174,7 +176,9 @@ describe('paypal express', () => {
       }
       const request = {
         url: 'test_url',
-        type: 'POST',
+        method: 'POST',
+        timeout: 10000,
+        contentType: 'application/x-www-form-urlencoded',
         data: {
           csrf_token: undefined,
           data: JSON.stringify({
@@ -189,7 +193,6 @@ describe('paypal express', () => {
             }
           }),
         },
-        async: false,
       }
 
       await handleShippingAddressChange(data, actions, component);
@@ -359,10 +362,9 @@ describe('paypal express', () => {
 
       const request = {
         url: 'test_url',
-        async: false,
-        type: 'POST',
-        success: expect.any(Function),
-        error: expect.any(Function),
+        method: 'POST',
+        timeout: 10000,
+        contentType: "application/x-www-form-urlencoded",
         data: {
           csrf_token: undefined,
           data: JSON.stringify({
