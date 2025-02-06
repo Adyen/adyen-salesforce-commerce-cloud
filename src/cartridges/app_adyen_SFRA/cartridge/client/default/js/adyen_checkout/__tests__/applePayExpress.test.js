@@ -28,11 +28,6 @@ afterEach(() => {
 
 describe('Apple Pay Express', () => {
   it('Should handle Apple Pay errors', () => {
-    document.body.innerHTML = `
-        <div id="result">Apple Pay Result</div>
-        <form id="showConfirmationForm"> Confirmation form</form>
-      `;
-    window.HTMLFormElement.prototype.submit = () => {};
     const rejectApplePay = jest.fn();
     handleError(rejectApplePay);
     expect(rejectApplePay).toBeCalledTimes(1);
@@ -73,10 +68,7 @@ describe('Apple Pay Express', () => {
         details: 'mocked_details',
       },
     });
-    $.ajax = jest.fn(({ success }) => {
-      success(data);
-      return { fail: jest.fn() };
-    });
+    $.ajax = jest.fn().mockReturnValue(data);
     const resolveApplePay = jest.fn();
     const rejectApplePay = jest.fn();
     await callPaymentFromComponent(data, resolveApplePay, rejectApplePay);

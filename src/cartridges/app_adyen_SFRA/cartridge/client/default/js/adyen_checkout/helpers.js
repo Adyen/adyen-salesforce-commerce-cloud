@@ -14,10 +14,10 @@ function assignPaymentMethodValue() {
 }
 
 function setOrderFormData(response) {
-  if (response.orderNo) {
+  if (response?.orderNo && document.querySelector('#merchantReference')) {
     document.querySelector('#merchantReference').value = response.orderNo;
   }
-  if (response.orderToken) {
+  if (response?.orderToken && document.querySelector('#orderToken')) {
     document.querySelector('#orderToken').value = response.orderToken;
   }
 }
