@@ -688,5 +688,16 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   renderStores();
+  if (terminalDropdown) {
+    // eslint-disable-next-line
+    const choices = new Choices(terminalDropdown, {
+      removeItemButton: true,
+      searchEnabled: true,
+    });
+
+    terminalDropdown.addEventListener('change', () => {
+      enableformButtons();
+    });
+  }
   createExpressPaymentsComponent(expressPaymentMethods, draggableList);
 });

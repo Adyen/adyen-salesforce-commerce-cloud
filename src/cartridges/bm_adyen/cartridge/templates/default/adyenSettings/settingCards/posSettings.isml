@@ -1,5 +1,6 @@
 <iscontent type="text/html" charset="UTF-8" compact="true">
-<isset name="AdyenConfigs" value="${require('*/cartridge/adyen/utils/adyenConfigs')}" scope="page"/>
+<link href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
 <div id="posSettings" class="card bg-white mt-4">
    <div class="card-body">
       <h5 class="card-title mb-0">
@@ -16,7 +17,7 @@
                <input type="hidden" class="form-control" name="Adyen_StoreId" id="storeID" aria-describedby="storeIDHelp" value="${AdyenConfigs.getAdyenStoreId()  || ''}"/>
                <input type="hidden" class="form-control" name="Adyen_SelectedStoreID" id="selectedStoreID" aria-describedby="selectedStoreIDHelp" value="${AdyenConfigs.getAdyenActiveStoreId()  || ''}"/>
 	       <select class="form-control" id="terminalDropdown" name="Adyen_SelectedStoreID" multiple>
-      		      <option value="">Select Store</option>
+      		      <option value="">Connect stores to your webshop</option>
     	       </select>
             </div>
          </div>
