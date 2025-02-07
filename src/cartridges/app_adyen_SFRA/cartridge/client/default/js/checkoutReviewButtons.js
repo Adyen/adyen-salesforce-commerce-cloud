@@ -20,6 +20,7 @@ async function makeExpressPaymentDetailsCall(data) {
       },
     });
     helpers.setOrderFormData(response);
+    document.querySelector('#showConfirmationForm').submit();
   } catch (error) {
     $.spinner().stop();
   }
@@ -31,13 +32,12 @@ async function makeExpressPaymentDetailsCall(data) {
  */
 function initCheckoutReviewButtons() {
   $(document).ready(() => {
-    $("button[name='place-order']").click(() => {
+    $("button[name='place-order']").click(async () => {
       $.spinner().start();
       const stateData = document.querySelector(
         '#additionalDetailsHidden',
       ).value;
-      makeExpressPaymentDetailsCall(JSON.parse(stateData));
-      document.querySelector('#showConfirmationForm').submit();
+      await makeExpressPaymentDetailsCall(JSON.parse(stateData));
     });
   });
 }
