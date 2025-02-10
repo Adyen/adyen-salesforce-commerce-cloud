@@ -79,7 +79,7 @@ beforeEach(() => {
 });
 describe('Render Generic Component', () => {
   it('should render', async () => {
-    fetchGiftCards.mockReturnValue(availableGiftCards);
+    fetchGiftCards.mockReturnValue([]);
     document.body.innerHTML = giftCardHtml;
     store.componentsObj = { foo: 'bar', bar: 'baz' };
     store.checkoutConfiguration = {

@@ -11,6 +11,7 @@ const {
   showGiftCardCancelButton,
   attachGiftCardCancelListener,
 } = require('./renderGiftcardComponent');
+const { httpClient } = require('../commons/httpClient');
 
 function getCardConfig() {
   return {
@@ -178,97 +179,83 @@ function getGiftCardConfig() {
       store.updateSelectedPayment(constants.GIFTCARD, 'isValid', state.isValid);
       store.updateSelectedPayment(constants.GIFTCARD, 'stateData', state.data);
     },
-    onBalanceCheck: (resolve, reject, requestData) => {
+    onBalanceCheck: async (resolve, reject, requestData) => {
       const payload = {
         csrf_token: $('#adyen-token').val(),
         data: JSON.stringify(requestData),
       };
-      $.ajax({
-        type: 'POST',
+      const data = await httpClient({
+        method: 'POST',
         url: window.checkBalanceUrl,
         data: payload,
-        async: false,
-        success: (data) => {
-          giftcardBalance = data.balance;
-          document.querySelector('button[value="submit-payment"]').disabled =
-            false;
-          if (data.resultCode === constants.SUCCESS) {
-            const {
-              giftCardsInfoMessageContainer,
-              giftCardSelect,
-              cancelMainPaymentGiftCard,
-              giftCardAddButton,
-              giftCardSelectWrapper,
-            } = getGiftCardElements();
-            if (giftCardSelectWrapper) {
-              giftCardSelectWrapper.classList.add('invisible');
-            }
-            const initialPartialObject = { ...store.partialPaymentsOrderObj };
-
-            cancelMainPaymentGiftCard.classList.remove('invisible');
-            cancelMainPaymentGiftCard.addEventListener('click', () => {
-              store.componentsObj.giftcard.node.unmount('component_giftcard');
-              cancelMainPaymentGiftCard.classList.add('invisible');
-              giftCardAddButton.style.display = 'block';
-              giftCardSelect.value = 'null';
-              store.partialPaymentsOrderObj.remainingAmountFormatted =
-                initialPartialObject.remainingAmountFormatted;
-              store.partialPaymentsOrderObj.totalDiscountedAmount =
-                initialPartialObject.totalDiscountedAmount;
-            });
-
-            document.querySelector('button[value="submit-payment"]').disabled =
-              true;
-            giftCardsInfoMessageContainer.innerHTML = '';
-            giftCardsInfoMessageContainer.classList.remove(
-              'gift-cards-info-message-container',
-            );
-            store.partialPaymentsOrderObj.remainingAmountFormatted =
-              data.remainingAmountFormatted;
-            store.partialPaymentsOrderObj.totalDiscountedAmount =
-              data.totalAmountFormatted;
-            resolve(data);
-          } else if (
-            data.resultCode === constants.NOTENOUGHBALANCE &&
-            data.balance.value > 0
-          ) {
-            resolve(data);
-          } else {
-            reject();
-          }
-        },
-        fail: () => {
-          reject();
-        },
       });
+      giftcardBalance = data.balance;
+      document.querySelector('button[value="submit-payment"]').disabled = false;
+      if (data.resultCode === constants.SUCCESS) {
+        const {
+          giftCardsInfoMessageContainer,
+          giftCardSelect,
+          cancelMainPaymentGiftCard,
+          giftCardAddButton,
+          giftCardSelectWrapper,
+        } = getGiftCardElements();
+        if (giftCardSelectWrapper) {
+          giftCardSelectWrapper.classList.add('invisible');
+        }
+        const initialPartialObject = { ...store.partialPaymentsOrderObj };
+
+        cancelMainPaymentGiftCard.classList.remove('invisible');
+        cancelMainPaymentGiftCard.addEventListener('click', () => {
+          store.componentsObj.giftcard.node.unmount('component_giftcard');
+          cancelMainPaymentGiftCard.classList.add('invisible');
+          giftCardAddButton.style.display = 'block';
+          giftCardSelect.value = 'null';
+          store.partialPaymentsOrderObj.remainingAmountFormatted =
+            initialPartialObject.remainingAmountFormatted;
+          store.partialPaymentsOrderObj.totalDiscountedAmount =
+            initialPartialObject.totalDiscountedAmount;
+        });
+
+        document.querySelector('button[value="submit-payment"]').disabled =
+          true;
+        giftCardsInfoMessageContainer.innerHTML = '';
+        giftCardsInfoMessageContainer.classList.remove(
+          'gift-cards-info-message-container',
+        );
+        store.partialPaymentsOrderObj.remainingAmountFormatted =
+          data.remainingAmountFormatted;
+        store.partialPaymentsOrderObj.totalDiscountedAmount =
+          data.totalAmountFormatted;
+        resolve(data);
+      } else if (
+        data.resultCode === constants.NOTENOUGHBALANCE &&
+        data.balance.value > 0
+      ) {
+        resolve(data);
+      } else {
+        reject();
+      }
     },
-    onOrderRequest: (resolve, reject, requestData) => {
+    onOrderRequest: async (resolve, reject, requestData) => {
       // Make a POST /orders request
       // Create an order for the total transaction amount
       const { paymentMethod } = requestData;
       if (store.adyenOrderDataCreated) {
         makeGiftcardPaymentRequest(paymentMethod, giftcardBalance, reject);
       } else {
-        $.ajax({
-          type: 'POST',
+        const data = await httpClient({
+          method: 'POST',
           url: window.partialPaymentsOrderUrl,
           data: {
             csrf_token: $('#adyen-token').val(),
             data: JSON.stringify(requestData),
           },
-          async: false,
-          success: (data) => {
-            if (data.resultCode === 'Success') {
-              store.adyenOrderDataCreated = true;
-              // make payments call including giftcard data and order data
-              makeGiftcardPaymentRequest(
-                paymentMethod,
-                giftcardBalance,
-                reject,
-              );
-            }
-          },
         });
+        if (data.resultCode === 'Success') {
+          store.adyenOrderDataCreated = true;
+          // make payments call including giftcard data and order data
+          makeGiftcardPaymentRequest(paymentMethod, giftcardBalance, reject);
+        }
       }
     },
     onSubmit(state, component) {
@@ -302,27 +289,24 @@ const actionHandler = async (action) => {
   }
 };
 
-function handleOnAdditionalDetails(state) {
+async function handleOnAdditionalDetails(state) {
   const requestData = JSON.stringify({
     data: state.data,
     orderToken: window.orderToken,
   });
-  $.ajax({
-    type: 'POST',
+  const data = await httpClient({
+    method: 'POST',
     url: window.paymentsDetailsURL,
     data: {
       csrf_token: $('#adyen-token').val(),
       data: requestData,
     },
-    async: false,
-    success(data) {
-      if (!data.isFinal && typeof data.action === 'object') {
-        actionHandler(data.action);
-      } else {
-        window.location.href = data.redirectUrl;
-      }
-    },
   });
+  if (!data.isFinal && typeof data.action === 'object') {
+    await actionHandler(data.action);
+  } else {
+    window.location.href = data.redirectUrl;
+  }
 }
 
 function getAmazonpayConfig() {

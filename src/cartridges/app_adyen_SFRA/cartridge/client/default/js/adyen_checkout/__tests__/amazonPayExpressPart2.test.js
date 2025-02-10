@@ -28,10 +28,7 @@ beforeEach(async () => {
 describe('AmazonPay Express', () => {
   it('Should show the updated shipping methods', async () => {
     select = document.getElementById('shippingMethods');
-    $.ajax = jest.fn(({ success }) => {
-      success(data);
-      return { fail: jest.fn() };
-    });
+    $.ajax = jest.fn().mockReturnValue(data);
     saveShopperDetails(data);
     expect(
       select.innerHTML.includes('EUR001') &&

@@ -1,29 +1,29 @@
 const helpers = require('./adyen_checkout/helpers');
+const { httpClient } = require('./commons/httpClient');
 
 /**
  * make payment details call for express payment methods from review page .
  * @param data - state data from adyen checkout component
  * @return {undefined}
  */
-function makeExpressPaymentDetailsCall(data) {
-  const csrfToken = document.querySelector(
-    '#showConfirmationForm input[id="adyen-token"]',
-  ).value;
-  $.ajax({
-    type: 'POST',
-    url: window.makeExpressPaymentDetailsCall,
-    data: {
-      csrf_token: csrfToken,
-      data: JSON.stringify({ data }),
-    },
-    async: false,
-    success(response) {
-      helpers.setOrderFormData(response);
-    },
-    error() {
-      $.spinner().stop();
-    },
-  });
+async function makeExpressPaymentDetailsCall(data) {
+  try {
+    const csrfToken = document.querySelector(
+      '#showConfirmationForm input[id="adyen-token"]',
+    ).value;
+    const response = await httpClient({
+      method: 'POST',
+      url: window.makeExpressPaymentDetailsCall,
+      data: {
+        csrf_token: csrfToken,
+        data: JSON.stringify({ data }),
+      },
+    });
+    helpers.setOrderFormData(response);
+    document.querySelector('#showConfirmationForm').submit();
+  } catch (error) {
+    $.spinner().stop();
+  }
 }
 
 /**
@@ -32,13 +32,12 @@ function makeExpressPaymentDetailsCall(data) {
  */
 function initCheckoutReviewButtons() {
   $(document).ready(() => {
-    $("button[name='place-order']").click(() => {
+    $("button[name='place-order']").click(async () => {
       $.spinner().start();
       const stateData = document.querySelector(
         '#additionalDetailsHidden',
       ).value;
-      makeExpressPaymentDetailsCall(JSON.parse(stateData));
-      document.querySelector('#showConfirmationForm').submit();
+      await makeExpressPaymentDetailsCall(JSON.parse(stateData));
     });
   });
 }

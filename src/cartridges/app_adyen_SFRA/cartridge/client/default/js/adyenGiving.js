@@ -1,6 +1,8 @@
+const { httpClient } = require('./commons/httpClient');
+
 const adyenGivingNode = document.getElementById('donate-container');
 
-function handleOnDonate(state, component) {
+async function handleOnDonate(state, component) {
   if (!state.isValid) {
     return;
   }
@@ -13,14 +15,16 @@ function handleOnDonate(state, component) {
     csrf_token: $('#adyen-token').val(),
   };
 
-  $.ajax({
-    url: window.donateURL,
-    type: 'post',
-    data: donationData,
-    success() {
-      component.setStatus('success');
-    },
-  });
+  try {
+    await httpClient({
+      method: 'POST',
+      url: window.donateURL,
+      data: donationData,
+    });
+    component.setStatus('success');
+  } catch (error) {
+    component.setStatus('error');
+  }
 }
 
 function handleOnCancel(state, component) {

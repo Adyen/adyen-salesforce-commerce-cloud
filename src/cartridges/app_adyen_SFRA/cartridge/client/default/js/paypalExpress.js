@@ -4,50 +4,42 @@ const {
 } = require('./commons');
 const helpers = require('./adyen_checkout/helpers');
 const { PAYPAL } = require('./constants');
+const { httpClient } = require('./commons/httpClient');
 
 async function callPaymentFromComponent(data, component) {
   try {
     $.spinner().start();
-
-    $.ajax({
-      type: 'POST',
+    const response = await httpClient({
+      method: 'POST',
       url: window.makeExpressPaymentsCall,
       data: {
-        csrf_token: $('#adyen-token').val(),
         data: JSON.stringify(data),
-      }, // Send the data as a JSON string
-      success(response) {
-        const { action, errorMessage = '' } = response;
-        if (action) {
-          component.handleAction(action);
-        } else {
-          throw new Error(errorMessage);
-        }
-      },
-      error() {
-        component.handleError();
       },
     });
+    const { action } = response;
+    if (action) {
+      component.handleAction(action);
+    } else {
+      component.handleError();
+    }
   } catch (e) {
     component.handleError();
   }
 }
 
 async function saveShopperDetails(details, actions) {
-  return $.ajax({
-    url: window.saveShopperData,
-    type: 'post',
-    data: {
-      shopperDetails: JSON.stringify(details),
-      csrf_token: $('#adyen-token').val(),
-    },
-    success() {
-      actions.resolve();
-    },
-    error() {
-      $.spinner().stop();
-    },
-  });
+  try {
+    await httpClient({
+      method: 'POST',
+      url: window.saveShopperData,
+      data: {
+        shopperDetails: JSON.stringify(details),
+      },
+    });
+    actions.resolve();
+  } catch (e) {
+    $.spinner().stop();
+  }
 }
 
 function redirectToReviewPage(data) {
@@ -72,23 +64,20 @@ function redirectToReviewPage(data) {
   redirect.submit();
 }
 
-function makeExpressPaymentDetailsCall(data) {
-  return $.ajax({
-    type: 'POST',
-    url: window.makeExpressPaymentDetailsCall,
-    data: {
-      csrf_token: $('#adyen-token').val(),
-      data: JSON.stringify({ data }),
-    },
-    async: false,
-    success(response) {
-      helpers.createShowConfirmationForm(window.showConfirmationAction);
-      helpers.setOrderFormData(response);
-    },
-    error() {
-      $.spinner().stop();
-    },
-  });
+async function makeExpressPaymentDetailsCall(data) {
+  try {
+    const response = await httpClient({
+      method: 'POST',
+      url: window.makeExpressPaymentDetailsCall,
+      data: {
+        data: JSON.stringify({ data }),
+      },
+    });
+    helpers.createShowConfirmationForm(window.showConfirmationAction);
+    helpers.setOrderFormData(response);
+  } catch (e) {
+    $.spinner().stop();
+  }
 }
 
 function updateComponent(response, component) {
@@ -108,10 +97,11 @@ function updateComponent(response, component) {
 
 async function handleShippingAddressChange(data, actions, component) {
   try {
-    const { shippingAddress, errors } = data;
+    const { shippingAddress } = data;
     const currentPaymentData = component.paymentData;
     if (!shippingAddress) {
-      throw new Error(errors?.ADDRESS_ERROR);
+      actions.reject();
+      return;
     }
     const requestBody = {
       paymentMethodType: PAYPAL,
@@ -124,58 +114,41 @@ async function handleShippingAddressChange(data, actions, component) {
         postalCode: shippingAddress.postalCode,
       },
     };
-    $.ajax({
-      type: 'POST',
+    const response = await httpClient({
+      method: 'POST',
       url: window.shippingMethodsUrl,
       data: {
-        csrf_token: $('#adyen-token').val(),
         data: JSON.stringify(requestBody),
       },
-      async: false,
-      success(response) {
-        updateComponent(response, component);
-      },
-      error() {
-        actions.reject();
-      },
     });
+    updateComponent(response, component);
   } catch (e) {
     actions.reject();
   }
-  return false;
 }
 
 async function handleShippingOptionChange(data, actions, component) {
   try {
-    const { selectedShippingOption, errors } = data;
-    const currentPaymentData = component.paymentData;
+    const { selectedShippingOption } = data;
     if (!selectedShippingOption) {
-      throw new Error(errors?.METHOD_UNAVAILABLE);
+      actions.reject();
+    } else {
+      const response = await httpClient({
+        method: 'POST',
+        url: window.selectShippingMethodUrl,
+        data: {
+          data: JSON.stringify({
+            paymentMethodType: PAYPAL,
+            currentPaymentData: component.paymentData,
+            methodID: selectedShippingOption?.id,
+          }),
+        },
+      });
+      updateComponent(response, component);
     }
-    const requestBody = {
-      paymentMethodType: PAYPAL,
-      currentPaymentData,
-      methodID: selectedShippingOption?.id,
-    };
-    $.ajax({
-      type: 'POST',
-      url: window.selectShippingMethodUrl,
-      data: {
-        csrf_token: $('#adyen-token').val(),
-        data: JSON.stringify(requestBody),
-      },
-      async: false,
-      success(response) {
-        updateComponent(response, component);
-      },
-      error() {
-        actions.reject();
-      },
-    });
   } catch (e) {
     actions.reject();
   }
-  return false;
 }
 
 function getPaypalButtonConfig(paypalConfig) {
@@ -196,11 +169,11 @@ function getPaypalButtonConfig(paypalConfig) {
     onShopperDetails: async (shopperDetails, rawData, actions) => {
       await saveShopperDetails(shopperDetails, actions);
     },
-    onAdditionalDetails: (state) => {
+    onAdditionalDetails: async (state) => {
       if (paypalReviewPageEnabled) {
         redirectToReviewPage(state.data);
       } else {
-        makeExpressPaymentDetailsCall(state.data);
+        await makeExpressPaymentDetailsCall(state.data);
         document.querySelector('#additionalDetailsHidden').value =
           JSON.stringify(state.data);
         document.querySelector('#showConfirmationForm').submit();

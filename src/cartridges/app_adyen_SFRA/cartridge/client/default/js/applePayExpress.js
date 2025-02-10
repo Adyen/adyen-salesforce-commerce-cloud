@@ -6,6 +6,7 @@ const {
   createTemporaryBasket,
 } = require('./commons');
 const { APPLE_PAY } = require('./constants');
+const { httpClient } = require('./commons/httpClient');
 
 let checkout;
 let shippingMethodsData;
@@ -60,76 +61,77 @@ function formatCustomerObject(customerData, billingData) {
 
 function handleAuthorised(response, resolveApplePay) {
   resolveApplePay();
-  document.querySelector('#result').value = JSON.stringify({
-    pspReference: response.fullResponse?.pspReference,
-    resultCode: response.fullResponse?.resultCode,
-    paymentMethod: response.fullResponse?.paymentMethod
-      ? response.fullResponse.paymentMethod
-      : response.fullResponse?.additionalData?.paymentMethod,
-    donationToken: response.fullResponse?.donationToken,
-    amount: response.fullResponse?.amount,
-  });
-  document.querySelector('#showConfirmationForm').submit();
+  if (document.querySelector('#result')) {
+    document.querySelector('#result').value = JSON.stringify({
+      pspReference: response.fullResponse?.pspReference,
+      resultCode: response.fullResponse?.resultCode,
+      paymentMethod: response.fullResponse?.paymentMethod
+        ? response.fullResponse.paymentMethod
+        : response.fullResponse?.additionalData?.paymentMethod,
+      donationToken: response.fullResponse?.donationToken,
+      amount: response.fullResponse?.amount,
+    });
+  }
+  if (document.querySelector('#showConfirmationForm')) {
+    document.querySelector('#showConfirmationForm').submit();
+  }
 }
 
 function handleError(rejectApplePay) {
   rejectApplePay();
-  document.querySelector('#result').value = JSON.stringify({
-    error: true,
-  });
-  document.querySelector('#showConfirmationForm').submit();
+  if (document.querySelector('#result')) {
+    document.querySelector('#result').value = JSON.stringify({
+      error: true,
+    });
+  }
+  if (document.querySelector('#showConfirmationForm')) {
+    document.querySelector('#showConfirmationForm').submit();
+  }
 }
 
 function handleApplePayResponse(response, resolveApplePay, rejectApplePay) {
-  if (response.resultCode === 'Authorised') {
+  if (response?.resultCode === 'Authorised') {
     handleAuthorised(response, resolveApplePay);
   } else {
     handleError(rejectApplePay);
   }
 }
 
-function callPaymentFromComponent(data, resolveApplePay, rejectApplePay) {
-  return $.ajax({
+async function callPaymentFromComponent(data, resolveApplePay, rejectApplePay) {
+  const response = await httpClient({
     url: window.paymentFromComponentURL,
-    type: 'post',
+    method: 'POST',
     data: {
       data: JSON.stringify(data),
       paymentMethod: APPLE_PAY,
-      csrf_token: $('#adyen-token').val(),
     },
-    success(response) {
-      helpers.createShowConfirmationForm(window.showConfirmationAction);
-      helpers.setOrderFormData(response);
-      document.querySelector('#additionalDetailsHidden').value =
-        JSON.stringify(data);
-      handleApplePayResponse(response, resolveApplePay, rejectApplePay);
-    },
-  }).fail(() => {
-    rejectApplePay();
   });
+  helpers.createShowConfirmationForm(window.showConfirmationAction);
+  helpers.setOrderFormData(response);
+  if (document.querySelector('#additionalDetailsHidden')) {
+    document.querySelector('#additionalDetailsHidden').value =
+      JSON.stringify(data);
+  }
+  handleApplePayResponse(response, resolveApplePay, rejectApplePay);
 }
 
-async function selectShippingMethod({ shipmentUUID, ID }, reject) {
+async function selectShippingMethod({ shipmentUUID, ID }) {
   const requestBody = {
     paymentMethodType: APPLE_PAY,
     shipmentUUID,
     methodID: ID,
     isExpressPdp: true,
   };
-  return $.ajax({
-    type: 'POST',
+  return httpClient({
+    method: 'POST',
     url: window.selectShippingMethodUrl,
     data: {
-      csrf_token: $('#adyen-token').val(),
       data: JSON.stringify(requestBody),
     },
-    success(response) {
-      return response;
-    },
-  }).fail(() => reject());
+  });
 }
 
-function getShippingMethod(shippingContact, reject) {
+function getShippingMethod(shippingContact) {
   const requestBody = {
     paymentMethodType: APPLE_PAY,
     isExpressPdp: true,
@@ -143,20 +145,12 @@ function getShippingMethod(shippingContact, reject) {
       postalCode: shippingContact.postalCode,
     };
   }
-  return $.ajax({
-    type: 'POST',
+  return httpClient({
+    method: 'POST',
     url: window.shippingMethodsUrl,
     data: {
-      csrf_token: $('#adyen-token').val(),
       data: JSON.stringify(requestBody),
     },
-    success(response) {
-      return response;
-    },
-  }).fail(() => {
-    if (reject) {
-      reject();
-    }
   });
 }
 
@@ -228,7 +222,6 @@ async function onShippingMethodSelected(
   );
   const calculationResponse = await selectShippingMethod(
     matchingShippingMethod,
-    reject,
   );
   if (calculationResponse?.grandTotalAmount) {
     applePayButtonConfig.amount = {
@@ -250,13 +243,10 @@ async function onShippingMethodSelected(
 
 async function onShippingContactSelected(resolve, reject, event, merchantName) {
   const { shippingContact } = event;
-  shippingMethodsData = await getShippingMethod(shippingContact, reject);
+  shippingMethodsData = await getShippingMethod(shippingContact);
   if (shippingMethodsData?.shippingMethods?.length) {
     const selectedShippingMethod = shippingMethodsData.shippingMethods[0];
-    const newCalculation = await selectShippingMethod(
-      selectedShippingMethod,
-      reject,
-    );
+    const newCalculation = await selectShippingMethod(selectedShippingMethod);
     if (newCalculation?.grandTotalAmount) {
       const shippingMethodsStructured = shippingMethodsData.shippingMethods.map(
         (sm) => ({
