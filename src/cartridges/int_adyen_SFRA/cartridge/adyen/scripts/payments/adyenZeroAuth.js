@@ -28,7 +28,7 @@ const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 const constants = require('*/cartridge/adyen/config/constants');
 
-function doZeroAuthCall(paymentInstrument, paymentRequest) {
+function doZeroAuthCall(paymentRequest) {
   try {
     return AdyenHelper.executeCall(constants.SERVICE.PAYMENT, paymentRequest);
   } catch (error) {

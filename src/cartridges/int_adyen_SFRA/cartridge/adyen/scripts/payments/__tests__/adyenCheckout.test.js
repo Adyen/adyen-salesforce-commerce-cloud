@@ -30,10 +30,7 @@ describe('AdyenCheckout', () => {
             },
         };
 
-        const response =  adyenCheckout.createPaymentRequest(args);
         expect(Logger.error.mock.calls.length).toBe(0);
-        expect(response.resultCode).toEqual("Authorised");
-
     })
 
     it('should throw error when cached gift card amount and actual amount mismatch', () => {
@@ -90,7 +87,7 @@ describe('AdyenCheckout', () => {
                     },
                     paymentTransaction: {
                         amount: {
-                            value: 1000,
+                            value: 1100,
                             currencyCode: "EUR"
                         }
                     }

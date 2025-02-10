@@ -40,15 +40,21 @@ const paypalHelper = require('*/cartridge/adyen/utils/paypalHelper');
 function doPaymentsCall(order, paymentInstrument, paymentRequest) {
   const paymentResponse = {};
   let errorMessage = '';
-  const transactionAmount = AdyenHelper.getCurrencyValueForApi(
-    paymentInstrument.paymentTransaction.amount,
-  ).getValueOrNull();
   try {
-    if (
-      !order ||
-      !paymentRequest.amount.value ||
-      paymentRequest.amount.value !== transactionAmount
-    ) {
+    if (!order || !paymentRequest?.amount?.value) {
+      throw new Error('Zero amount not accepted');
+    }
+    const transactionAmount = AdyenHelper.getCurrencyValueForApi(
+      paymentInstrument?.paymentTransaction?.amount,
+    ).getValueOrNull();
+    if (session.privacy.partialPaymentData) {
+      const { remainingAmount } = JSON.parse(
+        session.privacy.partialPaymentData,
+      );
+      if (remainingAmount.value !== paymentRequest?.amount?.value) {
+        throw new Error('Amounts dont match');
+      }
+    } else if (transactionAmount !== paymentRequest?.amount?.value) {
       throw new Error('Amounts dont match');
     }
     const responseObject = AdyenHelper.executeCall(
