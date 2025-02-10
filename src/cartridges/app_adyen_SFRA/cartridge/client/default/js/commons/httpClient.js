@@ -4,7 +4,6 @@ function httpClient(config) {
   const defaults = {
     method: 'GET',
     contentType: 'application/x-www-form-urlencoded',
-    timeout: 10000,
   };
 
   const settings = $.extend({}, defaults, config);

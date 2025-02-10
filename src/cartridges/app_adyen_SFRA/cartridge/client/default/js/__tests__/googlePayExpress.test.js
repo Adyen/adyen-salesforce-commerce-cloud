@@ -249,7 +249,6 @@ describe('getShippingMethods', () => {
     expect($.ajax).toHaveBeenCalledWith({
       method: 'POST',
       contentType: "application/x-www-form-urlencoded",
-      timeout: 10000,
       url: window.shippingMethodsUrl,
       data: {
         csrf_token: undefined,
@@ -275,7 +274,6 @@ describe('getShippingMethods', () => {
 
     expect($.ajax).toHaveBeenCalledWith({
       method: 'POST',
-      timeout: 10000,
       contentType: "application/x-www-form-urlencoded",
       url: window.shippingMethodsUrl,
       data: {
@@ -311,7 +309,6 @@ describe('selectShippingMethod', () => {
 
     expect($.ajax).toHaveBeenCalledWith({
       method: 'POST',
-      timeout: 10000,
       url: window.selectShippingMethodUrl,
       contentType: "application/x-www-form-urlencoded",
       data: {

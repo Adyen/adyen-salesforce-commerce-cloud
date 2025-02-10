@@ -177,7 +177,6 @@ describe('paypal express', () => {
       const request = {
         url: 'test_url',
         method: 'POST',
-        timeout: 10000,
         contentType: 'application/x-www-form-urlencoded',
         data: {
           csrf_token: undefined,
@@ -363,7 +362,6 @@ describe('paypal express', () => {
       const request = {
         url: 'test_url',
         method: 'POST',
-        timeout: 10000,
         contentType: "application/x-www-form-urlencoded",
         data: {
           csrf_token: undefined,
