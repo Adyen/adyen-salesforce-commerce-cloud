@@ -40,16 +40,21 @@ const paypalHelper = require('*/cartridge/adyen/utils/paypalHelper');
 function doPaymentsCall(order, paymentInstrument, paymentRequest) {
   const paymentResponse = {};
   let errorMessage = '';
+  const transactionAmount = AdyenHelper.getCurrencyValueForApi(
+    paymentInstrument.paymentTransaction.amount,
+  ).getValueOrNull();
   try {
+    if (
+      !order ||
+      !paymentRequest.amount.value ||
+      paymentRequest.amount.value !== transactionAmount
+    ) {
+      throw new Error('Amounts dont match');
+    }
     const responseObject = AdyenHelper.executeCall(
       constants.SERVICE.PAYMENT,
       paymentRequest,
     );
-    // There is no order for zero auth transactions.
-    // Return response directly to PaymentInstruments-SavePayment
-    if (!order) {
-      return responseObject;
-    }
     paymentResponse.fullResponse = responseObject;
     paymentResponse.redirectObject = responseObject.action
       ? responseObject.action

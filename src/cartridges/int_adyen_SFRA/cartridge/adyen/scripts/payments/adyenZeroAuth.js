@@ -21,12 +21,30 @@
 
 /* API Includes */
 const URLUtils = require('dw/web/URLUtils');
+const Resource = require('dw/web/Resource');
 
 /* Script Modules */
 const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
-const adyenCheckout = require('*/cartridge/adyen/scripts/payments/adyenCheckout');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 const constants = require('*/cartridge/adyen/config/constants');
+
+function doZeroAuthCall(paymentInstrument, paymentRequest) {
+  try {
+    return AdyenHelper.executeCall(constants.SERVICE.PAYMENT, paymentRequest);
+  } catch (error) {
+    AdyenLogs.fatal_log('Zero auth call failed:', error);
+    return {
+      error: true,
+      args: {
+        adyenErrorMessage: Resource.msg(
+          'confirm.error.declined',
+          'checkout',
+          null,
+        ),
+      },
+    };
+  }
+}
 
 function zeroAuthPayment(customer, paymentInstrument) {
   try {
@@ -55,11 +73,7 @@ function zeroAuthPayment(customer, paymentInstrument) {
     zeroAuthRequest.shopperEmail = customer.getProfile().getEmail();
     zeroAuthRequest.shopperIP = request.getHttpRemoteAddress();
 
-    return adyenCheckout.doPaymentsCall(
-      null,
-      paymentInstrument,
-      zeroAuthRequest,
-    );
+    return doZeroAuthCall(paymentInstrument, zeroAuthRequest);
   } catch (error) {
     AdyenLogs.error_log('error processing zero auth payment:', error);
     return { error: true };
