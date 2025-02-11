@@ -29,6 +29,7 @@ afterEach(() => {
 
 describe('Express Payments controller', () => {
   it('Should return response when payments call is successful', () => {
+    currentBasket = require('dw/order/BasketMgr').getCurrentBasket();
     makeExpressPaymentsCall(req, res, next);
     expect(res.json).toHaveBeenCalledWith({"pspReference": "mocked_pspReference"});
     expect(AdyenLogs.error_log).not.toHaveBeenCalled();
