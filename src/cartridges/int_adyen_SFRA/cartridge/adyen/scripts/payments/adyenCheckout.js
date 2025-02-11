@@ -41,7 +41,7 @@ function doPaymentsCall(order, paymentInstrument, paymentRequest) {
   const paymentResponse = {};
   let errorMessage = '';
   try {
-    if (!order || !paymentRequest?.amount?.value) {
+    if (!paymentRequest?.amount?.value) {
       throw new Error('Zero amount not accepted');
     }
     const transactionAmount = AdyenHelper.getCurrencyValueForApi(

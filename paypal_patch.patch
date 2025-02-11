@@ -1,0 +1,59 @@
+diff --git a/metadata/site_import/meta/system-objecttype-extensions.xml b/metadata/site_import/meta/system-objecttype-extensions.xml
+index 82f7377c..46a46824 100644
+--- a/metadata/site_import/meta/system-objecttype-extensions.xml
++++ b/metadata/site_import/meta/system-objecttype-extensions.xml
+@@ -743,6 +743,14 @@
+                 <externally-managed-flag>false</externally-managed-flag>
+                 <min-length>0</min-length>
+             </attribute-definition>
++            <attribute-definition attribute-id="adyenProductLineItems">
++                <display-name xml:lang="x-default">adyenProductLineItems</display-name>
++                <description xml:lang="x-default">Adyen Product Line Items</description>
++                <type>text</type>
++                <mandatory-flag>false</mandatory-flag>
++                <externally-managed-flag>false</externally-managed-flag>
++                <min-length>0</min-length>
++            </attribute-definition>
+         </custom-attribute-definitions>
+         <group-definitions>
+             <attribute-group group-id="AdyenPayment">
+diff --git a/src/cartridges/int_adyen_SFRA/cartridge/adyen/scripts/expressPayments/paypal/makeExpressPaymentDetailsCall.js b/src/cartridges/int_adyen_SFRA/cartridge/adyen/scripts/expressPayments/paypal/makeExpressPaymentDetailsCall.js
+index 07a47445..ecfeb15d 100644
+--- a/src/cartridges/int_adyen_SFRA/cartridge/adyen/scripts/expressPayments/paypal/makeExpressPaymentDetailsCall.js
++++ b/src/cartridges/int_adyen_SFRA/cartridge/adyen/scripts/expressPayments/paypal/makeExpressPaymentDetailsCall.js
+@@ -29,6 +29,13 @@ function makeExpressPaymentDetailsCall(req, res, next) {
+   try {
+     const request = JSON.parse(req.form.data);
+     const currentBasket = BasketMgr.getCurrentBasket();
++    const productLines = currentBasket.getAllProductLineItems().toArray();
++    const productQuantity = currentBasket.getProductQuantityTotal();
++    const hashedProducts = AdyenHelper.getAdyenHash(productLines, productQuantity);
++
++    if (hashedProducts !== currentBasket.custom.adyenProductLineItems){
++        throw new Error('Basket products changed, cannot complete trasaction');
++    };
+ 
+     const response = adyenCheckout.doPaymentsDetailsCall(request.data);
+ 
+diff --git a/src/cartridges/int_adyen_SFRA/cartridge/adyen/scripts/expressPayments/paypal/makeExpressPaymentsCall.js b/src/cartridges/int_adyen_SFRA/cartridge/adyen/scripts/expressPayments/paypal/makeExpressPaymentsCall.js
+index c3cba57a..3bb23233 100644
+--- a/src/cartridges/int_adyen_SFRA/cartridge/adyen/scripts/expressPayments/paypal/makeExpressPaymentsCall.js
++++ b/src/cartridges/int_adyen_SFRA/cartridge/adyen/scripts/expressPayments/paypal/makeExpressPaymentsCall.js
+@@ -12,6 +12,9 @@ const paypalHelper = require('*/cartridge/adyen/utils/paypalHelper');
+ function makeExpressPaymentsCall(req, res, next) {
+   try {
+     const currentBasket = BasketMgr.getCurrentBasket();
++    const productLines = currentBasket.getAllProductLineItems().toArray();
++    const productQuantity = currentBasket.getProductQuantityTotal();
++    const hashedProducts = AdyenHelper.getAdyenHash(productLines, productQuantity);
+     let paymentInstrument;
+     Transaction.wrap(() => {
+       currentBasket.removeAllPaymentInstruments();
+@@ -24,6 +27,7 @@ function makeExpressPaymentsCall(req, res, next) {
+       );
+       paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
+       paymentInstrument.custom.adyenPaymentData = req.form.data;
++      currentBasket.custom.adyenProductLineItems = hashedProducts;
+     });
+     // Creates order number to be utilized for PayPal express
+     const paypalExpressOrderNo = OrderMgr.createOrderNo();
