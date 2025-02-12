@@ -4,7 +4,7 @@ const constants = require('../constants');
 
 const { httpClient } = require('../commons/httpClient');
 const CardConfig = require('./paymentMethodsConfiguration/card/cardConfig');
-// const StoredCardConfig = require('./paymentMethodsConfiguration/card/storedCardConfig');
+const StoredCardConfig = require('./paymentMethodsConfiguration/card/storedCardConfig');
 const GooglePayConfig = require('./paymentMethodsConfiguration/googlePay/googlePayConfig');
 const BoletoConfig = require('./paymentMethodsConfiguration/boleto/boletoConfig');
 const KlarnaConfig = require('./paymentMethodsConfiguration/klarna/klarnaConfig');
@@ -63,7 +63,7 @@ function setCheckoutConfiguration() {
   store.checkoutConfiguration.clientKey = window.adyenClientKey;
 
   const cardConfig = new CardConfig(store, helpers).getConfig();
-  // const storedCardConfig = new StoredCardConfig(store, helpers).getConfig();
+  const storedCardConfig = new StoredCardConfig(store, helpers).getConfig();
   const boletoConfig = new BoletoConfig().getConfig();
   const googlePayConfig = new GooglePayConfig(helpers).getConfig();
   const klarnaConfig = new KlarnaConfig(helpers).getConfig();
@@ -77,7 +77,7 @@ function setCheckoutConfiguration() {
   store.checkoutConfiguration.paymentMethodsConfiguration = {
     card: cardConfig,
     bcmc: cardConfig,
-    // storedCard: storedCardConfig,
+    storedCard: storedCardConfig,
     boletobancario: boletoConfig,
     paywithgoogle: googlePayConfig,
     googlepay: googlePayConfig,

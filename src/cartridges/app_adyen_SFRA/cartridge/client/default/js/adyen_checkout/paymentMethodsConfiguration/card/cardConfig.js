@@ -29,17 +29,19 @@ class CardConfig {
     document.querySelector('button[value="submit-payment"]').click();
   };
 
-  getConfig = () => ({
-    hasHolderName: this.hasHolderName,
-    holderNameRequired: this.holderNameRequired,
-    enableStoreDetails: this.enableStoreDetails,
-    clickToPayConfiguration: this.clickToPayConfiguration,
-    exposeExpiryDate: this.exposeExpiryDate,
-    onChange: this.onChange,
-    onSubmit: this.onSubmit,
-    onFieldValid,
-    onBrand,
-  });
+  getConfig() {
+    return {
+      hasHolderName: this.hasHolderName,
+      holderNameRequired: this.holderNameRequired,
+      enableStoreDetails: this.enableStoreDetails,
+      clickToPayConfiguration: this.clickToPayConfiguration,
+      exposeExpiryDate: this.exposeExpiryDate,
+      onChange: this.onChange,
+      onSubmit: this.onSubmit,
+      onFieldValid,
+      onBrand,
+    };
+  }
 }
 
 module.exports = CardConfig;
