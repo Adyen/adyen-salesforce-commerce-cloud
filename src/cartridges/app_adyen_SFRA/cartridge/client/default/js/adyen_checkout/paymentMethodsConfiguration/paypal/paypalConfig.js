@@ -7,15 +7,15 @@ class PaypalConfig {
     this.store.paypalTerminatedEarly = false;
   }
 
-  onSubmit(state, component) {
+  onSubmit = (state, component) => {
     this.helpers.assignPaymentMethodValue();
     document.querySelector('#adyenStateData').value = JSON.stringify(
       this.store.selectedPayment.stateData,
     );
     this.helpers.paymentFromComponent(state.data, component);
-  }
+  };
 
-  onCancel(data, component) {
+  onCancel = (data, component) => {
     this.store.paypalTerminatedEarly = false;
     this.helpers.paymentFromComponent(
       {
@@ -25,25 +25,25 @@ class PaypalConfig {
       },
       component,
     );
-  }
+  };
 
-  onError(error, component) {
+  onError = (error, component) => {
     this.store.paypalTerminatedEarly = false;
     if (component) {
       component.setStatus('ready');
     }
     document.querySelector('#showConfirmationForm').submit();
-  }
+  };
 
-  onAdditionalDetails(state) {
+  onAdditionalDetails = (state) => {
     this.store.paypalTerminatedEarly = false;
     document.querySelector('#additionalDetailsHidden').value = JSON.stringify(
       state.data,
     );
     document.querySelector('#showConfirmationForm').submit();
-  }
+  };
 
-  onClick(data, actions) {
+  onClick = (data, actions) => {
     $('#dwfrm_billing').trigger('submit');
     if (this.store.formErrorsExist) {
       return actions.reject();
@@ -58,7 +58,7 @@ class PaypalConfig {
     }
     this.store.paypalTerminatedEarly = true;
     return null;
-  }
+  };
 
   getConfig() {
     return {

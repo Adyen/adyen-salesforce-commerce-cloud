@@ -7,17 +7,15 @@ class GooglePayConfig {
     this.helpers = helpers;
   }
 
-  onSubmit() {
+  onSubmit = () => {
     this.helpers.assignPaymentMethodValue();
     document.querySelector('button[value="submit-payment"]').disabled = false;
     document.querySelector('button[value="submit-payment"]').click();
-  }
+  };
 
-  getConfiguration() {
-    return {
-      gatewayMerchantId: this.merchantAccount,
-    };
-  }
+  getConfiguration = () => ({
+    gatewayMerchantId: this.merchantAccount,
+  });
 
   getConfig() {
     return {

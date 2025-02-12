@@ -9,7 +9,7 @@ class AmazonPayConfig {
     this.helpers = helpers;
   }
 
-  onClick(resolve, reject) {
+  onClick = (resolve, reject) => {
     $('#dwfrm_billing').trigger('submit');
     if (this.store.formErrorsExist) {
       reject();
@@ -17,7 +17,7 @@ class AmazonPayConfig {
       this.helpers.assignPaymentMethodValue();
       resolve();
     }
-  }
+  };
 
   getConfig() {
     return {

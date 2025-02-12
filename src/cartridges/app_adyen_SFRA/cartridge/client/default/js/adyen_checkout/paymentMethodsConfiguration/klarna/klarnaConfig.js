@@ -5,16 +5,16 @@ class KlarnaConfig {
     this.document = document;
   }
 
-  onSubmit(state, component) {
+  onSubmit = (state, component) => {
     this.helpers.assignPaymentMethodValue();
     this.helpers.paymentFromComponent(state.data, component);
-  }
+  };
 
-  onAdditionalDetails(state) {
+  onAdditionalDetails = (state) => {
     this.document.querySelector('#additionalDetailsHidden').value =
       JSON.stringify(state.data);
     this.document.querySelector('#showConfirmationForm').submit();
-  }
+  };
 
   getConfig() {
     if (this.klarnaWidgetEnabled) {
