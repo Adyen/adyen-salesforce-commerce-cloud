@@ -12,7 +12,9 @@ class UpiConfig {
   }
 
   onAdditionalDetails(state) {
-    document.querySelector('#additionalDetailsHidden').value = JSON.stringify(state.data);
+    document.querySelector('#additionalDetailsHidden').value = JSON.stringify(
+      state.data,
+    );
     document.querySelector('#showConfirmationForm').submit();
   }
 
