@@ -231,9 +231,7 @@ describe('getShippingOptionsParameters', () => {
 
 describe('getShippingMethods', () => {
   beforeEach(() => {
-    global.$.ajax = jest.fn().mockImplementation(({ success }) => {
-      success({ action : {}})
-    });
+    global.$.ajax = jest.fn().mockReturnValue({ action : {}});
     jest.clearAllMocks();
   });
 
@@ -249,7 +247,8 @@ describe('getShippingMethods', () => {
     const result = await getShippingMethods(shippingAddress);
 
     expect($.ajax).toHaveBeenCalledWith({
-      type: 'POST',
+      method: 'POST',
+      contentType: "application/x-www-form-urlencoded",
       url: window.shippingMethodsUrl,
       data: {
         csrf_token: undefined,
@@ -264,7 +263,6 @@ describe('getShippingMethods', () => {
           }
         })
       },
-      success: expect.any(Function)
     });
   });
 
@@ -275,7 +273,8 @@ describe('getShippingMethods', () => {
     const result = await getShippingMethods();
 
     expect($.ajax).toHaveBeenCalledWith({
-      type: 'POST',
+      method: 'POST',
+      contentType: "application/x-www-form-urlencoded",
       url: window.shippingMethodsUrl,
       data: {
         csrf_token: undefined,
@@ -283,7 +282,6 @@ describe('getShippingMethods', () => {
           paymentMethodType: 'googlepay',
         })
       },
-      success: expect.any(Function)
     });
   });
 
@@ -310,8 +308,9 @@ describe('selectShippingMethod', () => {
     const result = await selectShippingMethod({ shipmentUUID, ID });
 
     expect($.ajax).toHaveBeenCalledWith({
-      type: 'POST',
+      method: 'POST',
       url: window.selectShippingMethodUrl,
+      contentType: "application/x-www-form-urlencoded",
       data: {
         csrf_token: undefined,
         data: JSON.stringify({
@@ -320,7 +319,6 @@ describe('selectShippingMethod', () => {
           methodID: 'test-method-id',
         })
       },
-      success: expect.any(Function)
     });
 
     expect(result).toEqual(mockResponse);
@@ -454,8 +452,10 @@ describe('paymentFromComponent', () => {
   });
   it('starts spinner and makes ajax call with correct data', async () => {
     const start = jest.fn();
+    const stop = jest.fn();
     global.$.spinner = jest.fn(() => {return {
-      start: start
+      start: start,
+      stop: stop
     }})
     global.$.ajax = jest.fn().mockImplementation(({ success }) => {
       success({ action : {}})

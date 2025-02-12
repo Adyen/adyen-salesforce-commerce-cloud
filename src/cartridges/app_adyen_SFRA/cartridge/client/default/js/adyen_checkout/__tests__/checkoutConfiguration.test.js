@@ -24,6 +24,13 @@ let applepay;
 let klarna;
 let querySelector;
 
+jest.mock('../../commons/httpClient', () => ({
+  httpClient: jest.fn().mockImplementation(() => ({
+    balance: 100,
+      resultCode: 'invalid'
+  }))
+}))
+
 beforeEach(() => {
   jest.clearAllMocks();
   querySelector = document.querySelector;
@@ -291,11 +298,8 @@ describe('Checkout Configuration', () => {
     store.checkout = {
       options: {}
      };
-    jest.spyOn($, 'ajax').mockImplementation((options) => {
-      options.success({ balance: 100, resultCode: 'Success'});
-    });
-    const config = giftcardconfig;
-    await config.onBalanceCheck(mockResolve, mockReject, requestData);
+    jest.spyOn($, 'ajax').mockReturnValue({ balance: 100, resultCode: 'Success'});
+    await giftcardconfig.onBalanceCheck(mockResolve, mockReject, requestData);
     expect(mockResolve).toHaveBeenCalled();
     expect(mockReject).not.toHaveBeenCalled();
   });
@@ -309,11 +313,8 @@ describe('Checkout Configuration', () => {
     const mockResolve = jest.fn();
     const mockReject = jest.fn();
     const requestData = {resultCode: 'invalid', remainingAmountFormatted: 50, totalAmountFormatted: 100};
-    jest.spyOn($, 'ajax').mockImplementation((options) => {
-      options.success({ balance: 100, resultCode: 'invalid'});
-    });
-    const config = giftcardconfig;
-    await config.onBalanceCheck(mockResolve, mockReject, requestData);
+    jest.spyOn($, 'ajax').mockReturnValue({ balance: 100, resultCode: 'Error'});
+    await giftcardconfig.onBalanceCheck(mockResolve, mockReject, requestData);
     expect(mockReject).toHaveBeenCalled();
     expect(mockResolve).not.toHaveBeenCalled();
   });

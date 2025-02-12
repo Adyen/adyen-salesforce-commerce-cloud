@@ -1,27 +1,25 @@
 const { getPaymentMethods } = require('./commons');
+const { httpClient } = require('./commons/httpClient');
 
-function saveShopperDetails(details) {
-  $.ajax({
+async function saveShopperDetails(details) {
+  const data = await httpClient({
+    method: 'POST',
     url: window.saveShopperDetailsURL,
-    type: 'post',
     data: {
-      csrf_token: $('#adyen-token').val(),
       shopperDetails: JSON.stringify(details),
       paymentMethod: 'amazonpay',
     },
-    success(data) {
-      const select = document.querySelector('#shippingMethods');
-      select.innerHTML = '';
-      data.shippingMethods.forEach((shippingMethod) => {
-        const option = document.createElement('option');
-        option.setAttribute('data-shipping-id', shippingMethod.ID);
-        option.innerText = `${shippingMethod.displayName} (${shippingMethod.estimatedArrivalTime})`;
-        select.appendChild(option);
-      });
-      select.options[0].selected = true;
-      select.dispatchEvent(new Event('change'));
-    },
   });
+  const select = document.querySelector('#shippingMethods');
+  select.innerHTML = '';
+  data.shippingMethods.forEach((shippingMethod) => {
+    const option = document.createElement('option');
+    option.setAttribute('data-shipping-id', shippingMethod.ID);
+    option.innerText = `${shippingMethod.displayName} (${shippingMethod.estimatedArrivalTime})`;
+    select.appendChild(option);
+  });
+  select.options[0].selected = true;
+  select.dispatchEvent(new Event('change'));
 }
 
 function constructAddress(shopperDetails) {

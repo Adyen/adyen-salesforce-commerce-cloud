@@ -413,25 +413,31 @@ describe('callPaymentFromComponent', () => {
   const mockData = { some: 'data' };
   let mockElementDiv;
   let mockElementForm
+  let mockQuerySelector;
+  let mockResultInput;
+  let mockFormSubmit;
 
   beforeEach(() => {
-    jest.clearAllMocks();
-    window.paymentFromComponentURL = '/test-url';
-    window.showConfirmationAction = '/confirmation-action';
-    mockElementForm = document.createElement('form');
-    mockElementForm.setAttribute("id", "showConfirmationForm");
-    mockElementDiv = document.createElement('div');
-    mockElementDiv.setAttribute("id", "additionalDetailsHidden");
-    spy.mockReturnValue(mockElementForm);
-    spy.mockReturnValue(mockElementDiv);
+    mockResultInput = {
+      value: '',
+    };
+    mockFormSubmit = jest.fn();
+    mockQuerySelector = jest.spyOn(document, 'querySelector').mockImplementation((selector) => {
+      if (selector === '#result') {
+        return mockResultInput;
+      }
+      if (selector === '#showConfirmationForm') {
+        return {
+          submit: mockFormSubmit,
+        };
+      }
+    });
   });
 
   it('should call rejectApplePay on ajax fail', async () => {
-    global.$.ajax = jest.fn().mockImplementation(({ success }) => ({
-      fail: (callback) => {
-        callback();
-      },
-    }));
+    global.$.ajax = jest.fn().mockReturnValue({
+      orderNo: '123'
+    });
     await callPaymentFromComponent(mockData, mockResolveApplePay, mockRejectApplePay);
     expect(mockRejectApplePay).toHaveBeenCalled();
   });

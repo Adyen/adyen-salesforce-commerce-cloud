@@ -97,10 +97,7 @@ afterEach(() => {
 describe('Make partial payment request', () => {
   it('should make partial payment', async () => {
     document.body.innerHTML = giftCardHtml;
-    jest.spyOn($, 'ajax').mockImplementation(() => ({
-      done: jest.fn().mockImplementation((callback) => callback(data)),
-      fail: jest.fn(),
-    }));
+    jest.spyOn($, 'ajax').mockReturnValue(data);
     await makePartialPayment(data);
     expect(store.adyenOrderDataCreated).toBeTruthy();
   });
@@ -108,10 +105,7 @@ describe('Make partial payment request', () => {
   it('should handle partial payment with error', async () => {
     document.body.innerHTML = giftCardHtml;
     const responseData = { error: true };
-    jest.spyOn($, 'ajax').mockImplementation(() => ({
-      done: jest.fn().mockImplementation((callback) => callback(responseData)),
-      fail: jest.fn(),
-    }));
+    jest.spyOn($, 'ajax').mockReturnValue(responseData);
     try {
       await makePartialPayment(data);
       fail();

@@ -1,7 +1,0 @@
-{
-  "blockedPaymentMethods": [
-    "wechatpayMiniProgram",
-    "wechatpayQR",
-    "wechatpaySDK"
-  ]
-}

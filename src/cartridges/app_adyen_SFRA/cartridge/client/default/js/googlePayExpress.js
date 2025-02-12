@@ -9,6 +9,7 @@ const {
   PAY_WITH_GOOGLE,
   GOOGLE_PAY_CALLBACK_TRIGGERS,
 } = require('./constants');
+const { httpClient } = require('./commons/httpClient');
 
 let checkout;
 let googlePayButton;
@@ -74,15 +75,11 @@ async function getShippingMethods(shippingAddress) {
       postalCode: shippingAddress.postalCode,
     };
   }
-  return $.ajax({
-    type: 'POST',
+  return httpClient({
+    method: 'POST',
     url: window.shippingMethodsUrl,
     data: {
-      csrf_token: $('#adyen-token').val(),
       data: JSON.stringify(requestBody),
-    },
-    success(response) {
-      return response;
     },
   });
 }
@@ -94,15 +91,11 @@ async function selectShippingMethod({ shipmentUUID, ID }) {
     methodID: ID,
     isExpressPdp: window.isExpressPdp,
   };
-  return $.ajax({
-    type: 'POST',
+  return httpClient({
+    method: 'POST',
     url: window.selectShippingMethodUrl,
     data: {
-      csrf_token: $('#adyen-token').val(),
       data: JSON.stringify(requestBody),
-    },
-    success(response) {
-      return response;
     },
   });
 }
@@ -172,28 +165,27 @@ function handleGooglePayResponse(response) {
   }
 }
 
-function paymentFromComponent(data) {
-  $.spinner().start();
-  $.ajax({
-    url: window.paymentFromComponentURL,
-    type: 'post',
-    data: {
-      csrf_token: $('#adyen-token').val(),
-      data: JSON.stringify(data),
-      paymentMethod: GOOGLE_PAY,
-    },
-    success(response) {
-      helpers.createShowConfirmationForm(window.showConfirmationAction);
-      helpers.setOrderFormData(response);
-      document.querySelector('#additionalDetailsHidden').value = JSON.stringify(
-        {
-          ...data,
-          ...response,
-        },
-      );
-      handleGooglePayResponse(response);
-    },
-  });
+async function paymentFromComponent(data) {
+  try {
+    $.spinner().start();
+    const response = await httpClient({
+      method: 'POST',
+      url: window.paymentFromComponentURL,
+      data: {
+        data: JSON.stringify(data),
+        paymentMethod: GOOGLE_PAY,
+      },
+    });
+    helpers.createShowConfirmationForm(window.showConfirmationAction);
+    helpers.setOrderFormData(response);
+    document.querySelector('#additionalDetailsHidden').value = JSON.stringify({
+      ...data,
+      ...response,
+    });
+    handleGooglePayResponse(response);
+  } catch (error) {
+    $.spinner().stop();
+  }
 }
 
 async function initializeCheckout(paymentMethodsResponse) {
