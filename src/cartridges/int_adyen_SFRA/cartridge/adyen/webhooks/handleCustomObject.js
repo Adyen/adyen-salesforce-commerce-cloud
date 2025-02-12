@@ -50,10 +50,8 @@ function placeOrder(order) {
   const fraudDetectionStatus = { status: 'success' };
   // Only created orders can be placed
   if (order.status.value === Order.ORDER_STATUS_CREATED) {
-     const placeOrderResult = COHelpers.placeOrder(order, fraudDetectionStatus);
-     if (placeOrderResult.error) {
-	AdyenLogs.error_log('Failed to place the order', placeOrderResult.error);
-     }
+    const placeOrder = COHelpers.placeOrder(order, fraudDetectionStatus);
+    return placeOrder;
   }
 }
 
@@ -116,7 +114,9 @@ function handle(customObj) {
     `Order date ${orderCreateDate} , orderCreateDateDelay ${orderCreateDateDelay} , currentDate ${currentDate}`,
   );
   if (orderCreateDateDelay < currentDate) {
-    const totalAmount = adyenHelper.getCurrencyValueForApi(order.getTotalGrossPrice()).value;
+    const totalAmount = adyenHelper.getCurrencyValueForApi(
+      order.getTotalGrossPrice(),
+    ).value;
     switch (customObj.custom.eventCode) {
       case 'AUTHORISATION':
         // Check if one of the adyen payment methods was used during payment
@@ -158,14 +158,16 @@ function handle(customObj) {
               `Partial amount ${customObj.custom.value} received for order number ${order.orderNo} with total amount ${totalAmount}`,
             );
           } else {
-	    placeOrder(order);
-            order.setPaymentStatus(Order.PAYMENT_STATUS_PAID);
-            order.setExportStatus(Order.EXPORT_STATUS_READY);
-            order.setConfirmationStatus(Order.CONFIRMATION_STATUS_CONFIRMED);
-            AdyenLogs.info_log(
-              `Order ${order.orderNo} updated to status PAID.`,
-            );
-            result.SubmitOrder = true;
+            const placeOrderResult = placeOrder(order);
+            if (!placeOrderResult.error) {
+              order.setPaymentStatus(Order.PAYMENT_STATUS_PAID);
+              order.setExportStatus(Order.EXPORT_STATUS_READY);
+              order.setConfirmationStatus(Order.CONFIRMATION_STATUS_CONFIRMED);
+              AdyenLogs.info_log(
+                `Order ${order.orderNo} updated to status PAID.`,
+              );
+              result.SubmitOrder = true;
+            }
           }
           order.custom.Adyen_eventCode = customObj.custom.eventCode;
           order.custom.Adyen_value = amountPaid.toString();
@@ -228,13 +230,18 @@ function handle(customObj) {
         }
         break;
       case 'ORDER_CLOSED':
-	// Placing the order for partial paymetns once OFFER_CLOSED webhook came, and the total amount matches order amount
-        if (customObj.custom.success === 'true' && parseFloat(customObj.custom.value) === parseFloat(totalAmount)) {
-	  placeOrder(order);
-          order.setPaymentStatus(Order.PAYMENT_STATUS_PAID);
-	  order.setExportStatus(Order.EXPORT_STATUS_READY);
-	  order.setConfirmationStatus(Order.CONFIRMATION_STATUS_CONFIRMED);
-          AdyenLogs.info_log(`Order ${order.orderNo} placed and closed`);
+        // Placing the order for partial paymetns once OFFER_CLOSED webhook came, and the total amount matches order amount
+        if (
+          customObj.custom.success === 'true' &&
+          parseFloat(customObj.custom.value) === parseFloat(totalAmount)
+        ) {
+          const placeOrderResult = placeOrder(order);
+          if (!placeOrderResult.error) {
+            order.setPaymentStatus(Order.PAYMENT_STATUS_PAID);
+            order.setExportStatus(Order.EXPORT_STATUS_READY);
+            order.setConfirmationStatus(Order.CONFIRMATION_STATUS_CONFIRMED);
+            AdyenLogs.info_log(`Order ${order.orderNo} placed and closed`);
+          }
         }
         break;
       case 'OFFER_CLOSED':
