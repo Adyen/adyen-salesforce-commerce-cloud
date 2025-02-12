@@ -4,7 +4,7 @@ const constants = require('../constants');
 
 const { httpClient } = require('../commons/httpClient');
 const CardConfig = require('./paymentMethodsConfiguration/card/cardConfig');
-const StoredCardConfig = require('./paymentMethodsConfiguration/card/storedCardConfig');
+// const StoredCardConfig = require('./paymentMethodsConfiguration/card/storedCardConfig');
 const GooglePayConfig = require('./paymentMethodsConfiguration/googlePay/googlePayConfig');
 const BoletoConfig = require('./paymentMethodsConfiguration/boleto/boletoConfig');
 const KlarnaConfig = require('./paymentMethodsConfiguration/klarna/klarnaConfig');
@@ -13,9 +13,7 @@ const UpiConfig = require('./paymentMethodsConfiguration/upi/upiConfig');
 const ApplePayConfig = require('./paymentMethodsConfiguration/applePay/applePayConfig');
 const PayPalConfig = require('./paymentMethodsConfiguration/paypal/paypalConfig');
 const AmazonPayConfig = require('./paymentMethodsConfiguration/amazonPay/amazonPayConfig');
-const {
-  getGiftCardConfig,
-} = require('./paymentMethodsConfiguration/giftcards/giftcardsConfig');
+const GiftCardConfig = require('./paymentMethodsConfiguration/giftcards/giftcardsConfig');
 
 async function handleOnChange(state) {
   const { type } = state.data.paymentMethod;
@@ -65,7 +63,7 @@ function setCheckoutConfiguration() {
   store.checkoutConfiguration.clientKey = window.adyenClientKey;
 
   const cardConfig = new CardConfig(store, helpers).getConfig();
-  const storedCardConfig = new StoredCardConfig().getConfig();
+  // const storedCardConfig = new StoredCardConfig(store, helpers).getConfig();
   const boletoConfig = new BoletoConfig().getConfig();
   const googlePayConfig = new GooglePayConfig(helpers).getConfig();
   const klarnaConfig = new KlarnaConfig(helpers).getConfig();
@@ -74,17 +72,18 @@ function setCheckoutConfiguration() {
   const applePayConfig = new ApplePayConfig(helpers).getConfig();
   const payPalConfig = new PayPalConfig(store, helpers).getConfig();
   const amazonPayConfig = new AmazonPayConfig(store, helpers).getConfig();
+  const giftCardConfig = new GiftCardConfig(store, helpers).getConfig();
 
   store.checkoutConfiguration.paymentMethodsConfiguration = {
     card: cardConfig,
     bcmc: cardConfig,
-    storedCard: storedCardConfig,
+    // storedCard: storedCardConfig,
     boletobancario: boletoConfig,
     paywithgoogle: googlePayConfig,
     googlepay: googlePayConfig,
     paypal: payPalConfig,
     amazonpay: amazonPayConfig,
-    giftcard: getGiftCardConfig(),
+    giftcard: giftCardConfig,
     applepay: applePayConfig,
     klarna: klarnaConfig,
     klarna_account: klarnaConfig,
