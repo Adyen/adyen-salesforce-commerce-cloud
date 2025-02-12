@@ -1,24 +1,23 @@
-const helpers = require('../../helpers');
-const store = require('../../../../../../store');
-
 class PaypalConfig {
-  constructor() {
+  constructor(store, helpers) {
+    this.store = store;
+    this.helpers = helpers;
     this.showPayButton = true;
     this.environment = window.Configuration.environment;
-    store.paypalTerminatedEarly = false;
+    this.store.paypalTerminatedEarly = false;
   }
 
   onSubmit(state, component) {
-    helpers.assignPaymentMethodValue();
+    this.helpers.assignPaymentMethodValue();
     document.querySelector('#adyenStateData').value = JSON.stringify(
-      store.selectedPayment.stateData,
+      this.store.selectedPayment.stateData,
     );
-    helpers.paymentFromComponent(state.data, component);
+    this.helpers.paymentFromComponent(state.data, component);
   }
 
   onCancel(data, component) {
-    store.paypalTerminatedEarly = false;
-    helpers.paymentFromComponent(
+    this.store.paypalTerminatedEarly = false;
+    this.helpers.paymentFromComponent(
       {
         cancelTransaction: true,
         merchantReference: document.querySelector('#merchantReference').value,
@@ -29,7 +28,7 @@ class PaypalConfig {
   }
 
   onError(error, component) {
-    store.paypalTerminatedEarly = false;
+    this.store.paypalTerminatedEarly = false;
     if (component) {
       component.setStatus('ready');
     }
@@ -37,7 +36,7 @@ class PaypalConfig {
   }
 
   onAdditionalDetails(state) {
-    store.paypalTerminatedEarly = false;
+    this.store.paypalTerminatedEarly = false;
     document.querySelector('#additionalDetailsHidden').value = JSON.stringify(
       state.data,
     );
@@ -46,18 +45,18 @@ class PaypalConfig {
 
   onClick(data, actions) {
     $('#dwfrm_billing').trigger('submit');
-    if (store.formErrorsExist) {
+    if (this.store.formErrorsExist) {
       return actions.reject();
     }
-    if (store.paypalTerminatedEarly) {
-      helpers.paymentFromComponent({
+    if (this.store.paypalTerminatedEarly) {
+      this.helpers.paymentFromComponent({
         cancelTransaction: true,
         merchantReference: document.querySelector('#merchantReference').value,
       });
-      store.paypalTerminatedEarly = false;
+      this.store.paypalTerminatedEarly = false;
       return actions.resolve();
     }
-    store.paypalTerminatedEarly = true;
+    this.store.paypalTerminatedEarly = true;
     return null;
   }
 

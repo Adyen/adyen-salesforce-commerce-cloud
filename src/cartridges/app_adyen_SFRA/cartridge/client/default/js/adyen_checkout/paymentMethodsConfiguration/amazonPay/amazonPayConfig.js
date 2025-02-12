@@ -1,21 +1,20 @@
-const helpers = require('../../helpers');
-const store = require('../../../../../../store');
-
 class AmazonPayConfig {
-  constructor() {
+  constructor(store, helpers) {
     this.showPayButton = true;
     this.productType = 'PayAndShip';
     this.checkoutMode = 'ProcessOrder';
     this.locale = window.Configuration.locale;
     this.returnUrl = window.returnURL;
+    this.store = store;
+    this.helpers = helpers;
   }
 
   onClick(resolve, reject) {
     $('#dwfrm_billing').trigger('submit');
-    if (store.formErrorsExist) {
+    if (this.store.formErrorsExist) {
       reject();
     } else {
-      helpers.assignPaymentMethodValue();
+      this.helpers.assignPaymentMethodValue();
       resolve();
     }
   }

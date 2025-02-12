@@ -1,15 +1,14 @@
-const helpers = require('../../helpers');
-
 class ApplePayConfig {
-  constructor() {
+  constructor(helpers) {
     this.showPayButton = true;
     this.buttonColor = 'black';
+    this.helpers = helpers;
   }
 
   onSubmit(state, component) {
     $('#dwfrm_billing').trigger('submit');
-    helpers.assignPaymentMethodValue();
-    helpers.paymentFromComponent(state.data, component);
+    this.helpers.assignPaymentMethodValue();
+    this.helpers.paymentFromComponent(state.data, component);
   }
 
   getConfig() {

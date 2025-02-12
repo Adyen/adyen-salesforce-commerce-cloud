@@ -1,14 +1,13 @@
-const helpers = require('../../helpers');
-
 class CashAppConfig {
-  constructor() {
+  constructor(helpers) {
     this.showPayButton = true;
+    this.helpers = helpers;
   }
 
   onSubmit(state, component) {
     $('#dwfrm_billing').trigger('submit');
-    helpers.assignPaymentMethodValue();
-    helpers.paymentFromComponent(state.data, component);
+    this.helpers.assignPaymentMethodValue();
+    this.helpers.paymentFromComponent(state.data, component);
   }
 
   getConfig() {

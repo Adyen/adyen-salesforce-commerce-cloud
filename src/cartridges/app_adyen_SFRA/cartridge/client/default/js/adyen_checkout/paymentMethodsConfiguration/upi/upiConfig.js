@@ -1,28 +1,27 @@
-const helpers = require('../../helpers');
-
 class UpiConfig {
-  constructor() {
+  constructor(helpers) {
     this.showPayButton = true;
+    this.helpers = helpers;
+    this.document = document;
   }
 
   onSubmit(state, component) {
     $('#dwfrm_billing').trigger('submit');
-    helpers.assignPaymentMethodValue();
-    helpers.paymentFromComponent(state.data, component);
+    this.helpers.assignPaymentMethodValue();
+    this.helpers.paymentFromComponent(state.data, component);
   }
 
   onAdditionalDetails(state) {
-    document.querySelector('#additionalDetailsHidden').value = JSON.stringify(
-      state.data,
-    );
-    document.querySelector('#showConfirmationForm').submit();
+    this.document.querySelector('#additionalDetailsHidden').value =
+      JSON.stringify(state.data);
+    this.document.querySelector('#showConfirmationForm').submit();
   }
 
   onError(component) {
     if (component) {
       component.setStatus('ready');
     }
-    document.querySelector('#showConfirmationForm').submit();
+    this.document.querySelector('#showConfirmationForm').submit();
   }
 
   getConfig() {

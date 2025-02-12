@@ -1,20 +1,19 @@
-const helpers = require('../../helpers');
-
 class KlarnaConfig {
-  constructor() {
+  constructor(helpers) {
     this.klarnaWidgetEnabled = window.klarnaWidgetEnabled;
+    this.helpers = helpers;
+    this.document = document;
   }
 
   onSubmit(state, component) {
-    helpers.assignPaymentMethodValue();
-    helpers.paymentFromComponent(state.data, component);
+    this.helpers.assignPaymentMethodValue();
+    this.helpers.paymentFromComponent(state.data, component);
   }
 
   onAdditionalDetails(state) {
-    document.querySelector('#additionalDetailsHidden').value = JSON.stringify(
-      state.data,
-    );
-    document.querySelector('#showConfirmationForm').submit();
+    this.document.querySelector('#additionalDetailsHidden').value =
+      JSON.stringify(state.data);
+    this.document.querySelector('#showConfirmationForm').submit();
   }
 
   getConfig() {

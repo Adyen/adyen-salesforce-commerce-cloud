@@ -1,4 +1,5 @@
 const store = require('../../../../store');
+const helpers = require('./helpers');
 const constants = require('../constants');
 
 const { httpClient } = require('../commons/httpClient');
@@ -63,16 +64,16 @@ function setCheckoutConfiguration() {
   store.checkoutConfiguration.showPayButton = false;
   store.checkoutConfiguration.clientKey = window.adyenClientKey;
 
-  const cardConfig = new CardConfig().getConfig();
+  const cardConfig = new CardConfig(store, helpers).getConfig();
   const storedCardConfig = new StoredCardConfig().getConfig();
   const boletoConfig = new BoletoConfig().getConfig();
-  const googlePayConfig = new GooglePayConfig().getConfig();
-  const klarnaConfig = new KlarnaConfig().getConfig();
-  const cashAppConfig = new CashAppConfig().getConfig();
-  const upiConfig = new UpiConfig().getConfig();
-  const applePayConfig = new ApplePayConfig().getConfig();
-  const payPalConfig = new PayPalConfig().getConfig();
-  const amazonPayConfig = new AmazonPayConfig().getConfig();
+  const googlePayConfig = new GooglePayConfig(helpers).getConfig();
+  const klarnaConfig = new KlarnaConfig(helpers).getConfig();
+  const cashAppConfig = new CashAppConfig(helpers).getConfig();
+  const upiConfig = new UpiConfig(helpers).getConfig();
+  const applePayConfig = new ApplePayConfig(helpers).getConfig();
+  const payPalConfig = new PayPalConfig(store, helpers).getConfig();
+  const amazonPayConfig = new AmazonPayConfig(store, helpers).getConfig();
 
   store.checkoutConfiguration.paymentMethodsConfiguration = {
     card: cardConfig,

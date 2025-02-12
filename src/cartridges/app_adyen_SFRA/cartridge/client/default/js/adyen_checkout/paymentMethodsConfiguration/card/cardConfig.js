@@ -1,9 +1,7 @@
-const helpers = require('../../helpers');
-const store = require('../../../../../../store');
 const { onBrand, onFieldValid } = require('../../../commons');
 
 class CardConfig {
-  constructor() {
+  constructor(store, helpers) {
     this.hasHolderName = true;
     this.holderNameRequired = true;
     this.enableStoreDetails = window.showStoreDetails;
@@ -12,19 +10,21 @@ class CardConfig {
       merchantDisplayName: window.merchantAccount,
     };
     this.exposeExpiryDate = false;
+    this.store = store;
+    this.helpers = helpers;
   }
 
   onChange(state) {
-    store.isValid = state.isValid;
+    this.store.isValid = state.isValid;
     const method = state.data.paymentMethod.storedPaymentMethodId
       ? `storedCard${state.data.paymentMethod.storedPaymentMethodId}`
-      : store.selectedMethod;
-    store.updateSelectedPayment(method, 'isValid', store.isValid);
-    store.updateSelectedPayment(method, 'stateData', state.data);
+      : this.store.selectedMethod;
+    this.store.updateSelectedPayment(method, 'isValid', this.store.isValid);
+    this.store.updateSelectedPayment(method, 'stateData', state.data);
   }
 
   onSubmit() {
-    helpers.assignPaymentMethodValue();
+    this.helpers.assignPaymentMethodValue();
     document.querySelector('button[value="submit-payment"]').disabled = false;
     document.querySelector('button[value="submit-payment"]').click();
   }
