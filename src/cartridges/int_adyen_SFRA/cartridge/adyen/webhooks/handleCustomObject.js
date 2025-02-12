@@ -53,6 +53,7 @@ function placeOrder(order) {
     const placeOrder = COHelpers.placeOrder(order, fraudDetectionStatus);
     return placeOrder;
   }
+  return { error: true };
 }
 
 function execute(args) {
