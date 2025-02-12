@@ -50,10 +50,10 @@ function placeOrder(order) {
   const fraudDetectionStatus = { status: 'success' };
   // Only created orders can be placed
   if (order.status.value === Order.ORDER_STATUS_CREATED) {
-	const placeOrderResult = COHelpers.placeOrder(order, fraudDetectionStatus);
-	if (placeOrderResult.error) {
-	  AdyenLogs.error_log('Failed to place the order', placeOrderResult.error);
-	}
+     const placeOrderResult = COHelpers.placeOrder(order, fraudDetectionStatus);
+     if (placeOrderResult.error) {
+	AdyenLogs.error_log('Failed to place the order', placeOrderResult.error);
+     }
   }
 }
 
@@ -116,7 +116,7 @@ function handle(customObj) {
     `Order date ${orderCreateDate} , orderCreateDateDelay ${orderCreateDateDelay} , currentDate ${currentDate}`,
   );
   if (orderCreateDateDelay < currentDate) {
-	const totalAmount = adyenHelper.getCurrencyValueForApi(order.getTotalGrossPrice()).value;
+    const totalAmount = adyenHelper.getCurrencyValueForApi(order.getTotalGrossPrice()).value;
     switch (customObj.custom.eventCode) {
       case 'AUTHORISATION':
         // Check if one of the adyen payment methods was used during payment
@@ -158,7 +158,7 @@ function handle(customObj) {
               `Partial amount ${customObj.custom.value} received for order number ${order.orderNo} with total amount ${totalAmount}`,
             );
           } else {
-			placeOrder(order);
+	    placeOrder(order);
             order.setPaymentStatus(Order.PAYMENT_STATUS_PAID);
             order.setExportStatus(Order.EXPORT_STATUS_READY);
             order.setConfirmationStatus(Order.CONFIRMATION_STATUS_CONFIRMED);
@@ -228,12 +228,12 @@ function handle(customObj) {
         }
         break;
       case 'ORDER_CLOSED':
-		// Placing the order for partial paymetns once OFFER_CLOSED webhook came, and the total amount matches order amount
+	// Placing the order for partial paymetns once OFFER_CLOSED webhook came, and the total amount matches order amount
         if (customObj.custom.success === 'true' && parseFloat(customObj.custom.value) === parseFloat(totalAmount)) {
-		  placeOrder(order);
-		  order.setPaymentStatus(Order.PAYMENT_STATUS_PAID);
-		  order.setExportStatus(Order.EXPORT_STATUS_READY);
-		  order.setConfirmationStatus(Order.CONFIRMATION_STATUS_CONFIRMED);
+	  placeOrder(order);
+          order.setPaymentStatus(Order.PAYMENT_STATUS_PAID);
+	  order.setExportStatus(Order.EXPORT_STATUS_READY);
+	  order.setConfirmationStatus(Order.CONFIRMATION_STATUS_CONFIRMED);
           AdyenLogs.info_log(`Order ${order.orderNo} placed and closed`);
         }
         break;
