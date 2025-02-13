@@ -49,12 +49,22 @@ function doPaymentsCall(order, paymentInstrument, paymentRequest) {
   var paymentResponse = {};
   var errorMessage = '';
   try {
-    var responseObject = AdyenHelper.executeCall(constants.SERVICE.PAYMENT, paymentRequest);
-    // There is no order for zero auth transactions.
-    // Return response directly to PaymentInstruments-SavePayment
-    if (!order) {
-      return responseObject;
+    var _paymentRequest$amoun, _paymentInstrument$pa, _paymentRequest$amoun3;
+    if (!(paymentRequest !== null && paymentRequest !== void 0 && (_paymentRequest$amoun = paymentRequest.amount) !== null && _paymentRequest$amoun !== void 0 && _paymentRequest$amoun.value)) {
+      throw new Error('Zero amount not accepted');
     }
+    var transactionAmount = AdyenHelper.getCurrencyValueForApi(paymentInstrument === null || paymentInstrument === void 0 ? void 0 : (_paymentInstrument$pa = paymentInstrument.paymentTransaction) === null || _paymentInstrument$pa === void 0 ? void 0 : _paymentInstrument$pa.amount).getValueOrNull();
+    if (session.privacy.partialPaymentData) {
+      var _paymentRequest$amoun2;
+      var _JSON$parse = JSON.parse(session.privacy.partialPaymentData),
+        remainingAmount = _JSON$parse.remainingAmount;
+      if (remainingAmount.value !== (paymentRequest === null || paymentRequest === void 0 ? void 0 : (_paymentRequest$amoun2 = paymentRequest.amount) === null || _paymentRequest$amoun2 === void 0 ? void 0 : _paymentRequest$amoun2.value)) {
+        throw new Error('Amounts dont match');
+      }
+    } else if (transactionAmount !== (paymentRequest === null || paymentRequest === void 0 ? void 0 : (_paymentRequest$amoun3 = paymentRequest.amount) === null || _paymentRequest$amoun3 === void 0 ? void 0 : _paymentRequest$amoun3.value)) {
+      throw new Error('Amounts dont match');
+    }
+    var responseObject = AdyenHelper.executeCall(constants.SERVICE.PAYMENT, paymentRequest);
     paymentResponse.fullResponse = responseObject;
     paymentResponse.redirectObject = responseObject.action ? responseObject.action : '';
     paymentResponse.resultCode = responseObject.resultCode;

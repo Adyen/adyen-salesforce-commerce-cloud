@@ -19,7 +19,6 @@ var _require2 = require('./constants'),
   APPLE_PAY = _require2.APPLE_PAY;
 var checkout;
 var shippingMethodsData;
-var temporaryBasketId;
 function formatCustomerObject(customerData, billingData) {
   return {
     addressBook: {
@@ -106,11 +105,11 @@ function callPaymentFromComponent(data, resolveApplePay, rejectApplePay) {
     rejectApplePay();
   });
 }
-function selectShippingMethod(_x, _x2, _x3) {
+function selectShippingMethod(_x, _x2) {
   return _selectShippingMethod.apply(this, arguments);
 }
 function _selectShippingMethod() {
-  _selectShippingMethod = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee(_ref, basketId, reject) {
+  _selectShippingMethod = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee(_ref, reject) {
     var shipmentUUID, ID, requestBody;
     return _regeneratorRuntime().wrap(function _callee$(_context) {
       while (1) switch (_context.prev = _context.next) {
@@ -120,7 +119,7 @@ function _selectShippingMethod() {
             paymentMethodType: APPLE_PAY,
             shipmentUUID: shipmentUUID,
             methodID: ID,
-            basketId: basketId
+            isExpressPdp: window.isExpressPdp
           };
           return _context.abrupt("return", $.ajax({
             type: 'POST',
@@ -143,10 +142,10 @@ function _selectShippingMethod() {
   }));
   return _selectShippingMethod.apply(this, arguments);
 }
-function getShippingMethod(shippingContact, basketId, reject) {
+function getShippingMethod(shippingContact, reject) {
   var requestBody = {
     paymentMethodType: APPLE_PAY,
-    basketId: basketId
+    isExpressPdp: window.isExpressPdp
   };
   if (shippingContact) {
     requestBody.address = {
@@ -168,10 +167,12 @@ function getShippingMethod(shippingContact, basketId, reject) {
       return response;
     }
   }).fail(function () {
-    return reject();
+    if (reject) {
+      reject();
+    }
   });
 }
-function initializeCheckout(_x4) {
+function initializeCheckout(_x3) {
   return _initializeCheckout.apply(this, arguments);
 }
 function _initializeCheckout() {
@@ -202,7 +203,7 @@ function _initializeCheckout() {
   }));
   return _initializeCheckout.apply(this, arguments);
 }
-function createApplePayButton(_x5) {
+function createApplePayButton(_x4) {
   return _createApplePayButton.apply(this, arguments);
 }
 function _createApplePayButton() {
@@ -219,7 +220,7 @@ function _createApplePayButton() {
   }));
   return _createApplePayButton.apply(this, arguments);
 }
-function _onAuthorized2(_x6, _x7, _x8, _x9, _x10) {
+function _onAuthorized2(_x5, _x6, _x7, _x8, _x9) {
   return _onAuthorized.apply(this, arguments);
 }
 function _onAuthorized() {
@@ -254,7 +255,7 @@ function _onAuthorized() {
           _context4.next = 8;
           return callPaymentFromComponent(_objectSpread(_objectSpread({}, stateData), {}, {
             customer: customer,
-            basketId: temporaryBasketId
+            isExpressPdp: window.isExpressPdp
           }), resolveApplePay, reject);
         case 8:
           _context4.next = 13;
@@ -271,7 +272,7 @@ function _onAuthorized() {
   }));
   return _onAuthorized.apply(this, arguments);
 }
-function _onShippingMethodSelected2(_x11, _x12, _x13, _x14, _x15, _x16) {
+function _onShippingMethodSelected2(_x10, _x11, _x12, _x13, _x14, _x15) {
   return _onShippingMethodSelected.apply(this, arguments);
 }
 function _onShippingMethodSelected() {
@@ -287,7 +288,7 @@ function _onShippingMethodSelected() {
             return sm.ID === shippingMethod.identifier;
           });
           _context5.next = 5;
-          return selectShippingMethod(matchingShippingMethod, temporaryBasketId, reject);
+          return selectShippingMethod(matchingShippingMethod, reject);
         case 5:
           calculationResponse = _context5.sent;
           if (calculationResponse !== null && calculationResponse !== void 0 && calculationResponse.grandTotalAmount) {
@@ -314,7 +315,7 @@ function _onShippingMethodSelected() {
   }));
   return _onShippingMethodSelected.apply(this, arguments);
 }
-function _onShippingContactSelected2(_x17, _x18, _x19, _x20) {
+function _onShippingContactSelected2(_x16, _x17, _x18, _x19) {
   return _onShippingContactSelected.apply(this, arguments);
 }
 function _onShippingContactSelected() {
@@ -326,7 +327,7 @@ function _onShippingContactSelected() {
         case 0:
           shippingContact = event.shippingContact;
           _context6.next = 3;
-          return getShippingMethod(shippingContact, temporaryBasketId, reject);
+          return getShippingMethod(shippingContact, reject);
         case 3:
           shippingMethodsData = _context6.sent;
           if (!((_shippingMethodsData2 = shippingMethodsData) !== null && _shippingMethodsData2 !== void 0 && (_shippingMethodsData3 = _shippingMethodsData2.shippingMethods) !== null && _shippingMethodsData3 !== void 0 && _shippingMethodsData3.length)) {
@@ -335,7 +336,7 @@ function _onShippingContactSelected() {
           }
           selectedShippingMethod = shippingMethodsData.shippingMethods[0];
           _context6.next = 8;
-          return selectShippingMethod(selectedShippingMethod, temporaryBasketId, reject);
+          return selectShippingMethod(selectedShippingMethod, reject);
         case 8:
           newCalculation = _context6.sent;
           if (newCalculation !== null && newCalculation !== void 0 && newCalculation.grandTotalAmount) {
@@ -371,7 +372,7 @@ function _onShippingContactSelected() {
   }));
   return _onShippingContactSelected.apply(this, arguments);
 }
-function init(_x21) {
+function init(_x20) {
   return _init.apply(this, arguments);
 }
 function _init() {
@@ -417,7 +418,7 @@ function _init() {
                           }
                         }, _callee7);
                       }));
-                      function onAuthorized(_x22, _x23, _x24) {
+                      function onAuthorized(_x21, _x22, _x23) {
                         return _onAuthorized3.apply(this, arguments);
                       }
                       return onAuthorized;
@@ -440,8 +441,7 @@ function _init() {
                               return createTemporaryBasket();
                             case 3:
                               tempBasketResponse = _context8.sent;
-                              if (tempBasketResponse !== null && tempBasketResponse !== void 0 && tempBasketResponse.basketId) {
-                                temporaryBasketId = tempBasketResponse.basketId;
+                              if (tempBasketResponse !== null && tempBasketResponse !== void 0 && tempBasketResponse.temporaryBasketCreated) {
                                 applePayButtonConfig.amount = {
                                   value: tempBasketResponse.amount.value,
                                   currency: tempBasketResponse.amount.currency
@@ -467,7 +467,7 @@ function _init() {
                           }
                         }, _callee8);
                       }));
-                      function onClick(_x25, _x26) {
+                      function onClick(_x24, _x25) {
                         return _onClick.apply(this, arguments);
                       }
                       return onClick;
@@ -485,7 +485,7 @@ function _init() {
                           }
                         }, _callee9);
                       }));
-                      function onShippingMethodSelected(_x27, _x28, _x29) {
+                      function onShippingMethodSelected(_x26, _x27, _x28) {
                         return _onShippingMethodSelected3.apply(this, arguments);
                       }
                       return onShippingMethodSelected;
@@ -503,7 +503,7 @@ function _init() {
                           }
                         }, _callee10);
                       }));
-                      function onShippingContactSelected(_x30, _x31, _x32) {
+                      function onShippingContactSelected(_x29, _x30, _x31) {
                         return _onShippingContactSelected3.apply(this, arguments);
                       }
                       return onShippingContactSelected;

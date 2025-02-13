@@ -4,163 +4,143 @@ function _regeneratorRuntime() { "use strict"; /*! regenerator-runtime -- Copyri
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 function asyncGeneratorStep(n, t, e, r, o, a, c) { try { var i = n[a](c), u = i.value; } catch (n) { return void e(n); } i.done ? t(u) : Promise.resolve(u).then(r, o); }
 function _asyncToGenerator(n) { return function () { var t = this, e = arguments; return new Promise(function (r, o) { var a = n.apply(t, e); function _next(n) { asyncGeneratorStep(a, r, o, _next, _throw, "next", n); } function _throw(n) { asyncGeneratorStep(a, r, o, _next, _throw, "throw", n); } _next(void 0); }); }; }
-var _require = require('./commons'),
-  onFieldValid = _require.onFieldValid,
-  onBrand = _require.onBrand,
-  getPaymentMethods = _require.getPaymentMethods;
-var store = require('../../../store');
-var checkout;
-var card;
-
-// Store configuration
-store.checkoutConfiguration.amount = {
-  value: 0,
-  currency: 'EUR'
-};
-function initializeStoreConfiguration() {
-  return _initializeStoreConfiguration.apply(this, arguments);
+function _toConsumableArray(r) { return _arrayWithoutHoles(r) || _iterableToArray(r) || _unsupportedIterableToArray(r) || _nonIterableSpread(); }
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
+function _iterableToArray(r) { if ("undefined" != typeof Symbol && null != r[Symbol.iterator] || null != r["@@iterator"]) return Array.from(r); }
+function _arrayWithoutHoles(r) { if (Array.isArray(r)) return _arrayLikeToArray(r); }
+function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
+function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: !0, configurable: !0, writable: !0 }) : e[r] = t, e; }
+function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
+function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
+var applePayExpressModule = require('../applePayExpress');
+var googlePayExpressModule = require('../googlePayExpress');
+var _require = require('../constants'),
+  APPLE_PAY = _require.APPLE_PAY,
+  GOOGLE_PAY = _require.GOOGLE_PAY;
+var _require2 = require('../commons'),
+  getPaymentMethods = _require2.getPaymentMethods;
+var paymentMethodsResponse;
+function getProductForm(product) {
+  var $productInputEl = document.createElement('input');
+  $productInputEl.setAttribute('id', 'selected-express-product');
+  $productInputEl.setAttribute('name', 'selected-express-product');
+  $productInputEl.setAttribute('type', 'hidden');
+  $productInputEl.setAttribute('data-pid', "".concat(product.id));
+  $productInputEl.setAttribute('data-basketId', '');
+  $productInputEl.value = JSON.stringify(product);
+  var $productForm = document.createElement('form');
+  $productForm.setAttribute('id', 'express-product-form');
+  $productForm.setAttribute('name', 'express-product-form');
+  $productForm.append($productInputEl);
+  return $productForm;
 }
-function _initializeStoreConfiguration() {
-  _initializeStoreConfiguration = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
-    var paymentMethodsData, paymentMethodsResponse, cardBrands;
+function getValueForCurrency(amount, currency) {
+  var value = Math.round(amount * Math.pow(10, window.fractionDigits));
+  return {
+    value: value,
+    currency: currency
+  };
+}
+function getExpressPaymentButtons(product) {
+  var expressMethodsConfig = _defineProperty(_defineProperty({}, APPLE_PAY, window.isApplePayExpressOnPdpEnabled === 'true'), GOOGLE_PAY, window.isGooglePayExpressOnPdpEnabled === 'true');
+  var enabledExpressPaymentButtons = [];
+  Object.keys(expressMethodsConfig).forEach(function (key) {
+    if (expressMethodsConfig[key]) {
+      var $container = document.createElement('div');
+      $container.setAttribute('id', "".concat(key, "-pdp"));
+      $container.setAttribute('class', "expressComponent ".concat(key));
+      $container.setAttribute('data-method', "".concat(key));
+      $container.setAttribute('data-pid', "".concat(product.id));
+      enabledExpressPaymentButtons.push($container);
+    }
+  });
+  return enabledExpressPaymentButtons;
+}
+function renderApplePayButton(paymentMethods) {
+  applePayExpressModule.init(paymentMethods, true);
+}
+function renderGooglePayButton(paymentMethods) {
+  googlePayExpressModule.init(paymentMethods, true);
+}
+function renderExpressPaymentButtons() {
+  $('body').on('product:renderExpressPaymentButtons', function (e, response) {
+    var _response$product = response.product,
+      product = _response$product === void 0 ? {} : _response$product,
+      paymentMethods = response.paymentMethods;
+    var $expressPaymentButtonsContainer = document.getElementById('express-payment-buttons');
+    if (product.readyToOrder && product.available) {
+      var price = product.price,
+        selectedQuantity = product.selectedQuantity;
+      var _price$sales = price.sales,
+        value = _price$sales.value,
+        currency = _price$sales.currency;
+      var amount = getValueForCurrency(value * selectedQuantity, currency);
+      window.basketAmount = JSON.stringify(amount);
+      var expressPaymentButtons = getExpressPaymentButtons(product);
+      var $productForm = getProductForm(product);
+      $expressPaymentButtonsContainer.replaceChildren.apply($expressPaymentButtonsContainer, _toConsumableArray(expressPaymentButtons).concat([$productForm]));
+      renderApplePayButton(paymentMethods);
+      renderGooglePayButton(paymentMethods);
+    } else {
+      $expressPaymentButtonsContainer.replaceChildren();
+    }
+  });
+}
+function init() {
+  return _init.apply(this, arguments);
+}
+function _init() {
+  _init = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
     return _regeneratorRuntime().wrap(function _callee2$(_context2) {
       while (1) switch (_context2.prev = _context2.next) {
         case 0:
           _context2.next = 2;
           return getPaymentMethods();
         case 2:
-          paymentMethodsData = _context2.sent;
-          paymentMethodsResponse = paymentMethodsData.AdyenPaymentMethods;
-          cardBrands = paymentMethodsResponse.paymentMethods.filter(function (method) {
-            return method.type === 'scheme';
-          }).flatMap(function (method) {
-            return method.brands || [];
+          paymentMethodsResponse = _context2.sent;
+          $('body').on('product:updateAddToCart', function (e, response) {
+            $('body').trigger('product:renderExpressPaymentButtons', {
+              product: response.product,
+              paymentMethods: paymentMethodsResponse
+            });
           });
-          store.checkoutConfiguration.paymentMethodsConfiguration = {
-            card: {
-              enableStoreDetails: false,
-              hasHolderName: true,
-              holderNameRequired: true,
-              installments: [],
-              onBrand: onBrand,
-              onFieldValid: onFieldValid,
-              brands: cardBrands,
-              onChange: function onChange(state) {
-                store.isValid = state.isValid;
-                store.componentState = state;
+          $(document).ready(/*#__PURE__*/_asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
+            var dataUrl, productVariation;
+            return _regeneratorRuntime().wrap(function _callee$(_context) {
+              while (1) switch (_context.prev = _context.next) {
+                case 0:
+                  $.spinner().start();
+                  dataUrl = $('.quantity-select').find('option:selected').data('url');
+                  _context.next = 4;
+                  return $.ajax({
+                    url: dataUrl,
+                    method: 'get'
+                  });
+                case 4:
+                  productVariation = _context.sent;
+                  if (productVariation !== null && productVariation !== void 0 && productVariation.product) {
+                    $('body').trigger('product:renderExpressPaymentButtons', {
+                      product: productVariation === null || productVariation === void 0 ? void 0 : productVariation.product,
+                      paymentMethods: paymentMethodsResponse
+                    });
+                  }
+                  $.spinner().stop();
+                case 7:
+                case "end":
+                  return _context.stop();
               }
-            }
-          };
-        case 6:
+            }, _callee);
+          })));
+        case 5:
         case "end":
           return _context2.stop();
       }
     }, _callee2);
   }));
-  return _initializeStoreConfiguration.apply(this, arguments);
+  return _init.apply(this, arguments);
 }
-function initializeCardComponent() {
-  return _initializeCardComponent.apply(this, arguments);
-} // Handle Payment action
-function _initializeCardComponent() {
-  _initializeCardComponent = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee3() {
-    var cardNode;
-    return _regeneratorRuntime().wrap(function _callee3$(_context3) {
-      while (1) switch (_context3.prev = _context3.next) {
-        case 0:
-          cardNode = document.getElementById('card');
-          _context3.next = 3;
-          return AdyenCheckout(store.checkoutConfiguration);
-        case 3:
-          checkout = _context3.sent;
-          card = checkout.create('card').mount(cardNode);
-        case 5:
-        case "end":
-          return _context3.stop();
-      }
-    }, _callee3);
-  }));
-  return _initializeCardComponent.apply(this, arguments);
-}
-function handleAction(action) {
-  checkout.createFromAction(action).mount('#action-container');
-  $('#action-modal').modal({
-    backdrop: 'static',
-    keyboard: false
-  });
-}
-store.checkoutConfiguration.onAdditionalDetails = function (state) {
-  var requestData = JSON.stringify({
-    data: state.data
-  });
-  $.ajax({
-    type: 'POST',
-    url: window.paymentsDetailsURL,
-    data: {
-      csrf_token: $('#adyen-token').val(),
-      data: requestData
-    },
-    async: false,
-    success: function success(data) {
-      if (data.isSuccessful) {
-        window.location.href = window.redirectUrl;
-      } else if (!data.isFinal && _typeof(data.action) === 'object') {
-        handleAction(data.action);
-      } else {
-        $('#action-modal').modal('hide');
-        document.getElementById('cardError').style.display = 'block';
-      }
-    }
-  });
-};
-var formErrorsExist = false;
-function submitAddCard() {
-  var form = $(document.getElementById('payment-form'));
-  $.ajax({
-    type: 'POST',
-    url: form.attr('action'),
-    data: form.serialize(),
-    async: false,
-    success: function success(data) {
-      if (data.redirectAction) {
-        handleAction(data.redirectAction);
-      } else if (data.redirectUrl) {
-        window.location.href = data.redirectUrl;
-      } else if (data.error) {
-        formErrorsExist = true;
-      }
-    }
-  });
-}
-_asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
-  return _regeneratorRuntime().wrap(function _callee$(_context) {
-    while (1) switch (_context.prev = _context.next) {
-      case 0:
-        _context.next = 2;
-        return initializeStoreConfiguration();
-      case 2:
-        _context.next = 4;
-        return initializeCardComponent();
-      case 4:
-      case "end":
-        return _context.stop();
-    }
-  }, _callee);
-}))();
-$('button[value="add-new-payment"]').on('click', function (event) {
-  if (store.isValid) {
-    document.querySelector('#adyenStateData').value = JSON.stringify(store.componentState.data);
-    submitAddCard();
-    if (formErrorsExist) {
-      return;
-    }
-    event.preventDefault();
-  } else {
-    var _card;
-    (_card = card) === null || _card === void 0 ? void 0 : _card.showValidation();
-  }
-});
 module.exports = {
-  initializeCardComponent: initializeCardComponent,
-  submitAddCard: submitAddCard
+  init: init,
+  renderExpressPaymentButtons: renderExpressPaymentButtons
 };

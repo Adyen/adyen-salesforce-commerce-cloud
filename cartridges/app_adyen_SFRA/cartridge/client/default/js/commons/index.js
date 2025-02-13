@@ -12,7 +12,8 @@ var store = require('../../../../store');
 var _require = require('../constants'),
   PAYPAL = _require.PAYPAL,
   APPLE_PAY = _require.APPLE_PAY,
-  AMAZON_PAY = _require.AMAZON_PAY;
+  AMAZON_PAY = _require.AMAZON_PAY,
+  GOOGLE_PAY = _require.GOOGLE_PAY;
 module.exports.onFieldValid = function onFieldValid(data) {
   if (data.endDigits) {
     store.endDigits = data.endDigits;
@@ -76,8 +77,46 @@ module.exports.getPaymentMethods = /*#__PURE__*/function () {
   }
   return getPaymentMethods;
 }();
+
+/**
+ * Makes an ajax call to the controller function createTemporaryBasket
+ */
+module.exports.createTemporaryBasket = /*#__PURE__*/function () {
+  var _createTemporaryBasket = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee3() {
+    var productForm, data, dataFromEntries, parsedData;
+    return _regeneratorRuntime().wrap(function _callee3$(_context3) {
+      while (1) switch (_context3.prev = _context3.next) {
+        case 0:
+          productForm = document.getElementById('express-product-form');
+          data = new FormData(productForm);
+          dataFromEntries = Object.fromEntries(data.entries());
+          parsedData = JSON.parse(dataFromEntries['selected-express-product']);
+          return _context3.abrupt("return", $.ajax({
+            url: window.createTemporaryBasketUrl,
+            type: 'post',
+            data: {
+              csrf_token: $('#adyen-token').val(),
+              data: JSON.stringify({
+                id: parsedData.id,
+                bundledProducts: parsedData.bundledProducts,
+                options: parsedData.options,
+                selectedQuantity: parsedData.selectedQuantity
+              })
+            }
+          }));
+        case 5:
+        case "end":
+          return _context3.stop();
+      }
+    }, _callee3);
+  }));
+  function createTemporaryBasket() {
+    return _createTemporaryBasket.apply(this, arguments);
+  }
+  return createTemporaryBasket;
+}();
 module.exports.checkIfExpressMethodsAreReady = function checkIfExpressMethodsAreReady() {
-  var expressMethodsConfig = _defineProperty(_defineProperty(_defineProperty({}, APPLE_PAY, window.isApplePayExpressEnabled === 'true'), AMAZON_PAY, window.isAmazonPayExpressEnabled === 'true'), PAYPAL, window.isPayPalExpressEnabled === 'true');
+  var expressMethodsConfig = _defineProperty(_defineProperty(_defineProperty(_defineProperty({}, APPLE_PAY, window.isApplePayExpressEnabled === 'true'), AMAZON_PAY, window.isAmazonPayExpressEnabled === 'true'), PAYPAL, window.isPayPalExpressEnabled === 'true'), GOOGLE_PAY, window.isGooglePayExpressEnabled === 'true');
   var enabledExpressMethods = [];
   Object.keys(expressMethodsConfig).forEach(function (key) {
     if (expressMethodsConfig[key]) {

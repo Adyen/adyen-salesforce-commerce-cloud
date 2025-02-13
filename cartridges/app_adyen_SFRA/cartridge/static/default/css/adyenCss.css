@@ -440,6 +440,10 @@ input:checked + .slider:before {
     padding: 10px 0;
 }
 
+.expressComponent #gpay-button-online-api-id {
+    padding: 5px 0;
+}
+
 .express-loader-container {
     width: 100%;
     display: flex;

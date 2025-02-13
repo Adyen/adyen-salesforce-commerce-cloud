@@ -8,6 +8,7 @@ var _require = require('./commons'),
   getPaymentMethods = _require.getPaymentMethods;
 var applePayExpressModule = require('./applePayExpress');
 var paypalPayExpressModule = require('./paypalExpress');
+var googlePayExpressModule = require('./googlePayExpress');
 var amazonPayExpressModule = require('./amazonPayExpressPart1');
 var paymentMethodsResponse = null;
 function init() {
@@ -47,6 +48,13 @@ function _init() {
                   _context.next = 9;
                   return amazonPayExpressModule.init(paymentMethodsResponse);
                 case 9:
+                  if (!(window.isGooglePayExpressEnabled === 'true')) {
+                    _context.next = 12;
+                    break;
+                  }
+                  _context.next = 12;
+                  return googlePayExpressModule.init(paymentMethodsResponse);
+                case 12:
                 case "end":
                   return _context.stop();
               }
