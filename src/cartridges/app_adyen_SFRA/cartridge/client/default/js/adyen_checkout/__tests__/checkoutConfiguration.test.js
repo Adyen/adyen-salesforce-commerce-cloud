@@ -1,7 +1,6 @@
 /**
  * @jest-environment jsdom
  */
-// const checkoutConfiguration = require('../paymentMethodsConfiguration/');
 const store = require('../../../../../store');
 const helpers = require('../helpers');
 const httpClient = require('../../../js/commons/httpClient');
