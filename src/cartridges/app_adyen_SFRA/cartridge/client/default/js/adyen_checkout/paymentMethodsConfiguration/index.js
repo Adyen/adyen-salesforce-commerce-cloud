@@ -11,6 +11,7 @@ const PayPalConfig = require('./paypal/paypalConfig');
 const GiftCardsConfig = require('./giftcards/giftcardsConfig');
 const store = require('../../../../../store');
 const helpers = require('../helpers');
+const { httpClient } = require('../../commons/httpClient');
 
 const cardConfig = new CardConfig(store, helpers).getConfig();
 const storedCardConfig = new StoredCardConfig(store, helpers).getConfig();
@@ -25,7 +26,7 @@ const upiConfig = new UpiConfig(helpers).getConfig();
 const applePayConfig = new ApplePayConfig(helpers).getConfig();
 const payPalConfig = new PayPalConfig(store, helpers).getConfig();
 const amazonPayConfig = new AmazonPayConfig(store, helpers).getConfig();
-const giftCardsConfig = new GiftCardsConfig(store, helpers).getConfig();
+const giftCardsConfig = new GiftCardsConfig(store, httpClient).getConfig();
 
 const paymentMethodsConfiguration = {
   card: cardConfig,
