@@ -33,9 +33,22 @@ module.exports = {
     APPLEPAY: 'applepay',
     AMAZONPAY: 'amazonpay',
     PAYPAL: 'paypal',
+    GOOGLEPAY: 'googlepay',
   },
 
-  CAN_SKIP_SUMMARY_PAGE: ['applepay', 'cashapp', 'upi'],
+  CAN_SKIP_SUMMARY_PAGE: ['applepay', 'cashapp', 'upi', 'googlepay'],
+
+  OPEN_INVOICE_METHODS: [
+    'afterpay',
+    'klarna',
+    'ratepay',
+    'facilypay',
+    'riverty',
+    'atome',
+    'zip',
+    'affirm',
+    'clearpay',
+  ],
 
   SERVICE: {
     PAYMENT: 'AdyenPayment',

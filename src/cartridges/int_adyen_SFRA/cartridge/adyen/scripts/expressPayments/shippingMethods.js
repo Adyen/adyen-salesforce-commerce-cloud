@@ -26,9 +26,9 @@ function updateShippingAddress(currentBasket, address) {
   }
 }
 
-function getBasket(basketId) {
-  return basketId
-    ? BasketMgr.getTemporaryBasket(basketId)
+function getBasket(isExpressPdp) {
+  return isExpressPdp
+    ? BasketMgr.getTemporaryBasket(session.privacy.temporaryBasketId)
     : BasketMgr.getCurrentBasket();
 }
 /**
@@ -36,9 +36,9 @@ function getBasket(basketId) {
  */
 function callGetShippingMethods(req, res, next) {
   try {
-    const { address, currentPaymentData, paymentMethodType, basketId } =
+    const { address, currentPaymentData, paymentMethodType, isExpressPdp } =
       JSON.parse(req.form.data);
-    const currentBasket = getBasket(basketId);
+    const currentBasket = getBasket(isExpressPdp);
     if (!currentBasket) {
       res.json({
         error: true,

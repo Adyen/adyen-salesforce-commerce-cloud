@@ -29,24 +29,24 @@ export const setCountryCode = jest.fn();
 export const setPostalCode = jest.fn();
 
 export const getAllProductLineItems = jest.fn(() => ({
-	toArray: jest.fn(() => [
-	  {
-		custom: { adyenPaymentMethod: '' },
-		paymentTransaction: {
-		  paymentProcessor: 'mocked_payment_processor',
-		  amount: {
-			value: 'mockedValue',
-			currencyCode: 'mockedValue',
-		  },
-		},
-		setCreditCardNumber,
-		setCreditCardType,
-		setCreditCardExpirationMonth,
-		setCreditCardExpirationYear,
-		setCreditCardToken,
-		paymentMethod: 'AdyenComponent',
-	  },
-	]),
+  toArray: jest.fn(() => [
+    {
+      custom: { adyenPaymentMethod: '' },
+      paymentTransaction: {
+        paymentProcessor: 'mocked_payment_processor',
+        amount: {
+          value: 'mockedValue',
+          currencyCode: 'mockedValue',
+        },
+      },
+      setCreditCardNumber,
+      setCreditCardType,
+      setCreditCardExpirationMonth,
+      setCreditCardExpirationYear,
+      setCreditCardToken,
+      paymentMethod: 'AdyenComponent',
+    },
+  ]),
 }));
 
 export const isAvailable = jest.fn(() => true);
@@ -163,7 +163,7 @@ export const getCurrentBasket = jest.fn(() => ({
   removeAllPaymentInstruments: jest.fn(),
   removePaymentInstrument: jest.fn(),
   custom: {
-	adyenProductLineItems: 'mocked_hash',
+    adyenProductLineItems: 'mocked_hash',
     amazonExpressShopperDetails: JSON.stringify({
       billingAddressDetails: {
         address1: 'address1',
