@@ -26,7 +26,9 @@ describe('paypal express', () => {
       start: start
     }})
     global.$.ajax = jest.fn().mockImplementation(({ success }) => {
-		success({ action : {}})
+		success({
+        fullResponse: {action : {}}
+      })
     });
     const component = {
       handleError: jest.fn(),

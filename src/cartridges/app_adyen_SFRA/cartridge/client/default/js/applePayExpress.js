@@ -114,7 +114,7 @@ async function selectShippingMethod({ shipmentUUID, ID }, reject) {
     paymentMethodType: APPLE_PAY,
     shipmentUUID,
     methodID: ID,
-    isExpressPdp: true,
+    isExpressPdp: window.isExpressPdp,
   };
   return $.ajax({
     type: 'POST',
@@ -132,7 +132,7 @@ async function selectShippingMethod({ shipmentUUID, ID }, reject) {
 function getShippingMethod(shippingContact, reject) {
   const requestBody = {
     paymentMethodType: APPLE_PAY,
-    isExpressPdp: true,
+    isExpressPdp: window.isExpressPdp,
   };
   if (shippingContact) {
     requestBody.address = {
@@ -203,7 +203,7 @@ async function onAuthorized(resolve, reject, event, amountValue, merchantName) {
     };
 
     await callPaymentFromComponent(
-      { ...stateData, customer, isExpressPdp: true },
+      { ...stateData, customer, isExpressPdp: window.isExpressPdp },
       resolveApplePay,
       reject,
     );
