@@ -62,7 +62,6 @@ class GiftCardConfig {
         data: payload,
       });
 
-      this.giftCardBalance = data.balance;
       document.querySelector('button[value="submit-payment"]').disabled = false;
 
       if (data.resultCode === SUCCESS) {

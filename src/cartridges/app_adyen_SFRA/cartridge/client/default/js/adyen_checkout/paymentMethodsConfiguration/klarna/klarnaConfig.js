@@ -1,7 +1,7 @@
 class KlarnaConfig {
-  constructor(helpers) {
-    this.klarnaWidgetEnabled = window.klarnaWidgetEnabled;
+  constructor(helpers, klarnaWidgetEnabled) {
     this.helpers = helpers;
+    this.klarnaWidgetEnabled = klarnaWidgetEnabled;
     this.document = document;
   }
 

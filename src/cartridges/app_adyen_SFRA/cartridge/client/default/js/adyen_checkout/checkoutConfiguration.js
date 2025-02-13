@@ -2,7 +2,7 @@ const store = require('../../../../store');
 const constants = require('../constants');
 
 const { httpClient } = require('../commons/httpClient');
-const checkoutConfiguration = require('./paymentMethodsConfiguration');
+const paymentMethodsConfiguration = require('./paymentMethodsConfiguration');
 
 async function handleOnChange(state) {
   const { type } = state.data.paymentMethod;
@@ -52,7 +52,7 @@ function setCheckoutConfiguration() {
   store.checkoutConfiguration.clientKey = window.adyenClientKey;
 
   store.checkoutConfiguration.paymentMethodsConfiguration =
-    checkoutConfiguration;
+    paymentMethodsConfiguration;
 }
 
 module.exports = {

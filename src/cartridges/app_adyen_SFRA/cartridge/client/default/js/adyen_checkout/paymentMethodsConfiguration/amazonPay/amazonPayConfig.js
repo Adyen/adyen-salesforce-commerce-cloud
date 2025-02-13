@@ -3,7 +3,7 @@ class AmazonPayConfig {
     this.showPayButton = true;
     this.productType = 'PayAndShip';
     this.checkoutMode = 'ProcessOrder';
-    this.locale = window.Configuration.locale;
+    this.locale = window.Configuration?.locale || null;
     this.returnUrl = window.returnURL;
     this.store = store;
     this.helpers = helpers;

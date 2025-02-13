@@ -27,7 +27,11 @@ describe('paypal express', () => {
       start: start,
       stop: stop,
     }})
-    global.$.ajax = jest.fn().mockReturnValue({ action : {}})
+    global.$.ajax = jest.fn().mockReturnValue({
+      fullResponse: {
+        action: {}
+      }
+    })
     const component = {
       handleError: jest.fn(),
       handleAction: jest.fn()

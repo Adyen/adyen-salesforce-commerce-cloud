@@ -3,7 +3,7 @@ class PaypalConfig {
     this.store = store;
     this.helpers = helpers;
     this.showPayButton = true;
-    this.environment = window.Configuration.environment;
+    this.environment = window.Configuration?.environment || null;
     this.store.paypalTerminatedEarly = false;
   }
 
