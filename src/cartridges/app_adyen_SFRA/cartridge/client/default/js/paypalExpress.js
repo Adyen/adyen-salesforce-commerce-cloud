@@ -17,7 +17,7 @@ async function callPaymentFromComponent(data, component) {
         data: JSON.stringify(data),
       }, // Send the data as a JSON string
       success(response) {
-        const { action, errorMessage = '' } = response;
+        const { action, errorMessage = '' } = response.fullResponse;
         if (action) {
           component.handleAction(action);
         } else {

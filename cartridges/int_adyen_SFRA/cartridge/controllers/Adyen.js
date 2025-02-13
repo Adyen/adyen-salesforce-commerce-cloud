@@ -22,12 +22,12 @@ server.post('PaymentsDetails', server.middleware.https, consentTracking.consent,
  *  Save shipping address to currentBasket and
  *  get applicable shipping methods from an Express component in the SFCC session
  */
-server.post('ShippingMethods', server.middleware.https, adyen.callGetShippingMethods);
+server.post('ShippingMethods', server.middleware.https, csrf.validateRequest, adyen.callGetShippingMethods);
 
 /**
  *  Save selected shipping method to currentBasket from an Express component in the SFCC session
  */
-server.post('SelectShippingMethod', server.middleware.https, adyen.callSelectShippingMethod);
+server.post('SelectShippingMethod', server.middleware.https, csrf.validateRequest, adyen.callSelectShippingMethod);
 
 /**
  * Redirect to Adyen after 3DS1 Authentication When adding a card to an account
@@ -113,6 +113,11 @@ server.post('SaveShopperData', server.middleware.https, csrf.validateRequest, ad
  * Called by Adyen to fetch applied giftcards
  */
 server.post('fetchGiftCards', server.middleware.https, csrf.validateRequest, adyen.fetchGiftCards);
+
+/**
+ * Called by Adyen to create temporary basket for express payment on pdp.
+ */
+server.post('CreateTemporaryBasket', server.middleware.https, adyen.createTemporaryBasket);
 function getExternalPlatformVersion() {
   return EXTERNAL_PLATFORM_VERSION;
 }

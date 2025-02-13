@@ -32,7 +32,8 @@ var AdyenConfigs = require('*/cartridge/adyen/utils/adyenConfigs');
 var AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 var getPaymentMethods = require('*/cartridge/adyen/scripts/payments/adyenGetPaymentMethods');
 function getOneClickPaymentMethods(customer) {
-  var _getPaymentMethods$ge = getPaymentMethods.getMethods(null, customer, ''),
+  var amount = new dw.value.Money(0, session.currency.currencyCode);
+  var _getPaymentMethods$ge = getPaymentMethods.getMethods(amount, customer, ''),
     storedPaymentMethods = _getPaymentMethods$ge.storedPaymentMethods;
   var oneClickPaymentMethods = [];
   if (storedPaymentMethods) {

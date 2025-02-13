@@ -11,10 +11,22 @@ var Money = require('dw/value/Money');
 var BasketMgr = require('dw/order/BasketMgr');
 var Resource = require('dw/web/Resource');
 var AdyenConfigs = require('*/cartridge/adyen/utils/adyenConfigs');
-var adyenCheckout = require('*/cartridge/adyen/scripts/payments/adyenCheckout');
 var AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
 var AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 var constants = require('*/cartridge/adyen/config/constants');
+function doPartialPaymentsCall(paymentRequest) {
+  try {
+    return AdyenHelper.executeCall(constants.SERVICE.PAYMENT, paymentRequest);
+  } catch (error) {
+    AdyenLogs.fatal_log('Partial payments call failed:', error);
+    return {
+      error: true,
+      args: {
+        adyenErrorMessage: Resource.msg('confirm.error.declined', 'checkout', null)
+      }
+    };
+  }
+}
 function responseContainsErrors(response) {
   return (response === null || response === void 0 ? void 0 : response.error) || (response === null || response === void 0 ? void 0 : response.resultCode) !== constants.RESULTCODES.AUTHORISED;
 }
@@ -40,10 +52,10 @@ function makePartialPayment(req, res, next) {
       amount: JSON.parse(session.privacy.giftCardBalance),
       reference: currentBasket.custom.adyenGiftCardsOrderNo,
       paymentMethod: paymentMethod,
-      order: order
+      order: order,
+      shopperInteraction: constants.SHOPPER_INTERACTIONS.ECOMMERCE
     };
-    var response = adyenCheckout.doPaymentsCall(null, null, partialPaymentRequest); // no order created yet and no PI needed (for giftcards it will be created on Order level)
-
+    var response = doPartialPaymentsCall(partialPaymentRequest);
     if (responseContainsErrors(response)) {
       var errorMsg = "partial payment request did not go through .. resultCode: ".concat(response === null || response === void 0 ? void 0 : response.resultCode);
       throw new Error(errorMsg);

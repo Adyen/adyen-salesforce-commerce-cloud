@@ -311,10 +311,9 @@ var adyenHelperObj = {
     return returnValue;
   },
   isOpenInvoiceMethod: function isOpenInvoiceMethod(paymentMethod) {
-    if (paymentMethod.indexOf('afterpay') > -1 || paymentMethod.indexOf('klarna') > -1 || paymentMethod.indexOf('ratepay') > -1 || paymentMethod.indexOf('facilypay') > -1 || paymentMethod.indexOf('riverty') > -1 || paymentMethod === 'zip' || paymentMethod === 'affirm' || paymentMethod === 'clearpay') {
-      return true;
-    }
-    return false;
+    return constants.OPEN_INVOICE_METHODS.some(function (method) {
+      return paymentMethod.indexOf(method) > -1;
+    });
   },
   isMolpayMethod: function isMolpayMethod(paymentMethod) {
     if (paymentMethod.indexOf('molpay') > -1) {
@@ -514,6 +513,9 @@ var adyenHelperObj = {
       case 'paypal':
         methodName = 'PayPal';
         break;
+      case 'googlepay':
+        methodName = 'Google Pay';
+        break;
       default:
         methodName = paymentMethod;
     }
@@ -626,7 +628,8 @@ var adyenHelperObj = {
   // get the fraction digits based on the currency code used to convert amounts of currency for the Adyen Checkout API
   getFractionDigits: function getFractionDigits(currencyCode) {
     var format;
-    switch (currencyCode) {
+    var currency = currencyCode || session.currency.currencyCode;
+    switch (currency) {
       case 'CVE':
       case 'DJF':
       case 'GNF':

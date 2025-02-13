@@ -35,7 +35,6 @@ function makeExpressPaymentDetailsCall(req, res, next) {
       productLines,
       productQuantity,
     );
-
     if (hashedProducts !== currentBasket.custom.adyenProductLineItems) {
       throw new Error('Basket products changed, cannot complete trasaction');
     }

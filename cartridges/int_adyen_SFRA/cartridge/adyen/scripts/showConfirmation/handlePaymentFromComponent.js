@@ -101,7 +101,7 @@ function handlePayment(stateData, order, options) {
   }
   var finalResult;
   if (!hasStateData) {
-    if (result && (JSON.stringify(result).indexOf('amazonpay') > -1 || JSON.stringify(result).indexOf('applepay') > -1 || JSON.stringify(result).indexOf('cashapp') > -1)) {
+    if (result && (JSON.stringify(result).indexOf('amazonpay') > -1 || JSON.stringify(result).indexOf('applepay') > -1 || JSON.stringify(result).indexOf('googlepay') > -1 || JSON.stringify(result).indexOf('cashapp') > -1)) {
       finalResult = result;
     } else {
       return handlePaymentError(order, adyenPaymentInstrument, options);
