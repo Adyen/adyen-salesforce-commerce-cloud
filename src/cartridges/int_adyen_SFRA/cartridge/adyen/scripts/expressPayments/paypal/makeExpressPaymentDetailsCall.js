@@ -29,6 +29,16 @@ function makeExpressPaymentDetailsCall(req, res, next) {
   try {
     const request = JSON.parse(req.form.data);
     const currentBasket = BasketMgr.getCurrentBasket();
+    const productLines = currentBasket.getAllProductLineItems().toArray();
+    const productQuantity = currentBasket.getProductQuantityTotal();
+    const hashedProducts = AdyenHelper.getAdyenHash(
+      productLines,
+      productQuantity,
+    );
+
+    if (hashedProducts !== currentBasket.custom.adyenProductLineItems) {
+      throw new Error('Basket products changed, cannot complete trasaction');
+    }
 
     const response = adyenCheckout.doPaymentsDetailsCall(request.data);
 

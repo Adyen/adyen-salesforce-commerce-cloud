@@ -13,6 +13,9 @@ var paypalHelper = require('*/cartridge/adyen/utils/paypalHelper');
 function makeExpressPaymentsCall(req, res, next) {
   try {
     var currentBasket = BasketMgr.getCurrentBasket();
+    var productLines = currentBasket.getAllProductLineItems().toArray();
+    var productQuantity = currentBasket.getProductQuantityTotal();
+    var hashedProducts = AdyenHelper.getAdyenHash(productLines, productQuantity);
     var paymentInstrument;
     Transaction.wrap(function () {
       currentBasket.removeAllPaymentInstruments();
@@ -21,6 +24,7 @@ function makeExpressPaymentsCall(req, res, next) {
         paymentProcessor = _PaymentMgr$getPaymen.paymentProcessor;
       paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
       paymentInstrument.custom.adyenPaymentData = req.form.data;
+      currentBasket.custom.adyenProductLineItems = hashedProducts;
     });
     // Creates order number to be utilized for PayPal express
     var paypalExpressOrderNo = OrderMgr.createOrderNo();
