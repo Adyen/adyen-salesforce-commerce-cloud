@@ -5,24 +5,24 @@ class UpiConfig {
     this.document = document;
   }
 
-  onSubmit(state, component) {
+  onSubmit = (state, component) => {
     $('#dwfrm_billing').trigger('submit');
     this.helpers.assignPaymentMethodValue();
     this.helpers.paymentFromComponent(state.data, component);
-  }
+  };
 
-  onAdditionalDetails(state) {
+  onAdditionalDetails = (state) => {
     this.document.querySelector('#additionalDetailsHidden').value =
       JSON.stringify(state.data);
     this.document.querySelector('#showConfirmationForm').submit();
-  }
+  };
 
-  onError(component) {
+  onError = (component) => {
     if (component) {
       component.setStatus('ready');
     }
     this.document.querySelector('#showConfirmationForm').submit();
-  }
+  };
 
   getConfig() {
     return {

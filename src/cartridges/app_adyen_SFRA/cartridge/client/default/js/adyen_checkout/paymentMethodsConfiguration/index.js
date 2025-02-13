@@ -13,7 +13,7 @@ const store = require('../../../../../store');
 const helpers = require('../helpers');
 
 const cardConfig = new CardConfig(store, helpers).getConfig();
-const storedCardConfig = new StoredCardConfig().getConfig();
+const storedCardConfig = new StoredCardConfig(store, helpers).getConfig();
 const boletoConfig = new BoletoConfig().getConfig();
 const googlePayConfig = new GooglePayConfig(helpers).getConfig();
 const klarnaConfig = new KlarnaConfig(
