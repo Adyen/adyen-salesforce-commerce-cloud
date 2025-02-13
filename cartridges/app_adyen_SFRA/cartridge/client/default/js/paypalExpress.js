@@ -34,9 +34,10 @@ function _callPaymentFromComponent() {
               },
               // Send the data as a JSON string
               success: function success(response) {
-                var action = response.action,
-                  _response$errorMessag3 = response.errorMessage,
-                  errorMessage = _response$errorMessag3 === void 0 ? '' : _response$errorMessag3;
+                var _response$fullRespons = response.fullResponse,
+                  action = _response$fullRespons.action,
+                  _response$fullRespons2 = _response$fullRespons.errorMessage,
+                  errorMessage = _response$fullRespons2 === void 0 ? '' : _response$fullRespons2;
                 if (action) {
                   component.handleAction(action);
                 } else {

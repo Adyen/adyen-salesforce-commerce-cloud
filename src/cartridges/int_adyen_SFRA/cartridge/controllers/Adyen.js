@@ -29,6 +29,7 @@ server.post(
 server.post(
   'ShippingMethods',
   server.middleware.https,
+  csrf.validateRequest,
   adyen.callGetShippingMethods,
 );
 
@@ -38,6 +39,7 @@ server.post(
 server.post(
   'SelectShippingMethod',
   server.middleware.https,
+  csrf.validateRequest,
   adyen.callSelectShippingMethod,
 );
 
@@ -203,6 +205,15 @@ server.post(
   server.middleware.https,
   csrf.validateRequest,
   adyen.fetchGiftCards,
+);
+
+/**
+ * Called by Adyen to create temporary basket for express payment on pdp.
+ */
+server.post(
+  'CreateTemporaryBasket',
+  server.middleware.https,
+  adyen.createTemporaryBasket,
 );
 
 function getExternalPlatformVersion() {

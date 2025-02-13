@@ -1,5 +1,8 @@
 "use strict";
 
+var _excluded = ["isExpressPdp"];
+function _objectWithoutProperties(e, t) { if (null == e) return {}; var o, r, i = _objectWithoutPropertiesLoose(e, t); if (Object.getOwnPropertySymbols) { var n = Object.getOwnPropertySymbols(e); for (r = 0; r < n.length; r++) o = n[r], -1 === t.indexOf(o) && {}.propertyIsEnumerable.call(e, o) && (i[o] = e[o]); } return i; }
+function _objectWithoutPropertiesLoose(r, e) { if (null == r) return {}; var t = {}; for (var n in r) if ({}.hasOwnProperty.call(r, n)) { if (-1 !== e.indexOf(n)) continue; t[n] = r[n]; } return t; }
 var BasketMgr = require('dw/order/BasketMgr');
 var PaymentMgr = require('dw/order/PaymentMgr');
 var Transaction = require('dw/system/Transaction');
@@ -13,7 +16,7 @@ var collections = require('*/cartridge/scripts/util/collections');
 var AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
 var AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 var GiftCardsHelper = require('*/cartridge/adyen/utils/giftCardsHelper');
-var expressMethods = ['applepay', 'amazonpay'];
+var expressMethods = [constants.PAYMENTMETHODS.APPLEPAY, constants.PAYMENTMETHODS.AMAZONPAY, constants.PAYMENTMETHODS.GOOGLEPAY];
 function setBillingAndShippingAddress(reqDataObj, currentBasket) {
   var billingAddress = currentBasket.billingAddress;
   var _currentBasket$getDef = currentBasket.getDefaultShipment(),
@@ -119,11 +122,13 @@ function canSkipSummaryPage(reqDataObj) {
  */
 function paymentFromComponent(req, res, next) {
   var _currentBasket$custom2;
-  var reqDataObj = JSON.parse(req.form.data);
+  var _JSON$parse = JSON.parse(req.form.data),
+    isExpressPdp = _JSON$parse.isExpressPdp,
+    reqDataObj = _objectWithoutProperties(_JSON$parse, _excluded);
   if (reqDataObj.cancelTransaction) {
     return handleCancellation(res, next, reqDataObj);
   }
-  var currentBasket = BasketMgr.getCurrentBasket();
+  var currentBasket = isExpressPdp ? BasketMgr.getTemporaryBasket(session.privacy.temporaryBasketId) : BasketMgr.getCurrentBasket();
   var paymentInstrument;
   Transaction.wrap(function () {
     collections.forEach(currentBasket.getPaymentInstruments(), function (item) {

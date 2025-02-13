@@ -1,6 +1,6 @@
 const $ = require('jquery');
 const store = require('../../../../store');
-const { PAYPAL, APPLE_PAY, AMAZON_PAY } = require('../constants');
+const { PAYPAL, APPLE_PAY, AMAZON_PAY, GOOGLE_PAY } = require('../constants');
 
 module.exports.onFieldValid = function onFieldValid(data) {
   if (data.endDigits) {
@@ -39,12 +39,36 @@ module.exports.getPaymentMethods = async function getPaymentMethods() {
   });
 };
 
+/**
+ * Makes an ajax call to the controller function createTemporaryBasket
+ */
+module.exports.createTemporaryBasket = async function createTemporaryBasket() {
+  const productForm = document.getElementById('express-product-form');
+  const data = new FormData(productForm);
+  const dataFromEntries = Object.fromEntries(data.entries());
+  const parsedData = JSON.parse(dataFromEntries['selected-express-product']);
+  return $.ajax({
+    url: window.createTemporaryBasketUrl,
+    type: 'post',
+    data: {
+      csrf_token: $('#adyen-token').val(),
+      data: JSON.stringify({
+        id: parsedData.id,
+        bundledProducts: parsedData.bundledProducts,
+        options: parsedData.options,
+        selectedQuantity: parsedData.selectedQuantity,
+      }),
+    },
+  });
+};
+
 module.exports.checkIfExpressMethodsAreReady =
   function checkIfExpressMethodsAreReady() {
     const expressMethodsConfig = {
       [APPLE_PAY]: window.isApplePayExpressEnabled === 'true',
       [AMAZON_PAY]: window.isAmazonPayExpressEnabled === 'true',
       [PAYPAL]: window.isPayPalExpressEnabled === 'true',
+      [GOOGLE_PAY]: window.isGooglePayExpressEnabled === 'true',
     };
     let enabledExpressMethods = [];
     Object.keys(expressMethodsConfig).forEach((key) => {

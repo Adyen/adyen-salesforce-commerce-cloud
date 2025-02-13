@@ -102,10 +102,22 @@ var adyenConfigsObj = {
     return getCustomPreference('AdyenGiving_enabled');
   },
   areExpressPaymentsEnabled: function areExpressPaymentsEnabled() {
-    return getCustomPreference('ExpressPayments_enabled');
+    return this.isApplePayExpressEnabled() || this.isAmazonPayExpressEnabled() || this.isPayPalExpressEnabled() || this.isGooglePayExpressEnabled();
+  },
+  arePdpExpressPaymentsEnabled: function arePdpExpressPaymentsEnabled() {
+    return this.isApplePayExpressOnPdpEnabled();
   },
   isApplePayExpressEnabled: function isApplePayExpressEnabled() {
     return getCustomPreference('ApplePayExpress_Enabled');
+  },
+  isApplePayExpressOnPdpEnabled: function isApplePayExpressOnPdpEnabled() {
+    return getCustomPreference('ApplePayExpress_Pdp_Enabled');
+  },
+  isGooglePayExpressEnabled: function isGooglePayExpressEnabled() {
+    return getCustomPreference('GooglePayExpress_Enabled');
+  },
+  isGooglePayExpressOnPdpEnabled: function isGooglePayExpressOnPdpEnabled() {
+    return getCustomPreference('GooglePayExpress_Pdp_Enabled');
   },
   isAmazonPayExpressEnabled: function isAmazonPayExpressEnabled() {
     return getCustomPreference('AmazonPayExpress_Enabled');

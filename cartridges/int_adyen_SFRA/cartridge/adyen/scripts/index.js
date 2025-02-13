@@ -20,6 +20,7 @@ var makeExpressPaymentDetailsCall = require('*/cartridge/adyen/scripts/expressPa
 var saveShopperData = require('*/cartridge/adyen/scripts/expressPayments/paypal/saveShopperData');
 var handleCheckoutReview = require('*/cartridge/adyen/scripts/expressPayments/paypal/handleCheckoutReview');
 var validatePaymentDataFromRequest = require('*/cartridge/adyen/utils/validatePaymentData');
+var createTemporaryBasket = require('*/cartridge/adyen/scripts/expressPayments/createTemporaryBasket');
 module.exports = {
   getCheckoutPaymentMethods: getCheckoutPaymentMethods,
   paymentFromComponent: paymentFromComponent,
@@ -40,5 +41,6 @@ module.exports = {
   makeExpressPaymentDetailsCall: makeExpressPaymentDetailsCall,
   saveShopperData: saveShopperData,
   handleCheckoutReview: handleCheckoutReview,
-  validatePaymentDataFromRequest: validatePaymentDataFromRequest
+  validatePaymentDataFromRequest: validatePaymentDataFromRequest,
+  createTemporaryBasket: createTemporaryBasket
 };

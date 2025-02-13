@@ -36,7 +36,7 @@ eval("\n\nvar helpers = __webpack_require__(/*! ./adyen_checkout/helpers */ \"./
   \****************************************************************************/
 /***/ ((module) => {
 
-eval("\n\n// Adyen constants\n\nmodule.exports = {\n  METHOD_ADYEN: 'Adyen',\n  METHOD_ADYEN_POS: 'AdyenPOS',\n  METHOD_ADYEN_COMPONENT: 'AdyenComponent',\n  RECEIVED: 'Received',\n  NOTENOUGHBALANCE: 'NotEnoughBalance',\n  SUCCESS: 'Success',\n  GIFTCARD: 'giftcard',\n  SCHEME: 'scheme',\n  GIROPAY: 'giropay',\n  APPLE_PAY: 'applepay',\n  PAYPAL: 'paypal',\n  AMAZON_PAY: 'amazonpay',\n  ACTIONTYPE: {\n    QRCODE: 'qrCode'\n  },\n  DISABLED_SUBMIT_BUTTON_METHODS: ['paypal', 'paywithgoogle', 'googlepay', 'amazonpay', 'applepay', 'cashapp', 'upi']\n};\n\n//# sourceURL=webpack://app_adyen_SFRA/./cartridges/app_adyen_SFRA/cartridge/client/default/js/constants.js?");
+eval("\n\n// Adyen constants\n\nmodule.exports = {\n  METHOD_ADYEN: 'Adyen',\n  METHOD_ADYEN_POS: 'AdyenPOS',\n  METHOD_ADYEN_COMPONENT: 'AdyenComponent',\n  RECEIVED: 'Received',\n  NOTENOUGHBALANCE: 'NotEnoughBalance',\n  SUCCESS: 'Success',\n  GIFTCARD: 'giftcard',\n  SCHEME: 'scheme',\n  GIROPAY: 'giropay',\n  APPLE_PAY: 'applepay',\n  PAYPAL: 'paypal',\n  AMAZON_PAY: 'amazonpay',\n  GOOGLE_PAY: 'googlepay',\n  PAY_WITH_GOOGLE: 'paywithgoogle',\n  GOOGLE_PAY_CALLBACK_TRIGGERS: {\n    INITIALIZE: 'INITIALIZE',\n    SHIPPING_ADDRESS: 'SHIPPING_ADDRESS',\n    SHIPPING_OPTION: 'SHIPPING_OPTION'\n  },\n  ACTIONTYPE: {\n    QRCODE: 'qrCode'\n  },\n  DISABLED_SUBMIT_BUTTON_METHODS: ['paypal', 'paywithgoogle', 'googlepay', 'amazonpay', 'applepay', 'cashapp', 'upi']\n};\n\n//# sourceURL=webpack://app_adyen_SFRA/./cartridges/app_adyen_SFRA/cartridge/client/default/js/constants.js?");
 
 /***/ }),
 

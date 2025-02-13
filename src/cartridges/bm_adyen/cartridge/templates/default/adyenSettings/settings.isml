@@ -19,17 +19,6 @@
          window.logCenterUrl = "/on/demandware.servlet/webdav/Sites/Logs";
       </script>
    </head>
-   <header class="header row bg-white mt-4 mb-4">
-      <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
-         <div class="col-sm-1 offset-md-1" id="logos">
-            <img src="${URLUtils.staticURL('icons/adyen.svg')}" class ="img-fluid" id="adyen-logo" alt="adyen-logo" width="170" height="30" />
-            <img src="${URLUtils.staticURL('icons/account-setting-tag.svg')}" class ="img-fluid" id="acc_settings_logo" alt="adyen-logo" />
-         </div>
-         <div class="sec-group">
-            <button type="button" id="classicButton" class="btn btn-light">View classic page</button>
-         </div>
-      </div>
-   </header>
    <body data-spy="scroll" data-target="#navigationList" data-bs-offset="50" id="formBody" class="bg-light">
       <div id="saveChangesAlert" class="alert alert-success alert-dismissible fade collapse text-center sticky-top w-5 h-10" role="alert">
          <img src="${URLUtils.staticURL('icons/icon-success.svg')}" class ="img-fluid" alt="adyen-logo" width="20px" height="20px" />
