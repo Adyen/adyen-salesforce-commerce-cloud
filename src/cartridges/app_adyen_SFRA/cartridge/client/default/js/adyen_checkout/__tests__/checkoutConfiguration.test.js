@@ -3,9 +3,14 @@
  */
 // const checkoutConfiguration = require('../paymentMethodsConfiguration/');
 const store = require('../../../../../store');
+const helpers = require('../helpers');
+const httpClient = require('../../../js/commons/httpClient');
 const {
   setCheckoutConfiguration,
 } = require('../checkoutConfiguration');
+const KlarnaConfig = require("../paymentMethodsConfiguration/klarna/klarnaConfig");
+const GooglePayConfig = require("../paymentMethodsConfiguration/googlePay/googlePayConfig");
+const GiftCardsConfig = require("../paymentMethodsConfiguration/giftcards/giftcardsConfig");
 
 let card;
 let paypal;
@@ -35,12 +40,9 @@ beforeEach(() => {
   setCheckoutConfiguration()
   card = store.checkoutConfiguration.paymentMethodsConfiguration.card
   paypal = store.checkoutConfiguration.paymentMethodsConfiguration.paypal
-  paywithgoogle = store.checkoutConfiguration.paymentMethodsConfiguration.googlepay
   amazonpay = store.checkoutConfiguration.paymentMethodsConfiguration.amazonpay
   cashapp = store.checkoutConfiguration.paymentMethodsConfiguration.cashapp
   applepay = store.checkoutConfiguration.paymentMethodsConfiguration.applepay
-  klarna = store.checkoutConfiguration.paymentMethodsConfiguration.klarna
-  giftcardconfig = store.checkoutConfiguration.paymentMethodsConfiguration.giftcard
 });
 
 describe('Checkout Configuration', () => {
@@ -186,6 +188,7 @@ describe('Checkout Configuration', () => {
 
   describe('GooglePay', () => {
     it('handles onSubmit', () => {
+      paywithgoogle = new GooglePayConfig(window.Configuration.environment, window.merchantAccount, helpers)
       document.body.innerHTML = `
         <div id="lb_paywithgoogle">Google Pay</div>
         <div id="adyenPaymentMethodName"></div>
@@ -269,6 +272,7 @@ describe('Checkout Configuration', () => {
   describe('Giftcards', () => {
     it('should update selected payment on change with valid state', () => {
       store.updateSelectedPayment = jest.fn();
+      giftcardconfig = new GiftCardsConfig(store, httpClient).getConfig();
       giftcardconfig.onChange({ isValid: true, data: 'testData' });
       expect(store.updateSelectedPayment).toHaveBeenCalledWith("giftcard", "isValid", true);
       expect(store.updateSelectedPayment).toHaveBeenCalledWith(
@@ -292,6 +296,8 @@ describe('Checkout Configuration', () => {
       options: {}
      };
     jest.spyOn($, 'ajax').mockReturnValue({ balance: 100, resultCode: 'Success'});
+    const httpClient = jest.fn().mockReturnValue({balance: 100, resultCode: 'Success'});
+    giftcardconfig = new GiftCardsConfig(store, httpClient).getConfig();
     await giftcardconfig.onBalanceCheck(mockResolve, mockReject, requestData);
     expect(mockResolve).toHaveBeenCalled();
     expect(mockReject).not.toHaveBeenCalled();
@@ -350,6 +356,7 @@ describe('Checkout Configuration', () => {
 
 describe('Klarna', () => {
   it('handles onSubmit', () => {
+    klarna = new KlarnaConfig(helpers, window.klarnaWidgetEnabled).getConfig();
     document.body.innerHTML = `
       <div id="lb_klarna">Klarna</div>
       <div id="adyenPaymentMethodName"></div>
@@ -362,6 +369,7 @@ describe('Klarna', () => {
   });
 
   it('handles onAdditionalDetails', () => {
+    klarna = new KlarnaConfig(helpers, window.klarnaWidgetEnabled).getConfig();
     document.body.innerHTML = `
       <div id="additionalDetailsHidden"></div>
       <div id="showConfirmationForm"></div>

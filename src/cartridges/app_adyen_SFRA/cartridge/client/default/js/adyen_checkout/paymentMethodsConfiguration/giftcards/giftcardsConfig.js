@@ -50,7 +50,7 @@ class GiftCardConfig {
     resolve(data);
   };
 
-  async onBalanceCheck(resolve, reject, requestData) {
+  onBalanceCheck = async (resolve, reject, requestData) => {
     try {
       const payload = {
         csrf_token: $('#adyen-token').val(),
@@ -77,7 +77,7 @@ class GiftCardConfig {
     } catch (error) {
       reject();
     }
-  }
+  };
 
   async onOrderRequest(resolve, reject, requestData) {
     try {
