@@ -25,6 +25,12 @@ function makeExpressPaymentDetailsCall(req, res, next) {
   try {
     var request = JSON.parse(req.form.data);
     var currentBasket = BasketMgr.getCurrentBasket();
+    var productLines = currentBasket.getAllProductLineItems().toArray();
+    var productQuantity = currentBasket.getProductQuantityTotal();
+    var hashedProducts = AdyenHelper.getAdyenHash(productLines, productQuantity);
+    if (hashedProducts !== currentBasket.custom.adyenProductLineItems) {
+      throw new Error('Basket products changed, cannot complete trasaction');
+    }
     var response = adyenCheckout.doPaymentsDetailsCall(request.data);
     paypalHelper.setBillingAndShippingAddress(currentBasket);
 
