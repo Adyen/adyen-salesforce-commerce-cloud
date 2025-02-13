@@ -14,64 +14,68 @@ const helpers = require('../adyen_checkout/helpers');
 
 describe('paypal express', () => {
   describe('callPaymentFromComponent', () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
-  afterEach(() => {
-    jest.resetModules();
-  });
-  it('should make successful payments call for express', async () => {
-    const start = jest.fn();
-    const stop = jest.fn();
-    global.$.spinner = jest.fn(() => {return {
-      start: start,
-      stop: stop,
-    }})
-    global.$.ajax = jest.fn().mockReturnValue({ action : {}})
-    const component = {
-      handleError: jest.fn(),
-      handleAction: jest.fn()
-    }
-    await callPaymentFromComponent({}, component);
-    expect(start).toHaveBeenCalledTimes(1);
-    expect(component.handleAction).toHaveBeenCalledTimes(1);
-    expect(component.handleError).not.toHaveBeenCalled();
+    beforeEach(() => {
+      jest.clearAllMocks();
+    });
+    afterEach(() => {
+      jest.resetModules();
+    });
+    it('should make successful payments call for express', async () => {
+      const start = jest.fn();
+      const stop = jest.fn();
+      global.$.spinner = jest.fn(() => {return {
+        start: start,
+        stop: stop,
+      }})
+      global.$.ajax = jest.fn().mockReturnValue({
+        fullResponse: {
+          action: {}
+        }
+      })
+      const component = {
+        handleError: jest.fn(),
+        handleAction: jest.fn()
+      }
+      await callPaymentFromComponent({}, component);
+      expect(start).toHaveBeenCalledTimes(1);
+      expect(component.handleAction).toHaveBeenCalledTimes(1);
+      expect(component.handleError).not.toHaveBeenCalled();
+    })
+    it('should handle failed payments call for express when response is not ok', async () => {
+      const start = jest.fn();
+      const stop = jest.fn();
+      global.$.spinner = jest.fn(() => {return {
+        start: start,
+        stop: stop
+      }})
+      global.$.ajax = jest.fn().mockReturnValue({});
+      const component = {
+        handleError: jest.fn(),
+        handleAction: jest.fn()
+      }
+      await callPaymentFromComponent({}, component);
+      expect(start).toHaveBeenCalledTimes(1);
+      expect(component.handleError).toHaveBeenCalledTimes(1);
+      expect(component.handleAction).not.toHaveBeenCalled();
+    })
+    it('should handle failed payments call for express when response is ok but there is no "action" in response', async () => {
+      const start = jest.fn();
+      const stop = jest.fn();
+      global.$.spinner = jest.fn(() => {return {
+        start: start,
+        stop: stop
+      }})
+      global.fetch = jest.fn().mockRejectedValueOnce({})
+      const component = {
+        handleError: jest.fn(),
+        handleAction: jest.fn()
+      }
+      await callPaymentFromComponent({}, component);
+      expect(start).toHaveBeenCalledTimes(1);
+      expect(component.handleError).toHaveBeenCalledTimes(1);
+      expect(component.handleAction).not.toHaveBeenCalled();
+    })
   })
-  it('should handle failed payments call for express when response is not ok', async () => {
-    const start = jest.fn();
-    const stop = jest.fn();
-    global.$.spinner = jest.fn(() => {return {
-      start: start,
-      stop: stop
-    }})
-    global.$.ajax = jest.fn().mockReturnValue({});
-    const component = {
-      handleError: jest.fn(),
-      handleAction: jest.fn()
-    }
-    await callPaymentFromComponent({}, component);
-    expect(start).toHaveBeenCalledTimes(1);
-    expect(component.handleError).toHaveBeenCalledTimes(1);
-    expect(component.handleAction).not.toHaveBeenCalled();
-  })
-  it('should handle failed payments call for express when response is ok but there is no "action" in response', async () => {
-    const start = jest.fn();
-    const stop = jest.fn();
-    global.$.spinner = jest.fn(() => {return {
-      start: start,
-      stop: stop
-    }})
-    global.fetch = jest.fn().mockRejectedValueOnce({})
-    const component = {
-      handleError: jest.fn(),
-      handleAction: jest.fn()
-    }
-    await callPaymentFromComponent({}, component);
-    expect(start).toHaveBeenCalledTimes(1);
-    expect(component.handleError).toHaveBeenCalledTimes(1);
-    expect(component.handleAction).not.toHaveBeenCalled();
-  })
-})
   describe('saveShopperDetails', () => {
     beforeEach(() => {
       jest.clearAllMocks();

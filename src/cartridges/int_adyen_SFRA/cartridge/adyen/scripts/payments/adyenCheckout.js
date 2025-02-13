@@ -41,15 +41,26 @@ function doPaymentsCall(order, paymentInstrument, paymentRequest) {
   const paymentResponse = {};
   let errorMessage = '';
   try {
+    if (!paymentRequest?.amount?.value) {
+      throw new Error('Zero amount not accepted');
+    }
+    const transactionAmount = AdyenHelper.getCurrencyValueForApi(
+      paymentInstrument?.paymentTransaction?.amount,
+    ).getValueOrNull();
+    if (session.privacy.partialPaymentData) {
+      const { remainingAmount } = JSON.parse(
+        session.privacy.partialPaymentData,
+      );
+      if (remainingAmount.value !== paymentRequest?.amount?.value) {
+        throw new Error('Amounts dont match');
+      }
+    } else if (transactionAmount !== paymentRequest?.amount?.value) {
+      throw new Error('Amounts dont match');
+    }
     const responseObject = AdyenHelper.executeCall(
       constants.SERVICE.PAYMENT,
       paymentRequest,
     );
-    // There is no order for zero auth transactions.
-    // Return response directly to PaymentInstruments-SavePayment
-    if (!order) {
-      return responseObject;
-    }
     paymentResponse.fullResponse = responseObject;
     paymentResponse.redirectObject = responseObject.action
       ? responseObject.action
