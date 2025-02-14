@@ -474,3 +474,9 @@ jest.mock(
   }),
   { virtual: true },
 );
+
+jest.mock(
+  '*/cartridge/client/default/js/adyen_checkout/paymentMethodsConfiguration',
+  () => jest.fn(),
+  { virtual: true },
+);

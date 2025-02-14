@@ -2,19 +2,7 @@ const store = require('../../../../store');
 const constants = require('../constants');
 
 const { httpClient } = require('../commons/httpClient');
-const CardConfig = require('./paymentMethodsConfiguration/card/cardConfig');
-const StoredCardConfig = require('./paymentMethodsConfiguration/card/storedCardConfig');
-const GooglePayConfig = require('./paymentMethodsConfiguration/googlePay/googlePayConfig');
-const BoletoConfig = require('./paymentMethodsConfiguration/boleto/boletoConfig');
-const KlarnaConfig = require('./paymentMethodsConfiguration/klarna/klarnaConfig');
-const CashAppConfig = require('./paymentMethodsConfiguration/cashapp/cashappConfig');
-const UpiConfig = require('./paymentMethodsConfiguration/upi/upiConfig');
-const ApplePayConfig = require('./paymentMethodsConfiguration/applePay/applePayConfig');
-const PayPalConfig = require('./paymentMethodsConfiguration/paypal/paypalConfig');
-const AmazonPayConfig = require('./paymentMethodsConfiguration/amazonPay/amazonPayConfig');
-const {
-  getGiftCardConfig,
-} = require('./paymentMethodsConfiguration/giftcards/giftcardsConfig');
+const paymentMethodsConfiguration = require('./paymentMethodsConfiguration');
 
 async function handleOnChange(state) {
   const { type } = state.data.paymentMethod;
@@ -63,34 +51,8 @@ function setCheckoutConfiguration() {
   store.checkoutConfiguration.showPayButton = false;
   store.checkoutConfiguration.clientKey = window.adyenClientKey;
 
-  const cardConfig = new CardConfig().getConfig();
-  const storedCardConfig = new StoredCardConfig().getConfig();
-  const boletoConfig = new BoletoConfig().getConfig();
-  const googlePayConfig = new GooglePayConfig().getConfig();
-  const klarnaConfig = new KlarnaConfig().getConfig();
-  const cashAppConfig = new CashAppConfig().getConfig();
-  const upiConfig = new UpiConfig().getConfig();
-  const applePayConfig = new ApplePayConfig().getConfig();
-  const payPalConfig = new PayPalConfig().getConfig();
-  const amazonPayConfig = new AmazonPayConfig().getConfig();
-
-  store.checkoutConfiguration.paymentMethodsConfiguration = {
-    card: cardConfig,
-    bcmc: cardConfig,
-    storedCard: storedCardConfig,
-    boletobancario: boletoConfig,
-    paywithgoogle: googlePayConfig,
-    googlepay: googlePayConfig,
-    paypal: payPalConfig,
-    amazonpay: amazonPayConfig,
-    giftcard: getGiftCardConfig(),
-    applepay: applePayConfig,
-    klarna: klarnaConfig,
-    klarna_account: klarnaConfig,
-    klarna_paynow: klarnaConfig,
-    cashapp: cashAppConfig,
-    upi: upiConfig,
-  };
+  store.checkoutConfiguration.paymentMethodsConfiguration =
+    paymentMethodsConfiguration;
 }
 
 module.exports = {
