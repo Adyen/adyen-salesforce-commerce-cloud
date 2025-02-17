@@ -32,6 +32,7 @@ const Money = require('dw/value/Money');
 const TaxMgr = require('dw/order/TaxMgr');
 const ShippingLocation = require('dw/order/ShippingLocation');
 const BasketMgr = require('dw/order/BasketMgr');
+const OrderMgr = require('dw/order/OrderMgr');
 //script includes
 const ShippingMethodModel = require('*/cartridge/models/shipping/shippingMethod');
 const collections = require('*/cartridge/scripts/util/collections');
@@ -915,6 +916,17 @@ let adyenHelperObj = {
       });
     }
   },
+
+  isIntermediateResultCode(orderNo) {
+    const order = OrderMgr.getOrder(orderNo);
+    const paymentInstrument = order.getPaymentInstruments(
+        adyenHelperObj.getOrderMainPaymentInstrumentType(order),
+    )[0];
+    const resultCode = paymentInstrument.paymentTransaction.custom.authCode;
+	AdyenLogs.fatal_log(`result code ${resultCode}`);
+    
+    return resultCode === constants.RESULTCODES.PENDING || resultCode === constants.RESULTCODES.RECEIVED;
+},
 
   executeCall(serviceType, requestObject) {
     const service = this.getService(serviceType);
