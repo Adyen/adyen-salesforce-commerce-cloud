@@ -922,9 +922,7 @@ let adyenHelperObj = {
     const paymentInstrument = order.getPaymentInstruments(
         adyenHelperObj.getOrderMainPaymentInstrumentType(order),
     )[0];
-    const resultCode = paymentInstrument.paymentTransaction.custom.authCode;
-	AdyenLogs.fatal_log(`result code ${resultCode}`);
-    
+    const resultCode = paymentInstrument.paymentTransaction.custom.authCode;    
     return resultCode === constants.RESULTCODES.PENDING || resultCode === constants.RESULTCODES.RECEIVED;
 },
 
