@@ -151,23 +151,20 @@ function setAmazonPayConfig(adyenPaymentMethods) {
     (paymentMethod) => paymentMethod.type === 'amazonpay',
   );
   if (amazonpay) {
-    store.checkoutConfiguration.paymentMethodsConfiguration.amazonpay.configuration =
+    store.paymentMethodsConfiguration.amazonpay.configuration =
       amazonpay.configuration;
-    store.checkoutConfiguration.paymentMethodsConfiguration.amazonpay.addressDetails =
-      {
-        name: `${document.querySelector('#shippingFirstNamedefault')?.value} ${
-          document.querySelector('#shippingLastNamedefault')?.value
-        }`,
-        addressLine1: document.querySelector('#shippingAddressOnedefault')
-          ?.value,
-        city: document.querySelector('#shippingAddressCitydefault')?.value,
-        stateOrRegion: document.querySelector('#shippingAddressCitydefault')
-          ?.value,
-        postalCode: document.querySelector('#shippingZipCodedefault')?.value,
-        countryCode: document.querySelector('#shippingCountrydefault')?.value,
-        phoneNumber: document.querySelector('#shippingPhoneNumberdefault')
-          ?.value,
-      };
+    store.paymentMethodsConfiguration.amazonpay.addressDetails = {
+      name: `${document.querySelector('#shippingFirstNamedefault')?.value} ${
+        document.querySelector('#shippingLastNamedefault')?.value
+      }`,
+      addressLine1: document.querySelector('#shippingAddressOnedefault')?.value,
+      city: document.querySelector('#shippingAddressCitydefault')?.value,
+      stateOrRegion: document.querySelector('#shippingAddressCitydefault')
+        ?.value,
+      postalCode: document.querySelector('#shippingZipCodedefault')?.value,
+      countryCode: document.querySelector('#shippingCountrydefault')?.value,
+      phoneNumber: document.querySelector('#shippingPhoneNumberdefault')?.value,
+    };
   }
 }
 
@@ -180,15 +177,14 @@ function setInstallments(amount) {
       window.installments.replace(/&quot;/g, '"'),
     );
     if (installments.length) {
-      store.checkoutConfiguration.paymentMethodsConfiguration.card.installmentOptions =
-        {};
+      store.paymentMethodsConfiguration.scheme.installmentOptions = {};
     }
     installments.forEach((installment) => {
       const [minAmount, numOfInstallments, cards] = installment;
       if (minAmount <= amount.value) {
         cards.forEach((cardType) => {
           const { installmentOptions } =
-            store.checkoutConfiguration.paymentMethodsConfiguration.card;
+            store.paymentMethodsConfiguration.scheme;
           if (!installmentOptions[cardType]) {
             installmentOptions[cardType] = {
               values: [1],
@@ -203,7 +199,7 @@ function setInstallments(amount) {
         });
       }
     });
-    store.checkoutConfiguration.paymentMethodsConfiguration.card.showInstallmentAmounts = true;
+    store.paymentMethodsConfiguration.scheme.showInstallmentAmounts = true;
   } catch (e) {} // eslint-disable-line no-empty
 }
 
@@ -227,7 +223,9 @@ export async function initializeCheckout() {
     ...paymentMethodsResponse.AdyenPaymentMethods,
     imagePath: paymentMethodsResponse.imagePath,
   };
-  store.checkout = await AdyenCheckout(store.checkoutConfiguration);
+  store.checkout = await window.AdyenWeb.AdyenCheckout(
+    store.checkoutConfiguration,
+  );
   setGiftCardContainerVisibility();
   const { totalDiscountedAmount, giftCards } = giftCardsData;
   if (giftCards?.length) {
@@ -281,16 +279,17 @@ export async function initializeCheckout() {
   );
 }
 
-document.getElementById('email')?.addEventListener('change', (e) => {
-  const emailPattern = /^[\w.%+-]+@[\w.-]+\.[\w]{2,6}$/;
-  if (emailPattern.test(e.target.value)) {
-    const { paymentMethodsConfiguration } = store.checkoutConfiguration;
-    paymentMethodsConfiguration.card.clickToPayConfiguration.shopperEmail =
-      e.target.value;
-    const event = new Event(INIT_CHECKOUT_EVENT);
-    document.dispatchEvent(event);
-  }
-});
+// TODO: click2pay
+// document.getElementById('email')?.addEventListener('change', (e) => {
+//   const emailPattern = /^[\w.%+-]+@[\w.-]+\.[\w]{2,6}$/;
+//   if (emailPattern.test(e.target.value)) {
+//     const { paymentMethodsConfiguration } = store.checkoutConfiguration;
+//     paymentMethodsConfiguration.card.clickToPayConfiguration.shopperEmail =
+//       e.target.value;
+//     const event = new Event(INIT_CHECKOUT_EVENT);
+//     document.dispatchEvent(event);
+//   }
+// });
 
 // used by renderGiftCardComponent.js
 document.addEventListener(INIT_CHECKOUT_EVENT, () => {

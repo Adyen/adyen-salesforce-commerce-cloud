@@ -1,6 +1,5 @@
 const store = require('../../../../store');
 const constants = require('../constants');
-
 const { httpClient } = require('../commons/httpClient');
 const paymentMethodsConfiguration = require('./paymentMethodsConfiguration');
 
@@ -15,7 +14,9 @@ async function handleOnChange(state) {
 }
 
 const actionHandler = async (action) => {
-  const checkout = await AdyenCheckout(store.checkoutConfiguration);
+  const checkout = await window.AdyenWeb.AdyenCheckout(
+    store.checkoutConfiguration,
+  );
   checkout.createFromAction(action).mount('#action-container');
   $('#action-modal').modal({ backdrop: 'static', keyboard: false });
   if (action.type === constants.ACTIONTYPE.QRCODE) {
@@ -50,9 +51,7 @@ function setCheckoutConfiguration() {
   store.checkoutConfiguration.onAdditionalDetails = handleOnAdditionalDetails;
   store.checkoutConfiguration.showPayButton = false;
   store.checkoutConfiguration.clientKey = window.adyenClientKey;
-
-  store.checkoutConfiguration.paymentMethodsConfiguration =
-    paymentMethodsConfiguration;
+  store.paymentMethodsConfiguration = paymentMethodsConfiguration;
 }
 
 module.exports = {

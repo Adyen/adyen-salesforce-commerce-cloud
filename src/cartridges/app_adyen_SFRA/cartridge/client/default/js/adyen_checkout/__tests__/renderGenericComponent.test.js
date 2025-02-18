@@ -53,16 +53,18 @@ const availableGiftCards = {
 }
 
 beforeEach(() => {
-  window.AdyenCheckout = jest.fn(async () => ({
-    create: jest.fn(),
-    paymentMethodsResponse: {
-      storedPaymentMethods: [{ supportedShopperInteractions: ['Ecommerce'] }],
-      paymentMethods: [{ type: 'amazonpay' }],
-      adyenDescriptions: {
-        amazonpay: 'testDescription'
-      }
-    },
-  }));
+  window.AdyenWeb = {
+    AdyenCheckout: jest.fn(async () => ({
+      create: jest.fn(),
+      paymentMethodsResponse: {
+        storedPaymentMethods: [{ supportedShopperInteractions: ['Ecommerce'] }],
+        paymentMethods: [{ type: 'amazonpay' }],
+        adyenDescriptions: {
+          amazonpay: 'testDescription'
+        }
+      },
+    }))
+  };
   window.installments = '[[0,2,["amex","hipercard"]]]';
   store.checkout = {
     options: {}
@@ -88,10 +90,10 @@ describe('Render Generic Component', () => {
         value: 'mocked_amount'
       },
       countryCode: 'mocked_countrycode',
-      paymentMethodsConfiguration: {
-        amazonpay: {}
-      }
     }
+    store.paymentMethodsConfiguration = {
+      amazonpay: {}
+    };
     await renderGenericComponent();
     expect(getPaymentMethods).toBeCalled();
     expect(store.checkoutConfiguration).toMatchSnapshot();
@@ -110,9 +112,9 @@ describe('Render Generic Component', () => {
         value: 'mocked_amount'
       },
       countryCode: 'mocked_countrycode',
-      paymentMethodsConfiguration: {
-        amazonpay: {}
-      }
+    }
+    store.paymentMethodsConfiguration = {
+      amazonpay: {}
     }
     await renderGenericComponent();
     expect(getPaymentMethods).toBeCalled();
@@ -127,11 +129,9 @@ describe('Render Generic Component', () => {
 
   it('should set installment options correctly', () => {
     window.Configuration = { amount: 0, locale : 'pt_BR' };
-    store.checkoutConfiguration = {
-      paymentMethodsConfiguration: {
-        card: {
-          installmentOptions: {},
-        },
+    store.paymentMethodsConfiguration = {
+      scheme: {
+        installmentOptions: {},
       },
     };
     const amount = {
@@ -139,7 +139,7 @@ describe('Render Generic Component', () => {
       value: 150,
     };
     setInstallments(amount);
-    expect(store.checkoutConfiguration.paymentMethodsConfiguration.card.installmentOptions).toEqual({
+    expect(store.paymentMethodsConfiguration.scheme.installmentOptions).toEqual({
       amex: {
         values: [1, 2],
       },
@@ -147,16 +147,14 @@ describe('Render Generic Component', () => {
         values: [1, 2],
       },
     });
-    expect(store.checkoutConfiguration.paymentMethodsConfiguration.card.showInstallmentAmounts).toBe(true);
+    expect(store.paymentMethodsConfiguration.scheme.showInstallmentAmounts).toBe(true);
   });
 
   it('should not set installment options for US', () => {
     window.Configuration = { amount: 0, locale : 'en_US' };
-    store.checkoutConfiguration = {
-      paymentMethodsConfiguration: {
-        card: {
-          installmentOptions: {},
-        },
+    store.paymentMethodsConfiguration = {
+      scheme: {
+        installmentOptions: {},
       },
     };
     const amount = {
@@ -164,16 +162,16 @@ describe('Render Generic Component', () => {
       value: 50,
     };
     setInstallments(amount);
-    expect(store.checkoutConfiguration.paymentMethodsConfiguration.card.installmentOptions).toEqual({});
-    expect(store.checkoutConfiguration.paymentMethodsConfiguration.card.showInstallmentAmounts).toBe(undefined);
+    expect(store.paymentMethodsConfiguration.scheme.installmentOptions).toEqual({});
+    expect(store.paymentMethodsConfiguration.scheme.showInstallmentAmounts).toBe(undefined);
   });
 
   it('should handle email change event',async () => {
     document.body.innerHTML = `
       <input type="text" id="email">
     `;
-    store.checkoutConfiguration.paymentMethodsConfiguration = {
-      card: {
+    store.paymentMethodsConfiguration = {
+      scheme: {
         clickToPayConfiguration: {
           shopperEmail: 'initial@example.com',
         },
@@ -183,7 +181,7 @@ describe('Render Generic Component', () => {
     emailInput.value = 'new@example.com';
     emailInput.dispatchEvent(new Event('change'));
     setTimeout(() => {
-      expect(store.checkoutConfiguration.paymentMethodsConfiguration.card.clickToPayConfiguration.shopperEmail).toBe('new@example.com');
+      expect(store.paymentMethodsConfiguration.scheme.clickToPayConfiguration.shopperEmail).toBe('new@example.com');
       expect(document.dispatchEvent).toHaveBeenCalledWith(new Event('INIT_CHECKOUT_EVENT'));
       done();
     }); // Timeout needed for completition of the test

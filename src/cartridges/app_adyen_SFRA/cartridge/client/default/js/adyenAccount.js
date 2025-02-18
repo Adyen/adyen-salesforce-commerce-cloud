@@ -17,28 +17,30 @@ async function initializeStoreConfiguration() {
   const cardBrands = paymentMethodsResponse.paymentMethods
     .filter((method) => method.type === 'scheme')
     .flatMap((method) => method.brands || []);
-
-  store.checkoutConfiguration.paymentMethodsConfiguration = {
-    card: {
-      enableStoreDetails: false,
-      hasHolderName: true,
-      holderNameRequired: true,
-      installments: [],
-      onBrand,
-      onFieldValid,
-      brands: cardBrands,
-      onChange(state) {
-        store.isValid = state.isValid;
-        store.componentState = state;
-      },
+  return {
+    showPayButton: false,
+    enableStoreDetails: false,
+    hasHolderName: true,
+    holderNameRequired: true,
+    installments: [],
+    onBrand,
+    onFieldValid,
+    brands: cardBrands,
+    onChange(state) {
+      store.isValid = state.isValid;
+      store.componentState = state;
     },
   };
 }
 
 async function initializeCardComponent() {
+  const cardConfig = await initializeStoreConfiguration();
   const cardNode = document.getElementById('card');
-  checkout = await AdyenCheckout(store.checkoutConfiguration);
-  card = checkout.create('card').mount(cardNode);
+  store.checkoutConfiguration.countryCode = window.countryCode;
+  checkout = await window.AdyenWeb.AdyenCheckout(store.checkoutConfiguration);
+  card = window.AdyenWeb.createComponent('scheme', checkout, cardConfig).mount(
+    cardNode,
+  );
 }
 
 // Handle Payment action
@@ -102,7 +104,6 @@ async function handleAddNewPayment() {
 }
 
 (async () => {
-  await initializeStoreConfiguration();
   await initializeCardComponent();
 })();
 

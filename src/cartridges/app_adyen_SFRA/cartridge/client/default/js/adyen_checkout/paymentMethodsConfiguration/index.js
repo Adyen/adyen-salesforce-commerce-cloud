@@ -29,7 +29,7 @@ const amazonPayConfig = new AmazonPayConfig(store, helpers).getConfig();
 const giftCardsConfig = new GiftCardsConfig(store, httpClient).getConfig();
 
 const paymentMethodsConfiguration = {
-  card: cardConfig,
+  scheme: cardConfig,
   bcmc: cardConfig,
   storedCard: storedCardConfig,
   boletobancario: boletoConfig,

@@ -21,14 +21,16 @@ function getPersonalDetails() {
   };
 }
 
-function setNode(paymentMethodID) {
-  const createNode = (...args) => {
-    if (!store.componentsObj[paymentMethodID]) {
-      store.componentsObj[paymentMethodID] = {};
-    }
-    try {
-      // ALl nodes created for the checkout component are enriched with shopper personal details
-      const node = store.checkout.create(...args, {
+function setNode(paymentMethodType, paymentMethodID) {
+  if (!store.componentsObj[paymentMethodID]) {
+    store.componentsObj[paymentMethodID] = {};
+  }
+  try {
+    // ALl nodes created for the checkout component are enriched with shopper personal details
+    const node = window.AdyenWeb.createComponent(
+      paymentMethodType,
+      store.checkout,
+      {
         data: {
           ...getPersonalDetails(),
           personalDetails: getPersonalDetails(),
@@ -38,15 +40,14 @@ function setNode(paymentMethodID) {
           billingAddress: 'hidden',
           deliveryAddress: 'hidden',
         },
-      });
-      store.componentsObj[paymentMethodID].node = node;
-      store.componentsObj[paymentMethodID].isValid = node.isValid;
-    } catch (e) {
-      /* No component for payment method */
-    }
-  };
-
-  return createNode;
+        ...store.paymentMethodsConfiguration[paymentMethodID],
+      },
+    );
+    store.componentsObj[paymentMethodID].node = node;
+    store.componentsObj[paymentMethodID].isValid = node.isValid;
+  } catch (e) {
+    /* No component for payment method */
+  }
 }
 
 function getPaymentMethodID(isStored, paymentMethod) {
@@ -82,12 +83,12 @@ function handleFallbackPayment({ paymentMethod, container, paymentMethodID }) {
   };
   return fallback
     ? createTemplate()
-    : setNode(paymentMethod.type)(paymentMethodID);
+    : setNode(paymentMethod.type, paymentMethodID);
 }
 
 function handlePayment(options) {
   return options.isStored
-    ? setNode(options.paymentMethodID)('card', options.paymentMethod)
+    ? setNode(options.paymentMethod.type, options.paymentMethodID)
     : handleFallbackPayment(options);
 }
 
@@ -122,9 +123,11 @@ function configureContainer({ paymentMethodID, container }) {
 
 function handleInput({ paymentMethodID }) {
   const input = document.querySelector(`#rb_${paymentMethodID}`);
-  input.onchange = async (event) => {
-    helpers.displaySelectedMethod(event.target.value);
-  };
+  if (input) {
+    input.onchange = async (event) => {
+      helpers.displaySelectedMethod(event.target.value);
+    };
+  }
 }
 
 function createListItem(rerender, paymentMethodID, liContents) {
@@ -140,28 +143,13 @@ function createListItem(rerender, paymentMethodID, liContents) {
 }
 
 async function checkIfNodeIsAvailable(node) {
-  if (node.isAvailable) {
+  if (node?.isAvailable) {
     const isNodeAvailable = await node.isAvailable();
     if (!isNodeAvailable) {
       return false;
     }
   }
   return true;
-}
-
-async function appendNodeToContainerIfAvailable(
-  paymentMethodsUI,
-  li,
-  node,
-  container,
-) {
-  if (node) {
-    const canBeMounted = await checkIfNodeIsAvailable(node);
-    if (canBeMounted) {
-      paymentMethodsUI.append(li);
-      node.mount(container);
-    }
-  }
 }
 
 module.exports.renderPaymentMethod = async function renderPaymentMethod(
@@ -203,12 +191,9 @@ module.exports.renderPaymentMethod = async function renderPaymentMethod(
 
     li.append(container);
 
-    await appendNodeToContainerIfAvailable(
-      paymentMethodsUI,
-      li,
-      store.componentsObj[paymentMethodID]?.node,
-      container,
-    );
+    await checkIfNodeIsAvailable(store.componentsObj[paymentMethodID]?.node);
+    paymentMethodsUI.append(li);
+    store.componentsObj[paymentMethodID]?.node?.mount(container);
 
     if (paymentMethodID === constants.GIROPAY) {
       container.innerHTML = '';

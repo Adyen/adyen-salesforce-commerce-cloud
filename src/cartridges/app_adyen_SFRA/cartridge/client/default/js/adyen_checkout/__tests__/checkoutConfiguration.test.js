@@ -37,11 +37,11 @@ beforeEach(() => {
   window.customerEmail = 'test@email.com';
   store.checkoutConfiguration = {};
   setCheckoutConfiguration()
-  card = store.checkoutConfiguration.paymentMethodsConfiguration.card
-  paypal = store.checkoutConfiguration.paymentMethodsConfiguration.paypal
-  amazonpay = store.checkoutConfiguration.paymentMethodsConfiguration.amazonpay
-  cashapp = store.checkoutConfiguration.paymentMethodsConfiguration.cashapp
-  applepay = store.checkoutConfiguration.paymentMethodsConfiguration.applepay
+  card = store.paymentMethodsConfiguration.scheme
+  paypal = store.paymentMethodsConfiguration.paypal
+  amazonpay = store.paymentMethodsConfiguration.amazonpay
+  cashapp = store.paymentMethodsConfiguration.cashapp
+  applepay = store.paymentMethodsConfiguration.applepay
 });
 
 describe('Checkout Configuration', () => {
