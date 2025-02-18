@@ -184,14 +184,16 @@ function attachGiftCardFormListeners() {
         : store.checkout.options.amount;
 
       giftCardContainer.innerHTML = '';
-      const giftCardNode = store.checkout
-        .create(constants.GIFTCARD, {
-          ...store.checkoutConfiguration.giftcard,
+      const giftCardNode = window.AdyenWeb.createComponent(
+        constants.GIFTCARD,
+        store.checkout,
+        {
+          ...store.paymentMethodsConfiguration[constants.GIFTCARD],
           brand: selectedGiftCard.brand,
           name: selectedGiftCard.name,
           amount: giftCardAmount,
-        })
-        .mount(giftCardContainer);
+        },
+      ).mount(giftCardContainer);
       store.componentsObj.giftcard = { node: giftCardNode };
     });
   }
