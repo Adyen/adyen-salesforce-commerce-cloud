@@ -279,17 +279,15 @@ export async function initializeCheckout() {
   );
 }
 
-// TODO: click2pay
-// document.getElementById('email')?.addEventListener('change', (e) => {
-//   const emailPattern = /^[\w.%+-]+@[\w.-]+\.[\w]{2,6}$/;
-//   if (emailPattern.test(e.target.value)) {
-//     const { paymentMethodsConfiguration } = store.checkoutConfiguration;
-//     paymentMethodsConfiguration.card.clickToPayConfiguration.shopperEmail =
-//       e.target.value;
-//     const event = new Event(INIT_CHECKOUT_EVENT);
-//     document.dispatchEvent(event);
-//   }
-// });
+document.getElementById('email')?.addEventListener('change', (e) => {
+  const emailPattern = /^[\w.%+-]+@[\w.-]+\.[\w]{2,6}$/;
+  if (emailPattern.test(e.target.value)) {
+    store.paymentMethodsConfiguration.scheme.clickToPayConfiguration.shopperEmail =
+      e.target.value;
+    const event = new Event(INIT_CHECKOUT_EVENT);
+    document.dispatchEvent(event);
+  }
+});
 
 // used by renderGiftCardComponent.js
 document.addEventListener(INIT_CHECKOUT_EVENT, () => {
