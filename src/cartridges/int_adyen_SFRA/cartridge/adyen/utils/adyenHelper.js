@@ -277,6 +277,10 @@ let adyenHelperObj = {
           returnValue = constants.CHECKOUT_ENVIRONMENT_LIVE_IN;
           break;
         }
+        if (frontEndRegion === constants.FRONTEND_REGIONS.APSE) {
+          returnValue = constants.CHECKOUT_ENVIRONMENT_LIVE_APSE;
+          break;
+        }
         returnValue = constants.CHECKOUT_ENVIRONMENT_LIVE_EU;
         break;
     }
