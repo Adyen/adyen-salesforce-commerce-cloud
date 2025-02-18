@@ -69,6 +69,7 @@
                   <option class="dropdown-option" value="EU" id="regionEU" ${AdyenConfigs.getAdyenFrontendRegion() === 'EU' ? 'selected': ''}>EU - Europe (Default)</option>
                   <option class="dropdown-option" value="AU" id="regionAU" ${AdyenConfigs.getAdyenFrontendRegion() === 'AU' ? 'selected': ''}>AU - Australia</option>
                   <option class="dropdown-option" value="IN" id="regionIN" ${AdyenConfigs.getAdyenFrontendRegion() === 'IN' ? 'selected': ''}>IN - India</option>
+                  <option class="dropdown-option" value="APSE" id="regionAPSE" ${AdyenConfigs.getAdyenFrontendRegion() === 'APSE' ? 'selected': ''}>APSE - Asia Pacific & Southeast</option>
                </select>
             </div>
          </div>
