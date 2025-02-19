@@ -21,28 +21,34 @@ function getPersonalDetails() {
   };
 }
 
+const getComponentConfig = (paymentMethodID, paymentMethod) => {
+  const personalDetails = getPersonalDetails();
+
+  const baseConfig = {
+    data: {
+      ...personalDetails,
+      personalDetails,
+    },
+    visibility: {
+      personalDetails: 'editable',
+      billingAddress: 'hidden',
+      deliveryAddress: 'hidden',
+    },
+  };
+
+  const additionalConfig = paymentMethodID.includes('storedCard')
+    ? { ...store.paymentMethodsConfiguration.storedCard, ...paymentMethod }
+    : store.paymentMethodsConfiguration[paymentMethodID];
+
+  return { ...baseConfig, ...additionalConfig };
+};
+
 function setNode(paymentMethod, paymentMethodID) {
   if (!store.componentsObj[paymentMethodID]) {
     store.componentsObj[paymentMethodID] = {};
   }
   try {
-    let componentConfig = null;
-    if (paymentMethodID.includes('storedCard')) {
-      componentConfig = paymentMethod;
-    } else {
-      componentConfig = {
-        data: {
-          ...getPersonalDetails(),
-          personalDetails: getPersonalDetails(),
-        },
-        visibility: {
-          personalDetails: 'editable',
-          billingAddress: 'hidden',
-          deliveryAddress: 'hidden',
-        },
-        ...store.paymentMethodsConfiguration[paymentMethodID],
-      };
-    }
+    const componentConfig = getComponentConfig(paymentMethodID, paymentMethod);
     const node = window.AdyenWeb.createComponent(
       paymentMethod.type,
       store.checkout,
