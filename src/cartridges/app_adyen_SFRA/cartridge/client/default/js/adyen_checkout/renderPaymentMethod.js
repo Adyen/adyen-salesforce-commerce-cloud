@@ -21,16 +21,16 @@ function getPersonalDetails() {
   };
 }
 
-function setNode(paymentMethodType, paymentMethodID) {
+function setNode(paymentMethod, paymentMethodID) {
   if (!store.componentsObj[paymentMethodID]) {
     store.componentsObj[paymentMethodID] = {};
   }
   try {
-    // ALl nodes created for the checkout component are enriched with shopper personal details
-    const node = window.AdyenWeb.createComponent(
-      paymentMethodType,
-      store.checkout,
-      {
+    let componentConfig = null;
+    if (paymentMethodID.includes('storedCard')) {
+      componentConfig = paymentMethod;
+    } else {
+      componentConfig = {
         data: {
           ...getPersonalDetails(),
           personalDetails: getPersonalDetails(),
@@ -41,7 +41,12 @@ function setNode(paymentMethodType, paymentMethodID) {
           deliveryAddress: 'hidden',
         },
         ...store.paymentMethodsConfiguration[paymentMethodID],
-      },
+      };
+    }
+    const node = window.AdyenWeb.createComponent(
+      paymentMethod.type,
+      store.checkout,
+      componentConfig,
     );
     store.componentsObj[paymentMethodID].node = node;
     store.componentsObj[paymentMethodID].isValid = node.isValid;
@@ -81,14 +86,12 @@ function handleFallbackPayment({ paymentMethod, container, paymentMethodID }) {
     template.innerHTML = fallback;
     container.append(template.content);
   };
-  return fallback
-    ? createTemplate()
-    : setNode(paymentMethod.type, paymentMethodID);
+  return fallback ? createTemplate() : setNode(paymentMethod, paymentMethodID);
 }
 
 function handlePayment(options) {
   return options.isStored
-    ? setNode(options.paymentMethod.type, options.paymentMethodID)
+    ? setNode(options.paymentMethod, options.paymentMethodID)
     : handleFallbackPayment(options);
 }
 
@@ -109,8 +112,8 @@ function getImagePath({ isStored, paymentMethod, path, isSchemeNotStored }) {
   return isSchemeNotStored ? cardImage : paymentMethodImage;
 }
 
-function setValid({ isStored, paymentMethodID }) {
-  if (isStored && ['bcmc', 'scheme'].indexOf(paymentMethodID) > -1) {
+function setValid({ isStored, paymentMethodID, paymentMethod }) {
+  if (isStored && ['bcmc', 'scheme'].indexOf(paymentMethod.type) > -1) {
     store.componentsObj[paymentMethodID].isValid = true;
   }
 }
