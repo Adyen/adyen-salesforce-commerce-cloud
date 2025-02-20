@@ -2,7 +2,6 @@
 const store = require('../../../../store');
 const { renderPaymentMethod } = require('./renderPaymentMethod');
 const helpers = require('./helpers');
-const { installmentLocales } = require('./localesUsingInstallments');
 const { getPaymentMethods, fetchGiftCards } = require('../commons');
 const constants = require('../constants');
 const {
@@ -170,6 +169,7 @@ function setAmazonPayConfig(adyenPaymentMethods) {
 
 function setInstallments(amount) {
   try {
+    const installmentLocales = ['pt_BR', 'ja_JP', 'tr_TR', 'es_MX'];
     if (installmentLocales.indexOf(window.Configuration.locale) < 0) {
       return;
     }
