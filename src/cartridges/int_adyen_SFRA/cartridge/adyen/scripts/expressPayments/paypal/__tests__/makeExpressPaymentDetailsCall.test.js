@@ -32,6 +32,7 @@ afterEach(() => {
 
 describe('Express Payment Details controller', () => {
   it('Should return response when payment details call is successful', () => {
+    currentBasket = require('dw/order/BasketMgr').getCurrentBasket();
     makeExpressPaymentDetailsCall(req, res, next);
     expect(res.json).toHaveBeenCalledWith({"orderNo": "mocked_orderNo", "orderToken": "mocked_orderToken"});
     expect(AdyenLogs.error_log).not.toHaveBeenCalled();

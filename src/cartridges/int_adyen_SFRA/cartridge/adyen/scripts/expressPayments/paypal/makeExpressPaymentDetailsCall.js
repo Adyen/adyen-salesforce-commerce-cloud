@@ -4,7 +4,6 @@ const Transaction = require('dw/system/Transaction');
 const BasketMgr = require('dw/order/BasketMgr');
 const adyenCheckout = require('*/cartridge/adyen/scripts/payments/adyenCheckout');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
-const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
 const paypalHelper = require('*/cartridge/adyen/utils/paypalHelper');
 const constants = require('*/cartridge/adyen/config/constants');
@@ -29,6 +28,15 @@ function makeExpressPaymentDetailsCall(req, res, next) {
   try {
     const request = JSON.parse(req.form.data);
     const currentBasket = BasketMgr.getCurrentBasket();
+    const productLines = currentBasket.getAllProductLineItems().toArray();
+    const productQuantity = currentBasket.getProductQuantityTotal();
+    const hashedProducts = AdyenHelper.getAdyenHash(
+      productLines,
+      productQuantity,
+    );
+    if (hashedProducts !== currentBasket.custom.adyenProductLineItems) {
+      throw new Error('Basket products changed, cannot complete trasaction');
+    }
 
     const response = adyenCheckout.doPaymentsDetailsCall(request.data);
 
@@ -41,11 +49,6 @@ function makeExpressPaymentDetailsCall(req, res, next) {
       currentBasket,
       session.privacy.paypalExpressOrderNo,
     );
-    const fraudDetectionStatus = { status: 'success' };
-    const placeOrderResult = COHelpers.placeOrder(order, fraudDetectionStatus);
-    if (placeOrderResult.error) {
-      throw new Error('Failed to place the PayPal express order');
-    }
 
     response.orderNo = order.orderNo;
     response.orderToken = order.orderToken;

@@ -58,6 +58,9 @@ beforeEach(() => {
     paymentMethodsResponse: {
       storedPaymentMethods: [{ supportedShopperInteractions: ['Ecommerce'] }],
       paymentMethods: [{ type: 'amazonpay' }],
+      adyenDescriptions: {
+        amazonpay: 'testDescription'
+      }
     },
   }));
   window.installments = '[[0,2,["amex","hipercard"]]]';

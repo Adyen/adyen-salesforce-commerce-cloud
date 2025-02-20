@@ -29,6 +29,7 @@ server.post(
 server.post(
   'ShippingMethods',
   server.middleware.https,
+  csrf.validateRequest,
   adyen.callGetShippingMethods,
 );
 
@@ -38,6 +39,7 @@ server.post(
 server.post(
   'SelectShippingMethod',
   server.middleware.https,
+  csrf.validateRequest,
   adyen.callSelectShippingMethod,
 );
 

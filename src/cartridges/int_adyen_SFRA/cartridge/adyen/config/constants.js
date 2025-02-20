@@ -36,9 +36,10 @@ module.exports = {
     APPLEPAY: 'applepay',
     AMAZONPAY: 'amazonpay',
     PAYPAL: 'paypal',
+    GOOGLEPAY: 'googlepay',
   },
 
-  CAN_SKIP_SUMMARY_PAGE: ['applepay', 'cashapp', 'upi'],
+  CAN_SKIP_SUMMARY_PAGE: ['applepay', 'cashapp', 'upi', 'googlepay'],
 
   OPEN_INVOICE_METHODS: [
     'afterpay',
@@ -145,5 +146,5 @@ module.exports = {
     '/.well-known/apple-developer-merchantid-domain-association',
 
   CHECKOUT_COMPONENT_VERSION: '5.68.0',
-  VERSION: '24.4.1',
+  VERSION: '25.1.0',
 };
