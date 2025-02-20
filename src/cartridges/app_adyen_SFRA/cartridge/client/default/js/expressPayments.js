@@ -1,6 +1,7 @@
 const { getPaymentMethods } = require('./commons');
 const applePayExpressModule = require('./applePayExpress');
 const paypalPayExpressModule = require('./paypalExpress');
+const googlePayExpressModule = require('./googlePayExpress');
 const amazonPayExpressModule = require('./amazonPayExpressPart1');
 
 let paymentMethodsResponse = null;
@@ -16,6 +17,9 @@ async function init() {
     }
     if (window.isAmazonPayExpressEnabled === 'true') {
       await amazonPayExpressModule.init(paymentMethodsResponse);
+    }
+    if (window.isGooglePayExpressEnabled === 'true') {
+      await googlePayExpressModule.init(paymentMethodsResponse);
     }
   });
 }

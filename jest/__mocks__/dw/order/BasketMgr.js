@@ -28,7 +28,26 @@ export const setPhone = jest.fn();
 export const setCountryCode = jest.fn();
 export const setPostalCode = jest.fn();
 
-export const getAllProductLineItems = jest.fn(() => [1]);
+export const getAllProductLineItems = jest.fn(() => ({
+  toArray: jest.fn(() => [
+    {
+      custom: { adyenPaymentMethod: '' },
+      paymentTransaction: {
+        paymentProcessor: 'mocked_payment_processor',
+        amount: {
+          value: 'mockedValue',
+          currencyCode: 'mockedValue',
+        },
+      },
+      setCreditCardNumber,
+      setCreditCardType,
+      setCreditCardExpirationMonth,
+      setCreditCardExpirationYear,
+      setCreditCardToken,
+      paymentMethod: 'AdyenComponent',
+    },
+  ]),
+}));
 
 export const isAvailable = jest.fn(() => true);
 export const getTotalGrossPrice = jest.fn(() => ({
@@ -54,6 +73,7 @@ export const setCreditCardType = jest.fn();
 export const setCreditCardExpirationMonth = jest.fn();
 export const setCreditCardExpirationYear = jest.fn();
 export const setCreditCardToken = jest.fn();
+export const getProductQuantityTotal = jest.fn();
 
 export const toArray = jest.fn(() => [
   {
@@ -135,6 +155,7 @@ export const getCurrentBasket = jest.fn(() => ({
   getShipments,
   setCustomerEmail: jest.fn(),
   getAllProductLineItems,
+  getProductQuantityTotal,
   getTotalGrossPrice,
   getAdjustedMerchandizeTotalGrossPrice,
   getAdjustedMerchandizeTotalNetPrice,
@@ -142,6 +163,7 @@ export const getCurrentBasket = jest.fn(() => ({
   removeAllPaymentInstruments: jest.fn(),
   removePaymentInstrument: jest.fn(),
   custom: {
+    adyenProductLineItems: 'mocked_hash',
     amazonExpressShopperDetails: JSON.stringify({
       billingAddressDetails: {
         address1: 'address1',
