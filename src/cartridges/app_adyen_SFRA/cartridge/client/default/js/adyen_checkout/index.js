@@ -11,6 +11,7 @@ const {
 } = require('./helpers');
 const { validateComponents } = require('./validateComponents');
 const billing = require('../checkout/billing');
+const { httpClient } = require('../commons/httpClient');
 
 function renderPaymentMethod() {
   $('body').on('checkout:renderPaymentMethod', (e, response) => {
@@ -21,21 +22,23 @@ function renderPaymentMethod() {
 }
 
 function submitPayment() {
-  $('#dwfrm_billing').submit(function apiRequest(e) {
+  $('#dwfrm_billing').submit(async function apiRequest(e) {
     e.preventDefault();
 
     const form = $(this);
+    const formDataObject = form.serializeArray().reduce((obj, item) => {
+      obj[item.name] = item.value;
+      return obj;
+    }, {});
     const url = form.attr('action');
 
-    $.ajax({
-      type: 'POST',
+    const data = await httpClient({
+      method: 'POST',
       url,
-      data: form.serialize(),
-      async: false,
-      success(data) {
-        store.formErrorsExist = 'fieldErrors' in data;
-      },
+      data: formDataObject,
     });
+
+    store.formErrorsExist = 'fieldErrors' in data;
   });
 
   // Submit the payment
