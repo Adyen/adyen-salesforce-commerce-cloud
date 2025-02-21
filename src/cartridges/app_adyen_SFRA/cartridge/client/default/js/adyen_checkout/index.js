@@ -99,7 +99,7 @@ async function init() {
     const emailPattern = /^[\w.%+-]+@[\w.-]+\.[\w]{2,6}$/;
     if (emailPattern.test(e.target.value)) {
       $('body').trigger('checkout:renderPaymentMethod', {
-        email: e.target.value,
+        email: e.target.value?.trim(),
       });
     }
   });
