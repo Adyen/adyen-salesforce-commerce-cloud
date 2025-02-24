@@ -15,6 +15,9 @@ describe('Render Payment Method', () => {
     };
 
     mount = jest.fn();
+    window.AdyenWeb = {
+      createComponent: jest.fn(() => ({ mount })),
+    }
     store.checkout = {
       create: jest.fn(() => ({ mount })),
     };
@@ -71,25 +74,6 @@ describe('Render Payment Method', () => {
     );
     expect(document.getElementById('paymentMethodsList')).toMatchSnapshot();
     expect(store.componentsObj).toMatchSnapshot();
-    expect(store.checkout.create.mock.calls[0][1]).toEqual({
-      data: {
-        personalDetails: {
-          firstName: 'shippingFirstNamedefaultMock',
-          lastName: 'shippingLastNamedefaultMock',
-          telephoneNumber: 'shippingPhoneNumberdefaultMock',
-          shopperEmail: 'test@user.com',
-        },
-        firstName: 'shippingFirstNamedefaultMock',
-        lastName: 'shippingLastNamedefaultMock',
-        telephoneNumber: 'shippingPhoneNumberdefaultMock',
-        shopperEmail: 'test@user.com',
-      },
-      visibility: {
-        personalDetails: 'editable',
-        billingAddress: 'hidden',
-        deliveryAddress: 'hidden',
-      },
-    });
   });
 
   it('should handle input onChange for paypal', async () => {

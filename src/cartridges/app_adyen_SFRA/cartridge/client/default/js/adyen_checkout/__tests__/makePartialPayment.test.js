@@ -36,17 +36,19 @@ const giftCardHtml = `
       </div>
     `;
 beforeEach(() => {
-  window.AdyenCheckout = jest.fn(async () => ({
-    create: jest.fn(),
-    paymentMethodsResponse: {
-      storedPaymentMethods: [{ supportedShopperInteractions: ['Ecommerce'] }],
-      paymentMethods: [{ type: 'giftcard' }],
-    },
-    options: {
-      amount: 'mocked_amount',
-      countryCode: 'mocked_countrycode',
-    },
-  }));
+  window.AdyenWeb = {
+    createComponent: jest.fn(() => ({ mount: jest.fn() })),
+    AdyenCheckout: jest.fn().mockReturnValue({
+      paymentMethodsResponse: {
+        storedPaymentMethods: [{ supportedShopperInteractions: ['Ecommerce'] }],
+        paymentMethods: [{ type: 'giftcard' }],
+      },
+      options: {
+        amount: 'mocked_amount',
+        countryCode: 'mocked_countrycode',
+      },
+    })
+  }
   store.checkout = {
     options: { amount: 100 },
   };

@@ -79,6 +79,10 @@ let adyenHelperObj = {
     return null;
   },
 
+  getCountryCodeFromLocale(locale) {
+    return  Locale.getLocale(locale.id).country;
+  },
+
   /**
    * Returns shippingCost including taxes for a specific Shipment / ShippingMethod pair including the product level shipping cost if any
    * @param {dw.order.ShippingMethod} shippingMethod - the default shipment of the current basket

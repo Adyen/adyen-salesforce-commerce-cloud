@@ -16,11 +16,16 @@ class CardConfig {
 
   onChange = (state) => {
     this.store.isValid = state.isValid;
-    const method = state.data.paymentMethod.storedPaymentMethodId
-      ? `storedCard${state.data.paymentMethod.storedPaymentMethodId}`
-      : this.store.selectedMethod;
-    this.store.updateSelectedPayment(method, 'isValid', this.store.isValid);
-    this.store.updateSelectedPayment(method, 'stateData', state.data);
+    this.store.updateSelectedPayment(
+      this.store.selectedMethod,
+      'isValid',
+      this.store.isValid,
+    );
+    this.store.updateSelectedPayment(
+      this.store.selectedMethod,
+      'stateData',
+      state.data,
+    );
   };
 
   onSubmit = () => {

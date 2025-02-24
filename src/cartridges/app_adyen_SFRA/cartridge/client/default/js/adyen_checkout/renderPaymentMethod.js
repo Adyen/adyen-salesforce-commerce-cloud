@@ -21,32 +21,44 @@ function getPersonalDetails() {
   };
 }
 
-function setNode(paymentMethodID) {
-  const createNode = (...args) => {
-    if (!store.componentsObj[paymentMethodID]) {
-      store.componentsObj[paymentMethodID] = {};
-    }
-    try {
-      // ALl nodes created for the checkout component are enriched with shopper personal details
-      const node = store.checkout.create(...args, {
-        data: {
-          ...getPersonalDetails(),
-          personalDetails: getPersonalDetails(),
-        },
-        visibility: {
-          personalDetails: 'editable',
-          billingAddress: 'hidden',
-          deliveryAddress: 'hidden',
-        },
-      });
-      store.componentsObj[paymentMethodID].node = node;
-      store.componentsObj[paymentMethodID].isValid = node.isValid;
-    } catch (e) {
-      /* No component for payment method */
-    }
+const getComponentConfig = (paymentMethodID, paymentMethod) => {
+  const personalDetails = getPersonalDetails();
+
+  const baseConfig = {
+    data: {
+      ...personalDetails,
+      personalDetails,
+    },
+    visibility: {
+      personalDetails: 'editable',
+      billingAddress: 'hidden',
+      deliveryAddress: 'hidden',
+    },
   };
 
-  return createNode;
+  const additionalConfig = paymentMethodID.includes('storedCard')
+    ? { ...store.paymentMethodsConfiguration.storedCard, ...paymentMethod }
+    : store.paymentMethodsConfiguration[paymentMethodID];
+
+  return { ...baseConfig, ...additionalConfig };
+};
+
+function setNode(paymentMethod, paymentMethodID) {
+  if (!store.componentsObj[paymentMethodID]) {
+    store.componentsObj[paymentMethodID] = {};
+  }
+  try {
+    const componentConfig = getComponentConfig(paymentMethodID, paymentMethod);
+    const node = window.AdyenWeb.createComponent(
+      paymentMethod.type,
+      store.checkout,
+      componentConfig,
+    );
+    store.componentsObj[paymentMethodID].node = node;
+    store.componentsObj[paymentMethodID].isValid = node.isValid;
+  } catch (e) {
+    /* No component for payment method */
+  }
 }
 
 function getPaymentMethodID(isStored, paymentMethod) {
@@ -80,14 +92,12 @@ function handleFallbackPayment({ paymentMethod, container, paymentMethodID }) {
     template.innerHTML = fallback;
     container.append(template.content);
   };
-  return fallback
-    ? createTemplate()
-    : setNode(paymentMethod.type)(paymentMethodID);
+  return fallback ? createTemplate() : setNode(paymentMethod, paymentMethodID);
 }
 
 function handlePayment(options) {
   return options.isStored
-    ? setNode(options.paymentMethodID)('card', options.paymentMethod)
+    ? setNode(options.paymentMethod, options.paymentMethodID)
     : handleFallbackPayment(options);
 }
 
@@ -108,8 +118,8 @@ function getImagePath({ isStored, paymentMethod, path, isSchemeNotStored }) {
   return isSchemeNotStored ? cardImage : paymentMethodImage;
 }
 
-function setValid({ isStored, paymentMethodID }) {
-  if (isStored && ['bcmc', 'scheme'].indexOf(paymentMethodID) > -1) {
+function setValid({ isStored, paymentMethodID, paymentMethod }) {
+  if (isStored && ['bcmc', 'scheme'].indexOf(paymentMethod.type) > -1) {
     store.componentsObj[paymentMethodID].isValid = true;
   }
 }
@@ -122,9 +132,11 @@ function configureContainer({ paymentMethodID, container }) {
 
 function handleInput({ paymentMethodID }) {
   const input = document.querySelector(`#rb_${paymentMethodID}`);
-  input.onchange = async (event) => {
-    helpers.displaySelectedMethod(event.target.value);
-  };
+  if (input) {
+    input.onchange = async (event) => {
+      helpers.displaySelectedMethod(event.target.value);
+    };
+  }
 }
 
 function createListItem(rerender, paymentMethodID, liContents) {
@@ -140,28 +152,13 @@ function createListItem(rerender, paymentMethodID, liContents) {
 }
 
 async function checkIfNodeIsAvailable(node) {
-  if (node.isAvailable) {
+  if (node?.isAvailable) {
     const isNodeAvailable = await node.isAvailable();
     if (!isNodeAvailable) {
       return false;
     }
   }
   return true;
-}
-
-async function appendNodeToContainerIfAvailable(
-  paymentMethodsUI,
-  li,
-  node,
-  container,
-) {
-  if (node) {
-    const canBeMounted = await checkIfNodeIsAvailable(node);
-    if (canBeMounted) {
-      paymentMethodsUI.append(li);
-      node.mount(container);
-    }
-  }
 }
 
 module.exports.renderPaymentMethod = async function renderPaymentMethod(
@@ -203,12 +200,9 @@ module.exports.renderPaymentMethod = async function renderPaymentMethod(
 
     li.append(container);
 
-    await appendNodeToContainerIfAvailable(
-      paymentMethodsUI,
-      li,
-      store.componentsObj[paymentMethodID]?.node,
-      container,
-    );
+    await checkIfNodeIsAvailable(store.componentsObj[paymentMethodID]?.node);
+    paymentMethodsUI.append(li);
+    store.componentsObj[paymentMethodID]?.node?.mount(container);
 
     if (paymentMethodID === constants.GIROPAY) {
       container.innerHTML = '';

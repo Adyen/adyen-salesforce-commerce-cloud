@@ -14,6 +14,8 @@ class Store {
 
   @observable checkoutConfiguration = window.Configuration || {};
 
+  @observable paymentMethodsConfiguration = {};
+
   @observable formErrorsExist;
 
   @observable isValid = false;

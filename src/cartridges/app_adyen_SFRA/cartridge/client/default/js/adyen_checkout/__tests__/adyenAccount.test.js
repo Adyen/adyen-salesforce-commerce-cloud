@@ -16,12 +16,12 @@ let checkout;
 jest.mock('../../../../../store', () => ({
   checkoutConfiguration: {
     amount: { value: 0, currency: 'EUR' },
-    paymentMethodsConfiguration: {
-      card: {
-        onChange: jest.fn(),
-      },
-    },
     onAdditionalDetails: jest.fn(),
+  },
+  paymentMethodsConfiguration: {
+    scheme: {
+      onChange: jest.fn(),
+    },
   },
 }));   
 
@@ -34,6 +34,16 @@ describe('submitAddCard', () => {
 
   it('initialize card component', async () => {
     document.body.innerHTML = `<div id="card"></div>`;
+    const mount = jest.fn();
+    window.AdyenWeb = {
+      createComponent: jest.fn(() => ({ mount })),
+      AdyenCheckout: jest.fn(),
+    }
+    $.ajax = jest.fn().mockReturnValue({
+      AdyenPaymentMethods: {
+        paymentMethods: [{ type: 'scheme', brands: ['mc', 'visa'] }]
+      }
+    });
     await initializeCardComponent();
     expect(document.getElementById('card')).toBeDefined();
   });

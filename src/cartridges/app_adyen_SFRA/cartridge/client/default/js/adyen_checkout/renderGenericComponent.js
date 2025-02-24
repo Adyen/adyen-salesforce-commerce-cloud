@@ -2,7 +2,6 @@
 const store = require('../../../../store');
 const { renderPaymentMethod } = require('./renderPaymentMethod');
 const helpers = require('./helpers');
-const { installmentLocales } = require('./localesUsingInstallments');
 const { getPaymentMethods, fetchGiftCards } = require('../commons');
 const constants = require('../constants');
 const {
@@ -149,28 +148,26 @@ function setAmazonPayConfig(adyenPaymentMethods) {
     (paymentMethod) => paymentMethod.type === 'amazonpay',
   );
   if (amazonpay) {
-    store.checkoutConfiguration.paymentMethodsConfiguration.amazonpay.configuration =
+    store.paymentMethodsConfiguration.amazonpay.configuration =
       amazonpay.configuration;
-    store.checkoutConfiguration.paymentMethodsConfiguration.amazonpay.addressDetails =
-      {
-        name: `${document.querySelector('#shippingFirstNamedefault')?.value} ${
-          document.querySelector('#shippingLastNamedefault')?.value
-        }`,
-        addressLine1: document.querySelector('#shippingAddressOnedefault')
-          ?.value,
-        city: document.querySelector('#shippingAddressCitydefault')?.value,
-        stateOrRegion: document.querySelector('#shippingAddressCitydefault')
-          ?.value,
-        postalCode: document.querySelector('#shippingZipCodedefault')?.value,
-        countryCode: document.querySelector('#shippingCountrydefault')?.value,
-        phoneNumber: document.querySelector('#shippingPhoneNumberdefault')
-          ?.value,
-      };
+    store.paymentMethodsConfiguration.amazonpay.addressDetails = {
+      name: `${document.querySelector('#shippingFirstNamedefault')?.value} ${
+        document.querySelector('#shippingLastNamedefault')?.value
+      }`,
+      addressLine1: document.querySelector('#shippingAddressOnedefault')?.value,
+      city: document.querySelector('#shippingAddressCitydefault')?.value,
+      stateOrRegion: document.querySelector('#shippingAddressCitydefault')
+        ?.value,
+      postalCode: document.querySelector('#shippingZipCodedefault')?.value,
+      countryCode: document.querySelector('#shippingCountrydefault')?.value,
+      phoneNumber: document.querySelector('#shippingPhoneNumberdefault')?.value,
+    };
   }
 }
 
 function setInstallments(amount) {
   try {
+    const installmentLocales = ['pt_BR', 'ja_JP', 'tr_TR', 'es_MX'];
     if (installmentLocales.indexOf(window.Configuration.locale) < 0) {
       return;
     }
@@ -178,15 +175,14 @@ function setInstallments(amount) {
       window.installments.replace(/&quot;/g, '"'),
     );
     if (installments.length) {
-      store.checkoutConfiguration.paymentMethodsConfiguration.card.installmentOptions =
-        {};
+      store.paymentMethodsConfiguration.scheme.installmentOptions = {};
     }
     installments.forEach((installment) => {
       const [minAmount, numOfInstallments, cards] = installment;
       if (minAmount <= amount.value) {
         cards.forEach((cardType) => {
           const { installmentOptions } =
-            store.checkoutConfiguration.paymentMethodsConfiguration.card;
+            store.paymentMethodsConfiguration.scheme;
           if (!installmentOptions[cardType]) {
             installmentOptions[cardType] = {
               values: [1],
@@ -201,7 +197,7 @@ function setInstallments(amount) {
         });
       }
     });
-    store.checkoutConfiguration.paymentMethodsConfiguration.card.showInstallmentAmounts = true;
+    store.paymentMethodsConfiguration.scheme.showInstallmentAmounts = true;
   } catch (e) {} // eslint-disable-line no-empty
 }
 
@@ -225,7 +221,9 @@ export async function initializeCheckout() {
     ...paymentMethodsResponse.AdyenPaymentMethods,
     imagePath: paymentMethodsResponse.imagePath,
   };
-  store.checkout = await AdyenCheckout(store.checkoutConfiguration);
+  store.checkout = await window.AdyenWeb.AdyenCheckout(
+    store.checkoutConfiguration,
+  );
   setGiftCardContainerVisibility();
   const { totalDiscountedAmount, giftCards } = giftCardsData;
   if (giftCards?.length) {
