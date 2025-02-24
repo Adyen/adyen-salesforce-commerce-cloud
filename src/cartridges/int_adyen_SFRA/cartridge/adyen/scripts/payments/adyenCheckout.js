@@ -101,12 +101,6 @@ function doPaymentsCall(order, paymentInstrument, paymentRequest) {
     // Check the response object from /payment call
     if (acceptedResultCodes.indexOf(resultCode) !== -1) {
       paymentResponse.decision = 'ACCEPT';
-      // if 3D Secure is used, the statuses will be updated later
-      if (resultCode === constants.RESULTCODES.AUTHORISED) {
-        order.setPaymentStatus(Order.PAYMENT_STATUS_PAID);
-        order.setExportStatus(Order.EXPORT_STATUS_READY);
-        AdyenLogs.info_log('Payment result: Authorised');
-      }
     } else if (presentToShopperResultCodes.indexOf(resultCode) !== -1) {
       paymentResponse.decision = 'ACCEPT';
       if (responseObject.action) {

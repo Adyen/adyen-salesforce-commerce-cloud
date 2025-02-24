@@ -46,7 +46,7 @@
          <div class="form-group">
             <label class="form-title mb-0" for="frontendRegion">Front-end resources region</label>
             <small id="frontendRegionHelp" class="form-text mb-1">
-            Enter the closest regions to your shoppers. This setup influences the speed of the Adyen Checkout Component during checkout.
+            Enter the closest region to your shoppers. This setup influences the speed of the Adyen Checkout Component during checkout.
             Ensure that when updating the front-end region, it corresponds specifically to the chosen datacenter for your live prefix (applicable only in LIVE environment).
             <a class="text-primary" href="https://docs.adyen.com/development-resources/live-endpoints/#client-side-environment-region" target="_blank">Check the list of regions</a></small>
             <div class='input-fields' id="dropdown-options">
@@ -55,6 +55,7 @@
                   <option class="dropdown-option" value="EU" id="regionEU" ${AdyenConfigs.getAdyenFrontendRegion() === 'EU' ? 'selected': ''}>EU - Europe (Default)</option>
                   <option class="dropdown-option" value="AU" id="regionAU" ${AdyenConfigs.getAdyenFrontendRegion() === 'AU' ? 'selected': ''}>AU - Australia</option>
                   <option class="dropdown-option" value="IN" id="regionIN" ${AdyenConfigs.getAdyenFrontendRegion() === 'IN' ? 'selected': ''}>IN - India</option>
+                  <option class="dropdown-option" value="APSE" id="regionAPSE" ${AdyenConfigs.getAdyenFrontendRegion() === 'APSE' ? 'selected': ''}>APSE - Asia Pacific & Southeast</option>
                </select>
             </div>
          </div>

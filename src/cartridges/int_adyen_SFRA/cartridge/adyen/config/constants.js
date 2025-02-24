@@ -79,6 +79,7 @@ module.exports = {
     AU: 'AU',
     EU: 'EU',
     IN: 'IN',
+    APSE: 'APSE',
   },
 
   SHOPPER_INTERACTIONS: {
@@ -105,6 +106,7 @@ module.exports = {
   CHECKOUT_ENVIRONMENT_LIVE_US: 'live-us',
   CHECKOUT_ENVIRONMENT_LIVE_AU: 'live-au',
   CHECKOUT_ENVIRONMENT_LIVE_IN: 'live-in',
+  CHECKOUT_ENVIRONMENT_LIVE_APSE: 'live-apse',
 
   MERCHANT_APPLICATION_NAME: 'adyen-salesforce-commerce-cloud',
   EXTERNAL_PLATFORM_NAME: 'SalesforceCommerceCloud',
@@ -114,5 +116,5 @@ module.exports = {
     '/.well-known/apple-developer-merchantid-domain-association',
 
   CHECKOUT_COMPONENT_VERSION: '6.8.0',
-  VERSION: '24.4.3',
+  VERSION: '25.1.0',
 };
