@@ -16,6 +16,18 @@ class KlarnaConfig {
     this.document.querySelector('#showConfirmationForm').submit();
   };
 
+  onError = (component) => {
+    this.helpers.paymentFromComponent(
+      {
+        cancelTransaction: true,
+        merchantReference: document.querySelector('#merchantReference').value,
+        orderToken: document.querySelector('#orderToken').value,
+      },
+      component,
+    );
+    document.querySelector('#showConfirmationForm').submit();
+  };
+
   getConfig() {
     if (this.klarnaWidgetEnabled) {
       return {
@@ -23,6 +35,7 @@ class KlarnaConfig {
         useKlarnaWidget: true,
         onSubmit: this.onSubmit,
         onAdditionalDetails: this.onAdditionalDetails,
+        onError: this.onError,
       };
     }
     return null;
