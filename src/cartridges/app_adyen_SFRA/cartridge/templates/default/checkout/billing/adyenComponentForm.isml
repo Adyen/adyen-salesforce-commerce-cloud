@@ -20,7 +20,6 @@
       window.resultCodeAuthorised = '${AdyenConstants.RESULTCODES.AUTHORISED}';
       window.paymentsDetailsURL = "${URLUtils.https('Adyen-PaymentsDetails')}";
       window.ShowConfirmationPaymentFromComponent = "${ShowConfirmationPaymentFromComponent}";
-      window.AdyenSFRA6Enabled = '${pdict.adyen.SFRA6Enabled}';
       window.klarnaWidgetEnabled = ${adyenKlarnaWidgetEnabled};
       window.adyenRecurringPaymentsEnabled = ${adyenRecurringPaymentsEnabled};
       window.getPaymentMethodsURL = "${URLUtils.https('Adyen-GetPaymentMethods')}";

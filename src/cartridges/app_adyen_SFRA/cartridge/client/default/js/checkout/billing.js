@@ -47,4 +47,6 @@ function updatePaymentInformation(order) {
   }
 }
 
-module.exports.methods = { updatePaymentInformation };
+module.exports = {
+  methods: { updatePaymentInformation },
+};

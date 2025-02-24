@@ -67,7 +67,6 @@ function begin(req, res, next) {
   const adyenClientKey = AdyenConfigs.getAdyenClientKey();
   const googleMerchantID = AdyenConfigs.getGoogleMerchantID();
   const merchantAccount = AdyenConfigs.getAdyenMerchantAccount();
-  const SFRA6Enabled = AdyenConfigs.getAdyenSFRA6Compatibility();
 
   const viewData = res.getViewData();
   viewData.adyen = {
@@ -77,7 +76,6 @@ function begin(req, res, next) {
     googleMerchantID,
     merchantAccount,
     adyenClientKey,
-    SFRA6Enabled,
   };
 
   res.setViewData(viewData);
