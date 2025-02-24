@@ -36,7 +36,7 @@ beforeEach(() => {
   window.merchantAccount = 'test_merchant';
   window.customerEmail = 'test@email.com';
   store.checkoutConfiguration = {};
-  setCheckoutConfiguration()
+  setCheckoutConfiguration({email: window.customerEmail});
   card = store.paymentMethodsConfiguration.scheme
   paypal = store.paymentMethodsConfiguration.paypal
   amazonpay = store.paymentMethodsConfiguration.amazonpay

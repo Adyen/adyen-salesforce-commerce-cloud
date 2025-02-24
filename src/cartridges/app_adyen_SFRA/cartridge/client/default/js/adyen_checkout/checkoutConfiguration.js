@@ -46,12 +46,21 @@ async function handleOnAdditionalDetails(state) {
   }
 }
 
-function setCheckoutConfiguration() {
+function setCheckoutConfiguration({ email }) {
   store.checkoutConfiguration.onChange = handleOnChange;
   store.checkoutConfiguration.onAdditionalDetails = handleOnAdditionalDetails;
   store.checkoutConfiguration.showPayButton = false;
   store.checkoutConfiguration.clientKey = window.adyenClientKey;
-  store.paymentMethodsConfiguration = paymentMethodsConfiguration;
+  store.paymentMethodsConfiguration = {
+    ...paymentMethodsConfiguration,
+    scheme: {
+      ...paymentMethodsConfiguration.scheme,
+      clickToPayConfiguration: {
+        ...paymentMethodsConfiguration.scheme.clickToPayConfiguration,
+        ...(email && { shopperEmail: email }),
+      },
+    },
+  };
 }
 
 module.exports = {

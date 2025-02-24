@@ -1,6 +1,5 @@
 const store = require('../../../../store');
 const constants = require('../constants');
-const { initializeCheckout } = require('./renderGenericComponent');
 const { httpClient } = require('../commons/httpClient');
 
 function getGiftCardElements() {
@@ -105,7 +104,8 @@ async function removeGiftCards() {
     document.querySelector('#cancelGiftCardContainer')?.parentNode.remove();
     store.componentsObj?.giftcard?.node.unmount('component_giftcard');
   }
-  initializeCheckout();
+  const renderPaymentMethodEvent = new Event('checkout:renderPaymentMethod');
+  document.dispatchEvent(renderPaymentMethodEvent);
 }
 
 function giftCardBrands() {
