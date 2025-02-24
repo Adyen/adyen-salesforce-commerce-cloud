@@ -1,0 +1,95 @@
+<isset name="AdyenHelper" value="${require('*/cartridge/adyen/utils/adyenHelper')}" scope="pdict"/>
+<isset name="AdyenConfigs" value="${require('*/cartridge/adyen/utils/adyenConfigs')}" scope="page" />
+<script src="${pdict.AdyenHelper.getCheckoutUrl()}" type="text/javascript"></script>
+<link rel="stylesheet" type="text/css" href="${pdict.AdyenHelper.getCheckoutCSS()}"/>
+<link rel="stylesheet" href="${URLUtils.staticURL('/css/adyenCss.css')}" />
+<input type="hidden" id="adyen-token" name="${pdict.csrf.tokenName}" value="${pdict.csrf.token}"/>
+<isif condition="${request.getHttpQueryString() && request.getHttpQueryString().indexOf('amazonCheckoutSessionId') > -1} ">
+    <script type="text/javascript">
+        window.clientKey = "${AdyenConfigs.getAdyenClientKey()}",
+        window.locale = "${request.locale}";
+        window.saveShopperDetailsURL = "${URLUtils.https('Adyen-SaveExpressShopperDetails')}";
+        window.returnUrl = "${URLUtils.https('Checkout-Begin', 'stage', 'payment')}";
+        window.getPaymentMethodsURL = "${URLUtils.https('Adyen-GetPaymentMethods')}";
+
+        var amazonCheckoutSessionId ="${pdict.AdyenHelper.encodeHtml(request.getHttpQueryString().split("=").pop())}";
+        window.amazonCheckoutSessionId = amazonCheckoutSessionId;
+
+        window.Configuration = {
+          locale: '${request.locale}',
+          clientKey: "${AdyenConfigs.getAdyenClientKey()}",
+          environment: "${AdyenConfigs.getAdyenEnvironment()}",
+        };
+        window.basketAmount = "${pdict.AdyenHelper.getBasketAmount()}".replace(/&quot;/g, '\"');
+        window.adyenClientKey = "${AdyenConfigs.getAdyenClientKey()}";
+    </script>
+    <isscript>
+        var assets = require('*/cartridge/scripts/assets.js');
+        assets.addJs('/js/amazonPayExpressPart2.js');
+    </isscript>
+    <input id="adyenStateData" type="hidden" name="${adyenPaymentFields.adyenStateData.htmlName}"/>
+    <div id="amazonPayAddressDetails">
+        <div class="addressHeaders">
+            <label>${Resource.msg('amazonpay.paymentMethod', 'adyen', null)}</label>
+            <button class="editAddressBtn">${Resource.msg('amazonpay.editButton', 'adyen', null)}</button>
+        </div>
+        <address id="paymentStr"></address>
+        <div class="addressHeaders">
+            <label>${Resource.msg('amazonpay.shippingAddress', 'adyen', null)}</label>
+            <button class="editAddressBtn">${Resource.msg('amazonpay.editButton', 'adyen', null)}</button>
+        </div>
+        <address id="address"></address>
+    </div>
+
+    <div id="amazon-container"></div>
+    <iselse>
+        <script type="text/javascript">
+            window.clientKey = "${AdyenConfigs.getAdyenClientKey()}";
+            window.locale = "${request.locale}";
+            window.selectShippingMethodUrl = "${URLUtils.https('Adyen-SelectShippingMethod')}";
+            window.paymentsDetailsURL = "${URLUtils.https('Adyen-PaymentsDetails')}";
+            window.paymentFromComponentURL = "${URLUtils.https('Adyen-PaymentFromComponent')}";
+            window.showConfirmationAction = "${URLUtils.https('Adyen-ShowConfirmationPaymentFromComponent')}";
+            window.environment = "${AdyenConfigs.getAdyenEnvironment()}";
+            window.getPaymentMethodsURL = "${URLUtils.https('Adyen-GetPaymentMethods')}";
+            window.shippingMethodsUrl = "${URLUtils.https('Adyen-ShippingMethods')}";
+            window.returnUrl = "${URLUtils.https('Cart-Show')}";
+            window.expressMethodsOrder = "${AdyenConfigs.getExpressPaymentsOrder()}";
+            window.isApplePayExpressEnabled = "${AdyenConfigs.isApplePayExpressEnabled()}";
+            window.isAmazonPayExpressEnabled = "${AdyenConfigs.isAmazonPayExpressEnabled()}";
+            window.isPayPalExpressEnabled = "${AdyenConfigs.isPayPalExpressEnabled()}";
+            window.isGooglePayExpressEnabled = "${AdyenConfigs.isGooglePayExpressEnabled()}";
+            window.isPayPalExpressReviewPageEnabled = "${AdyenConfigs.isPayPalExpressReviewPageEnabled()}";
+            window.digitsNumber = "${pdict.AdyenHelper.getFractionDigits(
+                pdict.AdyenHelper.getBasketAmount().currencyCode
+            )}";
+            window.basketAmount = "${pdict.AdyenHelper.getBasketAmount()}".replace(/&quot;/g, '\"');
+            window.makeExpressPaymentsCall = "${URLUtils.https('Adyen-MakeExpressPaymentsCall')}";
+            window.makeExpressPaymentDetailsCall = "${URLUtils.https('Adyen-MakeExpressPaymentDetailsCall')}";
+            window.saveShopperData = "${URLUtils.https('Adyen-SaveShopperData')}";
+            window.paypalUpdateOrder = "${URLUtils.https('Adyen-paypalUpdateOrder')}";
+            window.paypalReviewPageEnabled = ${AdyenConfigs.isPayPalExpressReviewPageEnabled()};
+            window.checkoutReview = "${URLUtils.https('Adyen-CheckoutReview')}";
+        </script>
+        <div class="mb-sm-3">
+            <a
+                href="${URLUtils.https('Checkout-Begin')}"
+                class="btn btn-primary btn-block checkout-btn ${pdict.valid.error ? 'disabled' : ''}"
+                role="button">
+            ${Resource.msg('button.checkout', 'cart', null)}
+            </a>
+        </div>
+        <isif condition="${AdyenConfigs.areExpressPaymentsEnabled()}">
+            <div id="express-loader-container" class="express-loader-container">
+                <span class="express-loader"></span>
+            </div>
+            <div id="express-container" class="hidden">
+                <div data-method="applepay" class="expressComponent applepay" style="padding:0"></div>
+                <div data-method="amazonpay" class="expressComponent" id="amazonpay-container"></div>
+                <div data-method="paypal" class="expressComponent" id="paypal-container" style="padding:0"></div>
+                <div data-method="googlepay" class="expressComponent googlepay" style="padding:0"></div>
+            </div>
+            <script src="${URLUtils.httpsStatic('/js/expressPayments.js')}" type="text/javascript"></script>
+        </isif>
+    </iselse>
+</isif>

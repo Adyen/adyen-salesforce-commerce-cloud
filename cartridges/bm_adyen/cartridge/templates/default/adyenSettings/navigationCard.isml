@@ -1,0 +1,50 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+
+<div class="card bg-white mt-4">
+    <div style="margin: 10px 15px">
+        <div id="logos">
+           <img src="${URLUtils.staticURL('icons/adyen.svg')}" class ="img-fluid" id="adyen-logo" alt="adyen-logo" width="170" height="30" />
+        </div>
+        <div class="sec-group">
+           <button type="button" id="classicButton" class="btn btn-light">View classic page</button>
+        </div>
+    </div>
+    <div id="navigationList" class="card-body list-group">
+        <a class="list-group-item navigation-item border-0" href="#requiredSettings">
+        <img src="${URLUtils.staticURL('icons/rules.svg')}" width="20" height="20" class="rounded float-start mr-3"/>
+        Account settings
+        </a>
+        <a class="list-group-item navigation-item border-0" href="#webhookSettings">
+        <img src="${URLUtils.staticURL('icons/notification.svg')}" width="20" height="20" class="rounded float-start mr-3"/>
+        Webhook settings
+        </a>
+        <a class="list-group-item navigation-item border-0" href="#cardSettings">
+        <img src="${URLUtils.staticURL('icons/card-lock.svg')}" width="20" height="20" class="rounded float-start mr-3"/>
+        Card settings
+        </a>
+        <a class="list-group-item navigation-item border-0" href="#lpmSettings">
+        <img src="${URLUtils.staticURL('icons/card.svg')}" width="20" height="20" class="rounded float-start mr-3"/>
+        Local payment method settings
+        </a>
+        <a class="list-group-item navigation-item border-0" href="#epmSettings">
+        <img src="${URLUtils.staticURL('icons/express.svg')}" width="20" height="20" class="rounded float-start mr-3"/>
+        Express checkout
+        </a>
+        <a class="list-group-item navigation-item border-0" href="#posSettings">
+        <img src="${URLUtils.staticURL('icons/pos.svg')}" width="20" height="20" class="rounded float-start mr-3"/>
+        In-person payments settings
+        </a>
+        <a class="list-group-item navigation-item border-0" href="#adyenGivingSettings">
+        <img src="${URLUtils.staticURL('icons/adyen-giving.svg')}" width="20" height="20" class="rounded float-start mr-3"/>
+        Adyen Giving
+        </a>
+        <a class="list-group-item navigation-item border-0" href="#optionalSettings">
+        <img src="${URLUtils.staticURL('icons/settings.svg')}" width="20" height="20" class="rounded float-start mr-3"/>
+        Additional settings
+        </a>
+        <a class="list-group-item navigation-item border-0" href="#troubleshooting">
+        <img src="${URLUtils.staticURL('icons/tools.svg')}" width="20" height="20" class="rounded float-start mr-3"/>
+        Troubleshooting
+        </a>
+    </div>
+</div>

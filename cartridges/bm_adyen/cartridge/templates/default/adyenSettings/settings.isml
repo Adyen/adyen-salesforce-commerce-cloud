@@ -1,0 +1,67 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<isinclude url="${URLUtils.url('SiteNavigationBar-IncludeFrameTop','SelectedMenuItem',pdict.SelectedMenuItem,'CurrentMenuItemId',pdict.CurrentMenuItemId)}">
+<html lang="en">
+   <head>
+      <link type="text/css" rel="stylesheet" href="${URLUtils.httpsStatic('/css/configurationSettings.css?v=' + Math.random())}"/>
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css" integrity="sha384-zCbKRCUGaJDkqS1kPbPd7TveP5iyJE0EjAuZQTgFLD2ylzuqKfdKlfG/eSrtxUkn" crossorigin="anonymous"/>
+      <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <script>
+         const token = "${URLUtils.https('ViewApplication-BM')}?csrf_token=${dw.web.CSRFProtection.generateToken()}"
+         const commonPath = "/?preference";
+         const classicPagePath = "#site_preference_group_attributes";
+         const classicPageSubpath = "!id!Adyen";
+         const storagePath = "#edit_across_sites";
+         const backgroundImageStorage = "!id!c_AdyenGiving_backgroundUrl!instance_type!sandbox!group_id!Adyen";
+         const logoImageStorage = "!id!c_AdyenGiving_logoUrl!instance_type!sandbox!group_id!Adyen";
+         window.classicConfigPageUrl = token +"#" + commonPath + classicPagePath + classicPageSubpath;
+         window.logCenterUrl = "/on/demandware.servlet/webdav/Sites/Logs";
+      </script>
+   </head>
+   <body data-spy="scroll" data-target="#navigationList" data-bs-offset="50" id="formBody" class="bg-light">
+      <div id="saveChangesAlert" class="alert alert-success alert-dismissible fade collapse text-center sticky-top w-5 h-10" role="alert">
+         <img src="${URLUtils.staticURL('icons/icon-success.svg')}" class ="img-fluid" alt="adyen-logo" width="20px" height="20px" />
+         Your Changes have been saved
+      </div>
+      <div id="notSavedChangesAlert" class="alert alert-success alert-dismissible fade collapse text-center sticky-top w-25" role="alert">
+         <img src="${URLUtils.staticURL('icons/icon-error.svg')}" class ="img-fluid" alt="adyen-logo" width="20px" height="20px" />
+         Your settings could not be saved :( Try again.
+      </div>
+
+      <div id="pageContents" class="mb-5 bg-light">
+         <div class="row bg-light pb-5">
+            <div class="col-sm-1"></div>
+            <div class="col-md-3">
+               <div class="sticky-top">
+                  <isinclude template="adyenSettings/navigationCard"/>
+                  <isinclude template="adyenSettings/quickLinksCard"/>
+               </div>
+            </div>
+            <div class="col-sm-1"></div>
+            <div class="col-lg-6">
+               <form id="settingsForm">
+                  <isinclude template="adyenSettings/settingCards/requiredSettings"/>
+                  <isinclude template="adyenSettings/settingCards/webhookSettings"/>
+                  <isinclude template="adyenSettings/settingCards/cardSettings"/>
+                  <isinclude template="adyenSettings/settingCards/lpmSettings"/>
+                  <isinclude template="adyenSettings/settingCards/epmSettings"/>
+                  <isinclude template="adyenSettings/settingCards/posSettings"/>
+                  <isinclude template="adyenSettings/settingCards/adyenGivingSettings"/>
+                  <isinclude template="adyenSettings/settingCards/optionalSettings"/>
+               </form>
+               <form id="troubleshootingForm">
+                  <isinclude template="adyenSettings/settingCards/troubleshooting.isml"/>
+               </form>
+            </div>
+         </div>
+      </div>
+      <footer class="footer fixed-bottom bg-white">
+         <div class="d-grid gap-2 d-md-flex justify-content-md-end form-buttons">
+            <button type="button" id="settingsFormCancelButton" class="btn btn-outline-dark disabled formButton">Cancel</button>
+            <button type="submit" id="settingsFormSubmitButton" class="btn btn-primary border disabled formButton">Save Changes</button>
+         </div>
+      </footer>
+      <script type="text/javascript" src="${URLUtils.httpsStatic('/js/adyenSettings.js?v=' + Math.random())}"></script>
+   </body>
+</html>

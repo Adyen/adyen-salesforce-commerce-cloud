@@ -1,0 +1,35 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<isset name="AdyenConfigs" value="${require('*/cartridge/adyen/utils/adyenConfigs')}" scope="page"/>
+<script>
+    window.dragIcon = "${URLUtils.staticURL('icons/drag.svg')}";
+    window.applePayIcon = "${URLUtils.staticURL('icons/applepay.svg')}";
+    window.amazonPayIcon = "${URLUtils.staticURL('icons/amazonpay.svg')}";
+    window.paypalIcon = "${URLUtils.staticURL('icons/paypal.svg')}";
+    window.googlePayIcon = "${URLUtils.staticURL('icons/googlepay.svg')}";
+
+    window.isApplePayEnabled = ${AdyenConfigs.isApplePayExpressEnabled() || false};
+    window.isApplePayExpressOnPdpEnabled = ${AdyenConfigs.isApplePayExpressOnPdpEnabled() || false};
+    window.isGooglePayEnabled = ${AdyenConfigs.isGooglePayExpressEnabled() || false};
+    window.isGooglePayExpressOnPdpEnabled = ${AdyenConfigs.isGooglePayExpressOnPdpEnabled() || false};
+    window.isAmazonPayEnabled = ${AdyenConfigs.isAmazonPayExpressEnabled() || false};
+    window.isPayPalExpressEnabled = ${AdyenConfigs.isPayPalExpressEnabled() || false};
+    window.isPayPalExpressReviewPageEnabled = ${AdyenConfigs.isPayPalExpressReviewPageEnabled() || false};
+    window.expressMethodsOrder = "${AdyenConfigs.getExpressPaymentsOrder()}";
+</script>
+<div id="epmSettings" class="card bg-white mt-4">
+   <div class="card-body">
+      <h5 class="card-title mb-0">
+         Express checkout
+      </h5>
+      <h7 class="card-subtitle">
+         <div class="first-subtitle">Surface payment methods that handle billing and shipping in various locations of your checkout.</div>
+      </h7>
+      <div class="mt-2">
+         <div class="express-settings collapse show">
+            <div class="form-group">
+                <ul class="draggable-list" id="draggable-list"></ul>
+            </div>
+         </div>
+      </div>
+   </div>
+</div>

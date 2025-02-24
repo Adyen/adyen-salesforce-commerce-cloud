@@ -1,0 +1,92 @@
+<isset name="AdyenConfigs" value="${require('*/cartridge/adyen/utils/adyenConfigs')}" scope="pdict"/>
+<input type="hidden" id="adyen-token" name="${pdict.csrf.tokenName}" value="${pdict.csrf.token}"/>
+<isdecorate template="common/layout/checkout">
+    <isscript>
+        var assets = require('*/cartridge/scripts/assets.js');
+        assets.addCss('/css/checkout/checkout.css');
+    </isscript>
+
+    <isif condition="${pdict.reportingURLs && pdict.reportingURLs.length}">
+        <isinclude template="reporting/reportingUrls" />
+    </isif>
+
+    <h1 class="page-title">
+        ${Resource.msg('title.checkout','checkout',null)}
+    </h1>
+<div id="checkout-review-main" class="container">
+    <!----------------------------------------------------------------------------------->
+    <!-- Help and Phone -->
+    <!----------------------------------------------------------------------------------->
+    <div class="row hidden-xs-down">
+        <div class="col-12 col-sm-5 offset-sm-7 col-md-5 offset-md-7">
+            <div class="text-center">
+                <span>${Resource.msg('info.need.help','cart',null)}</span>
+                <span><a href="tel:${Resource.msg('info.phone.number','common',null)}">${Resource.msg('info.phone.number','common',null)}</a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="row d-sm-none">
+        <div class="col-12">
+            <span class="grand-total-label">${Resource.msgf('label.number.items.in.cart','cart', null, pdict.order.items.totalQuantity)}</span>
+            <span class="grand-total-price">${pdict.order.totals.subTotal}</span>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-7">
+
+            <!-- Customer -->
+		<isif condition="${pdict.AdyenConfigs.getAdyenSFRA6Compatibility()}">
+            <div class="card customer-summary">
+                <div class="card-header clearfix">
+                    <h2 class="pull-left card-header-custom">${Resource.msg('heading.checkout.customer', 'checkout', null)}</h2>
+                </div>
+                <div class="card-body">
+                    <isinclude template="checkout/customer/customerSummary" />
+                </div>
+            </div>
+		</isif>
+
+            <!-- Shipping -->
+            <div class="card shipping-summary">
+                <div class="card-header clearfix">
+                    <h2 class="pull-left card-header-custom">${Resource.msg('heading.checkout.shipping', 'checkout', null)}</h2>
+                </div>
+                <div class="card-body">
+                    <isinclude template="checkout/shipping/shippingSummary" />
+                </div>
+            </div>
+
+            <!-- Payment and Billing-->
+            <div class="card payment-summary">
+                <div class="card-header clearfix">
+                    <h2 class="pull-left card-header-custom">${Resource.msg('heading.payment', 'checkout', null)}</h2>
+                </div>
+
+                <div class="card-body">
+                    <isinclude template="checkout/billing/billingSummary" />
+                </div>
+            </div>
+            <isinclude template="adyen/checkoutReviewButtons" />
+        </div>
+
+        <!----------------------------------------------------------------------------------->
+        <!-- Order Totals, Details and Summary -->
+        <!----------------------------------------------------------------------------------->
+        <div class="col-sm-5">
+
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-header-custom">${Resource.msg('heading.order.summary', 'checkout', null)}</h2>
+                </div>
+                <div class="card-body order-total-summary">
+                    <isinclude template="checkout/orderTotalSummary" />
+                </div>
+            </div>
+
+            <isinclude template="checkout/orderProductSummary" />
+        </div>
+    </div>
+</div>
+
+</isdecorate>

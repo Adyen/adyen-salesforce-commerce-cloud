@@ -1,0 +1,511 @@
+/*Credit Cards*/
+
+.additionalFields .adyen-checkout__label, .adyen-checkout__label__text {
+    float: none;
+    width: 100%;
+    text-align: left;
+}
+
+.form-horizontal #newCard label {
+    float: none;
+    width: 100%;
+    text-align: left;
+}
+
+.creditCard {
+    margin-left: 27%;
+}
+
+.paymentMethod {
+    list-style-type: none;
+    margin: 0.5em 0 0.5em 0;
+    border-bottom: 1px solid #b9c4c9;
+}
+
+.paymentMethod_img {
+    margin: 0 0.3125em 0 0.3125em;
+    vertical-align: middle;
+    width: 40px;
+    height: 26px;
+}
+
+.additionalFields {
+    display: inline-block;
+}
+
+.hiddenFields {
+    display: none;
+}
+
+.security-code-input .adyen-checkout__field:first-child {
+    display: none;
+}
+
+/*Checkout Components*/
+
+.checkoutComponent {
+    display:none;
+    margin-top: 1.25em;
+}
+
+#component_ach .form-row label {
+    float: left;
+}
+
+#type {
+    list-style-type: none;
+    line-height: 3.125em;
+}
+
+#type .form-row {
+    margin: .5rem 0 .5rem;
+}
+
+#ssnValue {
+    background: #fff;
+    border: 0.0625em solid #b9c4c9;
+    border-radius: 0.1875em;
+    color: #001b2b;
+    display: block;
+    font-family: inherit;
+    font-size: 1em;
+    height: 3em;
+    outline: none;
+    padding: 0.3125em 0.5em;
+    position: relative;
+    transition: border .2s ease-out,box-shadow .2s ease-out;
+    width: 12.5em;
+}
+
+#ssn_klarna {
+    margin-top: 1em;
+}
+
+/*Summary page*/
+
+.summary-label{
+    font-weight: bold;
+}
+
+.adyen-payment-details {
+    max-width: 25em;
+    margin: auto;
+}
+
+/* Custom Adyen */
+
+.payment-method #type {
+    margin-left: 22%;
+}
+
+.payment-method .issuer {
+    margin: 1% 5%;
+    display: none;
+}
+
+.payment-method-options .form-row {
+    width: 25%;
+}
+
+.payment-method #type .logo {
+    position: absolute;
+}
+
+.payment-method #type label {
+    display: inline;
+    float: none;
+    width: auto;
+}
+
+.payment_method_label{
+    padding: 0.75em 6em 0;
+}
+
+.openinvoiceInput {
+    display: none;
+}
+
+.adyen-checkout__field {
+    display: table;
+}
+
+.card-error {
+    display: none;
+}
+
+/* Custom Adyen SFRA */
+.adyen-checkout__input-wrapper .adyen-checkout__dropdown__list {
+    z-index: 10;
+}
+
+#paymentMethodsUl {
+    width: 80%;
+    padding-inline-start: 0;
+    margin: auto;
+}
+
+#adyenModalDialog {
+    pointer-events: auto;
+    background: white;
+}
+
+#amazonModal {
+    opacity: 0.95;
+}
+
+#giftcard-container {
+    padding: 2em;
+}
+
+#closeGiftCardModal {
+    position: absolute;
+    top: 0px;
+    right: 0px;
+}
+
+.invisible {
+    display: none;
+}
+
+#cancelGiftCardContainer {
+    cursor: pointer;
+}
+
+/*Toggle Switch */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+    margin: 0;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+
+input:checked + .slider {
+    background-color: #2196F3;
+}
+
+input:focus + .slider {
+    box-shadow: 0 0 1px #2196F3;
+}
+
+input:checked + .slider:before {
+    -webkit-transform: translateX(26px);
+    -ms-transform: translateX(26px);
+    transform: translateX(26px);
+}
+
+.slider.round {
+    border-radius: 34px;
+}
+
+.slider.round:before {
+    border-radius: 50%;
+}
+
+/* Gift card Dropdown */
+#giftCardSelectContainer {
+    position: relative;
+}
+
+.gift-card-selection {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    border-radius: 8px;
+    border: 1px solid #b9c4c9;
+    padding: 16px;
+    background: white;
+    position: relative;
+}
+
+.gift-card-selection hr {
+    width: 100%;
+}
+
+.gift-card-selection select {
+    width: 95%;
+    border: 0px;
+    outline: none;
+    appearance: none;
+}
+
+.gift-card-select-wrapper {
+    width: 100%;
+    margin: 10px 0 25px 0;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #b9c4c9;
+}
+
+.gift-card-select-wrapper::after {
+    content: "\2304";
+    vertical-align: top;
+    line-height: 1;
+    pointer-events: none;
+}
+
+.gift-card-select-wrapper:hover {
+    border-color: #99a3ad;
+    cursor: pointer;
+}
+
+.gift-card-selection select:hover {
+    cursor: pointer;
+}
+
+.gift-card-select-wrapper:focus-within {
+    border-color: #0075FF;
+    box-shadow: 0 0 0 2px #99c2ff;
+}
+
+.gift-card-selection .list-cards {
+    background: #fff;
+    list-style: none;
+    margin: 0 0 50px;
+    overflow-y: auto;
+    position: absolute;
+    width: 100%;
+    border-radius: 6px;
+    box-shadow: 0 2px 7px rgb(0 15 45 / 30%);
+    max-height: 375px;
+    z-index: 10;
+    top: 10px;
+    padding: 0;
+}
+
+.gift-card-selection ul li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px;
+    cursor: pointer;
+}
+
+.gift-card-selection ul li > * {
+    pointer-events: none;
+}
+
+.gift-card-selection ul li:hover {
+    background: rgba(230,233,235,.6);
+}
+
+.gift-card-selection select option {
+    display: none;
+}
+
+.gift-card-selection .heading-img {
+    position: absolute;
+    top: -13px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40px;
+    height: 26px;
+}
+
+.gift-card-selection p {
+    margin: 0;
+}
+
+.gift-card-logo {
+    width: 40px;
+    height: 26px;
+}
+
+.gift-card-warning-msg {
+    display: block;
+    margin: 20px 0;
+}
+
+.payment-methods-container {
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #b9c4c9;
+    border-radius: 8px;
+    background: white;
+}
+
+.additionalFields {
+    margin-bottom: 10px;
+}
+
+.gift-cards-container-cancel {
+    text-align: center;
+}
+
+.gift-cards-container-cancel a {
+    cursor: pointer;
+}
+
+.gift-cards-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-direction: column;
+    margin-top: 10px;
+}
+
+.gift-cards-container .gift-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #b9c4c9;
+    border-radius: 8px;
+    margin: 5px 0;
+    box-shadow: 0 5px 10px 0 lightgrey;
+}
+
+.gift-cards-container .gift-card .wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    margin: 4px 0;
+}
+
+.gift-cards-container .gift-card .wrapper p {
+    font-size: 13px;
+}
+
+.gift-cards-container .brand-container {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.gift-cards-container .brand-container p {
+    margin: 0 10px;
+}
+
+.gift-cards-container .gift-card-action {
+    display: flex;
+    align-items: center;
+}
+
+.gift-cards-container .gift-card-action a {
+    cursor: pointer;
+    font-size: 13px;
+}
+
+#cancelGiftCardButton, #cancelQrMethodsButton {
+    position: absolute;
+    top : 0;
+    right : 0;
+}
+
+#cancelGiftCardButtonStyling, #cancelQrMethodsButtonStyling {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;  
+}
+
+.expressComponent {
+    margin: 10px 0;
+}
+
+.expressComponent button {
+    width: 100%;
+    padding: 10px 0;
+}
+
+.expressComponent #gpay-button-online-api-id {
+    padding: 5px 0;
+}
+
+.express-loader-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.express-loader {
+    width: 48px;
+    height: 48px;
+    border: 5px solid #00a1e0;
+    border-bottom-color: transparent;
+    border-radius: 50%;
+    display: inline-block;
+    box-sizing: border-box;
+    animation: rotation 1s linear infinite;
+}
+
+.hidden {
+    display: none;
+}
+
+.adyen-checkout__amazonpay__button {
+    min-width: 100%;
+}
+
+@keyframes rotation {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.gift-cards-info-message-container {
+    margin-top: 10px;
+}
+
+#amazonPayAddressDetails label,
+label[for="shippingMethods"] {
+    font-weight: 500;
+}
+
+.addressHeaders {
+    display: flex;
+    justify-content: space-between;
+}
+
+.addressHeaders > label {
+    white-space: nowrap;
+}
+
+address {
+    font-size: 0.9rem;
+}
+
+.editAddressBtn {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  color: #0070d2;
+  margin-bottom: 0.5rem;
+}
