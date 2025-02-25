@@ -259,8 +259,7 @@ async function onShippingOptionChange(shippingAddress, shippingOptionData) {
   };
 }
 
-async function init(paymentMethodsResponse, isExpressPdp) {
-  window.isExpressPdp = isExpressPdp;
+async function init(paymentMethodsResponse) {
   initializeCheckout(paymentMethodsResponse)
     .then(async () => {
       const googlePayPaymentMethod =
