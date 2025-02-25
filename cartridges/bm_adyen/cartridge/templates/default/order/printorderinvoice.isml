@@ -1,0 +1,109 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<ismodule template="user/minicreditcard.isml"
+    name="minicreditcard" attribute="p_card" attribute="p_cc_formfield"
+>
+<html>
+<head>
+    <title>Invoice <isprint value="${pdict.Order.orderNo}"></title>
+    <link rel="STYLESHEET" type="text/css" href="${URLUtils.webRoot()}/css/enterprisesite.css"/>
+    <ismodule template = "inc/AddressInfoSmall_52.isml" name="AddressInfo" attribute="address">
+    <link rel="shortcut icon"  href="${URLUtils.webRoot()}/images/favicon.ico" />
+</head>
+
+<body id="print_invoice" onload="window.print();">
+    <table border="0" cellspacing="0" cellpadding="4">
+        <tr>
+            <td class="left"><h2>Invoice:</h2></td>
+            <td colspan="2" class="right"><h2><isprint value="${pdict.Order.invoiceNo}"></h2></td>
+        </tr>
+
+        <tr>
+            <td class="w n">&nbsp;</td>
+            <td class="table_detail bold n">
+                <table>
+                    <tr><td class="infobox_item" nowrap="nowrap">SiteGenesis</td></tr>
+                    <tr><td class="infobox_item" nowrap="nowrap">5 Wall Street</td></tr>
+                    <tr><td class="infobox_item" nowrap="nowrap">Burlington, MA 01803 USA</td></tr>
+                </table>
+            </td>
+            <td class="table_detail right bold e n">
+                <table>
+                    <tr><td align="left" class="infobox_item" nowrap="nowrap">Order:</td>
+                        <td class="infobox_item" nowrap="nowrap"><isprint value="${pdict.Order.orderNo}"></td></tr>
+                    <tr><td align="left" class="infobox_item" nowrap="nowrap">Date:</td>
+                        <td class="infobox_item" nowrap="nowrap"><isprint value="${pdict.Order.creationDate}"></td></tr>
+                    <tr><td align="left" class="infobox_item" nowrap="nowrap">Total:</td>
+                        <td class="infobox_item" nowrap="nowrap"><isprint value="${pdict.Order.totalGrossPrice}"></td></tr>
+                </table>
+            </td>
+        </tr>
+
+        <tr valign="top">
+            <td class="table_detail bold w n" >Bill To:</td>
+            <td class="table_detail n">
+                <table>
+                    <tr><td class="infobox_item" nowrap="nowrap"><isprint value="${pdict.Order.billingAddress.firstName}"> <isprint value="${pdict.Order.billingAddress.lastName}"></td></tr>
+                    <tr><td class="infobox_item" nowrap="nowrap"><isprint value="${pdict.Order.billingAddress.address1}"> <isprint value="${pdict.Order.billingAddress.address2}"></td></tr>
+                    <tr><td class="infobox_item" nowrap="nowrap"><isprint value="${pdict.Order.billingAddress.city}"> <isprint value="${pdict.Order.billingAddress.stateCode}"> <isprint value="${pdict.Order.billingAddress.postalCode}"></td></tr>
+                    <tr><td class="infobox_item" nowrap="nowrap"><isprint value="${pdict.Order.billingAddress.countryCode}"></td></tr>
+                </table>
+            </td>
+            <td class="table_detail n e">
+                <table>
+                    <tr><td align="left" class="infobox_item" nowrap="nowrap">Phone:</td>
+                        <td class="infobox_item" nowrap="nowrap"><isif condition="${! empty(pdict.Order.billingAddress.phone)}"><isprint value="${pdict.Order.billingAddress.phone}"><iselse>n/a</isif></td></tr>
+                    <tr><td align="left" class="infobox_item" nowrap="nowrap">Email:</td>
+                        <td class="infobox_item" nowrap="nowrap"><isif condition="${! empty(pdict.Order.customerEmail)}"><isprint value="${pdict.Order.customerEmail}"><iselse><isprint value="${pdict.Order.buyerEmail}"></isif></td></tr>
+                </table>
+            </td>
+        </tr>
+
+        <isif condition="${pdict.Order.paymentInstruments.size() > 0}">
+            <tr valign="top">
+                <isif condition="${pdict.Order.paymentInstruments.size() > 1}">
+                    <td colspan="1" class="table_detail n w bold">Payment Methods:</td>
+                <iselse>
+                    <td colspan="1" class="table_detail n w bold">Payment Method:</td>
+                </isif>
+
+                <td colspan="2" class="table_detail n e">
+                    <!-- process credit cards -->
+                    <isloop iterator="${pdict.Order.getPaymentInstruments(dw.order.PaymentInstrument.METHOD_CREDIT_CARD)}" alias="PaymentInstrument">
+                        <isminicreditcard p_card="${PaymentInstrument}">
+                        <div class="type">Amount: <isprint value="${PaymentInstrument.paymentTransaction.amount}"></div>
+
+                    </isloop>
+
+                    <!-- process gift certificates -->
+                    <isloop iterator="${pdict.Order.getPaymentInstruments(dw.order.PaymentInstrument.METHOD_GIFT_CERTIFICATE)}" alias="PaymentInstrument">
+                        <div class="type">
+                            <br>Gift Certificate: <isprint value="${PaymentInstrument.maskedGiftCertificateCode}">
+                            <br>Amount: <isprint value="${PaymentInstrument.paymentTransaction.amount}">
+                        </div>
+                    </isloop>
+
+                    <!--- if we do not have credit cards or gift certs, we have one or more custom payment insrutments --->
+                    <!-- process unknown payment methods -->
+                    <isif condition="${empty(pdict.Order.getPaymentInstruments(dw.order.PaymentInstrument.METHOD_CREDIT_CARD)) &&
+                                        empty(pdict.Order.getPaymentInstruments(dw.order.PaymentInstrument.METHOD_GIFT_CERTIFICATE))}">
+                        <div class="type"><br>Unknown payment processor. Cannot display payment data.</div>
+                    </isif>
+                </td>
+
+            </tr>
+        </isif>
+
+        <tr valign="top">
+            <td colspan="3" class="infobox_item bold aldi" >
+                <div class="printinvoice">
+                    <isset name="Container" value="${pdict.Order}" scope="REQUEST">
+                    <isinclude template="order/orderdetails">
+                </div>
+            </td>
+        </tr>
+    </table>
+
+</body>
+</html>

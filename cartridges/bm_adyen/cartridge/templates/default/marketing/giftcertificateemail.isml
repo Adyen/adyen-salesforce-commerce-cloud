@@ -1,0 +1,45 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<isset name="SHOP_URL" value="${URLUtils.http(new dw.web.URLAction('Home-Show', pdict.StorefrontName))}" scope="PAGE"/>
+
+<html>
+<head><title>A Gift Certificate for You</title></head>
+
+<body>
+	<div style="font-family: Verdana, Geneva, Arial, Helvetica, sans-serif; font-size: x-small; color: Black;">
+		<isif condition="${empty(pdict.GiftCertificate.recipientName)}">
+			Dear Valued Customer,
+		<iselse>
+			Dear&nbsp;<isprint value="${pdict.GiftCertificate.recipientName}">,
+		</isif>
+		<br/>
+		<br/>
+			A Gift Certificate has been issued to you in the amount of <isprint value="${pdict.GiftCertificate.amount}">.
+		<br/>
+		<br/>
+		<isif condition="${!empty(pdict.GiftCertificate.message)}">
+			Message:
+			<br/>
+			<br/>
+			<isprint value="${pdict.GiftCertificate.message}">
+			<br/>
+			<br/>
+		</isif>
+		You can redeem your gift certificate at <a href="${SHOP_URL}">our online store</a>.
+		<br/>
+		<br/>
+		Your gift certificate code is <b><isprint value="${pdict.GiftCertificate.giftCertificateCode}"></b>.
+		<br/>
+		<br/>
+		Sincerely, 
+		<br/>
+		<br/>
+		<isif condition="${empty(pdict.GiftCertificateSenderName)}">
+			Customer Support
+		<iselse>
+			<isprint value="${pdict.GiftCertificateSenderName}">
+		</isif>
+	</div>
+</body>
+</html>

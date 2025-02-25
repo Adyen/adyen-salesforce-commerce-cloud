@@ -1,0 +1,66 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<!-- Start: user/minishippingaddress -->
+
+<!---
+    Creates a minishippingaddress display.
+    
+    Parameter: 
+    p_shipment       : a shipment 
+    
+ --->
+          <isset name="ShippingAddress" value="${pdict.p_shipment.shippingAddress}" scope="PAGE"> 
+          <div class="summarybox">
+          	<!--- 
+          		There are some addresses without an ID, catch this here and make this include
+          	    more universal usable therefore.
+              --->
+          	<isif condition="${'ID' in ShippingAddress && !empty(ShippingAddress.ID)}">
+          		<div class="addressname">
+          			<isprint value="${ShippingAddress.ID}">
+          		</div>
+          	</isif>
+          	<div class="name">
+          		<span class="firstname"><isprint value="${ShippingAddress.firstName}"></span>
+          		<span class="lastname"><isprint value="${ShippingAddress.lastName}"></span>
+          		<div class="street">
+          			<div class="line1"><isprint value="${ShippingAddress.address1}"></div>
+          			<isif condition="${!empty(ShippingAddress.address2)}">
+          				<div class="line2"><isprint value="${ShippingAddress.address2}"></div>
+          			<iselse>
+          			</isif>
+          		</div><!-- END:street -->
+          		<div class="location">
+          			<isif condition="${ShippingAddress.city != null}">
+                          <span class="city"><isprint value="${ShippingAddress.city}"></span><span class="statedivider">,&nbsp;</span>
+                      </isif>
+                      <span class="state"><isprint value="${ShippingAddress.stateCode}">&nbsp;</span><span class="zip"><isprint value="${ShippingAddress.postalCode}"></span>
+          		</div><!-- END:location -->
+          		<!--- SHIPPING COUNTRY --->
+          		<!--- <div class="country"><isprint value="${ShippingAddress.countryCode}"></div> --->
+          	</div><!-- END:name -->
+           <!--- Shipping Method --->
+           <div class="shippingmethod">
+            <isif condition="${!empty(pdict.p_shipment.shippingMethod)}">
+                <isprint value="${pdict.p_shipment.shippingMethod.displayName}">
+            <iselse>
+                <isprint value="${pdict.p_shipment.shippingMethodID}"> 
+            </isif>
+            -
+           	<isif condition="${!empty(pdict.p_shipment.shippingPriceAdjustments)}" alias="Promo">
+           		<span class="shippingunadjusted"><isprint value="${pdict.p_shipment.shippingTotalPrice}"></span> <span class="promotiondescription"><isprint value="${pdict.p_shipment.adjustedShippingTotalPrice}"></span>
+           	<iselse>
+           		<isprint value="${pdict.p_shipment.shippingTotalPrice}">
+			</isif>
+		</div><!-- END:shippingmethod -->
+		<!--- /Shipping Method ---> 
+		<!--- Shipping Promotions --->
+			<isloop iterator="${pdict.p_shipment.shippingPriceAdjustments}" alias="Promo">
+				<isif condition="${Promo.price.value < 0}">
+					<div class="promotiondescription"><isprint value="${Promo.lineItemText}"></div>
+				</isif>
+			</isloop>
+		<!--- /Shipping Promotions --->                    
+          </div>
+                
+
+<!-- End: user/minishippingaddress -->

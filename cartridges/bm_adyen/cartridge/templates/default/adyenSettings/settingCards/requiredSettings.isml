@@ -1,0 +1,111 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<isset name="AdyenConfigs" value="${require('*/cartridge/adyen/utils/adyenConfigs')}" scope="page"/>
+
+<div id="requiredSettings" class="card bg-white mt-4">
+   <div class="card-body">
+      <h5 class="card-title mb-0">
+         Account settings
+      </h5>
+      <h7 class="card-subtitle">
+         <div class="first-subtitle">Make sure that you’re logged into the <a class="text-primary" href="https://ca-live.adyen.com/ca/ca/overview/default.shtml" target="_blank">Customer Area</a> as you will need to copy several settings to fill in the following information.</div>
+      </h7>
+      <div class="mt-3">
+         <div class="form-group">
+            <label class="form-title mb-0" for="mode">Environment</label>
+            <h7 id="modeHelp" class="form-text mb-1">Use the "Test" option in order to connect to your <a class="text-primary" href="https://ca-test.adyen.com/" target="_blank">Adyen test environment</a>. Use live to connect to your <a class="text-primary" href="https://ca-live.adyen.com/ca/ca/overview/default.shtml" target="_blank">Adyen Live environment</a>.</h7>
+            <div class="radio-buttons">
+               <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" name="Adyen_Mode" id="testRadio" value="TEST" ${AdyenConfigs.getAdyenEnvironment() === 'TEST' ? 'checked': ''}>
+                  <label class="form-check-label" for="testRadio">Test</label>
+               </div>
+               <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" name="Adyen_Mode" id="productionRadio" value="LIVE" ${AdyenConfigs.getAdyenEnvironment() === 'LIVE' ? 'checked': ''}>
+                  <label class="form-check-label" for="productionRadio">Live</label>
+               </div>
+            </div>
+         </div>
+         <div class="form-group">
+            <label class="form-title mb-0" for="livePrefix">Adyen Live Prefix</label>
+            <small id="livePrefixHelp" class="form-text mb-1">
+               This is the LIVE prefix you can retrieve from the <a class="text-primary" href="https://ca-live.adyen.com/" target="_blank">Customer Area.</a>
+               Different sites can use different prefixes depending in the selected datacenter.
+            </small>
+            <div class="input-fields">
+               <input type="text" class="form-control" name="Adyen_LivePrefix" id="livePrefix" aria-describedby="livePrefixHelp" placeholder="" value="${AdyenConfigs.getLivePrefix() || ''}" ${AdyenConfigs.getAdyenEnvironment() === 'TEST' ? 'disabled' : ''}>
+            </div>
+         </div>
+         <div class="form-group">
+            <label class="form-title mb-0" for="clienKey">Adyen Client Key</label>
+            <small id="clienKeyHelp" class="form-text mb-1">
+            <a class="text-primary" href="https://docs.adyen.com/development-resources/client-side-authentication#get-your-client-key" target="_blank">How to set up your client key?</a> 
+            </small>
+            <div class="input-fields">
+               <input type="text" class="form-control" name="Adyen_ClientKey" id="clienKey" aria-describedby="clienKeyHelp" placeholder="" value="${AdyenConfigs.getAdyenClientKey() || ''}">
+            </div>
+         </div>
+         <div class="form-group">
+            <label class="form-title mb-0" for="sfraCompatibility">Storefront Reference Architecture (SFRA) - version 6 or 7</label>
+            <small id="sfraCompatibilityHelp" class="form-text mb-1"><a class="text-primary" href="https://developer.salesforce.com/docs/commerce/sfra/guide/sfra-faq.html" target="_blank">SFRA</a> combines best practices in site design and technical architecture so you can customize your store’s website. This setting should only be enabled if you’re using SFRA v6 or v7.</small>
+            <div class="radio-buttons">
+               <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" name="Adyen_SFRA6_Compatibility" id="sfraYesRadio" value=true ${AdyenConfigs.getAdyenSFRA6Compatibility() ? 'checked': ''}>
+                  <label class="form-check-label" for="sfraYesRadio">Enable</label>
+               </div>
+               <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" name="Adyen_SFRA6_Compatibility" id="sfraNoRadio" value=false ${!AdyenConfigs.getAdyenSFRA6Compatibility() ? 'checked': ''}>
+                  <label class="form-check-label" for="sfraNoRadio">Disable</label>
+               </div>
+            </div>
+         </div>
+         <div class="form-group">
+            <label class="form-title mb-0" for="frontendRegion">Front-end resources region</label>
+            <small id="frontendRegionHelp" class="form-text mb-1">
+            Enter the closest region to your shoppers. This setup influences the speed of the Adyen Checkout Component during checkout.
+            Ensure that when updating the front-end region, it corresponds specifically to the chosen datacenter for your live prefix (applicable only in LIVE environment).
+            <a class="text-primary" href="https://docs.adyen.com/development-resources/live-endpoints/#client-side-environment-region" target="_blank">Check the list of regions</a></small>
+            <div class='input-fields' id="dropdown-options">
+               <select name="Adyen_Frontend_Region" class="form-select" required>
+                  <option class="dropdown-option" value="US" id="regionUS" ${AdyenConfigs.getAdyenFrontendRegion() === 'US' ? 'selected': ''}>US - United States</option>
+                  <option class="dropdown-option" value="EU" id="regionEU" ${AdyenConfigs.getAdyenFrontendRegion() === 'EU' ? 'selected': ''}>EU - Europe (Default)</option>
+                  <option class="dropdown-option" value="AU" id="regionAU" ${AdyenConfigs.getAdyenFrontendRegion() === 'AU' ? 'selected': ''}>AU - Australia</option>
+                  <option class="dropdown-option" value="IN" id="regionIN" ${AdyenConfigs.getAdyenFrontendRegion() === 'IN' ? 'selected': ''}>IN - India</option>
+                  <option class="dropdown-option" value="APSE" id="regionAPSE" ${AdyenConfigs.getAdyenFrontendRegion() === 'APSE' ? 'selected': ''}>APSE - Asia Pacific & Southeast</option>
+               </select>
+            </div>
+         </div>
+         <div class="line-divider">
+            <hr class="divider">
+         </div>
+         <div class="form-group">
+            <label class="form-title mb-0" for="merchantAccount">Merchant Account</label>
+            <small id="merchantAccountHelp" class="form-text mb-1">Please note that you can enter only one merchant account per storefront.</small>
+            <div class="input-fields">
+               <input type="text" class="form-control required" name="Adyen_merchantCode" id="merchantAccount" onchange="testConnectionButton.disabled=false;" aria-describedby="merchantAccountHelp" placeholder="" value="${AdyenConfigs.getAdyenMerchantAccount() || ''}">
+               <div class="valid-feedback"></div>
+               <div class="invalid-feedback">Please make sure the combination of merchant account and API key is correct.</div>
+            </div>
+         </div>
+         <div class="form-group">
+            <label class="form-title mb-0" for="apiKey">API key of webservice</label>
+            <small id="apiKeyHelp" class="form-text mb-1">This is the API key you generated in the <a class="text-primary" href="https://ca-live.adyen.com/" target="_blank">Customer Area</a>.</small>
+            <div class="input-fields">
+               <span>
+               <i class="bi bi-eye-slash bi-eye-slash2" id="toggleApi"></i>
+               </span>
+               <input type="password" class="form-control required" name="Adyen_API_Key" id="apiKey" aria-describedby="apiKeyHelp" onchange="testConnectionButton.disabled=false;"  placeholder="" value="${AdyenConfigs.getAdyenApiKey() || ''}">
+               <div class="valid-feedback"></div>
+               <div class="invalid-feedback">
+                  <div id="invalidFeedbackApi">
+                     Please make sure the combination of merchant account and API key is correct.
+                  </div>
+               </div>
+            </div>
+         </div>
+         <div class="form-group">
+            <div class="input-fields">
+               <button type="button" id="testConnectionButton" class="btn btn-primary border">Test Configuration</button>
+            </div>
+         </div>
+      </div>
+   </div>
+</div>

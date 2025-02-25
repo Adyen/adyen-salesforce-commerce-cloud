@@ -1,0 +1,10 @@
+<li class="nav-item" data-method-id="${paymentOption.ID}">
+    <a class="nav-link adyen-tab active" data-toggle="tab" href="#adyen-component-content" role="tab">
+        <img class="adyen-option"
+             src="${URLUtils.staticURL('/images/payment-types.png')}"
+             height="32"
+             alt="${paymentOption.name}"
+             title="${paymentOption.name}"
+        >
+    </a>
+</li>

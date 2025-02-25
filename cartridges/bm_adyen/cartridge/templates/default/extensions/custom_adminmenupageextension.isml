@@ -1,0 +1,102 @@
+<isdecorate template="application/MenuFrame">
+<iscontent type="text/html" charset="UTF-8">
+<isinclude template="inc/Modules">
+
+<!-- Page Navigator -->
+<isset name="TOP_URL"   value="${URLUtils.url('SiteNavigationBar-ShowMenuitemOverview', 'CurrentMenuItemId', pdict.CurrentMenuItemId)}" scope="PAGE">
+<ISBreadcrumb name1="${pdict.mainmenuname}" url1="${TOP_URL}" name2="Demo Admin Extension">
+<!-- EO Page Navigator -->
+
+<!-- errors -->
+<isif condition="${!pdict.SampleAdminParameter}"> <!-- or any other useful error condition -->
+	<table border="0" cellspacing="0" cellpadding="4" width="100%" class="error_box n s e w">
+		<tr valign="top">
+			<td class="error_icon top e"><img src="${URLUtils.webRoot()}/images/error.gif" width="16" height="15" alt="" border="0"/></td>
+			<td class="error top" width="100%">
+			<p>Custom Error ...: <isprint value="${pdict.ErrorParameter}"> hasn't been defined. This is an error message sample.<br/>
+			</td>
+		</tr>
+	</table>
+</isif>
+<!-- end errors-->
+
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+	<tr>
+		<td width="100%" class="w e s table_title"><isprint value="${pdict.SampleAdminParameter}"></td>
+	</tr>
+
+    <tr>
+		<td valign="top" class="table_title_description w e s">
+			<p>This page allows to view and configure custom values.
+			<p>
+			<ISIF condition="${pdict.OtherAdminParameter}">To save your settings, press the 'Apply' button.</ISIF>
+        </td>
+	</tr>
+</table>
+
+<!-- table list view -->
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+	<form action="${URLUtils.url('bm_extensionsactions-AdminAction')}" method="post" name="formMask">
+	<ISIF condition="${pdict.SampleAdminParameter}">
+		<input type="hidden" name="SampleAdminParameter" value="${pdict.SampleAdminParameter}"/>
+	</ISIF>
+
+	<ISIF condition="${pdict.OtherAdminParameter}">
+		<tr>
+			<td class="table_header w e s" width="20%">Name</td>
+			<td class="table_header e s">Value</td>
+			<td class="table_header e s" width="5%">Type</td>
+			<td class="table_header e s" width="15%">Default Value</td>
+		</tr>
+		<!-- content -->
+		<tr><!-- Name -->
+			<td class="table_detail w e s" nowrap="nowrap"> 
+				Parametername
+			</td>
+			<!--- Value --->
+	        <td class="table_detail e s" nowrap="nowrap">
+	        	<input type="text" name="${pdict.fld_Value}" class="inputfield_en w100"/>
+	        </td>
+			<!--- Type --->
+	        <td class="table_detail e s" nowrap="nowrap">
+	        	<input type="hidden" name="${pdict.CUSTOMPARAMNAME}" value="${pdict.CUSTOMTYPE}" class="inputfield_en w100"/>
+	        	CustomType &nbsp;
+	        </td>
+	        <td class="table_detail e s" nowrap="nowrap">
+	        	DefaultValue &nbsp;
+	        </td>
+		</tr>
+
+		<tr>
+			<td class="table_detail w e s" align="left">Instance times: <ISPRINT value="${pdict.MyDate}" style="DATE_TIME" timezone="INSTANCE"></td>
+			<td colspan="5" class="e s" align="right">
+				<table border="0" cellspacing="4" cellpadding="0">
+					<tr>
+	                    <td class="button"><input type="submit" name="update" value="Apply" class="button"/></td>
+	                    <td class="button"><input type="submit" name="cancel" value="Cancel" class="button"/></td>
+	                    <td class="button"><input type="reset" name="reset" value="Reset" class="button"/></td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+	<iselse>
+		<tr>
+			<td colspan="5" class="table_detail w e s">There are no custom values defined yet.</br>
+			<td class="table_detail e s" nowrap="nowrap" align="right" width="10%">Instance time: <ISPRINT value="${pdict.MyDate}" style="DATE_TIME" timezone="INSTANCE"></td>
+		</tr>
+	</isif>
+	</form>
+</table>
+<!-- EO Main Content -->
+<table class="bottombuttons">          
+	<form name="Back" action="${TOP_URL}" method="post">
+		<tr>
+			<td>
+				<input class="button" type="submit" name="backToPrefs" value="&lt;&lt; Back"/>
+			</td>
+		</tr>
+	</form>
+</table>
+<!-- EO Working Area -->
+
+</isdecorate>

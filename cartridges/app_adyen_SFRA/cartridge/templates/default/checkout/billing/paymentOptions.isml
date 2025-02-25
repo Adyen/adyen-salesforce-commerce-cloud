@@ -1,0 +1,32 @@
+<iscomment> ### Custom Adyen cartridge start ### </iscomment>
+<isscript>
+    var assets = require('*/cartridge/scripts/assets.js');
+    assets.addCss('/css/adyenCss.css');
+</isscript>
+<div class="form-nav billing-nav payment-information"
+     data-payment-method-id=""
+     <iscomment> ### Custom Adyen cartridge end ### </iscomment>
+     data-is-new-payment="${pdict.customer.registeredUser && pdict.customer.customerPaymentInstruments.length ? false : true}"
+>
+
+    <ul class="nav nav-tabs nav-fill payment-options" id="paymentOptions" role="tablist">
+        <isinclude template="checkout/billing/paymentOptions/paymentOptionsTabs"/>
+    </ul>
+</div>
+
+<iscomment> ### Custom Adyen cartridge start ### </iscomment>
+<fieldset>
+    <input type="hidden" class="form-control" id="selectedPaymentOption"
+           name="${pdict.forms.billingForm.paymentMethod.htmlName}"
+           value="paymentMethod">
+
+    <isset name="creditFields" value="${pdict.forms.billingForm.creditCardFields}" scope="page"/>
+    <iscomment> ### Custom Adyen cartridge end ### </iscomment>
+<div class="credit-card-selection-new" >
+    <div class="tab-content">
+        <isinclude template="checkout/billing/paymentOptions/paymentOptionsContent" />
+    </div>
+</div>
+<iscomment> ### Custom Adyen cartridge start ### </iscomment>
+</fieldset>
+<iscomment> ### Custom Adyen cartridge end ### </iscomment>

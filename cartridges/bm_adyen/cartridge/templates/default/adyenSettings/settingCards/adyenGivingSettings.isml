@@ -1,0 +1,101 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<isset name="AdyenConfigs" value="${require('*/cartridge/adyen/utils/adyenConfigs')}" scope="page"/>
+<div id="adyenGivingSettings" class="card bg-white mt-4 adyen-giving">
+   <script>
+      window.successImage = "${URLUtils.staticURL('icons/checkmark-circle-fill.svg')}";
+      window.logoValueField = "${AdyenConfigs.getAdyenGivingLogoUrl() || ''}";
+      window.backgroundValueField = "${AdyenConfigs.getAdyenGivingBackgroundUrl() || ''}";
+   </script>
+   <div class="card-body">
+      <h5 class="card-title mb-0">Adyen Giving <small class="text-secondary">(optional)</small></h5>
+      <h7 class="card-subtitle">
+         <div class="first-subtitle">
+            Give your shoppers the option to donate to a charity during their payment.
+            Not sure how to register to Adyen Giving? Contact your <a class="text-primary" href="https://www.adyen.com/contact" target="_blank">Account Manager or Support</a>.
+         </div>
+      </h7>
+      <div class="mt-2">
+         <div class="form-group">
+            <label class="form-title mb-0" for="adyenGivingButton">Adyen Giving</label>
+            <div class="row">
+               <div class="col-sm-9">
+                  <small id="adyenGivingButtonHelp" class="form-text mb-1">&#8198;Create a charity account to enable Adyen Giving.</small>
+               </div>
+               <div class="switch-button">
+                  <div class="form-check form-switch">
+                     <input class="form-check-input" type="checkbox" name="AdyenGiving_enabled" id="flexSwitchCheckChecked" data-bs-toggle="collapse" data-bs-target=".adyen-giving-settings" ${AdyenConfigs.getAdyenGivingEnabled() ? 'checked': 'unchecked'}>
+                  </div>
+               </div>
+            </div>
+         </div>
+         <div class="adyen-giving-settings collapse ${AdyenConfigs.getAdyenGivingEnabled() ? 'show': ''}">
+            <div class="form-group">
+               <label class="form-title mb-0" for="charityName">Charity’s name</label>
+               <small id="charityNameHelp" class="form-text mb-1">Enter the name of the charity displayed on the <a class="text-primary" href="https://docs.adyen.com/online-payments/donations/web-component" target="_blank">Adyen Giving Component</a>.</small>
+               <div class="input-fields">
+                  <input type="text" class="form-control" name="AdyenGiving_charityName" id="charityName" aria-describedby="charityNameHelp" value="${AdyenConfigs.getAdyenGivingCharityName() || ''}">
+               </div>
+            </div>
+            <div class="form-group">
+               <label class="form-title mb-0" for="charityMerchantAccount">Charity’s merchant account</label>
+               <small id="charityMerchantAccountHelp" class="form-text mb-1">Enter the name of your charity’s merchant account.</small>
+               <div class="input-fields">
+                  <input type="text" class="form-control" name="AdyenGiving_charityAccount" id="charityMerchantAccount" aria-describedby="charityMerchantAccountHelp" value="${AdyenConfigs.getAdyenGivingCharityAccount() || ''}">
+               </div>
+            </div>
+            <div class="form-group">
+               <label class="form-title mb-0" for="donationAmounts">Amounts for donation</label>
+               <small id="donationAmountsHelp" class="form-text mb-1">Enter the suggested amounts shoppers can choose to donate.</small>
+               <div class="input-fields">
+                  <input type="text" class="form-control" name="AdyenGiving_donationAmounts" id="donationAmounts" aria-describedby="donationAmountsHelp" placeholder="Use comma to separate values in minor units (e.g. $10.00 = 1000)" value="${AdyenConfigs.getAdyenGivingDonationAmounts() || ''}">
+               </div>
+            </div>
+            <div class="form-group">
+               <label class="form-title mb-0" for="charityDescription">Charity’s description</label>
+               <small id="charityDescriptionHelp" class="form-text mb-1">Create a short description of up to 70 characters to be displayed to your shoppers before they donate.</small>
+               <div class="input-fields">
+                  <input type="text" class="form-control" name="AdyenGiving_charityDescription" id="charityDescription" aria-describedby="charityDescriptionHelp" value="${AdyenConfigs.getAdyenGivingCharityDescription() || ''}">
+               </div>
+            </div>
+            <div class="form-group">
+               <label class="form-title mb-0" for="charityWebsite">Charity website</label>
+               <small id="charityWebsiteHelp" class="form-text mb-1">Enter the link to the charity website.</small>
+               <div class="input-fields">
+                  <input type="text" class="form-control" name="AdyenGiving_charityUrl" id="charityWebsite" aria-describedby="charityWebsiteHelp" placeholder="e.g. https://www.mycharity.com" value="${AdyenConfigs.getAdyenGivingCharityWebsite() || ''}" >
+               </div>
+            </div>
+            <div class="form-group">
+               <label class="form-title mb-0" for="backgroundFile">Background image for Adyen Giving component</label>
+               <small id="backgroundImageHelo" class="form-text mb-1">Your image needs to be in PNG, JPG, JPEG, or SVG format.</small>
+               <script>
+                  //Token and path can be found in settings.isml file
+                  window.adyenGivingBackgroundUrl = token +"#" + commonPath + storagePath + backgroundImageStorage;
+               </script>
+               <div class="wrapper-class "id="wrapper">
+                  <img src="${URLUtils.staticURL('icons/paperclip.svg')}" width="15" height="14" class="paperclip"/>
+                  <div class="drpbox-class" id="fileDropBoxCharitybackground" role="button">Click here to upload. </div>
+                  <div id="adyenGiving_background" class="form-group">
+                     <ul id="backgroundList"></ul>
+                  </div>
+               </div>
+               <br>
+            </div>
+            <div class="form-group">
+               <label class="form-title mb-0" for="logoFile">Logo in Adyen Giving component</label>
+               <small id="backgroundImageHelo" class="form-text mb-1">Your image needs to be in PNG, JPG, JPEG, or SVG format.</small>
+               <script>
+                  //Token and path can be found in settings.isml file
+                  window.adyenGivingLogoUrl = token +"#" + commonPath + storagePath + logoImageStorage;
+               </script>
+               <div class="wrapper-class "id="wrapper">
+                  <img src="${URLUtils.staticURL('icons/paperclip.svg')}" width="15" height="14" class="paperclip"/>
+                  <div class="drpbox-class" id="fileDropBoxGivingLogo" role="button">Click here to upload. </div>
+                  <div id="adyenGiving_logo" class="form-group">
+                     <ul id="logoList"></ul>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+</div>

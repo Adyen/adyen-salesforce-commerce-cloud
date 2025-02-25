@@ -1,0 +1,20 @@
+{
+	"hooks": [
+		{
+			"name": "app.payment.processor.adyen_pos",
+			"script": "./hooks/payment/processor/adyen_pos"
+		},
+		{
+			"name": "app.payment.form.processor.adyen_pos",
+			"script": "./hooks/payment/processor/adyen_pos_form_processor"
+		},
+		{
+			"name": "app.payment.processor.adyen_component",
+			"script": "./hooks/payment/processor/adyen_component"
+		},
+		{
+			"name": "app.payment.form.processor.adyen_component",
+			"script": "./hooks/payment/processor/adyen_component_form_processor"
+		}
+	]
+}

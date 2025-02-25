@@ -1,0 +1,57 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<isset name="AdyenConfigs" value="${require('*/cartridge/adyen/utils/adyenConfigs')}" scope="page"/>
+<div id="troubleshooting" class="card bg-white mt-4">
+   <div class="card-body">
+      <h5 class="card-title mb-0">
+         Troubleshooting <small class="text-secondary"></small>
+      </h5>
+      <h7 class="card-subtitle">
+         <div class="first-subtitle">You can download Adyen Logs from here.</div>
+      </h7>
+      <div class="mt-2">
+         <div class="form-group">
+            <label class="form-title mb-0" for="logsDownload">Download Logs</label>
+            <small id="logsDownloadHelp" class="form-text mb-1">
+            The logs are generated from the last 14 days. The downloaded files don’t include visuals, just text.  
+            </small>
+            <div class="checkboxes">
+               <div class="form-group">
+                  <ul class="log-list">
+                     <li class='log-checkbox-debug'>
+                        <label class="form-title mt-4" for="debugLogs">Debug Log</label>
+                        <input class="form-check-input" type="checkbox" name="AdyenDebugLogs" id="debugLogs" value="debug">
+                        <small id="debugLogsHelp" class="form-text mb-1">
+                        For checking order data, order create date delay, current date, and service config calls to Adyen Checkout API.
+                        </small>
+                     </li>
+                     <li class='log-checkbox-info'>
+                        <label class="form-title mt-4" for="infoLogs">Info Log</label>
+                        <input class="form-check-input" type="checkbox" name="AdyenInfoLogs" id="infoLogs" value="info">
+                        <small id="infoLogsHelp" class="form-text mb-1">
+                        For informational messages about payment results, webhooks processing, authorization, and order updates.
+                        </small>
+                     </li>
+                     <li class='log-checkbox-error'>
+                        <label class="form-title mt-4" for="errorLogs">Error Log</label>
+                        <input class="form-check-input" type="checkbox" name="AdyenErrorLogs" id="errorLogs" value="error">
+                        <small id="errorLogsHelp" class="form-text mb-1">
+                        For errors related to configuration, payment, order processing, card details, and components.
+                        </small>
+                     </li>
+                     <li class='log-checkbox-fatal'>
+                        <label class="form-title mt-4" for="fatalLogs">Fatal Log</label>
+                        <input class="form-check-input" type="checkbox" name="AdyenFatalLogs" id="fatalLogs" value="fatal">
+                        <small id="fatalLogsHelp" class="form-text mb-1">
+                        For severe errors preventing the cartridge from functioning properly.
+                        </small>
+                     </li>
+                  </ul>
+               </div>
+            </div>
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end form-buttons">
+               <button type="button" id="downloadLogsButton" class="btn btn-primary border disabled formButton">Download</button>
+            </div>
+         </div>
+      </div>
+   </div>
+</div>

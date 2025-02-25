@@ -1,0 +1,20 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+
+<!---
+	ISMODULE definitions used in this cartridge
+--->
+
+<!--- define reusable address helper --->
+<ismodule template="user/miniaddress.isml" 
+	name="miniaddress" 
+	attribute="address"
+	attribute="addressname"
+	attribute="privacy"
+>
+
+<!--- define reusable single shipping addresses view --->
+<!--- The prefix 'p_' avoids clashes with loop or other variables --->
+<ismodule template="user/minishippingaddress.isml"
+    name="minishippingaddress"
+    attribute="p_shipment"
+>

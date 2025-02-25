@@ -1,0 +1,41 @@
+[{
+  "id": "en_US",
+  "currencyCode": "USD"
+}, {
+  "id": "en_GB",
+  "currencyCode": "GBP"
+}, {
+  "id": "ja_JP",
+  "currencyCode": "JPY"
+}, {
+  "id": "zh_CN",
+  "currencyCode": "CNY"
+}, {
+  "id": "fr_FR",
+  "currencyCode": "EUR"
+}, {
+  "id": "it_IT",
+  "currencyCode": "EUR"
+}, {
+  "id": "pt_BR",
+  "currencyCode": "BRL"
+}, {
+  "id": "nb_NO",
+  "currencyCode": "NOK"
+}, {
+  "id": "da_DK",
+  "currencyCode": "DKK"
+}, {
+  "id": "sv_SE",
+  "currencyCode": "SEK"
+}, {
+  "id": "hi_IN",
+  "currencyCode": "INR"
+}, {
+  "id": "ja_JP",
+  "currencyCode": "JPY"
+}, 
+{
+	"id": "de_DE",
+	"currencyCode": "EUR"
+}]

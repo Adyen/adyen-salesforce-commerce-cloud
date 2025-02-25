@@ -1,0 +1,97 @@
+<!--- TEMPLATENAME: paymentInstrumentInfo_Adyen.isml --->
+
+<iscontent type="text/html" charset="UTF-8" compact="true">
+
+<isscript>
+	var order = pdict.Order;
+	var paymentInstruments = order.getPaymentInstruments().iterator();
+	if (paymentInstruments.hasNext()) {
+		var paymentInstrument = paymentInstruments.next();
+		var paymentMethod = dw.order.PaymentMgr.getPaymentMethod(paymentInstrument.paymentMethod);
+		var amount = order.custom.Adyen_value/100;
+		var adyenAdditionalPaymentData = JSON.parse(paymentInstrument.custom.adyenAdditionalPaymentData);
+		var adyenAction = JSON.parse(paymentInstrument.custom.adyenAction);
+	}
+</isscript>
+<BR><BR>
+
+<div id="Adyentable" style='border:1px solid #d0d0d0'>
+<table class='infobox w e'>
+	<thead>
+		<tr>
+			<th align='left' width='150'>
+			<A target='new' title='Click to go to Admin page' HREF='https://ca-test.adyen.com/'>
+			<img border='0' src='https://ca-test.adyen.com/ca/css/csr/images/adyen-logo.condensed.hr.png?c4e4' width='111'></A></th>
+			<th>Payment info</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+		    <td class='infobox_title'>PSP reference</td>
+	            <td class='infobox_item'>
+	                <isscript>
+	                    var mode : String = dw.system.Site.getCurrent().getCustomPreferenceValue("Adyen_Mode");
+	                    var urlPrefixType : String = 'test';
+	                    if (mode == 'LIVE') {
+	                        urlPrefixType = 'live';
+	                    }
+	                </isscript>
+	                <A target='new' HREF='https://ca-${urlPrefixType}.adyen.com/ca/ca/accounts/showTx.shtml?pspReference=${order.custom.Adyen_pspReference}&txType=Payment'>
+	                    <isprint value="${order.custom.Adyen_pspReference}">
+	                </A>
+            		</td>
+        	</tr>
+		<tr><td class='infobox_title'>Payment Method</td><td class='infobox_item'><isprint value="${order.custom.Adyen_paymentMethod}"></td></tr>
+		<tr><td class='infobox_title'>Eventcode</td><td class='infobox_item'><isprint value="${order.custom.Adyen_eventCode}"></td></tr>
+		<isif condition="${adyenAdditionalPaymentData != null}">
+			<isloop items="${adyenAdditionalPaymentData}" var="additionalItem" status="loopstate">
+				<isif condition="${additionalItem.key == 'bankTransfer.reference'}">
+					<tr>
+						<td><span class="infobox_title">Reference:</span></td>
+						<td><span class="summary-details">${bankTransferItem.value}</span></td>
+					</tr>
+				</isif>
+				<isif condition="${additionalItem.key == 'bankTransfer.owner'}">
+					<tr>
+						<td><span class="infobox_title">Beneficiary Name:</span></td>
+						<td><span class="summary-details">${bankTransferItem.value}</span></td>
+					</tr>
+				</isif>
+				<isif condition="${additionalItem.key == 'bankTransfer.iban'}">
+					<tr>
+						<td><span class="infobox_title">Bankaccount:</span></td>
+						<td><span class="summary-details">${bankTransferItem.value}</span></td>
+					</tr>
+				</isif>
+			</isloop>
+		</isif>
+		<isif condition="${adyenAction != null}">
+			<!--- Payment details for econtext --->
+			<isif condition="${adyenAction.reference}">
+				<tr>
+					<td><span class="summary-section-label">${Resource.msg('econtext.reference', 'checkout', null)}:</span></td>
+					<td><span class="summary-details">${adyenAction.reference}</span></td>
+				</tr>
+			</isif>
+			<isif condition="${adyenAction.maskedTelephoneNumber}">
+				<tr>
+					<td><span class="summary-section-label">${Resource.msg('econtext.maskedTelephoneNumber', 'checkout', null)}:</span></td>
+					<td><span class="summary-details">${adyenAction.maskedTelephoneNumber}</span></td>
+				</tr>
+			</isif>
+			<isif condition="${adyenAction.expiresAt}">
+				<tr>
+					<td><span class="summary-section-label">${Resource.msg('econtext.expiresAt', 'checkout', null)}:</span></td>
+					<td><span class="summary-details">${adyenAction.expiresAt}</span></td>
+				</tr>
+			</isif>
+		</isif>
+	</tbody>
+</table>
+</div>
+<BR>
+
+<!-- END: Adyentable 
+			
+
+-->

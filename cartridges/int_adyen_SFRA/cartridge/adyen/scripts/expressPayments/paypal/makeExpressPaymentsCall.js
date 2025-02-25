@@ -37,6 +37,7 @@ function makeExpressPaymentsCall(req, res, next) {
     paymentRequest.lineItems = paypalHelper.getLineItems({
       Basket: currentBasket
     }, true);
+    paymentRequest.shopperConversionId = session.sessionID.slice(0, 200);
     var result;
     Transaction.wrap(function () {
       result = adyenCheckout.doPaymentsCall(null, paymentInstrument, paymentRequest);

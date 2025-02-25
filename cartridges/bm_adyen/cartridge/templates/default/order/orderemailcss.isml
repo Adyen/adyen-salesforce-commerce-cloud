@@ -1,0 +1,311 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<!--templatename=order/orderemailstyleinclude
+    style information that needs to be included into the orderemail* templates
+    in order to send this style data along with the order data in the same email file
+-->
+<style type="text/css">
+
+body {
+	color: Black;
+	font-family: Arial, Verdana, Helvetica, sans-serif;
+	font-style: normal;
+	font-size: 9pt;
+	border: none;
+	background:#FFFFFF;
+	margin:auto; }
+img {
+	border:none;
+	margin:0;
+	padding:0; }
+p {
+	margin: 5px; }
+table {
+	margin: 0;
+	font-size: 12px; }
+tr {
+	background: #ffffff; }	
+.header {
+	font-size: 14px; }
+.header .address {
+	text-align: right;
+	font-size: 11px; }
+.content {
+	margin-right: auto;
+	border: 1px solid #666666;
+	width: 640px;
+	font-size: 12px; }
+.contentheader {
+	background: #f0f0e0;
+	border-bottom: 1px solid #666666;
+	padding: 5px;
+	font-size: 14px; }
+.confirmation {
+	font-weight: bold;
+	color: darkred;}
+.infotext {}
+.infotext .phone {
+	font-weight: bold; }
+.order {}
+.order h3 {
+	color: #69c;
+	font-weight: normal;
+	background-color: transparent;
+	margin: 5px 0px;
+	padding: 0px; }
+.order h4 {
+	text-transform: uppercase;
+	font-size: 12px;
+	font-weight: normal;
+	color: #69c;
+	background-color: transparent;
+	margin-bottom: 5px;
+	padding: 0px; }
+.order .addressgrouping {
+	width: 254px; /*25em;*/
+	padding: 10px;
+	margin: 5px 10px 10px 0px;
+	border: 1px dotted #ddd; }
+.orders {}
+.orders table {
+    width: 100%;
+	margin: 5px 0px auto;
+	border: none; }
+.orders	table th {
+	background-color: #ddd;
+	font-weight: bold;
+	text-transform: uppercase;
+	text-align: center;
+	font-size: 12px;
+	padding: 3px 5px; }
+.orders	table td {
+	padding: 3px 5px;
+    vertical-align: top;
+	white-space: nowrap;
+	text-align: center;
+    font-size: 12px; }
+.orders table td.price {
+	text-align: right; }
+.miniaddress {}
+.billingoverview {
+	display: inline; /* ie hack */
+	float: left;
+	border: 1px solid #c0d4e8;
+	width: 275px;
+	padding: 10px;
+	margin: 10px;
+    font-size: 12px; }
+.billingoverview .invoicetoaddress {
+	padding: 0px;
+	margin: 0px; }
+.billingoverview .invoicetoaddress h3 {
+	font-size: 14px;
+	font-weight: normal; }
+.billingoverview .paymentmethod {
+	padding: 0px;
+	margin: 0px; }
+.billingoverview .paymentmethod .payment {
+	padding: 0px;
+	margin-left: 10px; }
+.shippingoverview {
+	border: 1px solid #c0d4e8;
+	width: 275px;
+	display: inline; /* ie hack */
+	float: right;
+	padding: 10px;
+	margin: 10px;
+    font-size: 12px; }
+.shippingoverview .shiptoaddress {
+	margin: 3px 0px; }
+.shippingoverview .shiptoaddress h3 {
+	font-size: 14px;
+	font-weight: normal; }
+.shippingoverview .edit {
+	float: right; }
+.shippingoverview .deliverymethod .name {
+	margin-left: 10px;
+	padding: 0px; }
+.orderoverview {
+	clear: both;
+	margin: 0px;
+	padding: 0px; }
+.orderoverview .h3like {
+	text-transform: uppercase;
+	color: #69c; }		
+.orderoverview .itemname /*formats non-clickable products (giftcert) like products (as href)*/ {
+	color: darkblue; }		
+.orderoverview .taxinformation {
+	display: inline;
+	float: right; }
+.orderoverview .taxinformation .statedivider {
+	margin-right: 0.5em; }		
+.orderoverview .taxinformation .country {
+	margin-right: 5px; }		
+.orderoverview table {
+	width: 100%;
+	margin: 5px 0px auto; }
+.orderoverview table th {
+	text-align: center;
+	text-transform: uppercase;
+	font-weight: bold;
+	background-color: #ddd;
+	padding: 2px 5px;
+	font-size: 14px; }
+.orderoverview table td {
+	padding: 3px 5px;
+	vertical-align: top; }
+.orderoverview table tfoot td {
+	background-color: #f0f0f0; }
+.orderoverview table td.shippinggrouping {
+	background-color: #ededed;}
+.orderoverview table td.shipmenttax {
+	background-color: #ededed;}
+.orderoverview table td.shippinggrouping .key {
+	font-weight: bold; }
+.orderoverview table td.key {
+	text-align: right; }
+.orderoverview table td h3 {
+	padding: 0px;
+	margin: 0px; }
+.orderoverview table td a {
+	color: darkblue; }
+.orderoverview table td.quantitycolumn {
+	text-align:center; }
+.orderoverview table td.ordertotal {
+	font-weight: bold; }
+.orderoverview table td.merchandizetotal {
+	white-space: nowrap;
+	text-align: right;	}			
+.orderoverview table td.subtotal {
+	font-weight: bold; }
+.orderoverview table td.price {
+	white-space: nowrap;
+	text-align: right; }
+.orderoverview table td.shippingtotal {
+	white-space: nowrap;
+	text-align: right; }
+.orderoverview table td.orderdiscount {
+	white-space: nowrap;
+	text-align: right; }
+.orderoverview table td.taxtotal {
+	white-space: nowrap;
+	text-align: right; }			
+.orderoverview table td.couponcolumn {
+	color: brown; }
+.orderoverview table td.discountdescription {
+	color: brown; }
+.orderoverview table td.discountpricevalue {
+	color: brown; }
+.orderoverview table td.giftcertificatecolumn {
+	color: #e60; }
+.orderoverview table td.giftcertificatevalue {
+	color: #e60; }
+.orderoverview table th.blank {
+	background:#ffffff;  }
+.orderoverview table td.blank  {
+	background:#ffffff; }
+h1 {
+	font-family: 'Century Gothic',Arial,Verdana,sans-serif;
+	padding: 3px;
+	text-transform: none;
+	color: #006;
+	font-size: 18pt;
+	font-weight: normal;
+	text-transform: uppercase;
+	border: 0px; }
+h3 {
+	font-family: 'Century Gothic',Arial,Verdana,sans-serif;
+	font-weight: normal;
+	font-size: 12px;
+	text-transform: uppercase;
+	line-height: 1.1;
+	color: #6699cc;
+	padding: 3px 5px 0px 0px;
+	margin: 0px 0px 0px 10px;}
+p {
+	margin: 10px;}
+p.bonus {
+	color: red;
+	margin: 0px;
+	padding: 0px; }
+table.producttable {
+	width: 636px;
+	margin: auto;
+	border: 1px solid #eee;
+	font-size: 9pt; }
+table.producttable tr th {
+	background-color: #e0e0e0;
+	white-space: nowrap;
+	color: Black;
+	padding: 2px 5px;
+	text-transform: uppercase;
+	text-align: center; }
+table.producttable tr th.blank {
+	background:#ffffff; }
+table.producttable tr td.blank {
+	background:#ffffff; }
+table.producttable tfoot td {
+	padding: 3px 5px;
+	text-align: right;
+	background-color: #e0e0e0; }
+table.producttable tr td {
+	padding: 3px 5px;
+	margin: 0px;
+	background-color: #f3f3f3;}	
+table.producttable tr td.quantitycolumn {
+	text-align: center;
+	vertical-align: middle;
+	width: 70px; }
+table.producttable td .alreadyordered {
+	display: block;
+	color: Green; }
+table.producttable tr.odd td {
+	background-color: #f3f3f3; }
+table.producttable tr.even td {
+	background-color: #fcfcfc; }
+table.producttable td a {
+	text-decoration: none;
+	color: #006699; }
+table.producttable td a:hover {
+	text-decoration: underline; }
+table.producttable td.price {
+	text-align: right;
+	width: 85px; }	
+table.producttable .imagecolumn {
+	margin: auto;
+	text-align: center;
+	vertical-align: middle; }
+table.producttable .remove {
+	margin: auto;
+	text-align: center;
+	vertical-align: middle; }	
+table.producttable .shippinggrouping { }
+table.producttable .shiptoline { 
+	background-color: #fcfcfc;}
+table.producttable .shippinggroupinginfo {
+	text-align: right; }	
+table.producttable .shippinggroupingpromo{
+	text-align: right;
+	color: Red; }
+table.producttable .shippingunadjusted {
+	text-decoration: line-through; }
+table.producttable td.ordertotalsdivider {
+	margin: 0px;
+	padding: 1px;
+	background:#ffffff;
+	border-top: 1px solid #cdcdcd;
+	border-bottom: 1px solid #cdcdcd; }
+table.producttable tfoot td.blank {
+	background:#ffffff; }	
+table.producttable .ordertotal{
+	text-align: right;
+	background-color: #dcdcdc; }	
+table.producttable .ordertotalprice {
+	text-align: right;
+	font-weight: bold;
+	background-color: #dcdcdc; }
+table.producttable tfoot td {
+	background-color: #fcfcfc; }
+.promotiondescription {
+	color: red; }
+<!-- eof order section -->
+</style>

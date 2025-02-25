@@ -1,0 +1,40 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<link href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+<div id="posSettings" class="card bg-white mt-4">
+   <div class="card-body">
+      <h5 class="card-title mb-0">
+         In-person payments settings <small class="text-secondary">(optional)</small>
+      </h5>
+      <h7 class="card-subtitle">
+         <div class="first-subtitle">Set up your POS to process payments in your web store.</div>
+      </h7>
+      <div class="mt-2">
+         <div class="form-group">
+            <label class="form-title mb-0" for="storeID">StoreID for Terminal API <small class="text-secondary">(optional)</small></label>
+            <small id="storeIDHelp" class="form-text mb-1">If you want a POS in your physical store, select the <a class="text-primary" href="https://docs.adyen.com/plugins/salesforce-commerce-cloud/sfra-and-sitegenesis/set-up-the-cartridge/#set-up-in-person-payments" target="_blank">store ID.</a></small>
+            <div class="input-fields">
+               <input type="hidden" class="form-control" name="Adyen_StoreId" id="storeID" aria-describedby="storeIDHelp" value="${AdyenConfigs.getAdyenStoreId()  || ''}"/>
+               <input type="hidden" class="form-control" name="Adyen_SelectedStoreID" id="selectedStoreID" aria-describedby="selectedStoreIDHelp" value="${AdyenConfigs.getAdyenActiveStoreId()  || ''}"/>
+	       <select class="form-control" id="terminalDropdown" name="Adyen_SelectedStoreID" multiple>
+      		      <option value="">Connect stores to your webshop</option>
+    	       </select>
+            </div>
+         </div>
+      </div>
+         <div class="form-group">
+            <label class="form-title mb-0" for="posRegion">Terminal API Region</label>
+            <small id="posRegionHelp" class="form-text mb-1">
+            When you are ready to go live, enter the closest regions to your shoppers. This setup ensures that the communication between your payment terminal and our back-end is optimal.
+            <a class="text-primary" href="https://docs.adyen.com/point-of-sale/design-your-integration/terminal-api/#live-endpoints" target="_blank">Check the list of regions</a></small>
+            <div class='input-fields' id="dropdown-options">
+               <select name="Adyen_Pos_Region" class="form-select" required>
+                  <option class="dropdown-option" value="US" id="regionUS" ${AdyenConfigs.getAdyenPosRegion() === 'US' ? 'selected': ''}>US - United States</option>
+                  <option class="dropdown-option" value="EU" id="regionEU" ${AdyenConfigs.getAdyenPosRegion() === 'EU' ? 'selected': ''}>EU - Europe (Default)</option>
+                  <option class="dropdown-option" value="AU" id="regionAU" ${AdyenConfigs.getAdyenPosRegion() === 'AU' ? 'selected': ''}>AU - Australia</option>
+                  <option class="dropdown-option" value="APSE" id="regionAPSE" ${AdyenConfigs.getAdyenPosRegion() === 'APSE' ? 'selected': ''}>APSE - East Asia</option>
+               </select>
+            </div>
+         </div>
+   </div>
+</div>

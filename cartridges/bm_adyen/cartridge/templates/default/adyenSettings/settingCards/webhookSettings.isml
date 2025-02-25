@@ -1,0 +1,51 @@
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css" />
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<isset name="AdyenConfigs" value="${require('*/cartridge/adyen/utils/adyenConfigs')}" scope="page" />
+<div id="webhookSettings" class="card bg-white mt-4">
+   <div class="card-body">
+      <h5 class="card-title mb-0">
+         Webhook settings
+      </h5>
+      <h7 class="card-subtitle">
+         <div class="first-subtitle">
+            To receive authorization status updates, you need to <a class="text-primary" href="https://docs.adyen.com/plugins/salesforce-commerce-cloud/sfra-and-sitegenesis/set-up-the-cartridge/#set-up-webhooks" target="_blank">set up your webhook notification credentials</a> in your Customer Area.
+         </div>
+      </h7>
+      <div class="mt-2">
+         <div class="form-group">
+            <label class="form-title mb-0" for="notificationsUser">Webhook username</label>
+            <small id="notificationsUserHelp" class="form-text mb-1">This is the username you created under the Developers section in the Customer Area.</small>
+            <div class="input-fields">
+               <input type="text" class="form-control" name="Adyen_notification_user" id="notificationsUser"
+                  aria-describedby="notificationsUserHelp" placeholder="user012"
+                  value="${AdyenConfigs.getAdyenNotificationUser()}">
+            </div>
+         </div>
+         <div class="form-group">
+            <label class="form-title mb-0" for="notificationsPassword">Webhook password</label>
+            <small id="notificationsPasswordHelp" class="form-text mb-1">This is the password you created under the Developers section in the Customer Area.</small>
+            <span>
+            <i class="bi bi-eye-slash" id="togglePassword"></i>
+            </span>
+            <div class="input-fields">
+               <input type="password" class="form-control" name="Adyen_notification_password"
+                  id="notificationsPassword" aria-describedby="notificationsPasswordHelp"
+                  placeholder="•••••••••••••••" value="${AdyenConfigs.getAdyenNotificationPassword()}">
+            </div>
+         </div>
+         <div class="form-group">
+            <label class="form-title mb-0" for="hmacKey">HMAC Key (Optional)</label>
+            <small id="hmacKeyHelp" class="form-text mb-1">This is the HMAC key you created under the Developers section in the Customer Area.</small>
+            <span>
+               <i class="bi bi-eye-slash" id="toggleHmacKey"></i>
+            </span>
+            <div class="input-fields">
+               <input type="password" class="form-control" name="Adyen_Hmac_Key" id="hmacKey"
+                  aria-describedby="hmacKeyHelp" placeholder=""
+                  value="${AdyenConfigs.getAdyenHmacKey() || ''}">
+            </div>
+         </div>
+      </div>
+   </div>
+</div>

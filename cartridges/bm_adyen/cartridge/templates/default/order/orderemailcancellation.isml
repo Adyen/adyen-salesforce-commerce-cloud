@@ -1,0 +1,63 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<!-- TemplateName : user/orderemailcancellation.isml -->
+<!--- TemplateComment : creates an order confirmation , that is send per EMail
+  -- Address data are included via miniaddress
+  -- "subject" is copied as email subject
+  -- keep in mind all formatting (css) needs to be placed inside these templates
+     to be displayed properly in the shoppers emailbox
+--->
+
+<iscontent type="text/html" session="false" charset="UTF-8">
+<isset name="SHOP_URL" value="${URLUtils.http(new dw.web.URLAction('Home-Show', pdict.StorefrontName))}" scope="PAGE"/>
+<isset name="TRACK_URL" value="${URLUtils.https(new dw.web.URLAction('Order-Track', pdict.StorefrontName))}" scope="PAGE"/>
+
+<subject><isprint value="${pdict.MailSubject}"> of your Order #'#'#<isprint value="${pdict.Order.orderNo}"></subject>
+
+<html>
+<head>
+<isinclude template="order/orderemailcss">
+</head>
+
+<table class="header" cellSpacing=0 cellPadding=5 width=640 border=0>
+  <tbody>
+  <tr>
+    <td class="header"><strong>SiteGenesis</strong></td>
+    <td class="address"><strong>Demo SiteGenesis</strong><br />
+        5 Wall Street<br />
+        Burlington,&nbsp;MA&nbsp;01803<br />
+        <a href="${SHOP_URL}" title="Jump to our store"><span>SiteGenesis</span></a><br />
+        Phone: +1.888.553.9216</td>
+  </TR>
+  </tbody>
+</table>
+
+<div class="content">
+    <div class="contentheader">
+        <span class="confirmation">Order Cancellation:</span> Order Number: <isprint value="${pdict.Order.orderNo}"> - Your order was cancelled!
+    </div>
+    <div class="infotext">
+        <p>This email confirms we cancelled your order at <a href="${SHOP_URL}" title="Jump to our store"><span>SiteGenesis</span></a>.
+        You can check your order's status on your account pages at <a href="${TRACK_URL}" title="Jump to our store"><span>SiteGenesis</span></a></p>
+        <p><strong>Thank you for shopping with us!</strong></p>
+
+        <p><font color=#ff0000>Please print and save a copy for reference.</font></p>
+        <p><font color=#ff0000>PLEASE NOTE: </font>
+        Please don't hesitate to contact us for any further questions via PHONE ONLY, at
+        <span class="phone">+1.888.553.9216</span>
+        </p>
+    </div>
+
+    <div class="order">
+        <isinclude template="custom/modules">
+        <!--- overwrite the default address format (miniaddress) in case you need a different address format for email only
+            (usually you probably will replace the addressformat in user/miniaddress in general though)
+        --->
+        <isset name="Container" value="${pdict.Order}" scope="REQUEST">
+        <isinclude template="order/orderdetails">
+    </div>
+
+</div>
+
+</body>
+</html>

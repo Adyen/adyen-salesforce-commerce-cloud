@@ -1,0 +1,23 @@
+<iscontent compact="true"/>
+<isset name="AdyenHelper" value="${require('*/cartridge/adyen/utils/adyenHelper')}" scope="pdict"/>
+<script src="${pdict.AdyenHelper.getCheckoutUrl()}" type="text/javascript"></script>
+
+<isif condition="${payment.adyenAction != null}">
+    <!--- Payment action for Voucher --->
+    <div id="voucherResult" style="overflow:hidden"></div>
+    <br/>
+    <script type="text/javascript">
+        var configuration = {
+            locale: '${request.locale}'
+        };
+
+        AdyenCheckout(configuration).then((checkout) => {
+            const voucherResult = document.getElementById('voucherResult');
+            const action = JSON.parse('${payment.adyenAction}'.replace(/&quot;/g, '\"'));
+            checkout.createFromAction(action).mount(voucherResult);
+        });
+
+    </script>
+</isif>
+
+<isinclude template="checkout/confirmation/adyenConfirmationDetails"/>

@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<extensions xmlns="http://www.demandware.com/xml/bmmodules/2007-12-11" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.demandware.com/xml/bmmodules/2007-12-11 bmext.xsd">
+	<menuaction id="adyen_settings" menupath="site-prefs" position="2" site="true">
+        <name xml:lang="x-default">Adyen settings</name>
+        <short_description xml:lang="x-default">Adyen settings</short_description>
+        <description xml:lang="x-default">Adyen settings</description>
+        <exec pipeline="AdyenSettings" node="Start"/>
+        <sub-pipelines>
+            <pipeline name="AdyenSettings"/>
+        </sub-pipelines>
+        <icon>adyen_logo.svg</icon>
+    </menuaction>
+</extensions>
+<!-- =============================================================== -->
+<!-- ==                                                           == -->
+<!-- ==  BUSINESS MANAGER MENU IDs								  == -->
+<!-- ==                                                           == -->
+<!-- ===============================================================
+	SITE MENU **************************************************************************************
+		Menu ITEM:  Products and Catalogs 		<menuitem id="prod-cat" position="2000" site="true">
+			Menu Action:  Products 					<menuaction id="prod-cat_products" menupath="prod-cat" position="100" site="true">
+			Menu Action:  Catalogs					<menuaction id="prod-cat_catalogs" menupath="prod-cat" position="150" site="true">
+			Menu Action:  Product Sets				<menuaction id="prod-cat_product_sets" menupath="prod-cat" position="200" site="true">
+			Menu Action:  Product Options				<menuaction id="prod-cat_product_options" menupath="prod-cat" position="200" site="true">
+			Menu Action:  Recommendations			<menuaction id="prod-cat_recommendations" menupath="prod-cat" position="250" site="true">
+			Menu Action:  Price Books				<menuaction id="prod-cat_pricebooks" menupath="prod-cat" position="300" site="true">
+			Menu Action:  Inventory 				<menuaction id="prod-cat_inventory" menupath="prod-cat" position="350" site="true">
+			Menu Action:  Catalog Feeds 				<menuaction id="prod-cat_feeds" menupath="prod-cat" position="550" site="true">
+			Menu Action:  Batch Processes			<menuaction id="prod-cat_batchprocs" menupath="prod-cat" position="600" site="true">
+			Menu Action:  Import and Export			<menuaction id="prod-cat_impex" menupath="prod-cat" position="800" site="true">
+		Menu ITEM:  Content						<menuitem id="content" position="3000" site="true">
+			Menu Action:  Library Folder				<menuaction id="library_folder" menupath="content" position="100" site="true">
+			Menu Action:  Content Assets				<menuaction id="library_content" menupath="content" position="200" site="true">
+			Menu Action:  Import and Export			<menuaction id="content_impex" menupath="content" position="300" site="true">
+		Menu ITEM:  Search						<menuitem id="search" position="4000" site="true">
+			Menu Action:  Search Indexes			<menuaction id="search_indexes" menupath="search" position="100" site="true">
+			Menu Action:  Search Redirects			<menuaction id="search_index_redirects" menupath="search" position="110" site="true">
+			Menu Action:  Search Stopwords			<menuaction id="search_stopwords" menupath="search" position="120" site="true">
+			Menu Action:  Search Synonyms			<menuaction id="search_synonyms" menupath="search" position="130" site="true">
+			Menu Action:  Search Hypernyms			<menuaction id="search_hypernyms" menupath="search" position="140" site="true">
+			Menu Action:  Search Index Scheduler	<menuaction id="search_index_schedule" menupath="search" position="200" site="true">
+			Menu Action:  Guided Search Preference		<menuaction id="search_preferences" menupath="search" position="300" site="true">
+		Menu ITEM:  Online Marketing			<menuitem id="marketing" position="5000" site="true">
+			Menu Action:  Promotions and Discounts	<menuaction id="marketing_promodisc" menupath="marketing" position="100" site="true">
+			Menu Action:  Gift Certificates			<menuaction id="marketing_giftcert" menupath="marketing" position="200" site="true">
+			Menu Action:  Source-Code Groups			<menuaction id="sourcecode" menupath="marketing" position="300" site="true">
+			Menu Action:  Store Locations				<menuaction id="marketing_storelocations" menupath="marketing" position="400" site="true">
+			Menu Action:  Import and Export			<menuaction id="marketing_impex" menupath="marketing" position="600" site="true">
+		Menu ITEM:  Customers					<menuitem id="customers" position="6000" site="true">
+			Menu Action:  Customers					<menuaction id="customers_manage" menupath="customers" position="100" site="true">
+			Menu Action:  Customer Groups 			<menuaction id="customers_groups" menupath="customers" position="200" site="true">
+			Menu Action:  Customer Impex			<menuaction id="customers_impex" menupath="customers" position="300" site="true">
+		Menu ITEM:  Custom Objects				<menuitem id="site-obj" position="7000" site="true">
+			Menu Action: Custom Object Browser		<menuaction id="site-obj_impex" menupath="site-obj" position="100" site="true">
+			Menu Action: Custom Object Impex		<menuaction id="site-obj_editor" menupath="site-obj" position="200" site="true">
+		Menu ITEM:  Orders						<menuitem id="orders" position="8000" site="true">
+			Menu Action: Manage Orders				<menuaction id="orders_manage" menupath="orders" position="100" site="true">
+			Menu Action: Taxation					<menuaction id="orders_taxation" menupath="orders" position="200" site="true">
+			Menu Action: Payment Processors			<menuaction id="orders_paymethods" menupath="orders" position="300" site="true">
+			Menu Action: Shipping Methods			<menuaction id="orders_shipmethods" menupath="orders" position="400" site="true">
+			Menu Action: Ordering Import & Export		<menuaction id="orders_export" menupath="orders" position="700" site="true">	
+		Menu ITEM:  Analytics					<menuitem id="analytics" position="10000" site="true">
+			Menu Action: Conversion Reports 		<menuaction id="analytics_conversion" menupath="analytics" position="100" site="true">
+			Menu Action: Purchase Reports 			<menuaction id="analytics_purchase" menupath="analytics" position="200" site="true">
+			Menu Action: Catalog Reports			<menuaction id="analytics_catalog" menupath="analytics" position="300" site="true">
+			Menu Action: Search and Navigation Reports <menuaction id="analytics_seachnav" menupath="analytics" position="400" site="true">
+			Menu Action: Customer Reports			<menuaction id="analytics_customer" menupath="analytics" position="500" site="true">
+			Menu Action: Traffic Reports			<menuaction id="analytics_traffic" menupath="analytics" position="600" site="true">
+			Menu Action: A/B Testing Reports		<menuaction id="analytics_abtesting" menupath="analytics" position="700" site="true">
+			Menu Action: Technical Reports			<menuaction id="analytics_technical" menupath="analytics" position="900" site="true">
+		Menu ITEM:  Site URLs					<menuitem id="short-links" position="11000" site="true">
+			Menu Action: Search Support				<menuaction id="site-urls_searchsupport" menupath="site-urls" position="200" site="true">
+			Menu Action: Aliases					<menuaction id="site-urls_aliases" menupath="site-urls" position="300" site="true">
+			Menu Action: URL Mappings				<menuaction id="site-urls_url-mappings" menupath="site-urls" position="300" site="true">
+			Menu Action: URL Mapping Rules			<menuaction id="site-urls_url-mappings" menupath="site-urls" position="300" site="true">
+		Menu ITEM:  Site Preferences			<menuitem id="site-prefs" position="12000" site="true">
+			Menu Action: Product Locking			<menuaction id="site-prefs_prodlocking" menupath="site-prefs" position="400" site="true">
+			Menu Action: Shopping Cart				<menuaction id="site-prefs_cart" menupath="site-prefs" position="1000" site="true">
+			Menu Action: Locales					<menuaction id="site-prefs_sitelocales" menupath="site-prefs" position="1100" site="true">
+			Menu Action: Time Zone					<menuaction id="site-prefs_timezone" menupath="site-prefs" position="1200" site="true">
+			Menu Action: Source-Code Handling			<menuaction id="site-prefs_sourcecode" menupath="site-prefs" position="1400" site="true">
+			Menu Action: Gift Certificate Preferences		<menuaction id="site-prefs_giftcertificates" menupath="site-prefs" position="1500" site="true">
+			Menu Action: Guided Search Preferences		<menuaction id="site-prefs_search" menupath="site-prefs" position="1600" site="true">
+			Menu Action: Series Number Managements		<menuaction id="site-prefs_seriesnumbers" menupath="site-prefs" position="1700" site="true">
+			Menu Action: Custom Preferences			<menuaction id="site-prefs_custom_prefs" menupath="site-prefs" position="1800" site="true">
+
+	ADMINISTRATION MENU **************************************************************************************
+		Menu Item:  Data Replication			<menuitem id="global-data-rep" position="1000" site="false">
+			Menu Action: Data Replication				<menuaction id="global-data-rep-processes" menupath="global-replication" position="100" site="false">
+			Menu Action: Code Replication				<menuaction id="global-code-rep-processes" menupath="global-data-rep" position="200" site="false">
+		Menu Item:  Organization				<menuitem id="organization" position="2000" site="false">
+			Menu Action:  Organization Profile		<menuaction id="organization_profile" menupath="organization" position="100" site="false">			
+			Menu Action: Users 					menuaction id="organization_users" menupath="organization" position="400" site="false">
+		Menu Item:  Sites						<menuitem id="sites" position="3000" site="false">
+			Menu Action:  Manage Sites 				<menuaction id="sites_manage" menupath="sites" position="100" site="false">
+		Menu Item:  Site Development			<menuitem id="studio" position="4000" site="false">
+			Menu Action:  Studio Setup				<menuaction id="studio_setup" menupath="studio" position="100" site="false">
+			Menu Action: System Object Definitions		<menuaction id="studio_system_obj" menupath="studio" position="150" site="false">
+			Menu Action: Custom Object Definitions		<menuaction id="studio_custom_obj" menupath="studio" position="200" site="false">
+			Menu Action: Code Deployment			<menuaction id="studio_code_deployment" menupath="studio" position="400" site="false">
+			Menu Action: Site Import & Export			<menuaction id="instance_setup" menupath="studio" position="500" site="false">
+			Menu Action: Import & Export				<menuaction id="customization_impex" menupath="studio" position="600" site="false">
+		Menu Item:  Global Preferences			<menuitem id="global-prefs" position="5000" site="false">
+			Menu Action:  Manage Locales			<menuaction id="global-prefs_locales" menupath="global-prefs" position="100" site="false">
+			Menu Action:  Instance Time Zone		<menuaction id="global-prefs_timeZones" menupath="global-prefs" position="200" site="false">
+			Menu Action:  Exchange Rates			<menuaction id="global-prefs_exchangeRates" menupath="global-prefs" position="300" site="false">
+			Menu Action: Security Preferences			<menuaction id="global-prefs_securityPrefs" menupath="global-prefs" position="500" site="false">
+			Menu Action: Global Series Number Management	<menuaction id="global-prefs_orders_seriesnumbers" menupath="global-prefs" position="600" site="false">
+			Menu Action: Global Custom Preferences		<menuaction id="global-prefs_custom_prefs" menupath="global-prefs" position="700" site="false">
+		Menu Item:  Operations					<menuitem id="global-prefs" position="5000" site="false">
+			Menu Action: Manage Job Schedules			<menuaction id="global-prefs_locales" menupath="operations" position="100" site="false">
+			Menu Action: View Job History			<menuaction id="operations_jobmonitor" menupath="operations" position="200" site="false">
+-->

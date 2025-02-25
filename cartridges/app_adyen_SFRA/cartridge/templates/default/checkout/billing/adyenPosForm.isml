@@ -1,0 +1,11 @@
+<script src="${pdict.AdyenHelper.getCheckoutUrl()}" type="text/javascript"></script>
+<input id="terminalId" type="hidden" name="${adyenPaymentFields.terminalId.htmlName}"/>
+<input id="storeId" type="hidden" name="${adyenPaymentFields.storeId.htmlName}"/>
+
+
+<h3>${Resource.msg('terminal.selectStore', 'terminal', null)}</h3>
+<div id="adyenPosStores"></div>
+<h3>${Resource.msg('terminal.selectTerminal', 'terminal', null)}</h3>
+<div id="adyenPosTerminals">
+    <span>${Resource.msg('terminal.noTerminals', 'terminal', null)}</span>
+</div>

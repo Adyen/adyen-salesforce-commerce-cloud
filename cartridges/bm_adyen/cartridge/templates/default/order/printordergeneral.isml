@@ -1,0 +1,174 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<html>
+
+    <head>
+        <title>Order <isprint value="${pdict.Order.orderNo}"></title>
+        <link rel="STYLESHEET" type="text/css" href="${URLUtils.webRoot()}/css/enterprisesite.css"/>
+        <ismodule template = "inc/AddressInfoSmall_52.isml" name="AddressInfo" attribute="address">
+        <link rel="shortcut icon" href="${URLUtils.webRoot()}/images/favicon.ico" />
+    </head>
+
+    <body id="print_order" onload="window.print();">
+
+        <table width="600" border="0" cellspacing="0" cellpadding="4">
+
+            <tr>
+                <td class="table_detail" colspan="4">&nbsp;</td>
+            </tr>
+
+            <tr>
+                <td colspan="2" class="infobox_item"><h2>Order:</h2></td>
+                <td colspan="2" class="infobox_item"><h2><isprint value="${pdict.Order.orderNo}"></h2></td>
+            </tr>
+
+            <tr>
+                <td class="table_detail w e n" colspan="4">&nbsp;</td>
+            </tr>
+
+            <tr>
+                <td colspan="2" width="500" class="table_detail bold w">
+                    <table>
+                        <tr>
+                            <td class="infobox_item" nowrap="nowrap">SiteGenesis</td>
+                        </tr>
+                        <tr>
+                            <td class="infobox_item" nowrap="nowrap">5 Wall Street</td>
+                        </tr>
+                        <tr>
+                            <td class="infobox_item" nowrap="nowrap">Burlington, MA 01803 USA</td>
+                        </tr>
+                    </table>
+                </td>
+                <td colspan="2" class="table_detail bold e">
+                    <table>
+                        <tr>
+                            <td class="infobox_item" nowrap="nowrap">Order:</td>
+                            <td class="infobox_item" nowrap="nowrap"><isprint value="${pdict.Order.orderNo}"></td>
+                        </tr>
+                        <tr>
+                            <td class="infobox_item" nowrap="nowrap">Date:</td>
+                            <td class="infobox_item" nowrap="nowrap"><isprint value="${pdict.Order.creationDate}"></td>
+                        </tr>
+                        <tr>
+                            <td class="infobox_item" nowrap="nowrap">Total:</td>
+                            <td class="infobox_item" nowrap="nowrap"><isprint value="${pdict.Order.totalGrossPrice}"></td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="table_detail w e" colspan="4">&nbsp;</td>
+            </tr>
+
+            <tr>
+                <td class="table_detail w e n" colspan="4">&nbsp;</td>
+            </tr>
+
+            <tr valign="top">
+                <td class="table_detail bold w" nowrap="nowrap">Bill To:&nbsp;</td>
+                <td class="table_detail" width="100%">
+                    <table>
+                        <tr>
+                            <td class="infobox_item" nowrap="nowrap"><isprint value="${pdict.Order.billingAddress.firstName}"> <isprint value="${pdict.Order.billingAddress.lastName}"></td>
+                        </tr>
+                        <tr>
+                            <td class="infobox_item" nowrap="nowrap"><isprint value="${pdict.Order.billingAddress.address1}"> <isprint value="${pdict.Order.billingAddress.address2}"></td>
+                        </tr>
+                        <tr>
+                            <td class="infobox_item" nowrap="nowrap"><isprint value="${pdict.Order.billingAddress.city}"> <isprint value="${pdict.Order.billingAddress.stateCode}"> <isprint value="${pdict.Order.billingAddress.postalCode}"></td>
+                        </tr>
+                        <tr>
+                            <td class="infobox_item" nowrap="nowrap"><isprint value="${pdict.Order.billingAddress.countryCode}"></td>
+                        </tr>
+                        <tr>
+                            <td class="infobox_item" nowrap="nowrap">Phone: <isif condition="${! empty(pdict.Order.billingAddress.phone)}"><isprint value="${pdict.Order.billingAddress.phone}"><iselse>n/a</isif></td>
+                        </tr>
+                        <tr>
+                            <td class="infobox_item" nowrap="nowrap">Email: <isif condition="${! empty(pdict.Order.customerEmail)}"><isprint value="${pdict.Order.customerEmail}"><iselse><isprint value="${pdict.Order.buyerEmail}"></isif></td>
+                        </tr>
+                    </table>
+                </td>
+                <td class="table_detail e" colspan="2">&nbsp;</td>
+            </tr>
+
+            <tr>
+                <td class="table_detail w e" colspan="4">&nbsp;</td>
+            </tr>
+            <!-- LineItemGroups -->
+            <!--- If no product line items, don't need shipping info --->
+<!--
+            <isloop iterator="${pdict.Order.shipments}" alias="Group">
+
+                <tr>
+                    <td class="table_detail w e n" colspan="4">&nbsp;</td>
+                </tr>
+
+                <tr valign="top">
+                    <td class="table_detail bold w" nowrap="nowrap">Ship To:&nbsp;</td>
+
+                    <isif condition="${Group.productLineItems.size() > 0}">
+
+                        <td class="table_detail" width="100%">
+                            <table border="0" cellpadding="0" cellspacing="0">
+                                <tr>
+                                    <td>
+                                        <table border="0" cellpadding="0" cellspacing="2">
+                                            <tr>
+                                                <td class="infobox_item" nowrap="nowrap">Shipment: <isprint value="${Group.ID}"></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="infobox_item" nowrap="nowrap">${Group.shippingAddress.firstName}&nbsp;${Group.shippingAddress.lastName}</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="infobox_item" nowrap="nowrap">${Group.shippingAddress.address1}</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="infobox_item" nowrap="nowrap">${Group.shippingAddress.address2}</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="infobox_item" nowrap="nowrap">${Group.shippingAddress.city},&nbsp;${Group.shippingAddress.stateCode}&nbsp;${Group.shippingAddress.postalCode}</td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td class="table_detail e" colspan="2">&nbsp;</td>
+                    <iselseif condition="${Group.giftCertificateLineItems.size() > 0}">
+                        <td class="table_detail e" nowrap="nowrap" colspan="3">Email Delivery</td>
+                    <iselse>
+                        <td class="table_detail e" nowrap="nowrap" colspan="3">Not Applicable</td>
+                    </isif>
+                </tr>
+
+                <tr>
+                    <td class="table_detail s w e" colspan="4">&nbsp;</td>
+                </tr>
+
+            </isloop>
+-->
+            <!-- EO LineItemGroups -->
+            <tr>
+                <td class="table_detail s w e" colspan="4">&nbsp;</td>
+            </tr>
+
+            <tr>
+                <td class="table_detail w e" colspan="4">
+                    <div class="printorder" style="padding-left: 0px;">
+                        <isset name="Container" value="${pdict.Order}" scope="REQUEST">
+                        <isinclude template="order/orderdetails">
+                    </div>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="table_detail s w e" colspan="4">&nbsp;</td>
+            </tr>
+
+        </table>
+
+    </body>
+</html>

@@ -1,0 +1,70 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<isset name="AdyenConfigs" value="${require('*/cartridge/adyen/utils/adyenConfigs')}" scope="page"/>
+<div id="lpmSettings" class="card bg-white mt-4">
+   <div class="card-body">
+      <h5 class="card-title mb-0">
+         Local payment method settings
+      </h5>
+      <h7 class="card-subtitle">
+         <div class="first-subtitle">Configure required additional settings for payment methods. Most payment methods work without additional settings, find an overview of all payment methods <a class="text-primary" href="https://docs.adyen.com/plugins/salesforce-commerce-cloud/supported-payment-methods" target="_blank">here</a>.</div>
+      </h7>
+      <div class="mt-2">
+         <div class="form-group">
+            <label class="form-title mb-0" for="saleFlow">Payment methods without separate capture</label>
+            <small id="saleFlowHelp" class="form-text mb-1">If your SFCC is connected to an <a class="text-primary" href="https://docs.adyen.com/plugins/salesforce-order-management-system" target="_blank">OMS</a> instance, you need to add the same payment methods you selected in the Customer Area. Make sure that all letters are lowercase, and separate multiple payment methods with commas.</small>
+            <div class="input-fields">
+               <input type="text" class="form-control" name="AdyenSalePaymentMethods" id="saleFlow" aria-describedby="saleFlowHelp" placeholder="e.g. ideal, sepadirectdebit, paypal" value="${AdyenConfigs.getAdyenSalePaymentMethods().join(', ')}">
+            </div>
+         </div>
+         <div class="form-group">
+            <label class="form-title mb-0" for="ratePayId">RatePay ID <small class="text-secondary">(optional)</small></label>
+            <small id="ratePayIdHelp" class="form-text mb-1">This is an open invoice and secured direct debit provider available in Germany, Austria, Switzerland, and the Netherlands. Enter the unique ID provided by your Ratepay integration consultant.</small>
+            <div class="input-fields">
+               <input type="text" class="form-control" name="AdyenRatePayID" id="ratePayId" aria-describedby="ratePayIdHelp" placeholder="e.g. oj9GsQ" value="${AdyenConfigs.getRatePayMerchantID() || ''}">    
+            </div>
+         </div>
+         <div class="form-group">
+            <label class="form-title mb-0" for="googlePayMerchantID">Google Merchant ID</label>
+            <small id="googlePayMerchantHelp" class="form-text mb-1">Google Pay is enabled by default in the Test environment. If you also want to activate it in the Live environment, enter your <a class="text-primary" href="https://developers.google.com/pay/api/web/guides/test-and-deploy/deploy-production-environment#obtain-your-merchantID" target="_blank">Google Merchant ID</a></small>
+            <div class="input-fields">
+               <input type="text" class="form-control" name="Adyen_GooglePayMerchantID" id="googlePayMerchantID" aria-describedby="googlePayMerchantHelp" value="${AdyenConfigs.getGoogleMerchantID() || ''}">    
+            </div>
+         </div>
+         <div class="form-group">
+            <label class="form-title mb-0" for="applePayDomain">Apple Pay Domain Association</label>
+            <small id="applePayDomainHelp" class="form-text mb-1">Apple Pay is enabled by default in the Test environment. If you also want to activate it in the Live environment, enter <a class="text-primary" href="https://docs.adyen.com/payment-methods/apple-pay/web-component#going-live" target="_blank">Apple Pay Domain Association</a></small>
+            <div class="input-fields">
+               <textarea class="form-control" name="Adyen_ApplePay_DomainAssociation" id="applePayDomain" aria-describedby="applePayDomainHelp">${AdyenConfigs.getApplePayDomainAssociation() || ''}</textarea>    
+            </div>
+         </div>
+         <div class="form-group">
+            <label class="form-title mb-0" for="oneClick">Store shopper details with one-click <small class="text-secondary">(optional)</small></label>
+            <small id="oneClickHelp" class="form-text mb-1"><a class="text-primary" href="https://docs.adyen.com/plugins/salesforce-commerce-cloud/sfra-and-sitegenesis/set-up-the-cartridge/#store-shopper-details" target="_blank">One-click</a> stores payment details of your shoppers securely. It allows you to offer subscriptions, automatic top-ups to shoppers’ accounts, and give them a faster checkout experience.</small>
+            <div class="radio-buttons">
+               <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" name="AdyenOneClickEnabled" id="oneClickYes" value=true ${AdyenConfigs.getAdyenRecurringPaymentsEnabled() ? 'checked': ''}>
+                  <label class="form-check-label" for="oneClickYes">Enable</label>
+               </div>
+               <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" name="AdyenOneClickEnabled" id="oneClickNo" value=false ${!AdyenConfigs.getAdyenRecurringPaymentsEnabled() ? 'checked': ''}>
+                  <label class="form-check-label" for="oneClickNo">Disable</label>
+               </div>
+            </div>
+         </div>
+         <div class="form-group">
+            <label class="form-title mb-0" for="inlineWidget">Klarna Inline Widget<small class="text-secondary"> (optional)</small></label>
+            <small id="inlineWidgetHelp" class="form-text mb-1">Klarna inline widget allows you to complete Klarna payments without browser redirect.</small>
+            <div class="radio-buttons">
+               <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" name="Adyen_klarnaWidget" id="inlineWidgetYes" value=true ${AdyenConfigs.getKlarnaInlineWidgetEnabled() ? 'checked': ''}>
+                  <label class="form-check-label" for="inlineWidgetYes">Enable</label>
+               </div>
+               <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" name="Adyen_klarnaWidget" id="inlineWidgetNo" value=false ${!AdyenConfigs.getKlarnaInlineWidgetEnabled() ? 'checked': ''}>
+                  <label class="form-check-label" for="inlineWidgetNo">Disable</label>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+</div>
