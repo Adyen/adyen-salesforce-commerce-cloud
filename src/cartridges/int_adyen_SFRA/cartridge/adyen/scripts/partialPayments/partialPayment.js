@@ -64,8 +64,6 @@ function makePartialPayment(req, res, next) {
 
     Transaction.wrap(() => {
       session.privacy.giftCardResponse = JSON.stringify({
-        giftCardpspReference: response.pspReference,
-        orderPSPReference: response.order.pspReference,
         ...response.order,
         ...response.amount,
         paymentMethod: response.paymentMethod,
