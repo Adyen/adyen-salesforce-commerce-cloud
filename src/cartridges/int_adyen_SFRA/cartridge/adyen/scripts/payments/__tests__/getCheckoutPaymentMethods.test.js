@@ -59,9 +59,6 @@ describe('getCheckoutPaymentMethods', () => {
             currency: "EUR",
             value: 1000,
          },
-         adyenConnectedTerminals: {
-            "foo": "bar",
-          },
           adyenDescriptions: {
             "ideal": "Dutch payment method example description",
             "paypal": "PayPal example description",

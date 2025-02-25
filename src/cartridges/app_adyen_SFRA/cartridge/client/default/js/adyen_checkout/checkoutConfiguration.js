@@ -374,6 +374,18 @@ function getKlarnaConfig() {
     return {
       showPayButton: true,
       useKlarnaWidget: true,
+      onError: (component) => {
+        helpers.paymentFromComponent(
+          {
+            cancelTransaction: true,
+            merchantReference:
+              document.querySelector('#merchantReference').value,
+            orderToken: document.querySelector('#orderToken').value,
+          },
+          component,
+        );
+        document.querySelector('#showConfirmationForm').submit();
+      },
       onSubmit: (state, component) => {
         helpers.assignPaymentMethodValue();
         helpers.paymentFromComponent(state.data, component);
