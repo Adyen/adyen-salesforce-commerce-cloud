@@ -50,11 +50,13 @@ function getCheckoutPaymentMethods(req, res, next) {
       currency,
       currentBasket,
     );
+    const shopperEmail = AdyenHelper.getCustomerEmail();
 
     const paymentMethods = getPaymentMethods.getMethods(
       paymentAmount,
       AdyenHelper.getCustomer(req.currentCustomer),
       countryCode,
+      shopperEmail,
     );
     res.json({
       AdyenPaymentMethods: paymentMethods,

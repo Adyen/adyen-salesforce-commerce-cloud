@@ -259,6 +259,7 @@ function createPaymentRequest(args) {
         paymentRequest.deviceFingerprint = session.privacy.ratePayFingerprint;
       }
     }
+    paymentRequest.shopperConversionId = session.sessionID.slice(0, 200);
 
     // add line items for paypal
     if (paymentRequest.paymentMethod.type.indexOf('paypal') > -1) {

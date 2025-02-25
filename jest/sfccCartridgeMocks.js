@@ -314,6 +314,7 @@ jest.mock(
       action: { type: 'mockedAction' },
     })),
     createRedirectUrl: jest.fn(() => 'mocked_RedirectUrl'),
+	getCustomerEmail: jest.fn(() => 'mocked_email'),
   }),
   { virtual: true },
 );
