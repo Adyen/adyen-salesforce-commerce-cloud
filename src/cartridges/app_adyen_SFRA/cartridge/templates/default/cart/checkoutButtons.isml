@@ -43,6 +43,10 @@
 
     <div id="amazon-container"></div>
     <iselse>
+        <isscript>
+            var assets = require('*/cartridge/scripts/assets.js');
+            assets.addJs('/js/expressPayments.js');
+        </isscript>
         <script type="text/javascript">
             window.clientKey = "${AdyenConfigs.getAdyenClientKey()}";
             window.locale = "${request.locale}";
@@ -70,6 +74,7 @@
             window.paypalUpdateOrder = "${URLUtils.https('Adyen-paypalUpdateOrder')}";
             window.paypalReviewPageEnabled = ${AdyenConfigs.isPayPalExpressReviewPageEnabled()};
             window.checkoutReview = "${URLUtils.https('Adyen-CheckoutReview')}";
+            window.countryCode = window.locale.slice(-2);
         </script>
         <div class="mb-sm-3">
             <a
@@ -89,7 +94,6 @@
                 <div data-method="paypal" class="expressComponent" id="paypal-container" style="padding:0"></div>
                 <div data-method="googlepay" class="expressComponent googlepay" style="padding:0"></div>
             </div>
-            <script src="${URLUtils.httpsStatic('/js/expressPayments.js')}" type="text/javascript"></script>
         </isif>
     </iselse>
 </isif>

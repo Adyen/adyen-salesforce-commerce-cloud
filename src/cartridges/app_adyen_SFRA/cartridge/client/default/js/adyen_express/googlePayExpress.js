@@ -1,15 +1,15 @@
-const helpers = require('./adyen_checkout/helpers');
+const helpers = require('../adyen_checkout/helpers');
 const {
   checkIfExpressMethodsAreReady,
   updateLoadedExpressMethods,
   createTemporaryBasket,
-} = require('./commons');
+} = require('../commons');
 const {
   GOOGLE_PAY,
   PAY_WITH_GOOGLE,
   GOOGLE_PAY_CALLBACK_TRIGGERS,
-} = require('./constants');
-const { httpClient } = require('./commons/httpClient');
+} = require('../constants');
+const { httpClient } = require('../commons/httpClient');
 
 let checkout;
 let googlePayButton;
@@ -190,10 +190,11 @@ async function paymentFromComponent(data) {
 
 async function initializeCheckout(paymentMethodsResponse) {
   const applicationInfo = paymentMethodsResponse?.applicationInfo;
-  checkout = await AdyenCheckout({
+  checkout = await window.AdyenWeb.AdyenCheckout({
     environment: window.environment,
     clientKey: window.clientKey,
     locale: window.locale,
+    countryCode: window.countryCode,
     analytics: {
       analyticsData: { applicationInfo },
     },
@@ -268,6 +269,7 @@ async function init(paymentMethodsResponse, isExpressPdp) {
       const googlePayConfig = googlePayPaymentMethod.configuration;
       const googlePayButtonConfig = {
         showPayButton: true,
+        isExpress: true,
         buttonType: 'buy',
         environment: window.environment,
         emailRequired: true,
@@ -338,12 +340,17 @@ async function init(paymentMethodsResponse, isExpressPdp) {
         },
       };
 
-      googlePayButton = checkout.create(GOOGLE_PAY, googlePayButtonConfig);
+      googlePayButton = window.AdyenWeb.createComponent(
+        GOOGLE_PAY,
+        checkout,
+        googlePayButtonConfig,
+      );
       googlePayButton.mount('.googlepay');
       updateLoadedExpressMethods(GOOGLE_PAY);
       checkIfExpressMethodsAreReady();
     })
-    .catch(() => {
+    .catch((e) => {
+      console.log(e);
       updateLoadedExpressMethods(GOOGLE_PAY);
       checkIfExpressMethodsAreReady();
     });

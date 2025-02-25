@@ -13,13 +13,15 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
 function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: !0, configurable: !0, writable: !0 }) : e[r] = t, e; }
 function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
 function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
-var applePayExpressModule = require('../applePayExpress');
-var googlePayExpressModule = require('../googlePayExpress');
+var applePayExpressModule = require('../adyen_express/applePayExpress');
+var googlePayExpressModule = require('../adyen_express/googlePayExpress');
 var _require = require('../constants'),
   APPLE_PAY = _require.APPLE_PAY,
   GOOGLE_PAY = _require.GOOGLE_PAY;
 var _require2 = require('../commons'),
   getPaymentMethods = _require2.getPaymentMethods;
+var _require3 = require('../commons/httpClient'),
+  httpClient = _require3.httpClient;
 var paymentMethodsResponse;
 function getProductForm(product) {
   var $productInputEl = document.createElement('input');
@@ -113,9 +115,9 @@ function _init() {
                   $.spinner().start();
                   dataUrl = $('.quantity-select').find('option:selected').data('url');
                   _context.next = 4;
-                  return $.ajax({
+                  return httpClient({
                     url: dataUrl,
-                    method: 'get'
+                    method: 'GET'
                   });
                 case 4:
                   productVariation = _context.sent;

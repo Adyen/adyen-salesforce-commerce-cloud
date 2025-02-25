@@ -10,7 +10,7 @@ const {
   handleShippingOptionChange,
   getPaypalButtonConfig,
 } = require('../paypalExpress.js')
-const helpers = require('../adyen_checkout/helpers');
+const helpers = require('../../adyen_checkout/helpers');
 
 describe('paypal express', () => {
   describe('callPaymentFromComponent', () => {

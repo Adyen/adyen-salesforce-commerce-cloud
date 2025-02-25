@@ -1,12 +1,12 @@
-const helpers = require('./adyen_checkout/helpers');
+const helpers = require('../adyen_checkout/helpers');
 const {
   checkIfExpressMethodsAreReady,
   updateLoadedExpressMethods,
   getPaymentMethods,
   createTemporaryBasket,
-} = require('./commons');
-const { APPLE_PAY } = require('./constants');
-const { httpClient } = require('./commons/httpClient');
+} = require('../commons');
+const { APPLE_PAY } = require('../constants');
+const { httpClient } = require('../commons/httpClient');
 
 let checkout;
 let shippingMethodsData;
@@ -156,10 +156,11 @@ function getShippingMethod(shippingContact) {
 
 async function initializeCheckout(paymentMethodsResponse) {
   const applicationInfo = paymentMethodsResponse?.applicationInfo;
-  checkout = await AdyenCheckout({
+  checkout = await window.AdyenWeb.AdyenCheckout({
     environment: window.environment,
     clientKey: window.clientKey,
     locale: window.locale,
+    countryCode: window.countryCode,
     analytics: {
       analyticsData: { applicationInfo },
     },
@@ -167,7 +168,11 @@ async function initializeCheckout(paymentMethodsResponse) {
 }
 
 async function createApplePayButton(applePayButtonConfig) {
-  return checkout.create(APPLE_PAY, applePayButtonConfig);
+  return window.AdyenWeb.createComponent(
+    APPLE_PAY,
+    checkout,
+    applePayButtonConfig,
+  );
 }
 
 async function onAuthorized(resolve, reject, event, amountValue, merchantName) {
@@ -273,7 +278,8 @@ async function onShippingContactSelected(resolve, reject, event, merchantName) {
   }
 }
 
-async function init(paymentMethodsResponse) {
+async function init(paymentMethodsResponse, isExpressPdp) {
+  window.isExpressPdp = isExpressPdp;
   initializeCheckout(paymentMethodsResponse)
     .then(async () => {
       const applePayPaymentMethod =

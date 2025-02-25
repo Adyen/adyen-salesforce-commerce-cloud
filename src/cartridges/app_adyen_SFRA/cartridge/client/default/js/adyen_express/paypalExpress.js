@@ -1,10 +1,10 @@
 const {
   updateLoadedExpressMethods,
   checkIfExpressMethodsAreReady,
-} = require('./commons');
-const helpers = require('./adyen_checkout/helpers');
-const { PAYPAL } = require('./constants');
-const { httpClient } = require('./commons/httpClient');
+} = require('../commons');
+const helpers = require('../adyen_checkout/helpers');
+const { PAYPAL } = require('../constants');
+const { httpClient } = require('../commons/httpClient');
 
 async function callPaymentFromComponent(data, component) {
   try {
@@ -200,16 +200,21 @@ async function init(paymentMethodsResponse) {
       checkIfExpressMethodsAreReady();
       return;
     }
-    const checkout = await AdyenCheckout({
+    const checkout = await window.AdyenWeb.AdyenCheckout({
       environment: window.environment,
       clientKey: window.clientKey,
       locale: window.locale,
+      countryCode: window.countryCode,
       analytics: {
         analyticsData: { applicationInfo },
       },
     });
     const paypalButtonConfig = getPaypalButtonConfig(paypalConfig);
-    const paypalExpressButton = checkout.create(PAYPAL, paypalButtonConfig);
+    const paypalExpressButton = window.AdyenWeb.createComponent(
+      PAYPAL,
+      checkout,
+      paypalButtonConfig,
+    );
     paypalExpressButton.mount('#paypal-container');
     updateLoadedExpressMethods(PAYPAL);
     checkIfExpressMethodsAreReady();

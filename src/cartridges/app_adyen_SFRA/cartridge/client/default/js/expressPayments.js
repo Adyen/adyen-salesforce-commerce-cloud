@@ -1,10 +1,30 @@
-const { getPaymentMethods } = require('./commons');
-const applePayExpressModule = require('./applePayExpress');
-const paypalPayExpressModule = require('./paypalExpress');
-const googlePayExpressModule = require('./googlePayExpress');
-const amazonPayExpressModule = require('./amazonPayExpressPart1');
+const {
+  checkIfExpressMethodsAreReady,
+  getPaymentMethods,
+} = require('./commons');
+
+const applePayExpressModule = require('./adyen_express/applePayExpress');
+const paypalPayExpressModule = require('./adyen_express/paypalExpress');
+const googlePayExpressModule = require('./adyen_express/googlePayExpress');
+const amazonPayExpressModule = require('./adyen_express/amazonPayExpressPart1');
 
 let paymentMethodsResponse = null;
+
+function handleExpressPaymentsVisibility() {
+  const { expressMethodsOrder } = window;
+  if (expressMethodsOrder) {
+    const sortOrder = expressMethodsOrder.split(',');
+    const container = document.getElementById('express-container');
+    const toSort = Array.prototype.slice.call(container.children, 0);
+    toSort.sort(
+      (a, b) =>
+        sortOrder.indexOf(a.dataset.method) -
+        sortOrder.indexOf(b.dataset.method),
+    );
+    container.innerHTML = '';
+    [...toSort].map((node) => container.appendChild(node));
+  }
+}
 
 async function init() {
   paymentMethodsResponse = await getPaymentMethods();
@@ -25,3 +45,5 @@ async function init() {
 }
 
 init();
+handleExpressPaymentsVisibility();
+checkIfExpressMethodsAreReady();
