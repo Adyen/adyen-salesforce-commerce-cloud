@@ -19,13 +19,8 @@ global.request = { getLocale: jest.fn(() => 'nl_NL') };
 
 global.customer = { profile: { customerNo: 'mocked_customerNo' } };
 
-global.AdyenCheckout = () => {
-  return Promise.resolve({
-    create: () => {
-      return { mount: jest.fn() };
-    },
-    createFromAction: () => {
-      return { mount: jest.fn() };
-    },
+global.AdyenCheckout = () =>
+  Promise.resolve({
+    create: () => ({ mount: jest.fn() }),
+    createFromAction: () => ({ mount: jest.fn() }),
   });
-};
