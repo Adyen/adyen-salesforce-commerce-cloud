@@ -117,6 +117,7 @@ function makePartialPayment(req, res, next) {
         ...response.paymentMethod,
         amount: response.amount,
         name: giftcardBrand,
+        pspReference: response.pspReference,
       },
       orderAmount: {
         currency: currentBasket.currencyCode,
