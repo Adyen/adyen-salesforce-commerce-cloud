@@ -53,7 +53,8 @@ function makePartialPayment(req, res, next) {
       reference: currentBasket.custom.adyenGiftCardsOrderNo,
       paymentMethod: paymentMethod,
       order: order,
-      shopperInteraction: constants.SHOPPER_INTERACTIONS.ECOMMERCE
+      shopperInteraction: constants.SHOPPER_INTERACTIONS.ECOMMERCE,
+      shopperConversionId: session.sessionID.slice(0, 200)
     };
     var response = doPartialPaymentsCall(partialPaymentRequest);
     if (responseContainsErrors(response)) {

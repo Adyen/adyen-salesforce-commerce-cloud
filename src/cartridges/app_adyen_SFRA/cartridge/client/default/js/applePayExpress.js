@@ -283,7 +283,8 @@ async function onShippingContactSelected(resolve, reject, event, merchantName) {
   }
 }
 
-async function init(paymentMethodsResponse) {
+async function init(paymentMethodsResponse, isExpressPdp) {
+  window.isExpressPdp = isExpressPdp;
   initializeCheckout(paymentMethodsResponse)
     .then(async () => {
       const applePayPaymentMethod =
