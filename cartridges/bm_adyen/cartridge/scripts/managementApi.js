@@ -32,4 +32,6 @@ function fetchAllStores() {
   }
   return stores;
 }
-module.exports = fetchAllStores;
+module.exports = {
+  fetchAllStores: fetchAllStores
+};
