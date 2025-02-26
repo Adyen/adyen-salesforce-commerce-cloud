@@ -62,10 +62,7 @@ function makePartialPayment(req, res, next) {
       throw new Error(errorMsg);
     }
     Transaction.wrap(function () {
-      session.privacy.giftCardResponse = JSON.stringify(_objectSpread(_objectSpread(_objectSpread({
-        giftCardpspReference: response.pspReference,
-        orderPSPReference: response.order.pspReference
-      }, response.order), response.amount), {}, {
+      session.privacy.giftCardResponse = JSON.stringify(_objectSpread(_objectSpread(_objectSpread({}, response.order), response.amount), {}, {
         paymentMethod: response.paymentMethod,
         brand: giftcardBrand
       })); // entire response exceeds string length
@@ -92,7 +89,8 @@ function makePartialPayment(req, res, next) {
       expiresAt: response.order.expiresAt,
       giftCard: _objectSpread(_objectSpread({}, response.paymentMethod), {}, {
         amount: response.amount,
-        name: giftcardBrand
+        name: giftcardBrand,
+        pspReference: response.pspReference
       }),
       orderAmount: {
         currency: currentBasket.currencyCode,
