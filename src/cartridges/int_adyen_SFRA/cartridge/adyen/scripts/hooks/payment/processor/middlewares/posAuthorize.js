@@ -1,7 +1,7 @@
 const server = require('server');
 const Resource = require('dw/web/Resource');
 const Transaction = require('dw/system/Transaction');
-const adyenTerminalApi = require('*/cartridge/adyen/scripts/payments/adyenTerminalApi');
+const adyenTerminalApi = require('*/cartridge/adyen/scripts/pos/adyenTerminalApi');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 
 /**
@@ -10,7 +10,6 @@ const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 function posAuthorize(order, paymentInstrument, paymentProcessor) {
   try {
     Transaction.wrap(() => {
-      paymentInstrument.paymentTransaction.transactionID = order.orderNo;
       paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
     });
 

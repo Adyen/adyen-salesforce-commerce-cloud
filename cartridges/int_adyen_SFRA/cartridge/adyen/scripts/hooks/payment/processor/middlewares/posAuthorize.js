@@ -3,7 +3,7 @@
 var server = require('server');
 var Resource = require('dw/web/Resource');
 var Transaction = require('dw/system/Transaction');
-var adyenTerminalApi = require('*/cartridge/adyen/scripts/payments/adyenTerminalApi');
+var adyenTerminalApi = require('*/cartridge/adyen/scripts/pos/adyenTerminalApi');
 var AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 
 /**
@@ -12,7 +12,6 @@ var AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 function posAuthorize(order, paymentInstrument, paymentProcessor) {
   try {
     Transaction.wrap(function () {
-      paymentInstrument.paymentTransaction.transactionID = order.orderNo;
       paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
     });
     var adyenPaymentForm = server.forms.getForm('billing').adyenPaymentFields;

@@ -6,9 +6,9 @@ const adyenCheckout = require('*/cartridge/adyen/scripts/payments/adyenCheckout'
 const constants = require('*/cartridge/adyen/config/constants');
 const payment = require('*/cartridge/adyen/scripts/showConfirmation/handlePayment');
 const clearForms = require('*/cartridge/adyen/utils/clearForms');
-const handleAuthorised = require('*/cartridge/adyen/scripts/showConfirmation/authorise');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
+const AdyenConfigs = require('*/cartridge/adyen/utils/adyenConfigs');
 
 function getPaymentDetailsPayload(querystring) {
   const details = querystring.redirectResult
@@ -38,6 +38,37 @@ function getPaymentsDetailsResult(
   return result;
 }
 
+function handleOrderConfirm(
+  adyenPaymentInstrument,
+  result,
+  order,
+  { res, next },
+) {
+  Transaction.wrap(() => {
+    AdyenHelper.savePaymentDetails(adyenPaymentInstrument, order, result);
+  });
+
+  clearForms.clearForms();
+  // determines SFRA version for backwards compatibility
+  if (AdyenConfigs.getAdyenSFRA6Compatibility() === true) {
+    res.render('orderConfirmForm', {
+      orderID: order.orderNo,
+      orderToken: order.orderToken,
+    });
+  } else {
+    res.redirect(
+      URLUtils.url(
+        'Order-Confirm',
+        'ID',
+        order.orderNo,
+        'token',
+        order.orderToken,
+      ).toString(),
+    );
+  }
+  return next();
+}
+
 function handlePaymentsDetailsResult(
   adyenPaymentInstrument,
   detailsResult,
@@ -51,7 +82,7 @@ function handlePaymentsDetailsResult(
       constants.RESULTCODES.RECEIVED,
     ].indexOf(detailsResult.resultCode) > -1
   ) {
-    return handleAuthorised(
+    return handleOrderConfirm(
       adyenPaymentInstrument,
       detailsResult,
       order,

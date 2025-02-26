@@ -6,8 +6,6 @@ var HashMap = require('dw/util/HashMap');
 var Mail = require('dw/net/Mail');
 var Template = require('dw/util/Template');
 var Transaction = require('dw/system/Transaction');
-var Order = require('dw/order/Order');
-var COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 var OrderModel = require('*/cartridge/models/order');
 function sendEmail(order) {
   var confirmationEmail = new Mail();
@@ -32,17 +30,6 @@ function sendEmail(order) {
 function submit(order) {
   try {
     Transaction.begin();
-    // Places the order if not placed yet
-    if (order.status.value === Order.ORDER_STATUS_CREATED) {
-      // custom fraudDetection
-      var fraudDetectionStatus = {
-        status: 'success'
-      };
-      var placeOrderResult = COHelpers.placeOrder(order, fraudDetectionStatus);
-      if (placeOrderResult.error) {
-        return placeOrderResult;
-      }
-    }
     sendEmail(order);
     Transaction.commit();
     return {

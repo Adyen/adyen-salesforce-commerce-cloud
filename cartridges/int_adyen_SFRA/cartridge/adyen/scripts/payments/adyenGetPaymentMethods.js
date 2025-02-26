@@ -29,7 +29,7 @@ var blockedPayments = require('*/cartridge/adyen/config/blockedPaymentMethods.js
 var AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 
 // eslint-disable-next-line complexity
-function getMethods(paymentAmount, customer, countryCode) {
+function getMethods(paymentAmount, customer, countryCode, shopperEmail) {
   try {
     var paymentMethodsRequest = {
       merchantAccount: AdyenConfigs.getAdyenMerchantAccount(),
@@ -44,6 +44,9 @@ function getMethods(paymentAmount, customer, countryCode) {
     if (request.getLocale()) {
       paymentMethodsRequest.shopperLocale = request.getLocale();
     }
+    if (shopperEmail) {
+      paymentMethodsRequest.shopperEmail = shopperEmail;
+    }
 
     // check logged in shopper for oneClick
     var profile = customer && customer.registered && customer.getProfile() ? customer.getProfile() : null;
@@ -55,6 +58,7 @@ function getMethods(paymentAmount, customer, countryCode) {
       paymentMethodsRequest.shopperReference = customerID;
     }
     paymentMethodsRequest.blockedPaymentMethods = blockedPayments.blockedPaymentMethods;
+    paymentMethodsRequest.shopperConversionId = session.sessionID.slice(0, 200);
     return AdyenHelper.executeCall(constants.SERVICE.CHECKOUTPAYMENTMETHODS, paymentMethodsRequest);
   } catch (error) {
     AdyenLogs.fatal_log('/paymentMethods call failed', error);

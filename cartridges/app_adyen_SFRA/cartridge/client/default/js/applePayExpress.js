@@ -372,14 +372,15 @@ function _onShippingContactSelected() {
   }));
   return _onShippingContactSelected.apply(this, arguments);
 }
-function init(_x20) {
+function init(_x20, _x21) {
   return _init.apply(this, arguments);
 }
 function _init() {
-  _init = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee12(paymentMethodsResponse) {
+  _init = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee12(paymentMethodsResponse, isExpressPdp) {
     return _regeneratorRuntime().wrap(function _callee12$(_context12) {
       while (1) switch (_context12.prev = _context12.next) {
         case 0:
+          window.isExpressPdp = isExpressPdp;
           initializeCheckout(paymentMethodsResponse).then(/*#__PURE__*/_asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee11() {
             var _paymentMethodsRespon;
             var applePayPaymentMethod, applePayConfig, applePayButtonConfig, cartContainer, applePayButton, isApplePayButtonAvailable, expressCheckoutNodesIndex;
@@ -418,7 +419,7 @@ function _init() {
                           }
                         }, _callee7);
                       }));
-                      function onAuthorized(_x21, _x22, _x23) {
+                      function onAuthorized(_x22, _x23, _x24) {
                         return _onAuthorized3.apply(this, arguments);
                       }
                       return onAuthorized;
@@ -467,7 +468,7 @@ function _init() {
                           }
                         }, _callee8);
                       }));
-                      function onClick(_x24, _x25) {
+                      function onClick(_x25, _x26) {
                         return _onClick.apply(this, arguments);
                       }
                       return onClick;
@@ -485,7 +486,7 @@ function _init() {
                           }
                         }, _callee9);
                       }));
-                      function onShippingMethodSelected(_x26, _x27, _x28) {
+                      function onShippingMethodSelected(_x27, _x28, _x29) {
                         return _onShippingMethodSelected3.apply(this, arguments);
                       }
                       return onShippingMethodSelected;
@@ -503,7 +504,7 @@ function _init() {
                           }
                         }, _callee10);
                       }));
-                      function onShippingContactSelected(_x29, _x30, _x31) {
+                      function onShippingContactSelected(_x30, _x31, _x32) {
                         return _onShippingContactSelected3.apply(this, arguments);
                       }
                       return onShippingContactSelected;
@@ -534,7 +535,7 @@ function _init() {
             updateLoadedExpressMethods(APPLE_PAY);
             checkIfExpressMethodsAreReady();
           });
-        case 1:
+        case 2:
         case "end":
           return _context12.stop();
       }
