@@ -1,6 +1,7 @@
 "use strict";
 
 var getCheckoutPaymentMethods = require('*/cartridge/adyen/scripts/payments/getCheckoutPaymentMethods');
+var getConnectedTerminals = require('*/cartridge/adyen/scripts/pos/getConnectedTerminals');
 var paymentFromComponent = require('*/cartridge/adyen/scripts/payments/paymentFromComponent');
 var paymentsDetails = require('*/cartridge/adyen/scripts/payments/paymentsDetails');
 var redirect3ds1Response = require('*/cartridge/adyen/scripts/payments/redirect3ds1Response');
@@ -42,5 +43,6 @@ module.exports = {
   saveShopperData: saveShopperData,
   handleCheckoutReview: handleCheckoutReview,
   validatePaymentDataFromRequest: validatePaymentDataFromRequest,
-  createTemporaryBasket: createTemporaryBasket
+  createTemporaryBasket: createTemporaryBasket,
+  getConnectedTerminals: getConnectedTerminals
 };

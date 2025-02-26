@@ -4,7 +4,6 @@ const Transaction = require('dw/system/Transaction');
 const URLUtils = require('dw/web/URLUtils');
 const Resource = require('dw/web/Resource');
 const adyenCheckout = require('*/cartridge/adyen/scripts/payments/adyenCheckout');
-const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
 const AdyenConfigs = require('*/cartridge/adyen/utils/adyenConfigs');
 const constants = require('*/cartridge/adyen/config/constants');
@@ -47,18 +46,6 @@ function handleAuthorisedPayment(
   adyenPaymentInstrument,
   { res, next },
 ) {
-  // custom fraudDetection
-  const fraudDetectionStatus = { status: 'success' };
-  const isPayPalExpress = order.custom.Adyen_paypalExpressResponse;
-
-  // Places the order, for PayPal express the order is placed from makeExpressPaymentDetailsCall.js
-  if (!isPayPalExpress) {
-    const placeOrderResult = COHelpers.placeOrder(order, fraudDetectionStatus);
-    if (placeOrderResult.error) {
-      return handlePaymentError(order, adyenPaymentInstrument, { res, next });
-    }
-  }
-
   Transaction.wrap(() => {
     AdyenHelper.savePaymentDetails(adyenPaymentInstrument, order, result);
   });

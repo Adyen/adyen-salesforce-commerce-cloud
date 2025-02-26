@@ -2,11 +2,8 @@
 
 var BasketMgr = require('dw/order/BasketMgr');
 var Locale = require('dw/util/Locale');
-var PaymentMgr = require('dw/order/PaymentMgr');
 var AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
-var adyenTerminalApi = require('*/cartridge/adyen/scripts/payments/adyenTerminalApi');
 var paymentMethodDescriptions = require('*/cartridge/adyen/config/paymentMethodDescriptions');
-var constants = require('*/cartridge/adyen/config/constants');
 var getPaymentMethods = require('*/cartridge/adyen/scripts/payments/adyenGetPaymentMethods');
 var AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 function getCountryCode(currentBasket, locale) {
@@ -19,12 +16,6 @@ function getCountryCode(currentBasket, locale) {
     }
   }
   return countryCode || Locale.getLocale(locale.id).country;
-}
-function getConnectedTerminals() {
-  if (PaymentMgr.getPaymentMethod(constants.METHOD_ADYEN_POS).isActive()) {
-    return adyenTerminalApi.getTerminals().response;
-  }
-  return '{}';
 }
 var getRemainingAmount = function getRemainingAmount(giftCardResponse, currency, currentBasket) {
   if (giftCardResponse && JSON.parse(giftCardResponse).remainingAmount) {
@@ -39,15 +30,14 @@ function getCheckoutPaymentMethods(req, res, next) {
     var currentBasket = BasketMgr.getCurrentBasket();
     var countryCode = getCountryCode(currentBasket, req.locale);
     var adyenURL = "".concat(AdyenHelper.getLoadingContext(), "images/logos/medium/");
-    var connectedTerminals = JSON.parse(getConnectedTerminals());
     var currency = currentBasket ? currentBasket.getTotalGrossPrice().currencyCode : session.currency.currencyCode;
     var paymentAmount = getRemainingAmount(session.privacy.giftCardResponse, currency, currentBasket);
-    var paymentMethods = getPaymentMethods.getMethods(paymentAmount, AdyenHelper.getCustomer(req.currentCustomer), countryCode);
+    var shopperEmail = AdyenHelper.getCustomerEmail();
+    var paymentMethods = getPaymentMethods.getMethods(paymentAmount, AdyenHelper.getCustomer(req.currentCustomer), countryCode, shopperEmail);
     res.json({
       AdyenPaymentMethods: paymentMethods,
       imagePath: adyenURL,
       adyenDescriptions: paymentMethodDescriptions,
-      adyenConnectedTerminals: connectedTerminals,
       amount: {
         value: paymentAmount.value,
         currency: currency

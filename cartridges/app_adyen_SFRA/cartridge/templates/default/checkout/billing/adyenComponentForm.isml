@@ -24,11 +24,13 @@
       window.klarnaWidgetEnabled = ${adyenKlarnaWidgetEnabled};
       window.adyenRecurringPaymentsEnabled = ${adyenRecurringPaymentsEnabled};
       window.getPaymentMethodsURL = "${URLUtils.https('Adyen-GetPaymentMethods')}";
+      window.getConnectedTerminalsURL = "${URLUtils.https('Adyen-GetConnectedTerminals')}";
       window.checkBalanceUrl = "${URLUtils.https('Adyen-CheckBalance')}";
       window.partialPaymentsOrderUrl = "${URLUtils.https('Adyen-PartialPaymentsOrder')}";
       window.partialPaymentUrl = "${URLUtils.https('Adyen-partialPayment')}";
       window.cancelPartialPaymentOrderUrl = "${URLUtils.https('Adyen-CancelPartialPaymentOrder')}";
       window.fetchGiftCardsUrl = "${URLUtils.https('Adyen-fetchGiftCards')}";
+      window.activeTerminalApiStores = '${pdict.AdyenConfigs.getAdyenActiveStoreId()}';
       
       window.remainingAmountGiftCardResource = "${Resource.msg('remainingAmount.giftCard', 'adyen', null)}";
       window.discountedAmountGiftCardResource = "${Resource.msg('discountedAmount.giftCard', 'adyen', null)}";

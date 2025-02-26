@@ -29,7 +29,8 @@ var _require2 = require('./localesUsingInstallments'),
   installmentLocales = _require2.installmentLocales;
 var _require3 = require('../commons'),
   getPaymentMethods = _require3.getPaymentMethods,
-  fetchGiftCards = _require3.fetchGiftCards;
+  fetchGiftCards = _require3.fetchGiftCards,
+  getConnectedTerminals = _require3.getConnectedTerminals;
 var constants = require('../constants');
 var _require4 = require('./renderGiftcardComponent'),
   createElementsToShowRemainingGiftCardAmount = _require4.createElementsToShowRemainingGiftCardAmount,
@@ -162,17 +163,80 @@ function _renderPaymentMethods() {
   return _renderPaymentMethods.apply(this, arguments);
 }
 function renderPosTerminals(adyenConnectedTerminals) {
-  var _adyenConnectedTermin;
   var removeChilds = function removeChilds() {
     var posTerminals = document.querySelector('#adyenPosTerminals');
     while (posTerminals.firstChild) {
       posTerminals.removeChild(posTerminals.firstChild);
     }
   };
-  if (adyenConnectedTerminals !== null && adyenConnectedTerminals !== void 0 && (_adyenConnectedTermin = adyenConnectedTerminals.uniqueTerminalIds) !== null && _adyenConnectedTermin !== void 0 && _adyenConnectedTermin.length) {
+  if (adyenConnectedTerminals) {
     removeChilds();
-    addPosTerminals(adyenConnectedTerminals.uniqueTerminalIds);
+    addPosTerminals(adyenConnectedTerminals);
   }
+}
+function addStores(_x4) {
+  return _addStores.apply(this, arguments);
+}
+function _addStores() {
+  _addStores = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee4(stores) {
+    var storeDropdown, placeholderOption, storeArray, storeDropdownContainer, existingDropdown;
+    return _regeneratorRuntime().wrap(function _callee4$(_context4) {
+      while (1) switch (_context4.prev = _context4.next) {
+        case 0:
+          storeDropdown = document.createElement('select');
+          storeDropdown.id = 'storeList';
+          placeholderOption = document.createElement('option');
+          placeholderOption.value = '';
+          placeholderOption.text = 'Select a store';
+          placeholderOption.disabled = true;
+          placeholderOption.selected = true;
+          storeDropdown.appendChild(placeholderOption);
+          storeArray = typeof stores === 'string' ? stores.split(',') : stores;
+          storeArray.forEach(function (terminalStore) {
+            var option = document.createElement('option');
+            option.value = terminalStore.trim();
+            option.text = terminalStore.trim();
+            storeDropdown.appendChild(option);
+          });
+          storeDropdownContainer = document.querySelector('#adyenPosStores');
+          existingDropdown = storeDropdownContainer.querySelector('#storeList');
+          if (existingDropdown) {
+            storeDropdownContainer.removeChild(existingDropdown);
+          }
+          storeDropdownContainer.append(storeDropdown);
+          storeDropdown.addEventListener('change', /*#__PURE__*/_asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee3() {
+            var terminalDropdownContainer, existingTerminalDropdown, data, parsedResponse, uniqueTerminalIds;
+            return _regeneratorRuntime().wrap(function _callee3$(_context3) {
+              while (1) switch (_context3.prev = _context3.next) {
+                case 0:
+                  terminalDropdownContainer = document.querySelector('#adyenPosTerminals');
+                  existingTerminalDropdown = terminalDropdownContainer.querySelector('#terminalList');
+                  if (existingTerminalDropdown) {
+                    terminalDropdownContainer.removeChild(existingTerminalDropdown); // Clear old terminal list
+                  }
+                  _context3.next = 5;
+                  return getConnectedTerminals();
+                case 5:
+                  data = _context3.sent;
+                  parsedResponse = JSON.parse(data.response);
+                  uniqueTerminalIds = parsedResponse.uniqueTerminalIds;
+                  if (uniqueTerminalIds) {
+                    renderPosTerminals(uniqueTerminalIds);
+                    document.querySelector('button[value="submit-payment"]').disabled = false;
+                  }
+                case 9:
+                case "end":
+                  return _context3.stop();
+              }
+            }, _callee3);
+          })));
+        case 15:
+        case "end":
+          return _context4.stop();
+      }
+    }, _callee4);
+  }));
+  return _addStores.apply(this, arguments);
 }
 function setAmazonPayConfig(adyenPaymentMethods) {
   var amazonpay = adyenPaymentMethods.paymentMethods.find(function (paymentMethod) {
@@ -239,27 +303,27 @@ function initializeCheckout() {
   return _initializeCheckout.apply(this, arguments);
 }
 function _initializeCheckout() {
-  _initializeCheckout = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee3() {
+  _initializeCheckout = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee5() {
     var paymentMethodsResponse, giftCardsData, totalDiscountedAmount, giftCards, lastGiftCard, paymentMethodsWithoutGiftCards, storedPaymentMethodsWithoutGiftCards, firstPaymentMethod;
-    return _regeneratorRuntime().wrap(function _callee3$(_context3) {
-      while (1) switch (_context3.prev = _context3.next) {
+    return _regeneratorRuntime().wrap(function _callee5$(_context5) {
+      while (1) switch (_context5.prev = _context5.next) {
         case 0:
-          _context3.next = 2;
+          _context5.next = 2;
           return getPaymentMethods();
         case 2:
-          paymentMethodsResponse = _context3.sent;
-          _context3.next = 5;
+          paymentMethodsResponse = _context5.sent;
+          _context5.next = 5;
           return fetchGiftCards();
         case 5:
-          giftCardsData = _context3.sent;
+          giftCardsData = _context5.sent;
           setCheckoutConfiguration(paymentMethodsResponse);
           store.checkoutConfiguration.paymentMethodsResponse = _objectSpread(_objectSpread({}, paymentMethodsResponse.AdyenPaymentMethods), {}, {
             imagePath: paymentMethodsResponse.imagePath
           });
-          _context3.next = 10;
+          _context5.next = 10;
           return AdyenCheckout(store.checkoutConfiguration);
         case 10:
-          store.checkout = _context3.sent;
+          store.checkout = _context5.sent;
           setGiftCardContainerVisibility();
           totalDiscountedAmount = giftCardsData.totalDiscountedAmount, giftCards = giftCardsData.giftCards;
           if (giftCards !== null && giftCards !== void 0 && giftCards.length) {
@@ -281,22 +345,24 @@ function _initializeCheckout() {
           if (window.adyenRecurringPaymentsEnabled) {
             renderStoredPaymentMethods(storedPaymentMethodsWithoutGiftCards, paymentMethodsResponse.imagePath);
           }
-          _context3.next = 22;
+          _context5.next = 22;
           return renderPaymentMethods(paymentMethodsWithoutGiftCards, paymentMethodsResponse.imagePath, paymentMethodsResponse.adyenDescriptions);
         case 22:
-          renderPosTerminals(paymentMethodsResponse.adyenConnectedTerminals);
           renderGiftCardLogo(paymentMethodsResponse.imagePath);
           firstPaymentMethod = document.querySelector('input[type=radio][name=brandCode]');
           if (firstPaymentMethod) {
             firstPaymentMethod.checked = true;
             helpers.displaySelectedMethod(firstPaymentMethod.value);
           }
+          if (window.activeTerminalApiStores) {
+            addStores(window.activeTerminalApiStores);
+          }
           helpers.createShowConfirmationForm(window.ShowConfirmationPaymentFromComponent);
         case 27:
         case "end":
-          return _context3.stop();
+          return _context5.stop();
       }
-    }, _callee3);
+    }, _callee5);
   }));
   return _initializeCheckout.apply(this, arguments);
 }
@@ -346,19 +412,19 @@ function renderGenericComponent() {
   return _renderGenericComponent.apply(this, arguments);
 }
 function _renderGenericComponent() {
-  _renderGenericComponent = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee4() {
+  _renderGenericComponent = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee6() {
     var _store$addedGiftCards2;
-    return _regeneratorRuntime().wrap(function _callee4$(_context4) {
-      while (1) switch (_context4.prev = _context4.next) {
+    return _regeneratorRuntime().wrap(function _callee6$(_context6) {
+      while (1) switch (_context6.prev = _context6.next) {
         case 0:
           if (!(Object.keys(store.componentsObj).length !== 0)) {
-            _context4.next = 3;
+            _context6.next = 3;
             break;
           }
-          _context4.next = 3;
+          _context6.next = 3;
           return unmountComponents();
         case 3:
-          _context4.next = 5;
+          _context6.next = 5;
           return initializeCheckout();
         case 5:
           if ((_store$addedGiftCards2 = store.addedGiftCards) !== null && _store$addedGiftCards2 !== void 0 && _store$addedGiftCards2.length) {
@@ -367,9 +433,9 @@ function _renderGenericComponent() {
           attachGiftCardAddButtonListener();
         case 7:
         case "end":
-          return _context4.stop();
+          return _context6.stop();
       }
-    }, _callee4);
+    }, _callee6);
   }));
   return _renderGenericComponent.apply(this, arguments);
 }
@@ -386,5 +452,6 @@ module.exports = {
   renderGiftCardLogo: renderGiftCardLogo,
   setGiftCardContainerVisibility: setGiftCardContainerVisibility,
   applyGiftCards: applyGiftCards,
+  addStores: addStores,
   INIT_CHECKOUT_EVENT: INIT_CHECKOUT_EVENT
 };

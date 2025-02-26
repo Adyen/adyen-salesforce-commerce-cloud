@@ -8,6 +8,8 @@ var AdyenConfigs = require('*/cartridge/adyen/utils/adyenConfigs');
 var AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
 var constants = require('*/cartridge/adyen/config/constants');
 var AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
+var bmHelper = require('*/cartridge/utils/helper');
+var managementApi = require('*/cartridge/scripts/managementApi');
 server.get('Start', function (_req, res, next) {
   if (!csrfProtection.validateRequest()) {
     res.redirect(URLUtils.url('CSRF-Fail'));
@@ -69,6 +71,22 @@ server.post('TestConnection', server.middleware.https, function (req, res, next)
     res.json({
       error: true,
       message: 'an unknown error has occurred',
+      success: false
+    });
+  }
+  return next();
+});
+server.get('GetStores', server.middleware.https, function (req, res, next) {
+  try {
+    var stores = managementApi.fetchAllStores();
+    bmHelper.saveMetadataField('Adyen_StoreId', stores);
+    res.json({
+      success: true,
+      stores: stores
+    });
+  } catch (error) {
+    AdyenLogs.error_log('Error while fetching stores:', error);
+    res.json({
       success: false
     });
   }

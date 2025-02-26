@@ -8,9 +8,9 @@ var adyenCheckout = require('*/cartridge/adyen/scripts/payments/adyenCheckout');
 var constants = require('*/cartridge/adyen/config/constants');
 var payment = require('*/cartridge/adyen/scripts/showConfirmation/handlePayment');
 var clearForms = require('*/cartridge/adyen/utils/clearForms');
-var handleAuthorised = require('*/cartridge/adyen/scripts/showConfirmation/authorise');
 var AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 var AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
+var AdyenConfigs = require('*/cartridge/adyen/utils/adyenConfigs');
 function getPaymentDetailsPayload(querystring) {
   var details = querystring.redirectResult ? {
     redirectResult: querystring.redirectResult
@@ -32,9 +32,27 @@ function getPaymentsDetailsResult(adyenPaymentInstrument, redirectResult, payloa
   clearForms.clearPaymentTransactionData(adyenPaymentInstrument);
   return result;
 }
+function handleOrderConfirm(adyenPaymentInstrument, result, order, _ref) {
+  var res = _ref.res,
+    next = _ref.next;
+  Transaction.wrap(function () {
+    AdyenHelper.savePaymentDetails(adyenPaymentInstrument, order, result);
+  });
+  clearForms.clearForms();
+  // determines SFRA version for backwards compatibility
+  if (AdyenConfigs.getAdyenSFRA6Compatibility() === true) {
+    res.render('orderConfirmForm', {
+      orderID: order.orderNo,
+      orderToken: order.orderToken
+    });
+  } else {
+    res.redirect(URLUtils.url('Order-Confirm', 'ID', order.orderNo, 'token', order.orderToken).toString());
+  }
+  return next();
+}
 function handlePaymentsDetailsResult(adyenPaymentInstrument, detailsResult, order, options) {
   if ([constants.RESULTCODES.AUTHORISED, constants.RESULTCODES.PENDING, constants.RESULTCODES.RECEIVED].indexOf(detailsResult.resultCode) > -1) {
-    return handleAuthorised(adyenPaymentInstrument, detailsResult, order, options);
+    return handleOrderConfirm(adyenPaymentInstrument, detailsResult, order, options);
   }
   Transaction.wrap(function () {
     order.custom.Adyen_pspReference = detailsResult.pspReference;

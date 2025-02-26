@@ -533,3 +533,7 @@ ul{
     margin-left: 32px;
     margin-bottom: 0;
 }
+
+.choices__list--multiple .choices__item {
+    background-color: #0d6efd!important;
+}

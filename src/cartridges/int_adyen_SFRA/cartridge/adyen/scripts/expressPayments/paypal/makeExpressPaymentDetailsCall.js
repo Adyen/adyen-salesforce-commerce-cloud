@@ -4,10 +4,10 @@ const Transaction = require('dw/system/Transaction');
 const BasketMgr = require('dw/order/BasketMgr');
 const adyenCheckout = require('*/cartridge/adyen/scripts/payments/adyenCheckout');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
-const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
 const paypalHelper = require('*/cartridge/adyen/utils/paypalHelper');
 const constants = require('*/cartridge/adyen/config/constants');
+const hooksHelper = require('*/cartridge/scripts/helpers/hooks');
 
 function setPaymentInstrumentFields(paymentInstrument, response) {
   paymentInstrument.custom.adyenPaymentMethod =
@@ -39,22 +39,29 @@ function makeExpressPaymentDetailsCall(req, res, next) {
       throw new Error('Basket products changed, cannot complete trasaction');
     }
 
-    const response = adyenCheckout.doPaymentsDetailsCall(request.data);
-
     paypalHelper.setBillingAndShippingAddress(currentBasket);
 
-    // Setting the session variable to null after assigning the shopper data to basket level
-    session.privacy.shopperDetails = null;
+    const validationOrderStatus = hooksHelper(
+      'app.validate.order',
+      'validateOrder',
+      currentBasket,
+      // eslint-disable-next-line global-require
+      require('*/cartridge/scripts/hooks/validateOrder').validateOrder,
+    );
+    if (validationOrderStatus.error) {
+      throw new Error(validationOrderStatus.message);
+    }
 
+    // create order
     const order = OrderMgr.createOrder(
       currentBasket,
       session.privacy.paypalExpressOrderNo,
     );
-    const fraudDetectionStatus = { status: 'success' };
-    const placeOrderResult = COHelpers.placeOrder(order, fraudDetectionStatus);
-    if (placeOrderResult.error) {
-      throw new Error('Failed to place the PayPal express order');
-    }
+
+    const response = adyenCheckout.doPaymentsDetailsCall(request.data);
+
+    // Setting the session variable to null after assigning the shopper data to basket level
+    session.privacy.shopperDetails = null;
 
     response.orderNo = order.orderNo;
     response.orderToken = order.orderToken;

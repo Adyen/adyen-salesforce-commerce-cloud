@@ -6,10 +6,10 @@ var Transaction = require('dw/system/Transaction');
 var BasketMgr = require('dw/order/BasketMgr');
 var adyenCheckout = require('*/cartridge/adyen/scripts/payments/adyenCheckout');
 var AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
-var COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 var AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
 var paypalHelper = require('*/cartridge/adyen/utils/paypalHelper');
 var constants = require('*/cartridge/adyen/config/constants');
+var hooksHelper = require('*/cartridge/scripts/helpers/hooks');
 function setPaymentInstrumentFields(paymentInstrument, response) {
   paymentInstrument.custom.adyenPaymentMethod = AdyenHelper.getAdyenComponentType(response.paymentMethod.type);
   paymentInstrument.custom["".concat(constants.OMS_NAMESPACE, "__Adyen_Payment_Method")] = AdyenHelper.getAdyenComponentType(response.paymentMethod.type);
@@ -31,19 +31,20 @@ function makeExpressPaymentDetailsCall(req, res, next) {
     if (hashedProducts !== currentBasket.custom.adyenProductLineItems) {
       throw new Error('Basket products changed, cannot complete trasaction');
     }
-    var response = adyenCheckout.doPaymentsDetailsCall(request.data);
     paypalHelper.setBillingAndShippingAddress(currentBasket);
+    var validationOrderStatus = hooksHelper('app.validate.order', 'validateOrder', currentBasket,
+    // eslint-disable-next-line global-require
+    require('*/cartridge/scripts/hooks/validateOrder').validateOrder);
+    if (validationOrderStatus.error) {
+      throw new Error(validationOrderStatus.message);
+    }
+
+    // create order
+    var order = OrderMgr.createOrder(currentBasket, session.privacy.paypalExpressOrderNo);
+    var response = adyenCheckout.doPaymentsDetailsCall(request.data);
 
     // Setting the session variable to null after assigning the shopper data to basket level
     session.privacy.shopperDetails = null;
-    var order = OrderMgr.createOrder(currentBasket, session.privacy.paypalExpressOrderNo);
-    var fraudDetectionStatus = {
-      status: 'success'
-    };
-    var placeOrderResult = COHelpers.placeOrder(order, fraudDetectionStatus);
-    if (placeOrderResult.error) {
-      throw new Error('Failed to place the PayPal express order');
-    }
     response.orderNo = order.orderNo;
     response.orderToken = order.orderToken;
     var paymentInstrument = order.getPaymentInstruments(AdyenHelper.getOrderMainPaymentInstrumentType(order))[0];

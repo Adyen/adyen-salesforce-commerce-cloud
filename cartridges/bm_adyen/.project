@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
     <projectDescription>
       <name>bm_adyen</name>
-      <comment>v25.1.0</comment>
+      <comment>v25.2.0</comment>
       <projects></projects>
       <buildSpec>
         <buildCommand>

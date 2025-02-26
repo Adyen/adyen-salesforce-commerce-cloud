@@ -52,6 +52,7 @@ function makeExpressPaymentsCall(req, res, next) {
       },
       true,
     );
+    paymentRequest.shopperConversionId = session.sessionID.slice(0, 200);
     let result;
     Transaction.wrap(() => {
       result = adyenCheckout.doPaymentsCall(

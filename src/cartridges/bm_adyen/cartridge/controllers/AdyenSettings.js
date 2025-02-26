@@ -6,6 +6,8 @@ const AdyenConfigs = require('*/cartridge/adyen/utils/adyenConfigs');
 const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
 const constants = require('*/cartridge/adyen/config/constants');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
+const bmHelper = require('*/cartridge/utils/helper');
+const managementApi = require('*/cartridge/scripts/managementApi');
 
 server.get('Start', (_req, res, next) => {
   if (!csrfProtection.validateRequest()) {
@@ -81,6 +83,18 @@ server.post('TestConnection', server.middleware.https, (req, res, next) => {
     });
   }
 
+  return next();
+});
+
+server.get('GetStores', server.middleware.https, (req, res, next) => {
+  try {
+    const stores = managementApi.fetchAllStores();
+    bmHelper.saveMetadataField('Adyen_StoreId', stores);
+    res.json({ success: true, stores });
+  } catch (error) {
+    AdyenLogs.error_log('Error while fetching stores:', error);
+    res.json({ success: false });
+  }
   return next();
 });
 

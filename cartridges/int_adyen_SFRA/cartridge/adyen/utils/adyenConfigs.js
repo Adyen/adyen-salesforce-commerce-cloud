@@ -1,7 +1,7 @@
 "use strict";
 
-var dwsystem = require('dw/system');
-var adyenCurrentSite = dwsystem.Site.getCurrent();
+var Site = require('dw/system/Site');
+var adyenCurrentSite = Site.getCurrent();
 function getCustomPreference(field) {
   var customPreference = null;
   if (adyenCurrentSite && adyenCurrentSite.getCustomPreferenceValue(field)) {
@@ -76,11 +76,17 @@ var adyenConfigsObj = {
   getAdyenStoreId: function getAdyenStoreId() {
     return getCustomPreference('Adyen_StoreId');
   },
+  getAdyenActiveStoreId: function getAdyenActiveStoreId() {
+    return getCustomPreference('Adyen_SelectedStoreID');
+  },
   getAdyenApiKey: function getAdyenApiKey() {
     return getCustomPreference('Adyen_API_Key');
   },
   getAdyenFrontendRegion: function getAdyenFrontendRegion() {
     return getCustomPreference('Adyen_Frontend_Region').value;
+  },
+  getAdyenPosRegion: function getAdyenPosRegion() {
+    return getCustomPreference('Adyen_Pos_Region').value;
   },
   getAdyenTokenisationEnabled: function getAdyenTokenisationEnabled() {
     return getCustomPreference('AdyenTokenisationEnabled');
