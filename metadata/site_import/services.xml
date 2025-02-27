@@ -149,15 +149,6 @@
         <profile-id>Adyen</profile-id>
         <credential-id>AdyenPaymentDetails</credential-id>
     </service>
-    <service service-id="AdyenRecurring">
-        <service-type>HTTP</service-type>
-        <enabled>true</enabled>
-        <log-prefix>adyen</log-prefix>
-        <comm-log-enabled>true</comm-log-enabled>
-        <mock-mode-enabled>false</mock-mode-enabled>
-        <profile-id>Adyen</profile-id>
-        <credential-id>AdyenRecurring</credential-id>
-    </service>
     <service service-id="AdyenCheckoutPaymentMethods">
         <service-type>HTTP</service-type>
         <enabled>true</enabled>
@@ -173,7 +164,7 @@
         <log-prefix>adyen</log-prefix>
         <comm-log-enabled>true</comm-log-enabled>
         <mock-mode-enabled>false</mock-mode-enabled>
-        <profile-id></profile-id>
+        <profile-id>Adyen</profile-id>
         <credential-id>AdyenRecurringDisable</credential-id>
     </service>
     <service service-id="AdyenPosPayment">
