@@ -1,32 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- IMPORTANT: YOUR_LIVE_PREFIX and CHECKOUT_API_VERSION get populated in the code, hence there is not need to change them in this file. -->
 <services xmlns="http://www.demandware.com/xml/impex/services/2014-09-26">
     <service-credential service-credential-id="AdyenPayment">
-        <url>https://checkout-test.adyen.com/checkout/v71/payments</url>
+        <url>https://checkout-test.adyen.com/checkout/[CHECKOUT_API_VERSION]/payments</url>
         <user-id></user-id>
         <password/>
     </service-credential>
     <service-credential service-credential-id="AdyenPaymentLive">
-        <url>https://[YOUR_LIVE_PREFIX]-checkout-live.adyenpayments.com/checkout/v71/payments</url>
+        <url>https://[YOUR_LIVE_PREFIX]-checkout-live.adyenpayments.com/checkout/[CHECKOUT_API_VERSION]/payments</url>
         <user-id></user-id>
         <password/>
     </service-credential>
     <service-credential service-credential-id="AdyenPaymentDetails">
-        <url>https://checkout-test.adyen.com/checkout/v71/payments/details</url>
+        <url>https://checkout-test.adyen.com/checkout/[CHECKOUT_API_VERSION]/payments/details</url>
         <user-id></user-id>
         <password/>
     </service-credential>
     <service-credential service-credential-id="AdyenPaymentDetailsLive">
-        <url>https://[YOUR_LIVE_PREFIX]-checkout-live.adyenpayments.com/checkout/v71/payments/details</url>
+        <url>https://[YOUR_LIVE_PREFIX]-checkout-live.adyenpayments.com/checkout/[CHECKOUT_API_VERSION]/payments/details</url>
         <user-id></user-id>
         <password/>
     </service-credential>
     <service-credential service-credential-id="AdyenCheckoutPaymentMethods">
-        <url>https://checkout-test.adyen.com/v71/paymentMethods</url>
+        <url>https://checkout-test.adyen.com/[CHECKOUT_API_VERSION]/paymentMethods</url>
         <user-id></user-id>
         <password/>
     </service-credential>
     <service-credential service-credential-id="AdyenCheckoutPaymentMethodsLive">
-        <url>https://[YOUR_LIVE_PREFIX]-checkout-live.adyenpayments.com/checkout/v71/paymentMethods</url>
+        <url>https://[YOUR_LIVE_PREFIX]-checkout-live.adyenpayments.com/checkout/[CHECKOUT_API_VERSION]/paymentMethods</url>
         <user-id></user-id>
         <password/>
     </service-credential>
@@ -61,62 +62,62 @@
         <password/>
     </service-credential>
     <service-credential service-credential-id="AdyenGiving">
-        <url>https://checkout-test.adyen.com/v71/donations</url>
+        <url>https://checkout-test.adyen.com/[CHECKOUT_API_VERSION]/donations</url>
         <user-id></user-id>
         <password/>
     </service-credential>
     <service-credential service-credential-id="AdyenGivingLive">
-        <url>https://[YOUR_LIVE_PREFIX]-checkout-live.adyenpayments.com/checkout/v71/donations</url>
+        <url>https://[YOUR_LIVE_PREFIX]-checkout-live.adyenpayments.com/checkout/[CHECKOUT_API_VERSION]/donations</url>
         <user-id></user-id>
         <password/>
     </service-credential>
     <service-credential service-credential-id="AdyenPartialPaymentsOrder">
-        <url>https://checkout-test.adyen.com/v71/orders</url>
+        <url>https://checkout-test.adyen.com/[CHECKOUT_API_VERSION]/orders</url>
         <user-id></user-id>
         <password/>
     </service-credential>
     <service-credential service-credential-id="AdyenPartialPaymentsOrderLive">
-        <url>https://[YOUR_LIVE_PREFIX]-checkout-live.adyenpayments.com/checkout/v71/orders</url>
+        <url>https://[YOUR_LIVE_PREFIX]-checkout-live.adyenpayments.com/checkout/[CHECKOUT_API_VERSION]/orders</url>
         <user-id></user-id>
         <password/>
     </service-credential>
     <service-credential service-credential-id="AdyenCancelPartialPaymentOrder">
-        <url>https://checkout-test.adyen.com/v71/orders/cancel</url>
+        <url>https://checkout-test.adyen.com/[CHECKOUT_API_VERSION]/orders/cancel</url>
         <user-id></user-id>
         <password/>
     </service-credential>
     <service-credential service-credential-id="AdyenCancelPartialPaymentOrderLive">
-        <url>https://[YOUR_LIVE_PREFIX]-checkout-live.adyenpayments.com/checkout/v71/orders/cancel</url>
+        <url>https://[YOUR_LIVE_PREFIX]-checkout-live.adyenpayments.com/checkout/[CHECKOUT_API_VERSION]/orders/cancel</url>
         <user-id></user-id>
         <password/>
     </service-credential>
     <service-credential service-credential-id="AdyenCheckBalance">
-        <url>https://checkout-test.adyen.com/v71/paymentMethods/balance</url>
+        <url>https://checkout-test.adyen.com/[CHECKOUT_API_VERSION]/paymentMethods/balance</url>
         <user-id></user-id>
         <password/>
     </service-credential>
     <service-credential service-credential-id="AdyenCheckBalanceLive">
-        <url>https://[YOUR_LIVE_PREFIX]-checkout-live.adyenpayments.com/checkout/v71/paymentMethods/balance</url>
+        <url>https://[YOUR_LIVE_PREFIX]-checkout-live.adyenpayments.com/checkout/[CHECKOUT_API_VERSION]/paymentMethods/balance</url>
         <user-id></user-id>
         <password/>
     </service-credential>
     <service-credential service-credential-id="AdyenPaypalUpdateOrder">
-        <url>https://checkout-test.adyen.com/v71/paypal/updateOrder</url>
+        <url>https://checkout-test.adyen.com/[CHECKOUT_API_VERSION]/paypal/updateOrder</url>
         <user-id></user-id>
         <password/>
     </service-credential>
     <service-credential service-credential-id="AdyenPaypalUpdateOrderLive">
-        <url>https://[YOUR_LIVE_PREFIX]-checkout-live.adyenpayments.com/checkout/v71/paypal/updateOrder</url>
+        <url>https://[YOUR_LIVE_PREFIX]-checkout-live.adyenpayments.com/checkout/[CHECKOUT_API_VERSION]/paypal/updateOrder</url>
         <user-id></user-id>
         <password/>
     </service-credential>
     <service-credential service-credential-id="AdyenManagementApiGetStores">
-        <url>https://management-test.adyen.com/v3/stores</url>
+        <url>https://management-test.adyen.com/[CHECKOUT_API_VERSION]/stores</url>
         <user-id></user-id>
         <password/>
     </service-credential>
     <service-credential service-credential-id="AdyenManagementApiGetStoresLive">
-        <url>https://management-live.adyen.com/v3/stores</url>
+        <url>https://management-live.adyen.com/[CHECKOUT_API_VERSION]/stores</url>
         <user-id></user-id>
         <password/>
     </service-credential>

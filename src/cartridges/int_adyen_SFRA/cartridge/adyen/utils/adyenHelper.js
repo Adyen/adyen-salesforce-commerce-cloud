@@ -962,6 +962,9 @@ let adyenHelperObj = {
       throw new Error(`Could not create ${serviceType} service object`);
     }
 
+	const serviceApiVersion = service.getURL().replace(`[CHECKOUT_API_VERSION]`, constants.CHECKOUT_API_VERSION);
+	service.setURL(serviceApiVersion);
+
     if (AdyenConfigs.getAdyenEnvironment() === constants.MODE.LIVE) {
       const livePrefix = AdyenConfigs.getLivePrefix();
       const serviceUrl = service.getURL().replace(`[YOUR_LIVE_PREFIX]`, livePrefix);
