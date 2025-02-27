@@ -112,12 +112,12 @@
         <password/>
     </service-credential>
     <service-credential service-credential-id="AdyenManagementApiGetStores">
-        <url>https://management-test.adyen.com/[CHECKOUT_API_VERSION]/stores</url>
+        <url>https://management-test.adyen.com/v3/stores</url>
         <user-id></user-id>
         <password/>
     </service-credential>
     <service-credential service-credential-id="AdyenManagementApiGetStoresLive">
-        <url>https://management-live.adyen.com/[CHECKOUT_API_VERSION]/stores</url>
+        <url>https://management-live.adyen.com/v3/stores</url>
         <user-id></user-id>
         <password/>
     </service-credential>
