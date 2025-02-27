@@ -45,7 +45,7 @@
     <iselse>
         <isscript>
             var assets = require('*/cartridge/scripts/assets.js');
-            assets.addJs('/js/adyen_express/cart/expressPayments.js');
+            assets.addJs('/js/cartExpressPayments.js');
         </isscript>
         <script type="text/javascript">
             window.clientKey = "${AdyenConfigs.getAdyenClientKey()}";
