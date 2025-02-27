@@ -1,6 +1,7 @@
 /**
- * @jest-environment jsdom
+ * @jest-environment ./jest/customJsdomEnvironment.js
  */
+
 let response;
 const {
   handleAuthorised,

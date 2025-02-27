@@ -43,13 +43,13 @@ const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 /* eslint no-var: off */
 let adyenHelperObj = {
   // Create the service config used to make calls to the Adyen Checkout API (used for all services)
-  getService(service) {
+  getService(service, reqMethod = 'POST') {
     let adyenService = null;
 
     try {
       adyenService = LocalServiceRegistry.createService(service, {
         createRequest(svc, args) {
-          svc.setRequestMethod('POST');
+          svc.setRequestMethod(reqMethod);
           if (args) {
             return args;
           }
@@ -287,6 +287,32 @@ let adyenHelperObj = {
           break;
         }
         returnValue = constants.CHECKOUT_ENVIRONMENT_LIVE_EU;
+        break;
+    }
+    return returnValue;
+  },
+
+  getTerminalApiEnvironment() {
+    let returnValue = '';
+    switch (AdyenConfigs.getAdyenEnvironment()) {
+      case constants.MODE.TEST:
+        returnValue = constants.POS_ENVIRONMENT_TEST;
+        break;
+      case constants.MODE.LIVE:
+        const terminalRegion = AdyenConfigs.getAdyenPosRegion();
+        if (terminalRegion === constants.POS_REGIONS.US) {
+          returnValue = constants.POS_ENVIRONMENT_LIVE_US;
+          break;
+        }
+        if (terminalRegion === constants.POS_REGIONS.AU) {
+          returnValue = constants.POS_ENVIRONMENT_LIVE_AU;
+          break;
+        }
+        if (terminalRegion === constants.POS_REGIONS.APSE) {
+          returnValue = constants.POS_ENVIRONMENT_LIVE_APSE;
+          break;
+        }
+        returnValue = constants.POS_ENVIRONMENT_LIVE_EU;
         break;
     }
     return returnValue;

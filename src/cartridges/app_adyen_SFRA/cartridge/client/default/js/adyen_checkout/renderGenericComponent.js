@@ -2,7 +2,11 @@
 const store = require('../../../../store');
 const { renderPaymentMethod } = require('./renderPaymentMethod');
 const helpers = require('./helpers');
-const { getPaymentMethods, fetchGiftCards } = require('../commons');
+const {
+  getPaymentMethods,
+  fetchGiftCards,
+  getConnectedTerminals,
+} = require('../commons');
 const constants = require('../constants');
 const {
   createElementsToShowRemainingGiftCardAmount,
@@ -136,11 +140,53 @@ function renderPosTerminals(adyenConnectedTerminals) {
       posTerminals.removeChild(posTerminals.firstChild);
     }
   };
-
-  if (adyenConnectedTerminals?.uniqueTerminalIds?.length) {
+  if (adyenConnectedTerminals) {
     removeChilds();
-    addPosTerminals(adyenConnectedTerminals.uniqueTerminalIds);
+    addPosTerminals(adyenConnectedTerminals);
   }
+}
+
+function addStores(stores) {
+  const storeDropdown = document.createElement('select');
+  storeDropdown.id = 'storeList';
+
+  const placeholderOption = document.createElement('option');
+  placeholderOption.value = '';
+  placeholderOption.text = 'Select a store';
+  placeholderOption.disabled = true;
+  placeholderOption.selected = true;
+  storeDropdown.appendChild(placeholderOption);
+
+  const storeArray = typeof stores === 'string' ? stores.split(',') : stores;
+
+  storeArray.forEach((terminalStore) => {
+    const option = document.createElement('option');
+    option.value = terminalStore.trim();
+    option.text = terminalStore.trim();
+    storeDropdown.appendChild(option);
+  });
+  const storeDropdownContainer = document.querySelector('#adyenPosStores');
+  const existingDropdown = storeDropdownContainer.querySelector('#storeList');
+  if (existingDropdown) {
+    storeDropdownContainer.removeChild(existingDropdown);
+  }
+  storeDropdownContainer.append(storeDropdown);
+  storeDropdown.addEventListener('change', async () => {
+    const terminalDropdownContainer =
+      document.querySelector('#adyenPosTerminals');
+    const existingTerminalDropdown =
+      terminalDropdownContainer.querySelector('#terminalList');
+    if (existingTerminalDropdown) {
+      terminalDropdownContainer.removeChild(existingTerminalDropdown); // Clear old terminal list
+    }
+    const data = await getConnectedTerminals();
+    const parsedResponse = JSON.parse(data.response);
+    const { uniqueTerminalIds } = parsedResponse;
+    if (uniqueTerminalIds) {
+      renderPosTerminals(uniqueTerminalIds);
+      document.querySelector('button[value="submit-payment"]').disabled = false;
+    }
+  });
 }
 
 function setAmazonPayConfig(adyenPaymentMethods) {
@@ -214,7 +260,6 @@ function setGiftCardContainerVisibility() {
 export async function initializeCheckout() {
   const paymentMethodsResponse = await getPaymentMethods();
   const giftCardsData = await fetchGiftCards();
-
   setCheckoutConfiguration(paymentMethodsResponse);
 
   store.checkoutConfiguration.paymentMethodsResponse = {
@@ -260,8 +305,6 @@ export async function initializeCheckout() {
     paymentMethodsResponse.adyenDescriptions,
   );
 
-  renderPosTerminals(paymentMethodsResponse.adyenConnectedTerminals);
-
   renderGiftCardLogo(paymentMethodsResponse.imagePath);
 
   const firstPaymentMethod = document.querySelector(
@@ -270,6 +313,10 @@ export async function initializeCheckout() {
   if (firstPaymentMethod) {
     firstPaymentMethod.checked = true;
     helpers.displaySelectedMethod(firstPaymentMethod.value);
+  }
+
+  if (window.activeTerminalApiStores) {
+    addStores(window.activeTerminalApiStores);
   }
 
   helpers.createShowConfirmationForm(
@@ -307,4 +354,5 @@ module.exports = {
   renderGiftCardLogo,
   setGiftCardContainerVisibility,
   applyGiftCards,
+  addStores,
 };
