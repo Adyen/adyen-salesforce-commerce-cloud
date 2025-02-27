@@ -349,8 +349,7 @@ async function init(paymentMethodsResponse, isExpressPdp) {
       updateLoadedExpressMethods(GOOGLE_PAY);
       checkIfExpressMethodsAreReady();
     })
-    .catch((e) => {
-      console.log(e);
+    .catch(() => {
       updateLoadedExpressMethods(GOOGLE_PAY);
       checkIfExpressMethodsAreReady();
     });
