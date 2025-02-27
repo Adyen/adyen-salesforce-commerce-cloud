@@ -39,17 +39,6 @@ describe('Show Confirmation Payment From Component', () => {
       expect(URLUtils.url.mock.calls[0][0]).toBe('Order-Confirm');
     },
   );
-  it('should redirect on placeOrder error', () => {
-    const adyenCheckout = require('*/cartridge/adyen/scripts/payments/adyenCheckout');
-    const URLUtils = require('dw/web/URLUtils');
-    const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
-    adyenCheckout.doPaymentsDetailsCall.mockImplementation(() => ({
-      resultCode: 'Authorised',
-    }));
-    COHelpers.placeOrder.mockImplementation(() => ({ error: true }));
-    showConfirmationPaymentFromComponent(req, res, jest.fn());
-    expect(URLUtils.url.mock.calls).toMatchSnapshot();
-  });
   it('should redirect on unsuccessful payment', () => {
     const adyenCheckout = require('*/cartridge/adyen/scripts/payments/adyenCheckout');
     const URLUtils = require('dw/web/URLUtils');

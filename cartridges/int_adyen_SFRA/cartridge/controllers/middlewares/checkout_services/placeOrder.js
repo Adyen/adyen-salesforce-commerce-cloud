@@ -143,8 +143,9 @@ function placeOrder(req, res, next) {
 
   // Handles payment authorization
   var handlePaymentResult = adyenHelpers.handlePayments(order);
-  var mainPaymentInstrument = order.getPaymentInstruments(AdyenHelper.getOrderMainPaymentInstrumentType(order))[0];
+  var mainPaymentInstrument;
   if (giftCardsAdded) {
+    mainPaymentInstrument = order.getPaymentInstruments(AdyenHelper.getOrderMainPaymentInstrumentType(order))[0];
     giftCardsAdded.forEach(function (giftCard) {
       var divideBy = AdyenHelper.getDivisorForCurrency(mainPaymentInstrument.paymentTransaction.getAmount());
       var amount = {
@@ -200,16 +201,6 @@ function placeOrder(req, res, next) {
       error: true,
       cartError: true,
       redirectUrl: URLUtils.url('Error-ErrorCode', 'err', fraudDetectionStatus.errorCode).toString(),
-      errorMessage: Resource.msg('error.technical', 'checkout', null)
-    });
-    return next();
-  }
-
-  // Places the order
-  var placeOrderResult = COHelpers.placeOrder(order, fraudDetectionStatus);
-  if (placeOrderResult.error) {
-    res.json({
-      error: true,
       errorMessage: Resource.msg('error.technical', 'checkout', null)
     });
     return next();

@@ -26,25 +26,49 @@ const Transaction = require('dw/system/Transaction');
 const Order = require('dw/order/Order');
 const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
 const AdyenConfigs = require('*/cartridge/adyen/utils/adyenConfigs');
-const constants = require('*/cartridge/adyen/config/constants');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
+const constants = require('*/cartridge/adyen/config/constants');
 
-function getTerminals() {
-  try {
-    const requestObject = {};
-    const getTerminalRequest = {};
-    getTerminalRequest.merchantAccount = AdyenConfigs.getAdyenMerchantAccount();
-
-    // storeId is optional
-    if (AdyenConfigs.getAdyenStoreId() !== null) {
-      getTerminalRequest.store = AdyenConfigs.getAdyenStoreId();
+function parsePaymentResponse(paymentResult) {
+  const terminalResponse = JSON.parse(paymentResult.response);
+  const {SaleToPOIResponse : {
+    PaymentResponse : {
+      POIData: {
+        POITransactionID: {
+          TransactionID
+        }
+      },
+      PaymentResult: {
+        PaymentInstrumentData: {
+          PaymentInstrumentType
+        }
+      },
+        Response: {
+          AdditionalResponse,
+          Result,
+          ErrorCondition
+        },
     }
-
-    requestObject.request = getTerminalRequest;
-    return executeCall(constants.SERVICE.CONNECTEDTERMINALS, requestObject);
-  } catch (error) {
-    AdyenLogs.fatal_log('/getTerminals call failed', error);
-    return { error: true, response: '{}' };
+  }} = terminalResponse;
+  const pspReference = TransactionID.split('.').pop();
+  const {additionalData : {
+    paymentMethod,
+    paymentMethodVariant
+  },
+    message,
+    refusalReason
+  } = JSON.parse(StringUtils.decodeBase64(AdditionalResponse));
+  return {
+    pspReference,
+    paymentMethod,
+    paymentMethodVariant,
+    paymentInstrumentType: PaymentInstrumentType,
+    result: Result,
+    error: {
+      errorCondition: ErrorCondition,
+      message,
+      refusalReason
+    }
   }
 }
 
@@ -52,6 +76,7 @@ function createTerminalPayment(order, paymentInstrument, terminalId) {
   try {
     Transaction.begin();
     const terminalRequestObject = {};
+    let result = {};
     if (!order || !paymentInstrument) {
       throw new Error(
         `Could not retrieve payment data, order = ${JSON.stringify(
@@ -76,12 +101,12 @@ function createTerminalPayment(order, paymentInstrument, terminalId) {
     terminalRequestObject.request = {
       SaleToPOIRequest: {
         MessageHeader: {
-          ProtocolVersion: '3.0',
-          MessageClass: 'Service',
-          MessageCategory: 'Payment',
-          MessageType: 'Request',
+          ProtocolVersion: constants.POS_PROTOCOL_VERSION,
+          MessageClass: constants.POS_MESSAGE_CLASS.SERVICE,
+          MessageCategory: constants.POS_MESSAGE_CATEGORY.PAYMENT,
+          MessageType: constants.POS_MESSAGE_TYPE.REQUEST,
           ServiceID: serviceId,
-          SaleID: 'SalesforceCommerceCloud',
+          SaleID: constants.EXTERNAL_PLATFORM_NAME,
           POIID: terminalId,
         },
         PaymentRequest: {
@@ -90,7 +115,7 @@ function createTerminalPayment(order, paymentInstrument, terminalId) {
               TransactionID: order.getOrderNo(),
               TimeStamp: new Date(),
             },
-            SaleReferenceID: 'SalesforceCommerceCloudPOS',
+            SaleReferenceID: constants.POS_REFERENCE_ID,
             SaleToAcquirerData: applicationInfoBase64,
           },
           PaymentTransaction: {
@@ -118,47 +143,47 @@ function createTerminalPayment(order, paymentInstrument, terminalId) {
         )}`,
       );
     } else {
-      const terminalResponse = JSON.parse(paymentResult.response);
-      let paymentResponse = '';
-      if (terminalResponse.SaleToPOIResponse) {
-        paymentResponse = terminalResponse.SaleToPOIResponse.PaymentResponse;
-        if (paymentResponse.Response.Result === 'Success') {
-          order.custom.Adyen_eventCode = 'AUTHORISATION';
-          let pspReference = '';
-          if (
-            !empty(
-              paymentResponse.PaymentResult.PaymentAcquirerData
-                .AcquirerTransactionID.TransactionID,
-            )
-          ) {
-            pspReference =
-              paymentResponse.PaymentResult.PaymentAcquirerData
-                .AcquirerTransactionID.TransactionID;
-          } else if (
-            !empty(paymentResponse.POIData.POITransactionID.TransactionID)
-          ) {
-            pspReference =
-              paymentResponse.POIData.POITransactionID.TransactionID.split(
-                '.',
-              )[1];
-          }
-          // Save full response to transaction custom attribute
-          paymentInstrument.paymentTransaction.transactionID = pspReference;
-          order.custom.Adyen_pspReference = pspReference;
-          order.setPaymentStatus(Order.PAYMENT_STATUS_PAID);
-          order.setExportStatus(Order.EXPORT_STATUS_READY);
-          paymentInstrument.paymentTransaction.custom.Adyen_log =
-            JSON.stringify(paymentResponse);
-          Transaction.commit();
-          return { error: false, authorized: true };
-        }
-      }
+      // Save full response to transaction custom attribute
+      paymentInstrument.paymentTransaction.custom.Adyen_log = paymentResult.response
 
-      throw new Error(
-        `No correct response: ${JSON.stringify(paymentResponse.Response)}`,
-      );
+      const paymentResponse = parsePaymentResponse(paymentResult);
+      paymentInstrument.custom.adyenMainPaymentInstrument = paymentResponse.paymentInstrumentType;
+      paymentInstrument.paymentTransaction.custom.authCode = paymentResponse.result;
+      // Set attributes for OMS
+      if (paymentResponse.pspReference) {
+        order.custom.Adyen_pspReference = paymentResponse.pspReference;
+        paymentInstrument.paymentTransaction.transactionID = paymentResponse.pspReference;
+        paymentInstrument.paymentTransaction.custom.Adyen_pspReference = paymentResponse.pspReference;
+      }
+      if(paymentResponse.paymentMethod) {
+        order.custom.Adyen_paymentMethod = paymentResponse.paymentMethod;
+        paymentInstrument.custom.adyenPaymentMethod = paymentResponse.paymentMethod;
+        paymentInstrument.custom[`${constants.OMS_NAMESPACE}__Adyen_Payment_Method`] = paymentResponse.paymentMethod;
+        paymentInstrument.paymentTransaction.custom.Adyen_paymentMethod = paymentResponse.paymentMethod;
+      }
+      if(paymentResponse.paymentMethodVariant) {
+        paymentInstrument.custom.Adyen_Payment_Method_Variant = paymentResponse.paymentMethodVariant;
+        paymentInstrument.custom[`${constants.OMS_NAMESPACE}__Adyen_Payment_Method_Variant`] = paymentResponse.paymentMethodVariant;
+      }
+      if (paymentResponse.result === constants.RESULTCODES.SUCCESS) {
+        order.custom.Adyen_eventCode = constants.RESULTCODES.AUTHORISATION;
+        // Set payment status and export status
+        order.setPaymentStatus(Order.PAYMENT_STATUS_PAID);
+        order.setConfirmationStatus(Order.CONFIRMATION_STATUS_CONFIRMED);
+        order.setExportStatus(Order.EXPORT_STATUS_READY);
+        result = { error: false, authorized: true };
+      } else if(paymentResponse.result === constants.RESULTCODES.FAILURE) {
+        order.custom.Adyen_eventCode = constants.RESULTCODES.FAILURE;
+        order.setPaymentStatus(Order.PAYMENT_STATUS_NOTPAID);
+        order.setConfirmationStatus(Order.CONFIRMATION_STATUS_NOTCONFIRMED);
+        result = { error: true, authorized: false };
+        AdyenLogs.error_log('POS payment failed:', JSON.stringify(paymentResponse.error));
+      }
+      Transaction.commit();
+      return result;
     }
   } catch (e) {
+    AdyenLogs.error_log('POS payment failed:', e);
     Transaction.rollback();
     return { error: true, response: e.toString() };
   }
@@ -172,21 +197,21 @@ function sendAbortRequest(serviceId, terminalId) {
   abortRequestObject.request = {
     SaleToPOIRequest: {
       AbortRequest: {
-        AbortReason: 'MerchantAbort',
+        AbortReason: constants.POS_ABORT_REASON.MERCHANT_ABORT,
         MessageReference: {
-          SaleID: 'SalesforceCommerceCloud',
+          SaleID: constants.EXTERNAL_PLATFORM_NAME,
           ServiceID: serviceId,
-          MessageCategory: 'Payment',
+          MessageCategory: constants.POS_MESSAGE_CATEGORY.PAYMENT,
         },
       },
       MessageHeader: {
-        MessageType: 'Request',
-        MessageCategory: 'Abort',
-        MessageClass: 'Service',
+        MessageType: constants.POS_MESSAGE_TYPE.REQUEST,
+        MessageCategory: constants.POS_MESSAGE_CATEGORY.ABORT,
+        MessageClass: constants.POS_MESSAGE_CLASS.SERVICE,
         ServiceID: newServiceId,
-        SaleID: 'SalesforceCommerceCloud',
+        SaleID: constants.EXTERNAL_PLATFORM_NAME,
         POIID: terminalId,
-        ProtocolVersion: '3.0',
+        ProtocolVersion: constants.ProtocolVersion,
       },
     },
   };
@@ -203,6 +228,16 @@ function executeCall(serviceType, requestObject) {
   service.addHeader('Content-type', 'application/json');
   service.addHeader('charset', 'UTF-8');
   service.addHeader('X-API-KEY', apiKey);
+  if (
+    AdyenConfigs.getAdyenEnvironment() === constants.MODE.LIVE &&
+    serviceType === constants.SERVICE.POSPAYMENT
+  ) {
+    const regionEndpoint = AdyenHelper.getTerminalApiEnvironment();
+    const serviceUrl = service
+      .getURL()
+      .replace('[ADYEN-REGION]', regionEndpoint);
+    service.setURL(serviceUrl);
+  }
   const callResult = service.call(JSON.stringify(requestObject.request));
 
   if (callResult.isOk() === false) {
@@ -233,6 +268,6 @@ function executeCall(serviceType, requestObject) {
 }
 
 module.exports = {
-  getTerminals,
   createTerminalPayment,
+  executeCall,
 };

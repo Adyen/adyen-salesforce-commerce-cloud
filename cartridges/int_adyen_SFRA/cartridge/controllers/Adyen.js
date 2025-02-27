@@ -64,6 +64,7 @@ server.post('PaymentFromComponent', server.middleware.https, csrf.validateReques
  */
 server.post('SaveExpressShopperDetails', server.middleware.https, csrf.validateRequest, adyen.saveExpressShopperDetails);
 server.post('GetPaymentMethods', server.middleware.https, csrf.validateRequest, adyen.getCheckoutPaymentMethods);
+server.post('GetConnectedTerminals', server.middleware.https, adyen.getConnectedTerminals);
 
 /**
  * Show the review page template.

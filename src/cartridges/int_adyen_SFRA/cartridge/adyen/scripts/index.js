@@ -1,4 +1,5 @@
 const getCheckoutPaymentMethods = require('*/cartridge/adyen/scripts/payments/getCheckoutPaymentMethods');
+const getConnectedTerminals = require('*/cartridge/adyen/scripts/pos/getConnectedTerminals');
 const paymentFromComponent = require('*/cartridge/adyen/scripts/payments/paymentFromComponent');
 const paymentsDetails = require('*/cartridge/adyen/scripts/payments/paymentsDetails');
 const redirect3ds1Response = require('*/cartridge/adyen/scripts/payments/redirect3ds1Response');
@@ -42,4 +43,5 @@ module.exports = {
   handleCheckoutReview,
   validatePaymentDataFromRequest,
   createTemporaryBasket,
+  getConnectedTerminals,
 };

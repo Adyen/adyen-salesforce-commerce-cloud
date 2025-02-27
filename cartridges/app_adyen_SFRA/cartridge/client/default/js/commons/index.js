@@ -77,21 +77,47 @@ module.exports.getPaymentMethods = /*#__PURE__*/function () {
   }
   return getPaymentMethods;
 }();
+module.exports.getConnectedTerminals = /*#__PURE__*/function () {
+  var _getConnectedTerminals = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee3() {
+    return _regeneratorRuntime().wrap(function _callee3$(_context3) {
+      while (1) switch (_context3.prev = _context3.next) {
+        case 0:
+          return _context3.abrupt("return", $.ajax({
+            url: window.getConnectedTerminalsURL,
+            type: 'post',
+            data: {
+              csrf_token: $('#adyen-token').val(),
+              data: JSON.stringify({
+                storeId: $('#storeList').val()
+              })
+            }
+          }));
+        case 1:
+        case "end":
+          return _context3.stop();
+      }
+    }, _callee3);
+  }));
+  function getConnectedTerminals() {
+    return _getConnectedTerminals.apply(this, arguments);
+  }
+  return getConnectedTerminals;
+}();
 
 /**
  * Makes an ajax call to the controller function createTemporaryBasket
  */
 module.exports.createTemporaryBasket = /*#__PURE__*/function () {
-  var _createTemporaryBasket = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee3() {
+  var _createTemporaryBasket = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee4() {
     var productForm, data, dataFromEntries, parsedData;
-    return _regeneratorRuntime().wrap(function _callee3$(_context3) {
-      while (1) switch (_context3.prev = _context3.next) {
+    return _regeneratorRuntime().wrap(function _callee4$(_context4) {
+      while (1) switch (_context4.prev = _context4.next) {
         case 0:
           productForm = document.getElementById('express-product-form');
           data = new FormData(productForm);
           dataFromEntries = Object.fromEntries(data.entries());
           parsedData = JSON.parse(dataFromEntries['selected-express-product']);
-          return _context3.abrupt("return", $.ajax({
+          return _context4.abrupt("return", $.ajax({
             url: window.createTemporaryBasketUrl,
             type: 'post',
             data: {
@@ -106,9 +132,9 @@ module.exports.createTemporaryBasket = /*#__PURE__*/function () {
           }));
         case 5:
         case "end":
-          return _context3.stop();
+          return _context4.stop();
       }
-    }, _callee3);
+    }, _callee4);
   }));
   function createTemporaryBasket() {
     return _createTemporaryBasket.apply(this, arguments);

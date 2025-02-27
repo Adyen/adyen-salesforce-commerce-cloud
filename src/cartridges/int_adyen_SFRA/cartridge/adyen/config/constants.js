@@ -22,6 +22,9 @@ module.exports = {
     RECEIVED: 'Received',
     REDIRECTSHOPPER: 'RedirectShopper',
     REFUSED: 'Refused',
+    SUCCESS: 'Success',
+    AUTHORISATION: 'AUTHORISATION',
+    FAILURE: 'Failure',
   },
   ACTIONTYPES: {
     VOUCHER: 'voucher',
@@ -62,6 +65,7 @@ module.exports = {
     CANCELPARTIALPAYMENTORDER: 'AdyenCancelPartialPaymentOrder',
     PARTIALPAYMENTSORDER: 'AdyenPartialPaymentsOrder',
     PAYPALUPDATEORDER: 'AdyenPaypalUpdateOrder',
+    GETSTORES: 'AdyenManagementApiGetStores',
   },
   CONTRACT: {
     ONECLICK: 'ONECLICK',
@@ -79,6 +83,14 @@ module.exports = {
     AU: 'AU',
     EU: 'EU',
     IN: 'IN',
+    APSE: 'APSE',
+  },
+
+  POS_REGIONS: {
+    US: 'US',
+    AU: 'AU',
+    EU: 'EU',
+    APSE: 'APSE',
   },
 
   SHOPPER_INTERACTIONS: {
@@ -105,6 +117,28 @@ module.exports = {
   CHECKOUT_ENVIRONMENT_LIVE_US: 'live-us',
   CHECKOUT_ENVIRONMENT_LIVE_AU: 'live-au',
   CHECKOUT_ENVIRONMENT_LIVE_IN: 'live-in',
+  CHECKOUT_ENVIRONMENT_LIVE_APSE: 'live-apse',
+
+  POS_ENVIRONMENT_TEST: 'test',
+  POS_ENVIRONMENT_LIVE_EU: 'live',
+  POS_ENVIRONMENT_LIVE_US: 'live-us',
+  POS_ENVIRONMENT_LIVE_AU: 'live-au',
+  POS_ENVIRONMENT_LIVE_APSE: 'live-apse',
+  POS_REFERENCE_ID: 'SalesforceCommerceCloudPOS',
+  POS_PROTOCOL_VERSION: '3.0',
+  POS_MESSAGE_CLASS: {
+    SERVICE: 'Service',
+  },
+  POS_MESSAGE_CATEGORY: {
+    PAYMENT: 'Payment',
+    ABORT: 'Abort',
+  },
+  POS_MESSAGE_TYPE: {
+    REQUEST: 'Request',
+  },
+  POS_ABORT_REASON: {
+    MERCHANT_ABORT: 'MerchantAbort',
+  },
 
   MERCHANT_APPLICATION_NAME: 'adyen-salesforce-commerce-cloud',
   EXTERNAL_PLATFORM_NAME: 'SalesforceCommerceCloud',
@@ -114,5 +148,5 @@ module.exports = {
     '/.well-known/apple-developer-merchantid-domain-association',
 
   CHECKOUT_COMPONENT_VERSION: '5.68.0',
-  VERSION: '25.1.0',
+  VERSION: '25.2.0',
 };

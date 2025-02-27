@@ -32,6 +32,7 @@ const Money = require('dw/value/Money');
 const TaxMgr = require('dw/order/TaxMgr');
 const ShippingLocation = require('dw/order/ShippingLocation');
 const BasketMgr = require('dw/order/BasketMgr');
+const OrderMgr = require('dw/order/OrderMgr');
 //script includes
 const ShippingMethodModel = require('*/cartridge/models/shipping/shippingMethod');
 const collections = require('*/cartridge/scripts/util/collections');
@@ -42,13 +43,13 @@ const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 /* eslint no-var: off */
 let adyenHelperObj = {
   // Create the service config used to make calls to the Adyen Checkout API (used for all services)
-  getService(service) {
+  getService(service, reqMethod = 'POST') {
     let adyenService = null;
 
     try {
       adyenService = LocalServiceRegistry.createService(service, {
         createRequest(svc, args) {
-          svc.setRequestMethod('POST');
+          svc.setRequestMethod(reqMethod);
           if (args) {
             return args;
           }
@@ -277,7 +278,37 @@ let adyenHelperObj = {
           returnValue = constants.CHECKOUT_ENVIRONMENT_LIVE_IN;
           break;
         }
+        if (frontEndRegion === constants.FRONTEND_REGIONS.APSE) {
+          returnValue = constants.CHECKOUT_ENVIRONMENT_LIVE_APSE;
+          break;
+        }
         returnValue = constants.CHECKOUT_ENVIRONMENT_LIVE_EU;
+        break;
+    }
+    return returnValue;
+  },
+
+  getTerminalApiEnvironment() {
+    let returnValue = '';
+    switch (AdyenConfigs.getAdyenEnvironment()) {
+      case constants.MODE.TEST:
+        returnValue = constants.POS_ENVIRONMENT_TEST;
+        break;
+      case constants.MODE.LIVE:
+        const terminalRegion = AdyenConfigs.getAdyenPosRegion();
+        if (terminalRegion === constants.POS_REGIONS.US) {
+          returnValue = constants.POS_ENVIRONMENT_LIVE_US;
+          break;
+        }
+        if (terminalRegion === constants.POS_REGIONS.AU) {
+          returnValue = constants.POS_ENVIRONMENT_LIVE_AU;
+          break;
+        }
+        if (terminalRegion === constants.POS_REGIONS.APSE) {
+          returnValue = constants.POS_ENVIRONMENT_LIVE_APSE;
+          break;
+        }
+        returnValue = constants.POS_ENVIRONMENT_LIVE_EU;
         break;
     }
     return returnValue;
@@ -915,6 +946,15 @@ let adyenHelperObj = {
       });
     }
   },
+
+  isIntermediateResultCode(orderNo) {
+    const order = OrderMgr.getOrder(orderNo);
+    const paymentInstrument = order.getPaymentInstruments(
+        adyenHelperObj.getOrderMainPaymentInstrumentType(order),
+    )[0];
+    const resultCode = paymentInstrument.paymentTransaction.custom.authCode;    
+    return resultCode === constants.RESULTCODES.PENDING || resultCode === constants.RESULTCODES.RECEIVED;
+},
 
   executeCall(serviceType, requestObject) {
     const service = this.getService(serviceType);
