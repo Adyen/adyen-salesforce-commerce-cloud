@@ -1,8 +1,8 @@
-const applePayExpressModule = require('../adyen_express/applePayExpress');
-const googlePayExpressModule = require('../adyen_express/googlePayExpress');
-const { APPLE_PAY, GOOGLE_PAY } = require('../constants');
-const { getPaymentMethods } = require('../commons');
-const { httpClient } = require('../commons/httpClient');
+const applePayExpressModule = require('../applePayExpress');
+const googlePayExpressModule = require('../googlePayExpress');
+const { APPLE_PAY, GOOGLE_PAY } = require('../../constants');
+const { getPaymentMethods } = require('../../commons');
+const { httpClient } = require('../../commons/httpClient');
 
 let paymentMethodsResponse;
 
