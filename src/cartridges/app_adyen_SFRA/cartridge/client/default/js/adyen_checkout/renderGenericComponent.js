@@ -146,7 +146,7 @@ function renderPosTerminals(adyenConnectedTerminals) {
   }
 }
 
-async function addStores(stores) {
+function addStores(stores) {
   const storeDropdown = document.createElement('select');
   storeDropdown.id = 'storeList';
 
