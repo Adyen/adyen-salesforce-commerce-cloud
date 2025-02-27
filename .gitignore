@@ -9,4 +9,5 @@ screenshots/
 playwright-report/
 test-results/
 Vagrantfile
-./cartridges
+cartridges
+!src/cartridges

@@ -1,12 +1,12 @@
 const {
   checkIfExpressMethodsAreReady,
   getPaymentMethods,
-} = require('./commons');
+} = require('../../commons');
 
-const applePayExpressModule = require('./adyen_express/applePayExpress');
-const paypalPayExpressModule = require('./adyen_express/paypalExpress');
-const googlePayExpressModule = require('./adyen_express/googlePayExpress');
-const amazonPayExpressModule = require('./adyen_express/amazonPayExpressPart1');
+const applePayExpressModule = require('../applePayExpress');
+const paypalPayExpressModule = require('../paypalExpress');
+const googlePayExpressModule = require('../googlePayExpress');
+const amazonPayExpressModule = require('../amazonPayExpressPart1');
 
 let paymentMethodsResponse = null;
 
