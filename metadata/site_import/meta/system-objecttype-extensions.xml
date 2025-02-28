@@ -249,19 +249,6 @@
             </attribute-definition>
         </system-attribute-definitions>
         <custom-attribute-definitions>
-            <attribute-definition attribute-id="AmountPaid">
-                <display-name xml:lang="x-default">Amount Paid</display-name>
-                <type>double</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-            </attribute-definition>
-            <attribute-definition attribute-id="approvalStatus">
-                <display-name xml:lang="x-default">Approval Status</display-name>
-                <type>string</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <min-length>0</min-length>
-            </attribute-definition>
             <attribute-definition attribute-id="authAmount">
                 <display-name xml:lang="x-default">Auth Amount</display-name>
                 <type>string</type>
@@ -278,20 +265,6 @@
             </attribute-definition>
             <attribute-definition attribute-id="cardType">
                 <display-name xml:lang="x-default">Card Type</display-name>
-                <type>string</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <min-length>0</min-length>
-            </attribute-definition>
-            <attribute-definition attribute-id="requestId">
-                <display-name xml:lang="x-default">Request ID</display-name>
-                <type>string</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <min-length>0</min-length>
-            </attribute-definition>
-            <attribute-definition attribute-id="requestToken">
-                <display-name xml:lang="x-default">Request Token</display-name>
                 <type>string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
@@ -317,12 +290,6 @@
             </attribute-definition>
             <attribute-definition attribute-id="Adyen_donationToken">
                 <display-name xml:lang="x-default">Adyen_donationToken</display-name>
-                <type>string</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-            </attribute-definition>
-            <attribute-definition attribute-id="Adyen_merchantReturnData">
-                <display-name xml:lang="x-default">Adyen_merchantReturnData</display-name>
                 <type>string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
@@ -729,6 +696,10 @@
                 <attribute attribute-id="Adyen_Mode"/>
                 <attribute attribute-id="Adyen_Frontend_Region"/>
                 <attribute attribute-id="Adyen_ClientKey"/>
+                <attribute attribute-id="Adyen_LivePrefix"/>
+                <attribute attribute-id="Adyen_ApplePay_DomainAssociation"/>
+                <attribute attribute-id="Adyen_Hmac_Key"/>
+                <attribute attribute-id="Adyen_klarnaWidget"/>
                 <attribute attribute-id="Adyen_SFRA6_Compatibility"/>
                 <attribute attribute-id="Adyen_notification_user"/>
                 <attribute attribute-id="Adyen_notification_password"/>
