@@ -2,8 +2,7 @@ name: Metadata upload
 
 on:
   pull_request:
-    paths:
-      - 'metadata/**'
+
 jobs:
   upload-metadata:
     runs-on: ubuntu-latest
