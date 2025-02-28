@@ -1,0 +1,39 @@
+<isset name="AdyenHelper" value="${require('*/cartridge/adyen/utils/adyenHelper')}" scope="page"/>
+<isset name="AdyenConfigs" value="${require('*/cartridge/adyen/utils/adyenConfigs')}" scope="page" />
+<script src="${AdyenHelper.getCheckoutUrl()}" type="text/javascript"></script>
+<link rel="stylesheet" type="text/css" href="${AdyenHelper.getCheckoutCSS()}"/>
+<link rel="stylesheet" href="${URLUtils.staticURL('/css/adyenCss.css')}" />
+<script type="text/javascript">
+   window.environment = "${AdyenConfigs.getAdyenEnvironment()}";
+   window.clientKey = "${AdyenConfigs.getAdyenClientKey()}",
+   window.locale = "${request.locale}";
+   window.countryCode = window.locale.slice(-2);
+
+   window.getPaymentMethodsURL = "${URLUtils.https('Adyen-GetPaymentMethods')}";
+   window.shippingMethodsUrl = "${URLUtils.https('Adyen-ShippingMethods')}";
+   window.selectShippingMethodUrl = "${URLUtils.https('Adyen-SelectShippingMethod')}";
+   window.paymentsDetailsURL = "${URLUtils.https('Adyen-PaymentsDetails')}";
+   window.paymentFromComponentURL = "${URLUtils.https('Adyen-PaymentFromComponent')}";
+   window.showConfirmationAction = "${URLUtils.https('Adyen-ShowConfirmationPaymentFromComponent')}";
+   window.returnUrl = "${URLUtils.https('Cart-Show')}";
+   window.createTemporaryBasketUrl = "${URLUtils.https('Adyen-CreateTemporaryBasket')}";
+   window.fractionDigits = "${AdyenHelper.getFractionDigits()}"
+   window.digitsNumber = "${pdict.AdyenHelper.getFractionDigits(pdict.AdyenHelper.getBasketAmount().currencyCode)}";
+
+   window.expressMethodsOrder = "${AdyenConfigs.getExpressPaymentsOrder()}";
+   window.isApplePayExpressEnabled = "${AdyenConfigs.isApplePayExpressEnabled()}";
+   window.isApplePayExpressOnPdpEnabled = "${AdyenConfigs.isApplePayExpressOnPdpEnabled()}";
+   window.isAmazonPayExpressEnabled = "${AdyenConfigs.isAmazonPayExpressEnabled()}";
+   window.isPayPalExpressEnabled = "${AdyenConfigs.isPayPalExpressEnabled()}";
+   window.isPayPalExpressReviewPageEnabled = "${AdyenConfigs.isPayPalExpressReviewPageEnabled()}";
+   window.isGooglePayExpressEnabled = "${AdyenConfigs.isGooglePayExpressEnabled()}";
+   window.isGooglePayExpressOnPdpEnabled = "${AdyenConfigs.isGooglePayExpressOnPdpEnabled()}";
+
+   window.basketAmount = "${pdict.AdyenHelper.getBasketAmount()}".replace(/&quot;/g, '\"');
+   window.makeExpressPaymentsCall = "${URLUtils.https('Adyen-MakeExpressPaymentsCall')}";
+   window.makeExpressPaymentDetailsCall = "${URLUtils.https('Adyen-MakeExpressPaymentDetailsCall')}";
+   window.saveShopperData = "${URLUtils.https('Adyen-SaveShopperData')}";
+   window.paypalUpdateOrder = "${URLUtils.https('Adyen-paypalUpdateOrder')}";
+   window.paypalReviewPageEnabled = ${AdyenConfigs.isPayPalExpressReviewPageEnabled()};
+   window.checkoutReview = "${URLUtils.https('Adyen-CheckoutReview')}";
+</script>

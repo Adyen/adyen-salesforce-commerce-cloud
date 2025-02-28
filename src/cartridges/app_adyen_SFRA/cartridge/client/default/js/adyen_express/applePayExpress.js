@@ -7,6 +7,7 @@ const {
 } = require('../commons');
 const { APPLE_PAY } = require('../constants');
 const { httpClient } = require('../commons/httpClient');
+const { initializeCheckout } = require('./initializeCheckout');
 
 let checkout;
 let shippingMethodsData;
@@ -154,19 +155,6 @@ function getShippingMethod(shippingContact) {
   });
 }
 
-async function initializeCheckout(paymentMethodsResponse) {
-  const applicationInfo = paymentMethodsResponse?.applicationInfo;
-  checkout = await window.AdyenWeb.AdyenCheckout({
-    environment: window.environment,
-    clientKey: window.clientKey,
-    locale: window.locale,
-    countryCode: window.countryCode,
-    analytics: {
-      analyticsData: { applicationInfo },
-    },
-  });
-}
-
 async function createApplePayButton(applePayButtonConfig) {
   return window.AdyenWeb.createComponent(
     APPLE_PAY,
@@ -279,102 +267,101 @@ async function onShippingContactSelected(resolve, reject, event, merchantName) {
 }
 
 async function init(paymentMethodsResponse, isExpressPdp) {
-  window.isExpressPdp = isExpressPdp;
-  initializeCheckout(paymentMethodsResponse)
-    .then(async () => {
-      const applePayPaymentMethod =
-        paymentMethodsResponse?.AdyenPaymentMethods?.paymentMethods.find(
-          (pm) => pm.type === APPLE_PAY,
+  try {
+    window.isExpressPdp = isExpressPdp;
+    checkout = await initializeCheckout(paymentMethodsResponse);
+    const applePayPaymentMethod =
+      paymentMethodsResponse?.AdyenPaymentMethods?.paymentMethods.find(
+        (pm) => pm.type === APPLE_PAY,
+      );
+    if (!applePayPaymentMethod) {
+      updateLoadedExpressMethods(APPLE_PAY);
+      checkIfExpressMethodsAreReady();
+      return;
+    }
+
+    const applePayConfig = applePayPaymentMethod.configuration;
+    const applePayButtonConfig = {
+      showPayButton: true,
+      isExpress: true,
+      configuration: applePayConfig,
+      amount: JSON.parse(window.basketAmount),
+      requiredShippingContactFields: ['postalAddress', 'email', 'phone'],
+      requiredBillingContactFields: ['postalAddress', 'phone'],
+      onAuthorized: async (resolve, reject, event) => {
+        await onAuthorized(
+          resolve,
+          reject,
+          event,
+          applePayButtonConfig.amount.value,
+          applePayConfig.merchantName,
         );
-      if (!applePayPaymentMethod) {
-        updateLoadedExpressMethods(APPLE_PAY);
-        checkIfExpressMethodsAreReady();
-        return;
-      }
-
-      const applePayConfig = applePayPaymentMethod.configuration;
-      const applePayButtonConfig = {
-        showPayButton: true,
-        isExpress: true,
-        configuration: applePayConfig,
-        amount: JSON.parse(window.basketAmount),
-        requiredShippingContactFields: ['postalAddress', 'email', 'phone'],
-        requiredBillingContactFields: ['postalAddress', 'phone'],
-        onAuthorized: async (resolve, reject, event) => {
-          await onAuthorized(
-            resolve,
-            reject,
-            event,
-            applePayButtonConfig.amount.value,
-            applePayConfig.merchantName,
-          );
-        },
-        onSubmit: () => {
-          // This handler is empty to prevent sending a second payment request
-          // We already do the payment in paymentFromComponent
-        },
-        onClick: async (resolve, reject) => {
-          if (window.isExpressPdp) {
-            const tempBasketResponse = await createTemporaryBasket();
-            if (tempBasketResponse?.temporaryBasketCreated) {
-              applePayButtonConfig.amount = {
-                value: tempBasketResponse.amount.value,
-                currency: tempBasketResponse.amount.currency,
-              };
-              const applePayAmountUpdate = {
-                newTotal: {
-                  type: 'final',
-                  label: applePayConfig.merchantName,
-                  amount: tempBasketResponse.amount.value,
-                },
-              };
-              resolve(applePayAmountUpdate);
-            } else {
-              reject();
-            }
+      },
+      onSubmit: () => {
+        // This handler is empty to prevent sending a second payment request
+        // We already do the payment in paymentFromComponent
+      },
+      onClick: async (resolve, reject) => {
+        if (window.isExpressPdp) {
+          const tempBasketResponse = await createTemporaryBasket();
+          if (tempBasketResponse?.temporaryBasketCreated) {
+            applePayButtonConfig.amount = {
+              value: tempBasketResponse.amount.value,
+              currency: tempBasketResponse.amount.currency,
+            };
+            const applePayAmountUpdate = {
+              newTotal: {
+                type: 'final',
+                label: applePayConfig.merchantName,
+                amount: tempBasketResponse.amount.value,
+              },
+            };
+            resolve(applePayAmountUpdate);
           } else {
-            resolve();
+            reject();
           }
-        },
-        onShippingMethodSelected: async (resolve, reject, event) => {
-          await onShippingMethodSelected(
-            resolve,
-            reject,
-            event,
-            applePayButtonConfig,
-            applePayConfig.merchantName,
-          );
-        },
-        onShippingContactSelected: async (resolve, reject, event) => {
-          await onShippingContactSelected(
-            resolve,
-            reject,
-            event,
-            applePayConfig.merchantName,
-          );
-        },
-      };
-
-      const cartContainer = document.getElementsByClassName(APPLE_PAY);
-      const applePayButton = await createApplePayButton(applePayButtonConfig);
-      const isApplePayButtonAvailable = await applePayButton.isAvailable();
-      if (isApplePayButtonAvailable) {
-        for (
-          let expressCheckoutNodesIndex = 0;
-          expressCheckoutNodesIndex < cartContainer.length;
-          expressCheckoutNodesIndex += 1
-        ) {
-          applePayButton.mount(cartContainer[expressCheckoutNodesIndex]);
+        } else {
+          resolve();
         }
-      }
+      },
+      onShippingMethodSelected: async (resolve, reject, event) => {
+        await onShippingMethodSelected(
+          resolve,
+          reject,
+          event,
+          applePayButtonConfig,
+          applePayConfig.merchantName,
+        );
+      },
+      onShippingContactSelected: async (resolve, reject, event) => {
+        await onShippingContactSelected(
+          resolve,
+          reject,
+          event,
+          applePayConfig.merchantName,
+        );
+      },
+    };
 
-      updateLoadedExpressMethods(APPLE_PAY);
-      checkIfExpressMethodsAreReady();
-    })
-    .catch(() => {
-      updateLoadedExpressMethods(APPLE_PAY);
-      checkIfExpressMethodsAreReady();
-    });
+    const cartContainer = document.getElementsByClassName(APPLE_PAY);
+    const applePayButton = await createApplePayButton(applePayButtonConfig);
+    const isApplePayButtonAvailable = await applePayButton.isAvailable();
+    if (isApplePayButtonAvailable) {
+      for (
+        let expressCheckoutNodesIndex = 0;
+        expressCheckoutNodesIndex < cartContainer.length;
+        expressCheckoutNodesIndex += 1
+      ) {
+        applePayButton.mount(cartContainer[expressCheckoutNodesIndex]);
+      }
+    }
+
+    updateLoadedExpressMethods(APPLE_PAY);
+    checkIfExpressMethodsAreReady();
+  } catch (error) {
+    updateLoadedExpressMethods(APPLE_PAY);
+    checkIfExpressMethodsAreReady();
+  }
 }
 
 module.exports = {

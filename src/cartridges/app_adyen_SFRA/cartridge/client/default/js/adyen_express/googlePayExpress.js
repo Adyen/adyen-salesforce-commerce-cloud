@@ -10,6 +10,7 @@ const {
   GOOGLE_PAY_CALLBACK_TRIGGERS,
 } = require('../constants');
 const { httpClient } = require('../commons/httpClient');
+const { initializeCheckout } = require('./initializeCheckout');
 
 let checkout;
 let googlePayButton;
@@ -188,19 +189,6 @@ async function paymentFromComponent(data) {
   }
 }
 
-async function initializeCheckout(paymentMethodsResponse) {
-  const applicationInfo = paymentMethodsResponse?.applicationInfo;
-  checkout = await window.AdyenWeb.AdyenCheckout({
-    environment: window.environment,
-    clientKey: window.clientKey,
-    locale: window.locale,
-    countryCode: window.countryCode,
-    analytics: {
-      analyticsData: { applicationInfo },
-    },
-  });
-}
-
 async function onShippingAddressChange(shippingAddress) {
   const shippingMethodsData = await getShippingMethods(shippingAddress);
   if (shippingMethodsData?.shippingMethods?.length) {
@@ -253,106 +241,105 @@ async function onShippingOptionChange(shippingAddress, shippingOptionData) {
 }
 
 async function init(paymentMethodsResponse, isExpressPdp) {
-  window.isExpressPdp = isExpressPdp;
-  initializeCheckout(paymentMethodsResponse)
-    .then(async () => {
-      const googlePayPaymentMethod =
-        paymentMethodsResponse?.AdyenPaymentMethods?.paymentMethods.find(
-          (pm) => pm.type === GOOGLE_PAY || pm.type === PAY_WITH_GOOGLE,
-        );
-      if (!googlePayPaymentMethod) {
-        updateLoadedExpressMethods(GOOGLE_PAY);
-        checkIfExpressMethodsAreReady();
-        return;
-      }
-
-      const googlePayConfig = googlePayPaymentMethod.configuration;
-      const googlePayButtonConfig = {
-        showPayButton: true,
-        isExpress: true,
-        buttonType: 'buy',
-        environment: window.environment,
-        emailRequired: true,
-        shippingAddressRequired: true,
-        shippingOptionRequired: true,
-        shippingAddressParameters: {
-          phoneNumberRequired: true,
-        },
-        billingAddressRequired: true,
-        billingAddressParameters: {
-          format: 'FULL',
-          phoneNumberRequired: true,
-        },
-        gatewayMerchantId: window.merchantAccount,
-        configuration: googlePayConfig,
-        callbackIntents: ['SHIPPING_ADDRESS', 'SHIPPING_OPTION'],
-        amount: JSON.parse(window.basketAmount),
-        onAuthorized: async (data) => {
-          const componentData = googlePayButton.data;
-          const customer = formatCustomerObject(data);
-          const requestData = {
-            paymentMethod: {
-              type: GOOGLE_PAY,
-              googlePayToken: componentData.paymentMethod.googlePayToken,
-            },
-            paymentType: 'express',
-            customer,
-            isExpressPdp: window.isExpressPdp,
-          };
-          paymentFromComponent(requestData);
-        },
-        onSubmit: async () => {},
-        paymentDataCallbacks: {
-          async onPaymentDataChanged(intermediatePaymentData) {
-            const { callbackTrigger, shippingAddress, shippingOptionData } =
-              intermediatePaymentData;
-
-            let paymentDataRequestUpdate = {};
-
-            if (callbackTrigger === GOOGLE_PAY_CALLBACK_TRIGGERS.INITIALIZE) {
-              if (window.isExpressPdp) {
-                await createTemporaryBasket();
-              }
-              paymentDataRequestUpdate =
-                await onShippingAddressChange(shippingAddress);
-            }
-
-            if (
-              callbackTrigger === GOOGLE_PAY_CALLBACK_TRIGGERS.SHIPPING_ADDRESS
-            ) {
-              paymentDataRequestUpdate =
-                await onShippingAddressChange(shippingAddress);
-            }
-
-            if (
-              callbackTrigger === GOOGLE_PAY_CALLBACK_TRIGGERS.SHIPPING_OPTION
-            ) {
-              paymentDataRequestUpdate = await onShippingOptionChange(
-                shippingAddress,
-                shippingOptionData,
-              );
-            }
-
-            return new Promise((resolve) => {
-              resolve(paymentDataRequestUpdate);
-            });
-          },
-        },
-      };
-
-      googlePayButton = window.AdyenWeb.createComponent(
-        GOOGLE_PAY,
-        checkout,
-        googlePayButtonConfig,
+  try {
+    window.isExpressPdp = isExpressPdp;
+    const googlePayPaymentMethod =
+      paymentMethodsResponse?.AdyenPaymentMethods?.paymentMethods.find(
+        (pm) => pm.type === GOOGLE_PAY || pm.type === PAY_WITH_GOOGLE,
       );
-      googlePayButton.mount('.googlepay');
+    if (!googlePayPaymentMethod) {
       updateLoadedExpressMethods(GOOGLE_PAY);
       checkIfExpressMethodsAreReady();
-    })
-    .catch(() => {
-      updateLoadedExpressMethods(GOOGLE_PAY);
-      checkIfExpressMethodsAreReady();
-    });
+      return;
+    }
+
+    checkout = await initializeCheckout(paymentMethodsResponse);
+    const googlePayConfig = googlePayPaymentMethod.configuration;
+    const googlePayButtonConfig = {
+      showPayButton: true,
+      isExpress: true,
+      buttonType: 'buy',
+      environment: window.environment,
+      emailRequired: true,
+      shippingAddressRequired: true,
+      shippingOptionRequired: true,
+      shippingAddressParameters: {
+        phoneNumberRequired: true,
+      },
+      billingAddressRequired: true,
+      billingAddressParameters: {
+        format: 'FULL',
+        phoneNumberRequired: true,
+      },
+      gatewayMerchantId: window.merchantAccount,
+      configuration: googlePayConfig,
+      callbackIntents: ['SHIPPING_ADDRESS', 'SHIPPING_OPTION'],
+      amount: JSON.parse(window.basketAmount),
+      onAuthorized: async (data) => {
+        const componentData = googlePayButton.data;
+        const customer = formatCustomerObject(data);
+        const requestData = {
+          paymentMethod: {
+            type: GOOGLE_PAY,
+            googlePayToken: componentData.paymentMethod.googlePayToken,
+          },
+          paymentType: 'express',
+          customer,
+          isExpressPdp: window.isExpressPdp,
+        };
+        paymentFromComponent(requestData);
+      },
+      onSubmit: async () => {},
+      paymentDataCallbacks: {
+        async onPaymentDataChanged(intermediatePaymentData) {
+          const { callbackTrigger, shippingAddress, shippingOptionData } =
+            intermediatePaymentData;
+
+          let paymentDataRequestUpdate = {};
+
+          if (callbackTrigger === GOOGLE_PAY_CALLBACK_TRIGGERS.INITIALIZE) {
+            if (window.isExpressPdp) {
+              await createTemporaryBasket();
+            }
+            paymentDataRequestUpdate =
+              await onShippingAddressChange(shippingAddress);
+          }
+
+          if (
+            callbackTrigger === GOOGLE_PAY_CALLBACK_TRIGGERS.SHIPPING_ADDRESS
+          ) {
+            paymentDataRequestUpdate =
+              await onShippingAddressChange(shippingAddress);
+          }
+
+          if (
+            callbackTrigger === GOOGLE_PAY_CALLBACK_TRIGGERS.SHIPPING_OPTION
+          ) {
+            paymentDataRequestUpdate = await onShippingOptionChange(
+              shippingAddress,
+              shippingOptionData,
+            );
+          }
+
+          return new Promise((resolve) => {
+            resolve(paymentDataRequestUpdate);
+          });
+        },
+      },
+    };
+
+    googlePayButton = window.AdyenWeb.createComponent(
+      GOOGLE_PAY,
+      checkout,
+      googlePayButtonConfig,
+    );
+    googlePayButton.mount('.googlepay');
+    updateLoadedExpressMethods(GOOGLE_PAY);
+    checkIfExpressMethodsAreReady();
+  } catch (error) {
+    updateLoadedExpressMethods(GOOGLE_PAY);
+    checkIfExpressMethodsAreReady();
+  }
 }
 
 module.exports = {

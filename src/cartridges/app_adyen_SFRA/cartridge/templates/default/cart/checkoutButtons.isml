@@ -43,39 +43,13 @@
 
     <div id="amazon-container"></div>
     <iselse>
+        <isinclude template="adyen/adyenExpressMetadata" />
+
         <isscript>
             var assets = require('*/cartridge/scripts/assets.js');
             assets.addJs('/js/cartExpressPayments.js');
         </isscript>
-        <script type="text/javascript">
-            window.clientKey = "${AdyenConfigs.getAdyenClientKey()}";
-            window.locale = "${request.locale}";
-            window.selectShippingMethodUrl = "${URLUtils.https('Adyen-SelectShippingMethod')}";
-            window.paymentsDetailsURL = "${URLUtils.https('Adyen-PaymentsDetails')}";
-            window.paymentFromComponentURL = "${URLUtils.https('Adyen-PaymentFromComponent')}";
-            window.showConfirmationAction = "${URLUtils.https('Adyen-ShowConfirmationPaymentFromComponent')}";
-            window.environment = "${AdyenConfigs.getAdyenEnvironment()}";
-            window.getPaymentMethodsURL = "${URLUtils.https('Adyen-GetPaymentMethods')}";
-            window.shippingMethodsUrl = "${URLUtils.https('Adyen-ShippingMethods')}";
-            window.returnUrl = "${URLUtils.https('Cart-Show')}";
-            window.expressMethodsOrder = "${AdyenConfigs.getExpressPaymentsOrder()}";
-            window.isApplePayExpressEnabled = "${AdyenConfigs.isApplePayExpressEnabled()}";
-            window.isAmazonPayExpressEnabled = "${AdyenConfigs.isAmazonPayExpressEnabled()}";
-            window.isPayPalExpressEnabled = "${AdyenConfigs.isPayPalExpressEnabled()}";
-            window.isGooglePayExpressEnabled = "${AdyenConfigs.isGooglePayExpressEnabled()}";
-            window.isPayPalExpressReviewPageEnabled = "${AdyenConfigs.isPayPalExpressReviewPageEnabled()}";
-            window.digitsNumber = "${pdict.AdyenHelper.getFractionDigits(
-                pdict.AdyenHelper.getBasketAmount().currencyCode
-            )}";
-            window.basketAmount = "${pdict.AdyenHelper.getBasketAmount()}".replace(/&quot;/g, '\"');
-            window.makeExpressPaymentsCall = "${URLUtils.https('Adyen-MakeExpressPaymentsCall')}";
-            window.makeExpressPaymentDetailsCall = "${URLUtils.https('Adyen-MakeExpressPaymentDetailsCall')}";
-            window.saveShopperData = "${URLUtils.https('Adyen-SaveShopperData')}";
-            window.paypalUpdateOrder = "${URLUtils.https('Adyen-paypalUpdateOrder')}";
-            window.paypalReviewPageEnabled = ${AdyenConfigs.isPayPalExpressReviewPageEnabled()};
-            window.checkoutReview = "${URLUtils.https('Adyen-CheckoutReview')}";
-            window.countryCode = window.locale.slice(-2);
-        </script>
+
         <div class="mb-sm-3">
             <a
                 href="${URLUtils.https('Checkout-Begin')}"

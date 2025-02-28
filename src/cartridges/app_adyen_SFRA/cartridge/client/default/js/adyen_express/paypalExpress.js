@@ -5,6 +5,7 @@ const {
 const helpers = require('../adyen_checkout/helpers');
 const { PAYPAL } = require('../constants');
 const { httpClient } = require('../commons/httpClient');
+const { initializeCheckout } = require('./initializeCheckout');
 
 async function callPaymentFromComponent(data, component) {
   try {
@@ -190,7 +191,6 @@ function getPaypalButtonConfig(paypalConfig) {
 
 async function init(paymentMethodsResponse) {
   try {
-    const applicationInfo = paymentMethodsResponse?.applicationInfo;
     const paypalConfig =
       paymentMethodsResponse?.AdyenPaymentMethods?.paymentMethods.find(
         (pm) => pm.type === PAYPAL,
@@ -200,15 +200,7 @@ async function init(paymentMethodsResponse) {
       checkIfExpressMethodsAreReady();
       return;
     }
-    const checkout = await window.AdyenWeb.AdyenCheckout({
-      environment: window.environment,
-      clientKey: window.clientKey,
-      locale: window.locale,
-      countryCode: window.countryCode,
-      analytics: {
-        analyticsData: { applicationInfo },
-      },
-    });
+    const checkout = await initializeCheckout(paymentMethodsResponse);
     const paypalButtonConfig = getPaypalButtonConfig(paypalConfig);
     const paypalExpressButton = window.AdyenWeb.createComponent(
       PAYPAL,
