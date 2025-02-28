@@ -45,11 +45,6 @@
     <iselse>
         <isinclude template="adyen/adyenExpressMetadata" />
 
-        <isscript>
-            var assets = require('*/cartridge/scripts/assets.js');
-            assets.addJs('/js/cartExpressPayments.js');
-        </isscript>
-
         <div class="mb-sm-3">
             <a
                 href="${URLUtils.https('Checkout-Begin')}"
@@ -68,6 +63,7 @@
                 <div data-method="paypal" class="expressComponent" id="paypal-container" style="padding:0"></div>
                 <div data-method="googlepay" class="expressComponent googlepay" style="padding:0"></div>
             </div>
+            <script src="${URLUtils.httpsStatic('/js/cartExpressPayments.js')}" type="text/javascript"></script>
         </isif>
     </iselse>
 </isif>
