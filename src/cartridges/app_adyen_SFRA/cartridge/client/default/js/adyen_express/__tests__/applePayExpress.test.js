@@ -22,7 +22,10 @@ let selectShippingMethod = applePayExpressModule.selectShippingMethod;
 let getShippingMethod = applePayExpressModule.getShippingMethod;
 let spy;
 
-global.checkout = { create: mockCreate };
+global.AdyenWeb = {
+  AdyenCheckout: jest.fn(),
+  createComponent: mockCreate,
+}
 global.fetch = jest.fn();
 
 jest.mock('../applePayExpress', () => ({

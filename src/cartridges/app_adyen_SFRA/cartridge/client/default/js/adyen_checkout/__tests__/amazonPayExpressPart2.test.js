@@ -4,7 +4,7 @@
 
 let select;
 let data;
-const {saveShopperDetails, constructAddress, wrapChangeAddressButton, showAddressDetails} = require('../../amazonPayExpressPart2');
+const {saveShopperDetails, constructAddress, wrapChangeAddressButton, showAddressDetails} = require('../../adyen_express/amazonPayExpressPart2');
 
 beforeEach(async () => {
   document.body.innerHTML = `

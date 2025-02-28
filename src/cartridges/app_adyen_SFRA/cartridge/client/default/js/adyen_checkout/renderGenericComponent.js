@@ -166,11 +166,13 @@ function addStores(stores) {
     storeDropdown.appendChild(option);
   });
   const storeDropdownContainer = document.querySelector('#adyenPosStores');
-  const existingDropdown = storeDropdownContainer.querySelector('#storeList');
-  if (existingDropdown) {
-    storeDropdownContainer.removeChild(existingDropdown);
+  if (storeDropdownContainer) {
+    const existingDropdown = storeDropdownContainer.querySelector('#storeList');
+    if (existingDropdown) {
+      storeDropdownContainer.removeChild(existingDropdown);
+    }
+    storeDropdownContainer.append(storeDropdown);
   }
-  storeDropdownContainer.append(storeDropdown);
   storeDropdown.addEventListener('change', async () => {
     const terminalDropdownContainer =
       document.querySelector('#adyenPosTerminals');

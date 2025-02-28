@@ -10,3 +10,4 @@ playwright-report/
 test-results/
 Vagrantfile
 cartridges
+!src/cartridges

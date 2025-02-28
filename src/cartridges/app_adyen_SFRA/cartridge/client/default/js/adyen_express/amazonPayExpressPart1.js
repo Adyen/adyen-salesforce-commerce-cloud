@@ -1,8 +1,8 @@
 const {
   checkIfExpressMethodsAreReady,
   updateLoadedExpressMethods,
-} = require('./commons');
-const { AMAZON_PAY } = require('./constants');
+} = require('../commons');
+const { AMAZON_PAY } = require('../constants');
 
 async function init(paymentMethodsResponse) {
   try {

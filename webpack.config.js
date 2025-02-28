@@ -3,10 +3,10 @@
 
 "use strict";
 
-require("shelljs/make");
+const cwd = process.cwd();
+const shell = require("shelljs");
 const path = require("path");
 const webpack = require("sgmf-scripts").webpack;
-const jsFiles = require("sgmf-scripts").createJsPath();
 const cartridge_name = require("./package.json").name;
 
 const bootstrapPackages = {
@@ -23,11 +23,23 @@ const bootstrapPackages = {
   Util: "exports-loader?Util!bootstrap/js/src/util",
 };
 
+const createJsPath = () => {
+  const jsFiles = shell.ls(path.join(cwd, `./cartridges/${cartridge_name}/cartridge/client/**/js/**/*.js`));
+
+  const result = {};
+  jsFiles.forEach((filePath) => {
+    let location = path.relative(path.join(cwd, `./cartridges/${cartridge_name}/cartridge/client`), filePath);
+    location = location.substr(0, location.length - 3);
+    result[location] = filePath;
+  });
+  return result;
+}
+
 module.exports = [
   {
     mode: "development",
     name: "js",
-    entry: jsFiles,
+    entry: createJsPath(),
     output: {
       path: path.resolve(`./cartridges/${cartridge_name}/cartridge/static`),
       filename: "[name].js",
