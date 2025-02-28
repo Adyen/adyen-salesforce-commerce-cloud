@@ -18,7 +18,6 @@
    window.returnUrl = "${URLUtils.https('Cart-Show')}";
    window.createTemporaryBasketUrl = "${URLUtils.https('Adyen-CreateTemporaryBasket')}";
    window.fractionDigits = "${AdyenHelper.getFractionDigits()}"
-   window.digitsNumber = "${AdyenHelper.getFractionDigits(AdyenHelper.getBasketAmount().currencyCode)}";
 
    window.expressMethodsOrder = "${AdyenConfigs.getExpressPaymentsOrder()}";
    window.isApplePayExpressEnabled = "${AdyenConfigs.isApplePayExpressEnabled()}";

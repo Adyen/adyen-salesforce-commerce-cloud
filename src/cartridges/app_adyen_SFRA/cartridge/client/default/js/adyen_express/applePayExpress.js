@@ -178,7 +178,7 @@ async function onAuthorized(resolve, reject, event, amountValue, merchantName) {
 
     const resolveApplePay = () => {
       // ** is used instead of Math.pow
-      const value = amountValue * 10 ** parseInt(window.digitsNumber, 10);
+      const value = amountValue * 10 ** parseInt(window.fractionDigits, 10);
       const finalPriceUpdate = {
         newTotal: {
           type: 'final',
