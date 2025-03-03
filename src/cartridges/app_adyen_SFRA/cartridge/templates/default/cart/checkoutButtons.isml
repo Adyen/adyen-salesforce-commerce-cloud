@@ -44,7 +44,6 @@
     <div id="amazon-container"></div>
     <iselse>
         <isinclude template="adyen/adyenExpressMetadata" />
-
         <div class="mb-sm-3">
             <a
                 href="${URLUtils.https('Checkout-Begin')}"
