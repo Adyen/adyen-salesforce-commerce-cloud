@@ -125,16 +125,18 @@ document.addEventListener('DOMContentLoaded', () => {
   let dragStartIndex;
 
   function renderStores() {
-    const stores = JSON.parse(availableStores);
-    stores.forEach((store) => {
-      const option = document.createElement('option');
-      option.value = store.reference;
-      option.textContent = `${store.reference} (${store.id})`;
-      terminalDropdown.appendChild(option);
-      if (activeSelectedStores.includes(store.reference)) {
-        option.selected = true;
-      }
-    });
+    if (availableStores) {
+      const stores = JSON.parse(availableStores);
+      stores.forEach((store) => {
+        const option = document.createElement('option');
+        option.value = store.reference;
+        option.textContent = `${store.reference} (${store.id})`;
+        terminalDropdown.appendChild(option);
+        if (activeSelectedStores.includes(store.reference)) {
+          option.selected = true;
+        }
+      });
+    }
   }
 
   function settingChanged(key, value) {

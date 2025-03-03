@@ -852,9 +852,9 @@ let adyenHelperObj = {
     return applicationInfo;
   },
 
-    isApplePay(paymentMethod) {
-      return paymentMethod === constants.PAYMENTMETHODS.APPLEPAY;
-    },
+  isApplePay(paymentMethod) {
+    return paymentMethod === constants.PAYMENTMETHODS.APPLEPAY;
+  },
 
   // validates all fields in a state data object. Filters out all invalid fields
   validateStateData(stateData) {

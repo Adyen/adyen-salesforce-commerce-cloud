@@ -1,5 +1,5 @@
-const { getPaymentMethods } = require('./commons');
-const { httpClient } = require('./commons/httpClient');
+const { getPaymentMethods } = require('../commons');
+const { httpClient } = require('../commons/httpClient');
 
 async function saveShopperDetails(details) {
   const data = await httpClient({
