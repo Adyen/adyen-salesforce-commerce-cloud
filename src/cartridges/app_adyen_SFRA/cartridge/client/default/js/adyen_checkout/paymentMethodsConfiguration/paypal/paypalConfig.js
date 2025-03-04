@@ -15,9 +15,9 @@ class PaypalConfig {
     this.helpers.paymentFromComponent(state.data, component);
   };
 
-  onCancel = async (data, component) => {
+  onCancel = (data, component) => {
     this.store.paypalTerminatedEarly = false;
-    await this.helpers.paymentFromComponent(
+    this.helpers.paymentFromComponent(
       {
         cancelTransaction: true,
         merchantReference: document.querySelector('#merchantReference').value,
@@ -27,9 +27,19 @@ class PaypalConfig {
     );
   };
 
-  onError = async (error, component) => {
-    await this.onCancel(component);
-    component.setStatus('ready');
+  onError = (error, component) => {
+    this.store.paypalTerminatedEarly = false;
+    this.helpers.paymentFromComponent(
+      {
+        cancelTransaction: true,
+        merchantReference: document.querySelector('#merchantReference').value,
+        orderToken: document.querySelector('#orderToken').value,
+      },
+      component,
+    );
+    if (component) {
+      component.setStatus('ready');
+    }
     document.querySelector('#showConfirmationForm').submit();
   };
 
