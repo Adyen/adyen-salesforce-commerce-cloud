@@ -15,7 +15,6 @@ const { httpClient } = require('../commons/httpClient');
 
 function renderPaymentMethod() {
   $('body').on('checkout:renderPaymentMethod', (e, response) => {
-    console.log('renderPaymentMethod', response);
     const { email } = response;
     setCheckoutConfiguration({ email });
     renderGenericComponent();
