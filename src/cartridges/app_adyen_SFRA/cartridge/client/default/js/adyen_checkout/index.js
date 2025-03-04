@@ -15,6 +15,7 @@ const { httpClient } = require('../commons/httpClient');
 
 function renderPaymentMethod() {
   $('body').on('checkout:renderPaymentMethod', (e, response) => {
+    console.log('renderPaymentMethod', response);
     const { email } = response;
     setCheckoutConfiguration({ email });
     renderGenericComponent();
@@ -83,6 +84,26 @@ function handlePaymentAction() {
 }
 
 async function init() {
+  $(document).ready(() => {
+    // TODO: render the error message box
+    const name = 'paymentError';
+    const error = new RegExp(`[?&]${encodeURIComponent(name)}=([^&]*)`).exec(
+      window.location.search,
+    );
+    const paymentStage = /[?&]stage=payment([^&]*)/.exec(
+      window.location.search,
+    );
+    if (error || paymentStage) {
+      if (error) {
+        $('.error-message').show();
+        $('.error-message-text').text(decodeURIComponent(error[1]));
+      }
+      $('body').trigger('checkout:renderPaymentMethod', {
+        email: null,
+      });
+    }
+  });
+
   $('body').on('checkout:updateCheckoutView', (event, data) => {
     const currentStage = window.location.search.substring(
       window.location.search.indexOf('=') + 1,
