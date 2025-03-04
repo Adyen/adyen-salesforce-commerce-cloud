@@ -24,11 +24,10 @@ function getCardConfig() {
     },
     exposeExpiryDate: false,
     onChange(state) {
-      store.isValid = state.isValid;
       const method = state.data.paymentMethod.storedPaymentMethodId
         ? `storedCard${state.data.paymentMethod.storedPaymentMethodId}`
-        : store.selectedMethod;
-      store.updateSelectedPayment(method, 'isValid', store.isValid);
+        : 'scheme';
+      store.updateSelectedPayment(method, 'isValid', state.isValid);
       store.updateSelectedPayment(method, 'stateData', state.data);
     },
     onSubmit: () => {
