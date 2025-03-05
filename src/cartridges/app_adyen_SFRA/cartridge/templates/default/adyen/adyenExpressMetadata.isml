@@ -1,6 +1,7 @@
-<isset name="AdyenConfigs" value="${require('*/cartridge/adyen/utils/adyenConfigs')}" scope="page" />
-<script src="${pdict.AdyenHelper.getCheckoutUrl()}" type="text/javascript"></script>
-<link rel="stylesheet" type="text/css" href="${pdict.AdyenHelper.getCheckoutCSS()}"/>
+<isset name="AdyenHelper" value="${require('*/cartridge/adyen/utils/adyenHelper')}" scope="pdict"/>
+<isset name="AdyenConfigs" value="${require('*/cartridge/adyen/utils/adyenConfigs')}" scope="pdict" />
+<script src="${AdyenHelper.getCheckoutUrl()}" type="text/javascript"></script>
+<link rel="stylesheet" type="text/css" href="${AdyenHelper.getCheckoutCSS()}"/>
 <link rel="stylesheet" href="${URLUtils.staticURL('/css/adyenCss.css')}" />
 <script type="text/javascript">
    window.environment = "${AdyenConfigs.getAdyenEnvironment()}";
@@ -16,7 +17,7 @@
    window.showConfirmationAction = "${URLUtils.https('Adyen-ShowConfirmationPaymentFromComponent')}";
    window.returnUrl = "${URLUtils.https('Cart-Show')}";
    window.createTemporaryBasketUrl = "${URLUtils.https('Adyen-CreateTemporaryBasket')}";
-   window.fractionDigits = "${pdict.AdyenHelper.getFractionDigits()}"
+   window.fractionDigits = "${AdyenHelper.getFractionDigits()}"
 
    window.expressMethodsOrder = "${AdyenConfigs.getExpressPaymentsOrder()}";
    window.isApplePayExpressEnabled = "${AdyenConfigs.isApplePayExpressEnabled()}";
@@ -27,7 +28,7 @@
    window.isGooglePayExpressEnabled = "${AdyenConfigs.isGooglePayExpressEnabled()}";
    window.isGooglePayExpressOnPdpEnabled = "${AdyenConfigs.isGooglePayExpressOnPdpEnabled()}";
 
-   window.basketAmount = "${pdict.AdyenHelper.getBasketAmount()}".replace(/&quot;/g, '\"');
+   window.basketAmount = "${AdyenHelper.getBasketAmount()}".replace(/&quot;/g, '\"');
    window.makeExpressPaymentsCall = "${URLUtils.https('Adyen-MakeExpressPaymentsCall')}";
    window.makeExpressPaymentDetailsCall = "${URLUtils.https('Adyen-MakeExpressPaymentDetailsCall')}";
    window.saveShopperData = "${URLUtils.https('Adyen-SaveShopperData')}";
