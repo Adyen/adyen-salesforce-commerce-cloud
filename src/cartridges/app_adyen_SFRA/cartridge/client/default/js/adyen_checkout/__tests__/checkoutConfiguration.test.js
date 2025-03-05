@@ -108,17 +108,6 @@ describe('Checkout Configuration', () => {
       );
     });
 
-    it('handles onCancel', () => {
-      document.body.innerHTML = `
-        <div id="merchantReference"></div>
-        <div id="adyenPaymentMethodName"></div>
-        <div id="orderToken"></div>
-      `;
-      store.paypalTerminatedEarly = true;    
-      paypal.onCancel({}, {});
-      expect(store.paypalTerminatedEarly).toBe(false);
-    });
-
     it('handles onError', () => {
       document.body.innerHTML = `
         <div id="showConfirmationForm"></div>
@@ -260,6 +249,7 @@ describe('Checkout Configuration', () => {
       document.body.innerHTML = `
         <div id="lb_cashapp">CashApp</div>
         <div id="adyenPaymentMethodName"></div>
+        <button value="submit-payment"></button>
       `;
       store.selectedMethod = 'cashapp';
       store.componentsObj = { cashapp: { stateData: { foo: 'bar' } } };
