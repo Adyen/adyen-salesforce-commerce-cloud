@@ -4,6 +4,7 @@ const { httpClient } = require('../commons/httpClient');
 
 let checkout;
 let card;
+let addingCardInProgress = false;
 
 function handleAction(action) {
   checkout.createFromAction(action).mount('#action-container');
@@ -29,6 +30,7 @@ function submitAddCard() {
 }
 
 async function handleAddNewPayment() {
+  addingCardInProgress = true;
   if (store.isValid) {
     document.querySelector('#adyenStateData').value = JSON.stringify(
       store.componentState.data,
@@ -44,11 +46,14 @@ async function handleAddNewPayment() {
   } else {
     card?.showValidation();
   }
+  addingCardInProgress = false;
 }
 
 $('button[value="add-new-payment"]').on('click', async (event) => {
   event.preventDefault();
-  await handleAddNewPayment();
+  if (!addingCardInProgress) {
+    await handleAddNewPayment();
+  }
 });
 
 store.checkoutConfiguration = {
