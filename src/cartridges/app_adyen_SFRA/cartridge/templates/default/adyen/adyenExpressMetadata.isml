@@ -1,3 +1,8 @@
+<isset name="AdyenHelper" value="${require('*/cartridge/adyen/utils/adyenHelper')}" scope="page"/>
+<isset name="AdyenConfigs" value="${require('*/cartridge/adyen/utils/adyenConfigs')}" scope="page" />
+<script src="${AdyenHelper.getCheckoutUrl()}" type="text/javascript"></script>
+<link rel="stylesheet" type="text/css" href="${AdyenHelper.getCheckoutCSS()}"/>
+<link rel="stylesheet" type="text/css" href="${URLUtils.staticURL('/css/adyenCss.css')}" />
 <script type="text/javascript">
    window.environment = "${AdyenConfigs.getAdyenEnvironment()}";
    window.clientKey = "${AdyenConfigs.getAdyenClientKey()}",
