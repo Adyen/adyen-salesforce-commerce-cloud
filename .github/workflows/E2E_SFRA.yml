@@ -6,6 +6,9 @@ on:
       - 'int_adyen_controllers/**'
       - 'adyen_controllers_changes/**'
 
+permissions:
+  contents: read
+
 jobs:
   setup-the-cartridge:
     if: ${{ github.actor != 'renovate[bot]' || github.actor != 'lgtm-com[bot]' }}

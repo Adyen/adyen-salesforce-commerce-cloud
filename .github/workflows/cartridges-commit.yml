@@ -6,6 +6,8 @@ on:
       - opened
       - synchronize
 
+permissions:
+  contents: write
 
 jobs:
   commit-the-cartridge-and-project-files:
