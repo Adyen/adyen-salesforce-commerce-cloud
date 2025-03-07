@@ -3,10 +3,10 @@
  */
 
 const store = require('../../../../../store');
-const {initializeCardComponent, handleAction, handleAddNewPayment} = require('../../adyenAccount')
+const {initializeCardComponent, handleAction, handleAddNewPayment} = require('../adyenAccount')
 $.fn.modal = jest.fn();
 
-jest.mock('../../adyenAccount.js', () => ({
+jest.mock('../adyenAccount.js', () => ({
   handleAction: jest.fn()
 }));
 jest.mock('../../commons');
