@@ -88,6 +88,7 @@ server.post('TestConnection', server.middleware.https, (req, res, next) => {
 
 server.get('GetStores', server.middleware.https, (req, res, next) => {
   try {
+    bmHelper.saveMetadataField('Adyen_StoreId', []);
     const stores = managementApi.fetchAllStores();
     bmHelper.saveMetadataField('Adyen_StoreId', stores);
     res.json({ success: true, stores });
