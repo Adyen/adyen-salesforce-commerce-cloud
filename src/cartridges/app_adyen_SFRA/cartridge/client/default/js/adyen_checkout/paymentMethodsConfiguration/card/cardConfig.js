@@ -15,17 +15,8 @@ class CardConfig {
   }
 
   onChange = (state) => {
-    this.store.isValid = state.isValid;
-    this.store.updateSelectedPayment(
-      this.store.selectedMethod,
-      'isValid',
-      this.store.isValid,
-    );
-    this.store.updateSelectedPayment(
-      this.store.selectedMethod,
-      'stateData',
-      state.data,
-    );
+    this.store.updateSelectedPayment('scheme', 'isValid', state.isValid);
+    this.store.updateSelectedPayment('scheme', 'stateData', state.data);
   };
 
   onSubmit = () => {
