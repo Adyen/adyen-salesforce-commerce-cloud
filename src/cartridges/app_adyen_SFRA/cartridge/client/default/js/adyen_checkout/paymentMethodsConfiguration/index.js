@@ -1,5 +1,6 @@
 const CardConfig = require('./card/cardConfig');
 const StoredCardConfig = require('./card/storedCardConfig');
+const BcmcConfig = require('./bcmc/bcmcConfig');
 const BoletoConfig = require('./boleto/boletoConfig');
 const GooglePayConfig = require('./googlePay/googlePayConfig');
 const KlarnaConfig = require('./klarna/klarnaConfig');
@@ -15,6 +16,7 @@ const { httpClient } = require('../../commons/httpClient');
 
 const cardConfig = new CardConfig(store, helpers).getConfig();
 const storedCardConfig = new StoredCardConfig(store, helpers).getConfig();
+const bcmcConfig = new BcmcConfig(store, helpers).getConfig();
 const boletoConfig = new BoletoConfig().getConfig();
 const googlePayConfig = new GooglePayConfig(helpers).getConfig();
 const klarnaConfig = new KlarnaConfig(
@@ -30,7 +32,7 @@ const giftCardsConfig = new GiftCardsConfig(store, httpClient).getConfig();
 
 const paymentMethodsConfiguration = {
   scheme: cardConfig,
-  bcmc: cardConfig,
+  bcmc: bcmcConfig,
   storedCard: storedCardConfig,
   boletobancario: boletoConfig,
   paywithgoogle: googlePayConfig,
