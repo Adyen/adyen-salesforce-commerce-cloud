@@ -351,7 +351,7 @@ jest.mock(
 );
 
 jest.mock(
-  '*/cartridge/client/default/js/adyen_checkout/renderGiftcardComponent',
+  '*/cartridge/client/default/js/adyen_checkout/adyenGiftards',
   () => ({
     removeGiftCards: jest.fn(),
     showGiftCardWarningMessage: jest.fn(),

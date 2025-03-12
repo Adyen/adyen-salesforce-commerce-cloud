@@ -6,7 +6,7 @@ const {
   renderAddedGiftCard,
   renderGiftCardSelectForm,
   showGiftCardWarningMessage,
-} = require('../renderGiftcardComponent');
+} = require('../adyenGiftcards/renderGiftcardComponent');
 const store = require('../../../../../store');
 
 jest.mock('../../commons');

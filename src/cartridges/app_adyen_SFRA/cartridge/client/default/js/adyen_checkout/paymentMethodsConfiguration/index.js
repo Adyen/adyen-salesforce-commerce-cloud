@@ -28,7 +28,11 @@ const upiConfig = new UpiConfig(helpers).getConfig();
 const applePayConfig = new ApplePayConfig(helpers).getConfig();
 const payPalConfig = new PayPalConfig(store, helpers).getConfig();
 const amazonPayConfig = new AmazonPayConfig(store, helpers).getConfig();
-const giftCardsConfig = new GiftCardsConfig(store, httpClient).getConfig();
+const giftCardsConfig = new GiftCardsConfig(
+  store,
+  httpClient,
+  helpers,
+).getConfig();
 
 const paymentMethodsConfiguration = {
   scheme: cardConfig,

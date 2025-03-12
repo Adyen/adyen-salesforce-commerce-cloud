@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 jest.mock('../../commons');
-const { makePartialPayment } = require('../makePartialPayment');
+const { makePartialPayment } = require('../adyenGiftcards/makePartialPayment');
 const store = require('../../../../../store');
 const {getPaymentMethods, fetchGiftCards} = require("../../commons");
 let data;

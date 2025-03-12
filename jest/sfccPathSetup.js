@@ -401,9 +401,9 @@ jest.mock(
 );
 
 jest.mock(
-  '*/cartridge/client/default/js/adyen_checkout/renderGiftcardComponent',
+  '*/cartridge/client/default/js/adyen_checkout/adyenGiftcards',
   () =>
-    require('../src/cartridges/int_adyen_SFRA/client/default/js/adyen_checkout/renderGiftcardComponent'),
+    require('../src/cartridges/int_adyen_SFRA/client/default/js/adyen_checkout/adyenGiftcards'),
   { virtual: true },
 );
 
