@@ -109,7 +109,10 @@ async function applyGiftCards() {
 
 function renderStoredPaymentMethod(imagePath) {
   return (pm) => {
-    if (pm.supportedShopperInteractions.includes('Ecommerce')) {
+    if (
+      pm.supportedShopperInteractions.includes('Ecommerce') &&
+      pm.type === constants.SCHEME
+    ) {
       renderPaymentMethod(pm, true, imagePath);
     }
   };
