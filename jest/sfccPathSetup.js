@@ -403,7 +403,7 @@ jest.mock(
 jest.mock(
   '*/cartridge/client/default/js/adyen_checkout/adyenGiftcards',
   () =>
-    require('../src/cartridges/int_adyen_SFRA/client/default/js/adyen_checkout/adyenGiftcards'),
+    require('../src/cartridges/app_adyen_SFRA/cartridge/client/default/js/adyen_checkout/adyenGiftcards'),
   { virtual: true },
 );
 
