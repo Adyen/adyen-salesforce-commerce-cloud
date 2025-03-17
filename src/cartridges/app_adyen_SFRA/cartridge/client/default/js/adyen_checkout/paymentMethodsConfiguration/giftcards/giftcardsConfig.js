@@ -5,7 +5,7 @@ const {
   showGiftCardCancelButton,
   attachGiftCardCancelListener,
   createElementsToShowRemainingGiftCardAmount,
-} = require('../../adyenGiftcards');
+} = require('../../giftcards');
 const { GIFTCARD, SUCCESS, NOTENOUGHBALANCE } = require('../../../constants');
 const { initializeCheckout } = require('../../renderGenericComponent');
 

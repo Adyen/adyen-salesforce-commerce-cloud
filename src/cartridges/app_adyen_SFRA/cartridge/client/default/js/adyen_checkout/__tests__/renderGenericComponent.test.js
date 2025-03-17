@@ -233,7 +233,7 @@ describe('Render Generic Component', () => {
   });
 
   it('should call removeGiftCards with isPartialPaymentExpired', () => {
-    const renderGiftCardComponent = require('*/cartridge/client/default/js/adyen_checkout/adyenGiftcards');
+    const renderGiftCardComponent = require('*/cartridge/client/default/js/adyen_checkout/giftcards');
     const now = new Date().toISOString();
     store.checkoutConfiguration = {
       amount : { currency: 'USD', value: 50 }
@@ -262,7 +262,7 @@ describe('Render Generic Component', () => {
   });
 
   it('should call removeGiftCards with cartModified', () => {
-    const renderGiftCardComponent = require('*/cartridge/client/default/js/adyen_checkout/adyenGiftcards');
+    const renderGiftCardComponent = require('*/cartridge/client/default/js/adyen_checkout/giftcards');
     store.checkoutConfiguration = {
       amount : { currency: 'USD', value: 50 }
     }
@@ -289,7 +289,7 @@ describe('Render Generic Component', () => {
   });
 
   it('should handle the else part correctly', () => {
-    const renderGiftCardComponent = require('*/cartridge/client/default/js/adyen_checkout/adyenGiftcards');
+    const renderGiftCardComponent = require('*/cartridge/client/default/js/adyen_checkout/giftcards');
     store.checkoutConfiguration = {
       amount: { currency: 'USD', value: 50 },
       paymentMethodsResponse: {

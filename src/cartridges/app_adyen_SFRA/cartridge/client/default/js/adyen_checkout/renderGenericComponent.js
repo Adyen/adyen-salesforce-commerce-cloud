@@ -19,7 +19,7 @@ const {
   clearGiftCardsContainer,
   attachGiftCardCancelListener,
   showGiftCardCancelButton,
-} = require('./adyenGiftcards');
+} = require('./giftcards');
 
 function addPosTerminals(terminals) {
   const ddTerminals = document.createElement('select');
