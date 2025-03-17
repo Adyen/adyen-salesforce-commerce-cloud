@@ -2,6 +2,7 @@ const server = require('server');
 const Transaction = require('dw/system/Transaction');
 const csrfProtection = require('dw/web/CSRFProtection');
 const URLUtils = require('dw/web/URLUtils');
+const PaymentMgr = require('dw/order/PaymentMgr');
 const AdyenConfigs = require('*/cartridge/adyen/utils/adyenConfigs');
 const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
 const constants = require('*/cartridge/adyen/config/constants');
@@ -87,15 +88,19 @@ server.post('TestConnection', server.middleware.https, (req, res, next) => {
 });
 
 server.get('GetStores', server.middleware.https, (req, res, next) => {
-  try {
-    const stores = managementApi.fetchAllStores();
-    bmHelper.saveMetadataField('Adyen_StoreId', stores);
-    res.json({ success: true, stores });
-  } catch (error) {
-    AdyenLogs.error_log('Error while fetching stores:', error);
-    res.json({ success: false });
+  if (PaymentMgr.getPaymentMethod(constants.METHOD_ADYEN_POS).isActive()) {
+    try {
+      bmHelper.saveMetadataField('Adyen_StoreId', []);
+      const stores = managementApi.fetchAllStores();
+      bmHelper.saveMetadataField('Adyen_StoreId', stores);
+      res.json({ success: true, stores });
+    } catch (error) {
+      AdyenLogs.error_log('Error while fetching stores:', error);
+      res.json({ success: false });
+    }
+    return next();
   }
-  return next();
+  return {};
 });
 
 module.exports = server.exports();
