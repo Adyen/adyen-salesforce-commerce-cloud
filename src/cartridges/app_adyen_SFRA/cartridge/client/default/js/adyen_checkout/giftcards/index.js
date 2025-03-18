@@ -427,16 +427,6 @@ function renderGiftCardLogo(imagePath) {
   }
 }
 
-function setGiftCardContainerVisibility() {
-  const availableGiftCards = giftCardBrands();
-  if (availableGiftCards.length === 0) {
-    const giftCardContainer = document.querySelector('.gift-card-selection');
-    giftCardContainer.style.display = 'none';
-    const giftCardSeparator = document.querySelector('.gift-card-separator');
-    giftCardSeparator.style.display = 'none';
-  }
-}
-
 async function applyGiftCards() {
   const now = new Date().toISOString();
   const { amount } = store.checkoutConfiguration;
@@ -477,7 +467,6 @@ async function renderGiftCards(paymentMethodsResponse) {
     store.partialPaymentsOrderObj = { ...lastGiftCard, totalDiscountedAmount };
   }
 
-  setGiftCardContainerVisibility();
   renderGiftCardLogo(paymentMethodsResponse.imagePath);
 
   if (store.addedGiftCards?.length) {
@@ -501,7 +490,6 @@ module.exports = {
   attachGiftCardCancelListener,
   showGiftCardCancelButton,
   applyGiftCards,
-  setGiftCardContainerVisibility,
   renderGiftCardLogo,
   isCartModified,
   renderGiftCards,

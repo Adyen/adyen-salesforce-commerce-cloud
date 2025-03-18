@@ -223,23 +223,6 @@ describe('Render Generic Component', () => {
     expect(headingImg.src).toBe('http://localhost/example.com/genericgiftcard.png');
   });
 
-  it('correctly sets gift card container visibility', () => {
-    document.body.innerHTML = `
-    <div class="gift-card-selection"></div>
-    <div class="gift-card-separator"></div>`;
-    store.checkout.paymentMethodsResponse = {
-      paymentMethods: {
-        filter: jest.fn(() => [
-        ]),
-      },
-    }
-    setGiftCardContainerVisibility();
-    const giftCardSelection = document.querySelector('.gift-card-selection');
-    const giftCardSeparator = document.querySelector('.gift-card-separator');
-    expect(giftCardSelection.style.display).toBe('none');
-    expect(giftCardSeparator.style.display).toBe('none');
-  });
-
   it('should call removeGiftCards with isPartialPaymentExpired', () => {
     const renderGiftCardComponent = require('*/cartridge/client/default/js/adyen_checkout/giftcards');
     const now = new Date().toISOString();
