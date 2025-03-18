@@ -4,7 +4,8 @@
 jest.mock('../../commons');
 jest.mock('../../../../../store');
 
-const { renderGenericComponent, setInstallments, renderPosTerminals, isCartModified, renderGiftCardLogo, setGiftCardContainerVisibility, applyGiftCards } = require('../renderGenericComponent');
+const { renderGenericComponent, setInstallments, renderPosTerminals } = require('../renderGenericComponent');
+const { applyGiftCards, setGiftCardContainerVisibility, renderGiftCardLogo, isCartModified } = require('../giftcards/index');
 const { getPaymentMethods } = require('../../commons');
 const { fetchGiftCards } = require('../../commons');
 const store = require('../../../../../store');
@@ -93,8 +94,17 @@ describe('Render Generic Component', () => {
     store.paymentMethodsConfiguration = {
       amazonpay: {}
     };
-    await renderGenericComponent();
-    expect(getPaymentMethods).toBeCalled();
+    await renderGenericComponent({
+      amount: {
+        currency: "mocked_currency",
+        value: "mocked_amount",
+      },
+      countryCode: "mocked_countrycode",
+      imagePath: 'example.com',
+      adyenDescriptions: {
+        amazonpay: 'testDescription'
+      }
+    });
     expect(store.checkoutConfiguration).toMatchSnapshot();
     expect(
       document.querySelector('input[type=radio][name=brandCode]').value,
@@ -115,15 +125,18 @@ describe('Render Generic Component', () => {
     store.paymentMethodsConfiguration = {
       amazonpay: {}
     }
-    await renderGenericComponent();
-    expect(getPaymentMethods).toBeCalled();
+    await renderGenericComponent({
+      amount: {
+        currency: "mocked_currency",
+        value: "mocked_amount",
+      },
+      countryCode: "mocked_countrycode",
+      imagePath: 'example.com',
+      adyenDescriptions: {
+        amazonpay: 'testDescription'
+      }
+    });
     expect(store.checkoutConfiguration).toMatchSnapshot();
-    expect(
-      document.querySelector('.gift-card-selection').style.display,
-    ).toEqual('none');
-    expect(
-      document.querySelector('.gift-card-separator').style.display,
-    ).toEqual('none');
   });
 
   it('should set installment options correctly', () => {
@@ -184,11 +197,6 @@ describe('Render Generic Component', () => {
       expect(document.dispatchEvent).toHaveBeenCalledWith(new Event('INIT_CHECKOUT_EVENT'));
       done();
     }); // Timeout needed for completition of the test
-  });
-
-  it('handles errors in initializeCheckout', async () => {
-    getPaymentMethods.mockRejectedValue(new Error('Payments method call failed'));
-    await expect(renderGenericComponent()).rejects.toThrow('Payments method call failed');
   });
 
   it('correctly sets Pos Terminals', () => {
