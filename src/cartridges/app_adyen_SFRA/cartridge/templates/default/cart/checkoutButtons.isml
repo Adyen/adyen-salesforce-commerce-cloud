@@ -48,15 +48,7 @@
             </a>
         </div>
         <isif condition="${AdyenConfigs.areExpressPaymentsEnabled()}">
-            <div id="express-loader-container" class="express-loader-container">
-                <span class="express-loader"></span>
-            </div>
-            <div id="express-container" class="hidden">
-                <div data-method="applepay" class="expressComponent applepay" style="padding:0"></div>
-                <div data-method="amazonpay" class="expressComponent" id="amazonpay-container"></div>
-                <div data-method="paypal" class="expressComponent" id="paypal-container" style="padding:0"></div>
-                <div data-method="googlepay" class="expressComponent googlepay" style="padding:0"></div>
-            </div>
+            <div id="express-container"></div>
             <script src="${URLUtils.httpsStatic('/js/cartExpressPayments.js')}" type="text/javascript"></script>
         </isif>
     </iselse>
