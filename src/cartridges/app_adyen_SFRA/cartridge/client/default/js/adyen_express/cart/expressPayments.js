@@ -35,7 +35,7 @@ async function renderApplePayButton(paymentMethodsResponse) {
     checkIfExpressMethodsAreReady();
     return;
   }
-  const applePay = new ApplePay(applePayConfig, applicationInfo, true);
+  const applePay = new ApplePay(applePayConfig, applicationInfo);
   const applePayComponent = await applePay.getComponent();
   applePayComponent.mount('.applepay');
   updateLoadedExpressMethods(APPLE_PAY);

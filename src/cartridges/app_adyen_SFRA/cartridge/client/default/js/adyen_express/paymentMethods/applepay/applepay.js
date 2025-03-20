@@ -246,7 +246,7 @@ class ApplePay {
     }
   };
 
-  async onClick(resolve, reject) {
+  onClick = async (resolve, reject) => {
     if (this.isExpressPdp) {
       const tempBasketResponse = await createTemporaryBasket();
       if (tempBasketResponse?.temporaryBasketCreated) {
@@ -264,7 +264,7 @@ class ApplePay {
     } else {
       resolve();
     }
-  }
+  };
 
   getConfig() {
     return {
