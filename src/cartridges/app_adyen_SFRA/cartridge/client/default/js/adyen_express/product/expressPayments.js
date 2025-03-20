@@ -1,10 +1,8 @@
-const applePayExpressModule = require('../applePayExpress');
 const googlePayExpressModule = require('../googlePayExpress');
 const { APPLE_PAY, GOOGLE_PAY } = require('../../constants');
 const { getPaymentMethods } = require('../../commons');
 const { httpClient } = require('../../commons/httpClient');
-
-let paymentMethodsResponse;
+const { ApplePay } = require('../paymentMethods');
 
 function getProductForm(product) {
   const $productInputEl = document.createElement('input');
@@ -45,8 +43,14 @@ function getExpressPaymentButtons(product) {
   return enabledExpressPaymentButtons;
 }
 
-function renderApplePayButton(paymentMethods) {
-  applePayExpressModule.init(paymentMethods, true);
+async function renderApplePayButton(paymentMethodsResponse) {
+  const { AdyenPaymentMethods, applicationInfo } = paymentMethodsResponse;
+  const applePayConfig = AdyenPaymentMethods?.paymentMethods.find(
+    (pm) => pm.type === APPLE_PAY,
+  )?.configuration;
+  const applePay = new ApplePay(applePayConfig, applicationInfo);
+  const applePayComponent = await applePay.getComponent();
+  applePayComponent.mount('.applepay');
 }
 
 function renderGooglePayButton(paymentMethods) {
@@ -79,7 +83,7 @@ function renderExpressPaymentButtons() {
 }
 
 async function init() {
-  paymentMethodsResponse = await getPaymentMethods();
+  const paymentMethodsResponse = await getPaymentMethods();
   $('body').on('product:updateAddToCart', (e, response) => {
     $('body').trigger('product:renderExpressPaymentButtons', {
       product: response.product,
