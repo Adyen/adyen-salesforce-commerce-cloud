@@ -5,14 +5,15 @@ const {
   showGiftCardCancelButton,
   attachGiftCardCancelListener,
   createElementsToShowRemainingGiftCardAmount,
-} = require('../../renderGiftcardComponent');
-const { makePartialPayment } = require('../../makePartialPayment');
+} = require('../../giftcards');
 const { GIFTCARD, SUCCESS, NOTENOUGHBALANCE } = require('../../../constants');
+const { initializeCheckout } = require('../../renderGenericComponent');
 
 class GiftCardConfig {
-  constructor(store, httpClient) {
+  constructor(store, httpClient, helpers) {
     this.store = store;
     this.httpClient = httpClient;
+    this.helpers = helpers;
   }
 
   handleBalanceCheckSuccess = (data, resolve) => {
@@ -180,6 +181,32 @@ class GiftCardConfig {
     createElementsToShowRemainingGiftCardAmount();
   }
 
+  makePartialPayment(requestData) {
+    // eslint-disable-next-line no-async-promise-executor
+    return new Promise(async (resolve, reject) => {
+      const response = await this.httpClient({
+        url: window.partialPaymentUrl,
+        method: 'POST',
+        data: {
+          data: JSON.stringify(requestData),
+        },
+      });
+      if (response.error) {
+        reject(new Error(`Partial payment error ${response?.error}`));
+      } else {
+        const { giftCards, ...rest } = response;
+        this.store.checkout.options.amount = rest.remainingAmount;
+        this.store.adyenOrderDataCreated = rest.orderCreated;
+        this.store.partialPaymentsOrderObj = rest;
+        sessionStorage.setItem('partialPaymentsObj', JSON.stringify(rest));
+        this.store.addedGiftCards = giftCards;
+        this.helpers.setOrderFormData(response);
+        initializeCheckout();
+        resolve();
+      }
+    });
+  }
+
   async makeGiftCardPaymentRequest(paymentMethod, reject) {
     const brandSelect = document.getElementById('giftCardSelect');
     const giftCardBrand = brandSelect.options[brandSelect.selectedIndex].text;
@@ -187,7 +214,7 @@ class GiftCardConfig {
     const { encryptedCardNumber, encryptedSecurityCode, brand } = paymentMethod;
 
     try {
-      await makePartialPayment({
+      await this.makePartialPayment({
         encryptedCardNumber,
         encryptedSecurityCode,
         brand,

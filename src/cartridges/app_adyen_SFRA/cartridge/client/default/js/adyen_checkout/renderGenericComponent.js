@@ -2,24 +2,8 @@
 const store = require('../../../../store');
 const { renderPaymentMethod } = require('./renderPaymentMethod');
 const helpers = require('./helpers');
-const {
-  getPaymentMethods,
-  fetchGiftCards,
-  getConnectedTerminals,
-} = require('../commons');
+const { getConnectedTerminals } = require('../commons');
 const constants = require('../constants');
-const {
-  createElementsToShowRemainingGiftCardAmount,
-  removeGiftCards,
-  renderAddedGiftCard,
-  showGiftCardWarningMessage,
-  attachGiftCardAddButtonListener,
-  showGiftCardInfoMessage,
-  giftCardBrands,
-  clearGiftCardsContainer,
-  attachGiftCardCancelListener,
-  showGiftCardCancelButton,
-} = require('./renderGiftcardComponent');
 
 function addPosTerminals(terminals) {
   const ddTerminals = document.createElement('select');
@@ -60,51 +44,6 @@ function unmountComponents() {
     return resolveUnmount(key, val);
   });
   return Promise.all(promises);
-}
-
-function isCartModified(amount, orderAmount) {
-  return (
-    amount.currency !== orderAmount.currency ||
-    amount.value !== orderAmount.value
-  );
-}
-
-function renderGiftCardLogo(imagePath) {
-  const headingImg = document.querySelector('#headingImg');
-  if (headingImg) {
-    headingImg.src = `${imagePath}genericgiftcard.png`;
-  }
-}
-
-async function applyGiftCards() {
-  const now = new Date().toISOString();
-  const { amount } = store.checkoutConfiguration;
-  const { orderAmount } = store.partialPaymentsOrderObj;
-
-  const isPartialPaymentExpired = store.addedGiftCards.some(
-    (cart) => now > cart.expiresAt,
-  );
-  const cartModified = isCartModified(amount, orderAmount);
-
-  if (isPartialPaymentExpired) {
-    await removeGiftCards();
-  } else if (cartModified) {
-    await removeGiftCards();
-    showGiftCardWarningMessage();
-  } else {
-    clearGiftCardsContainer();
-    store.addedGiftCards.forEach((card) => {
-      renderAddedGiftCard(card);
-    });
-    if (store.addedGiftCards?.length) {
-      showGiftCardInfoMessage();
-    }
-    store.checkout.options.amount =
-      store.addedGiftCards[store.addedGiftCards.length - 1].remainingAmount;
-    showGiftCardCancelButton(true);
-    attachGiftCardCancelListener();
-    createElementsToShowRemainingGiftCardAmount();
-  }
 }
 
 function renderStoredPaymentMethod(imagePath) {
@@ -252,19 +191,7 @@ function setInstallments(amount) {
   } catch (e) {} // eslint-disable-line no-empty
 }
 
-function setGiftCardContainerVisibility() {
-  const availableGiftCards = giftCardBrands();
-  if (availableGiftCards.length === 0) {
-    const giftCardContainer = document.querySelector('.gift-card-selection');
-    giftCardContainer.style.display = 'none';
-    const giftCardSeparator = document.querySelector('.gift-card-separator');
-    giftCardSeparator.style.display = 'none';
-  }
-}
-
-export async function initializeCheckout() {
-  const paymentMethodsResponse = await getPaymentMethods();
-  const giftCardsData = await fetchGiftCards();
+export async function initializeCheckout(paymentMethodsResponse) {
   setCheckoutConfiguration(paymentMethodsResponse);
 
   store.checkoutConfiguration.paymentMethodsResponse = {
@@ -274,13 +201,6 @@ export async function initializeCheckout() {
   store.checkout = await window.AdyenWeb.AdyenCheckout(
     store.checkoutConfiguration,
   );
-  setGiftCardContainerVisibility();
-  const { totalDiscountedAmount, giftCards } = giftCardsData;
-  if (giftCards?.length) {
-    store.addedGiftCards = giftCards;
-    const lastGiftCard = store.addedGiftCards[store.addedGiftCards.length - 1];
-    store.partialPaymentsOrderObj = { ...lastGiftCard, totalDiscountedAmount };
-  }
 
   setInstallments(paymentMethodsResponse.amount);
   setAmazonPayConfig(store.checkout.paymentMethodsResponse);
@@ -310,8 +230,6 @@ export async function initializeCheckout() {
     paymentMethodsResponse.adyenDescriptions,
   );
 
-  renderGiftCardLogo(paymentMethodsResponse.imagePath);
-
   const firstPaymentMethod = document.querySelector(
     'input[type=radio][name=brandCode]',
   );
@@ -332,18 +250,12 @@ export async function initializeCheckout() {
 /**
  * Calls getPaymentMethods and then renders the retrieved payment methods (including card component)
  */
-async function renderGenericComponent() {
+async function renderGenericComponent(paymentMethodsResponse) {
   if (Object.keys(store.componentsObj).length !== 0) {
     await unmountComponents();
   }
 
-  await initializeCheckout();
-
-  if (store.addedGiftCards?.length) {
-    await applyGiftCards();
-  }
-
-  attachGiftCardAddButtonListener();
+  await initializeCheckout(paymentMethodsResponse);
 }
 
 module.exports = {
@@ -354,10 +266,6 @@ module.exports = {
   renderStoredPaymentMethods,
   renderPaymentMethods,
   renderPosTerminals,
-  isCartModified,
   resolveUnmount,
-  renderGiftCardLogo,
-  setGiftCardContainerVisibility,
-  applyGiftCards,
   addStores,
 };

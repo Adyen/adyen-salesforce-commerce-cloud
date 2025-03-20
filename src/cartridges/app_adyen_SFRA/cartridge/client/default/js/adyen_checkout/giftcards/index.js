@@ -1,67 +1,45 @@
-const store = require('../../../../store');
-const constants = require('../constants');
-const { httpClient } = require('../commons/httpClient');
+const store = require('../../../../../store');
+const constants = require('../../constants');
+const { httpClient } = require('../../commons/httpClient');
+const { fetchGiftCards } = require('../../commons');
 
 function getGiftCardElements() {
-  const giftCardSelect = document.querySelector('#giftCardSelect');
-  const giftCardUl = document.querySelector('#giftCardUl');
-  const giftCardContainer = document.querySelector('#giftCardContainer');
-  const giftCardAddButton = document.querySelector('#giftCardAddButton');
-  const giftCardCancelContainer = document.querySelector(
-    '#giftCardsCancelContainer',
-  );
-  const giftCardCancelButton = document.querySelector('#giftCardCancelButton');
-  const giftCardSelectContainer = document.querySelector(
-    '#giftCardSelectContainer',
-  );
-  const giftCardSelectWrapper = document.querySelector(
-    '#giftCardSelectWrapper',
-  );
-  const giftCardsList = document.querySelector('#giftCardsList');
-  const giftCardsInfoMessageContainer = document.querySelector(
-    '#giftCardsInfoMessage',
-  );
-  const cancelMainPaymentGiftCard = document.querySelector(
-    '#cancelGiftCardButton',
-  );
-  const giftCardInformation = document.querySelector('#giftCardInformation');
-
-  return {
-    giftCardSelect,
-    giftCardUl,
-    giftCardContainer,
-    giftCardAddButton,
-    giftCardSelectContainer,
-    giftCardsList,
-    giftCardsInfoMessageContainer,
-    giftCardSelectWrapper,
-    giftCardCancelContainer,
-    giftCardCancelButton,
-    cancelMainPaymentGiftCard,
-    giftCardInformation,
+  const elements = {
+    giftCardSelect: '#giftCardSelect',
+    giftCardUl: '#giftCardUl',
+    giftCardContainer: '#giftCardContainer',
+    giftCardAddButton: '#giftCardAddButton',
+    giftCardCancelContainer: '#giftCardsCancelContainer',
+    giftCardCancelButton: '#giftCardCancelButton',
+    giftCardSelectContainer: '#giftCardSelectContainer',
+    giftCardSelectWrapper: '#giftCardSelectWrapper',
+    giftCardsList: '#giftCardsList',
+    giftCardsInfoMessageContainer: '#giftCardsInfoMessage',
+    cancelMainPaymentGiftCard: '#cancelGiftCardButton',
+    giftCardInformation: '#giftCardInformation',
   };
+
+  return Object.fromEntries(
+    Object.entries(elements).map(([key, selector]) => [
+      key,
+      document.querySelector(selector),
+    ]),
+  );
 }
 
 function showGiftCardCancelButton(show) {
   const { giftCardCancelContainer } = getGiftCardElements();
-  if (show) {
-    giftCardCancelContainer.classList.remove('invisible');
-  } else {
-    giftCardCancelContainer.classList.add('invisible');
-  }
+  giftCardCancelContainer.classList.toggle('invisible', !show);
 }
 
 async function removeGiftCards() {
-  const res = await httpClient({
+  const response = await httpClient({
     method: 'POST',
     url: window.cancelPartialPaymentOrderUrl,
     data: {
       csrf_token: $('#adyen-token').val(),
     },
   });
-  const adyenPartialPaymentsOrder = document.querySelector(
-    '#adyenPartialPaymentsOrder',
-  );
 
   const {
     giftCardsList,
@@ -74,6 +52,11 @@ async function removeGiftCards() {
     giftCardInformation,
   } = getGiftCardElements();
 
+  const adyenPartialPaymentsOrder = document.querySelector(
+    '#adyenPartialPaymentsOrder',
+  );
+  const submitButton = document.querySelector('button[value="submit-payment"]');
+
   adyenPartialPaymentsOrder.value = null;
   giftCardsList.innerHTML = '';
   giftCardAddButton.style.display = 'block';
@@ -85,32 +68,30 @@ async function removeGiftCards() {
   cancelMainPaymentGiftCard.classList.add('invisible');
   showGiftCardCancelButton(false);
   giftCardInformation?.remove();
-
-  store.checkout.options.amount = res.amount;
-  store.partialPaymentsOrderObj = null;
-  store.addedGiftCards = null;
-  store.adyenOrderDataCreated = false;
-
   giftCardsInfoMessageContainer.innerHTML = '';
   giftCardsInfoMessageContainer.classList.remove(
     'gift-cards-info-message-container',
   );
-  const submitButton = document.querySelector('button[value="submit-payment"]');
+
   if (submitButton) {
-    document.querySelector('button[value="submit-payment"]').disabled = false;
+    submitButton.disabled = false;
   }
 
-  if (res.resultCode === constants.RECEIVED) {
+  store.checkout.options.amount = response.amount;
+  store.partialPaymentsOrderObj = null;
+  store.addedGiftCards = null;
+  store.adyenOrderDataCreated = false;
+
+  if (response.resultCode === constants.RECEIVED) {
     document.querySelector('#cancelGiftCardContainer')?.parentNode.remove();
     store.componentsObj?.giftcard?.node.unmount('component_giftcard');
   }
-  const renderPaymentMethodEvent = new Event('checkout:renderPaymentMethod');
-  document.dispatchEvent(renderPaymentMethodEvent);
+
+  document.dispatchEvent(new Event('checkout:renderPaymentMethod'));
 }
 
 function giftCardBrands() {
   const { paymentMethodsResponse } = store.checkout;
-
   return paymentMethodsResponse.paymentMethods.filter(
     (pm) => pm.type === constants.GIFTCARD,
   );
@@ -124,31 +105,29 @@ function renderGiftCardSelectForm() {
   }
 
   const { imagePath } = store.checkoutConfiguration.paymentMethodsResponse;
-
   giftCardBrands().forEach((giftCard) => {
     const newListItem = document.createElement('li');
-    newListItem.setAttribute('data-brand', giftCard.brand);
-    newListItem.setAttribute('data-name', giftCard.name);
-    newListItem.setAttribute('data-type', giftCard.type);
+    newListItem.dataset.brand = giftCard.brand;
+    newListItem.dataset.name = giftCard.name;
+    newListItem.dataset.type = giftCard.type;
 
     const span = document.createElement('span');
     span.textContent = giftCard.name;
+
     const img = document.createElement('img');
     img.src = `${imagePath}${giftCard.brand}.png`;
     img.width = 40;
     img.height = 26;
 
-    newListItem.appendChild(span);
-    newListItem.appendChild(img);
-
+    newListItem.append(span, img);
     giftCardUl.appendChild(newListItem);
   });
+
+  giftCardSelect.classList.remove('invisible');
 }
 
 function attachGiftCardFormListeners() {
-  if (store.giftCardComponentListenersAdded) {
-    return;
-  }
+  if (store.giftCardComponentListenersAdded) return;
 
   const {
     giftCardUl,
@@ -159,15 +138,18 @@ function attachGiftCardFormListeners() {
 
   if (giftCardUl) {
     giftCardUl.addEventListener('click', (event) => {
-      giftCardUl.classList.toggle('invisible');
+      if (!event.target.dataset.name) return;
+
       const selectedGiftCard = {
         name: event.target.dataset.name,
         brand: event.target.dataset.brand,
         type: event.target.dataset.type,
       };
+
       if (store.componentsObj?.giftcard) {
         store.componentsObj.giftcard.node.unmount('component_giftcard');
       }
+
       if (!store.partialPaymentsOrderObj) {
         store.partialPaymentsOrderObj = {};
       }
@@ -177,8 +159,8 @@ function attachGiftCardFormListeners() {
       newOption.value = selectedGiftCard.brand;
       newOption.style.visibility = 'hidden';
       giftCardSelect.appendChild(newOption);
-
       giftCardSelect.value = selectedGiftCard.brand;
+
       const giftCardAmount = store.partialPaymentsOrderObj.remainingAmount
         ? store.partialPaymentsOrderObj.remainingAmount
         : store.checkout.options.amount;
@@ -195,6 +177,8 @@ function attachGiftCardFormListeners() {
         },
       ).mount(giftCardContainer);
       store.componentsObj.giftcard = { node: giftCardNode };
+
+      giftCardUl.classList.toggle('invisible');
     });
   }
 
@@ -208,26 +192,28 @@ function attachGiftCardFormListeners() {
 }
 
 function showGiftCardWarningMessage() {
+  const orderTotalSummaryEl = document.querySelector(
+    '.card-body.order-total-summary',
+  );
+
+  if (!orderTotalSummaryEl) return;
+
   const alertContainer = document.createElement('div');
-  alertContainer.setAttribute('id', 'giftCardWarningMessage');
+  alertContainer.id = 'giftCardWarningMessage';
   alertContainer.classList.add(
     'alert',
     'alert-warning',
     'error-message',
     'gift-card-warning-msg',
   );
-  alertContainer.setAttribute('role', 'alert');
+  alertContainer.role = 'alert';
 
   const alertContainerP = document.createElement('p');
   alertContainerP.classList.add('error-message-text');
   alertContainerP.textContent = window.giftCardWarningMessage;
 
-  alertContainer.appendChild(alertContainerP);
-
-  const orderTotalSummaryEl = document.querySelector(
-    '.card-body.order-total-summary',
-  );
-  orderTotalSummaryEl?.appendChild(alertContainer);
+  alertContainer.append(alertContainerP);
+  orderTotalSummaryEl.appendChild(alertContainer);
 }
 
 function attachGiftCardAddButtonListener() {
@@ -237,22 +223,23 @@ function attachGiftCardAddButtonListener() {
     giftCardSelectWrapper,
     giftCardSelect,
   } = getGiftCardElements();
-  if (giftCardAddButton) {
-    giftCardAddButton.addEventListener('click', () => {
-      renderGiftCardSelectForm();
-      attachGiftCardFormListeners();
-      const giftCardWarningMessageEl = document.querySelector(
-        '#giftCardWarningMessage',
-      );
-      if (giftCardWarningMessageEl) {
-        giftCardWarningMessageEl.style.display = 'none';
-      }
-      giftCardSelect.value = 'null';
-      giftCardAddButton.style.display = 'none';
-      giftCardSelectContainer.classList.remove('invisible');
-      giftCardSelectWrapper.classList.remove('invisible');
-    });
-  }
+
+  if (!giftCardAddButton) return;
+
+  giftCardAddButton.addEventListener('click', () => {
+    renderGiftCardSelectForm();
+    attachGiftCardFormListeners();
+    const giftCardWarningMessage = document.querySelector(
+      '#giftCardWarningMessage',
+    );
+    if (giftCardWarningMessage) {
+      document.querySelector('#giftCardWarningMessage').style.display = 'none';
+    }
+    giftCardSelect.value = 'null';
+    giftCardAddButton.style.display = 'none';
+    giftCardSelectContainer.classList.remove('invisible');
+    giftCardSelectWrapper.classList.remove('invisible');
+  });
 }
 
 function attachGiftCardCancelListener() {
@@ -335,6 +322,7 @@ function createElementsToShowRemainingGiftCardAmount() {
   const renderedDiscountedAmountEndSpan = document.getElementById(
     'discountedAmountEndSpan',
   );
+
   if (renderedRemainingAmountEndSpan && renderedDiscountedAmountEndSpan) {
     renderedRemainingAmountEndSpan.innerText =
       store.partialPaymentsOrderObj.remainingAmountFormatted;
@@ -343,67 +331,59 @@ function createElementsToShowRemainingGiftCardAmount() {
     return;
   }
 
-  const mainContainer = document.createElement('div');
-  const remainingAmountContainer = document.createElement('div');
-  const remainingAmountStart = document.createElement('div');
-  const remainingAmountEnd = document.createElement('div');
-  const discountedAmountContainer = document.createElement('div');
-  const discountedAmountStart = document.createElement('div');
-  const discountedAmountEnd = document.createElement('div');
-  const remainingAmountStartP = document.createElement('p');
-  const remainingAmountEndP = document.createElement('p');
-  const discountedAmountStartP = document.createElement('p');
-  const discountedAmountEndP = document.createElement('p');
-  const remainingAmountStartSpan = document.createElement('span');
-  const discountedAmountStartSpan = document.createElement('span');
-  const remainingAmountEndSpan = document.createElement('span');
-  remainingAmountEndSpan.id = 'remainingAmountEndSpan';
-  const discountedAmountEndSpan = document.createElement('span');
-  discountedAmountEndSpan.id = 'discountedAmountEndSpan';
-
-  remainingAmountContainer.classList.add('row', 'grand-total', 'leading-lines');
-  remainingAmountStart.classList.add('col-6', 'start-lines');
-  remainingAmountEnd.classList.add('col-6', 'end-lines');
-  remainingAmountStartP.classList.add('order-receipt-label');
-  discountedAmountContainer.classList.add(
-    'row',
-    'grand-total',
-    'leading-lines',
-  );
-  discountedAmountStart.classList.add('col-6', 'start-lines');
-  discountedAmountEnd.classList.add('col-6', 'end-lines');
-  discountedAmountStartP.classList.add('order-receipt-label');
-  remainingAmountEndP.classList.add('text-right');
-  discountedAmountEndP.classList.add('text-right');
-  discountedAmountContainer.id = 'discountedAmountContainer';
-  remainingAmountContainer.id = 'remainingAmountContainer';
-
-  remainingAmountStartSpan.innerText = window.remainingAmountGiftCardResource;
-  discountedAmountStartSpan.innerText = window.discountedAmountGiftCardResource;
-  remainingAmountEndSpan.innerText =
-    store.partialPaymentsOrderObj.remainingAmountFormatted;
-  discountedAmountEndSpan.innerText =
-    store.partialPaymentsOrderObj.totalDiscountedAmount;
-
-  remainingAmountContainer.appendChild(remainingAmountStart);
-  remainingAmountContainer.appendChild(remainingAmountEnd);
-  remainingAmountStart.appendChild(remainingAmountStartP);
-
-  discountedAmountContainer.appendChild(discountedAmountStart);
-  discountedAmountContainer.appendChild(discountedAmountEnd);
-  discountedAmountStart.appendChild(discountedAmountStartP);
-
-  remainingAmountEnd.appendChild(remainingAmountEndP);
-  remainingAmountStartP.appendChild(remainingAmountStartSpan);
-  discountedAmountEnd.appendChild(discountedAmountEndP);
-  discountedAmountStartP.appendChild(discountedAmountStartSpan);
-  remainingAmountEndP.appendChild(remainingAmountEndSpan);
-  discountedAmountEndP.appendChild(discountedAmountEndSpan);
-
   const pricingContainer = document.querySelector(
     '.card-body.order-total-summary',
   );
+
+  const mainContainer = document.createElement('div');
   mainContainer.id = 'giftCardInformation';
+
+  const createContainer = (id, startText, endText) => {
+    const container = document.createElement('div');
+    container.id = id;
+    container.classList.add('row', 'grand-total', 'leading-lines');
+
+    const startDiv = document.createElement('div');
+    startDiv.classList.add('col-6', 'start-lines');
+    const startP = document.createElement('p');
+    startP.classList.add('order-receipt-label');
+    const startSpan = document.createElement('span');
+    startSpan.innerText = startText;
+    startP.appendChild(startSpan);
+    startDiv.appendChild(startP);
+
+    const endDiv = document.createElement('div');
+    endDiv.classList.add('col-6', 'end-lines');
+    const endP = document.createElement('p');
+    endP.classList.add('text-right');
+    const endSpan = document.createElement('span');
+    endSpan.innerText = endText;
+    if (id === 'remainingAmountContainer') {
+      endSpan.id = 'remainingAmountEndSpan';
+    } else if (id === 'discountedAmountContainer') {
+      endSpan.id = 'discountedAmountEndSpan';
+    }
+    endP.appendChild(endSpan);
+    endDiv.appendChild(endP);
+
+    container.appendChild(startDiv);
+    container.appendChild(endDiv);
+
+    return container;
+  };
+
+  const remainingAmountContainer = createContainer(
+    'remainingAmountContainer',
+    window.remainingAmountGiftCardResource,
+    store.partialPaymentsOrderObj.remainingAmountFormatted,
+  );
+
+  const discountedAmountContainer = createContainer(
+    'discountedAmountContainer',
+    window.discountedAmountGiftCardResource,
+    store.partialPaymentsOrderObj.totalDiscountedAmount,
+  );
+
   mainContainer.appendChild(discountedAmountContainer);
   mainContainer.appendChild(remainingAmountContainer);
   pricingContainer.appendChild(mainContainer);
@@ -433,6 +413,69 @@ function showGiftCardInfoMessage() {
   );
 }
 
+function isCartModified(amount, orderAmount) {
+  return (
+    amount.currency !== orderAmount.currency ||
+    amount.value !== orderAmount.value
+  );
+}
+
+function renderGiftCardLogo(imagePath) {
+  const headingImg = document.querySelector('#headingImg');
+  if (headingImg) {
+    headingImg.src = `${imagePath}genericgiftcard.png`;
+  }
+}
+
+async function applyGiftCards() {
+  const now = new Date().toISOString();
+  const { amount } = store.checkoutConfiguration;
+  const { orderAmount } = store.partialPaymentsOrderObj;
+
+  const isPartialPaymentExpired = store.addedGiftCards.some(
+    (cart) => now > cart.expiresAt,
+  );
+  const cartModified = isCartModified(amount, orderAmount);
+
+  if (isPartialPaymentExpired) {
+    await removeGiftCards();
+  } else if (cartModified) {
+    await removeGiftCards();
+    showGiftCardWarningMessage();
+  } else {
+    clearGiftCardsContainer();
+    store.addedGiftCards.forEach((card) => {
+      renderAddedGiftCard(card);
+    });
+    if (store.addedGiftCards?.length) {
+      showGiftCardInfoMessage();
+    }
+    store.checkout.options.amount =
+      store.addedGiftCards[store.addedGiftCards.length - 1].remainingAmount;
+    showGiftCardCancelButton(true);
+    attachGiftCardCancelListener();
+    createElementsToShowRemainingGiftCardAmount();
+  }
+}
+
+async function renderGiftCards(paymentMethodsResponse) {
+  const giftCardsData = await fetchGiftCards();
+  const { totalDiscountedAmount, giftCards } = giftCardsData;
+  if (giftCards?.length) {
+    store.addedGiftCards = giftCards;
+    const lastGiftCard = store.addedGiftCards[store.addedGiftCards.length - 1];
+    store.partialPaymentsOrderObj = { ...lastGiftCard, totalDiscountedAmount };
+  }
+
+  renderGiftCardLogo(paymentMethodsResponse.imagePath);
+
+  if (store.addedGiftCards?.length) {
+    await applyGiftCards();
+  }
+
+  attachGiftCardAddButtonListener();
+}
+
 module.exports = {
   removeGiftCards,
   renderAddedGiftCard,
@@ -446,4 +489,8 @@ module.exports = {
   clearGiftCardsContainer,
   attachGiftCardCancelListener,
   showGiftCardCancelButton,
+  applyGiftCards,
+  renderGiftCardLogo,
+  isCartModified,
+  renderGiftCards,
 };

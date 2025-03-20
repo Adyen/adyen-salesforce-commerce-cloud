@@ -12,12 +12,23 @@ const {
 const { validateComponents } = require('./validateComponents');
 const billing = require('../checkout/billing');
 const { httpClient } = require('../commons/httpClient');
+const { getPaymentMethods } = require('../commons');
+const { GIFTCARD } = require('../constants');
+const { renderGiftCards } = require('./giftcards');
 
 function renderPaymentMethod() {
-  $('body').on('checkout:renderPaymentMethod', (e, response) => {
+  $('body').on('checkout:renderPaymentMethod', async (e, response) => {
+    const paymentMethodsResponse = await getPaymentMethods();
     const { email } = response;
     setCheckoutConfiguration({ email });
-    renderGenericComponent();
+    await renderGenericComponent(paymentMethodsResponse);
+    const areGiftCardsEnabled =
+      paymentMethodsResponse?.AdyenPaymentMethods?.paymentMethods?.some(
+        (pm) => pm.type === GIFTCARD,
+      );
+    if (areGiftCardsEnabled) {
+      await renderGiftCards(paymentMethodsResponse);
+    }
   });
 }
 

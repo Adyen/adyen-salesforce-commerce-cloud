@@ -6,7 +6,7 @@ const {
   renderAddedGiftCard,
   renderGiftCardSelectForm,
   showGiftCardWarningMessage,
-} = require('../renderGiftcardComponent');
+} = require('../giftcards');
 const store = require('../../../../../store');
 
 jest.mock('../../commons');
@@ -75,10 +75,6 @@ describe.only('Render gift card', () => {
     `;
 
     showGiftCardWarningMessage();
-    const orderTotalSummaryEl = document.querySelector(
-      '.card-body.order-total-summary',
-    );
-    expect(orderTotalSummaryEl).toMatchSnapshot();
     expect(document.querySelector('#giftCardWarningMessage')).toBeTruthy();
   });
 

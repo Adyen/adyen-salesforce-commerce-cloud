@@ -44,6 +44,7 @@
     <isscript>
         var assets = require('*/cartridge/scripts/assets.js');
         assets.addJs('/js/amazonPayCheckout.js');
+        assets.addCss('/css/adyenGiftcards.css');
         assets.addCss('/css/adyenCss.css');
     </isscript>
 
