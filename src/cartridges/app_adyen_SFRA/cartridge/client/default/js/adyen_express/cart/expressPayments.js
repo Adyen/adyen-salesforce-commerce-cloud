@@ -1,49 +1,70 @@
 const {
   checkIfExpressMethodsAreReady,
   getPaymentMethods,
+  updateLoadedExpressMethods,
 } = require('../../commons');
+const { Paypal } = require('../paymentMethods/index');
+const { APPLE_PAY, GOOGLE_PAY, PAYPAL } = require('../../constants');
 
-const applePayExpressModule = require('../applePayExpress');
-const paypalPayExpressModule = require('../paypalExpress');
-const googlePayExpressModule = require('../googlePayExpress');
-const amazonPayExpressModule = require('../amazonPayExpressPart1');
-
-let paymentMethodsResponse = null;
-
-function handleExpressPaymentsVisibility() {
-  const { expressMethodsOrder } = window;
-  if (expressMethodsOrder) {
-    const sortOrder = expressMethodsOrder.split(',');
-    const container = document.getElementById('express-container');
-    const toSort = Array.prototype.slice.call(container.children, 0);
-    toSort.sort(
-      (a, b) =>
-        sortOrder.indexOf(a.dataset.method) -
-        sortOrder.indexOf(b.dataset.method),
-    );
-    container.innerHTML = '';
-    [...toSort].map((node) => container.appendChild(node));
+async function renderPayPalButton(paymentMethodsResponse) {
+  const { AdyenPaymentMethods, applicationInfo } = paymentMethodsResponse;
+  const paypalConfig = AdyenPaymentMethods?.paymentMethods.find(
+    (pm) => pm.type === PAYPAL,
+  )?.configuration;
+  if (!paypalConfig) {
+    updateLoadedExpressMethods(PAYPAL);
+    checkIfExpressMethodsAreReady();
+    return;
   }
+  const paypal = new Paypal(paypalConfig, applicationInfo);
+  const paypalComponent = await paypal.getComponent();
+  paypalComponent.mount('.paypal');
+  updateLoadedExpressMethods(PAYPAL);
+  checkIfExpressMethodsAreReady();
 }
 
-async function init() {
-  paymentMethodsResponse = await getPaymentMethods();
-  $(document).ready(async () => {
-    if (window.isApplePayExpressEnabled === 'true') {
-      await applePayExpressModule.init(paymentMethodsResponse);
+function getExpressPaymentButtons() {
+  const expressMethodsConfig = {
+    [APPLE_PAY]: window.isApplePayExpressEnabled === 'true',
+    [GOOGLE_PAY]: window.isGooglePayExpressEnabled === 'true',
+    [PAYPAL]: window.isPayPalExpressEnabled === 'true',
+  };
+  const enabledExpressPaymentButtons = [];
+  Object.keys(expressMethodsConfig).forEach((key) => {
+    if (expressMethodsConfig[key]) {
+      const $container = document.createElement('div');
+      $container.setAttribute('id', `${key}-container`);
+      $container.setAttribute('class', `expressComponent ${key}`);
+      $container.setAttribute('data-method', `${key}`);
+      $container.setAttribute('style', `padding:0`);
+      enabledExpressPaymentButtons.push($container);
     }
-    if (window.isPayPalExpressEnabled === 'true') {
-      await paypalPayExpressModule.init(paymentMethodsResponse);
-    }
-    if (window.isAmazonPayExpressEnabled === 'true') {
-      await amazonPayExpressModule.init(paymentMethodsResponse);
-    }
-    if (window.isGooglePayExpressEnabled === 'true') {
-      await googlePayExpressModule.init(paymentMethodsResponse);
-    }
+  });
+  return enabledExpressPaymentButtons;
+}
+
+function renderExpressPaymentButtons() {
+  $('body').on('cart:renderExpressPaymentButtons', async (e, response) => {
+    const { paymentMethodsResponse } = response;
+    const $expressPaymentButtonsContainer =
+      document.getElementById('express-container');
+    const expressPaymentButtons = getExpressPaymentButtons();
+    $expressPaymentButtonsContainer.replaceChildren(...expressPaymentButtons);
+    $('#express-container').spinner().start();
+    await renderPayPalButton(paymentMethodsResponse);
+    $.spinner().stop();
   });
 }
 
-init();
-handleExpressPaymentsVisibility();
-checkIfExpressMethodsAreReady();
+async function init() {
+  const paymentMethodsResponse = await getPaymentMethods();
+  $(document).ready(async () => {
+    $('body').trigger('cart:renderExpressPaymentButtons', {
+      paymentMethodsResponse,
+    });
+  });
+}
+module.exports = {
+  init,
+  renderExpressPaymentButtons,
+};
