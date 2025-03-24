@@ -93,7 +93,7 @@ describe('ApplePay class', () => {
     const resolve = jest.fn();
     applePay.handleAuthorised(response, resolve);
     expect(resolve).toHaveBeenCalledTimes(1);
-    expect(resolve).toHaveBeenCalledWith(applePay.APPLE_PAY_SUCCESS);
+    expect(resolve).toHaveBeenCalledWith({"newTotal": {"amount": "100", "label": "Test Merchant", "type": "final"}});
   });
 
   it('should handle error response correctly', async () => {
