@@ -70,7 +70,13 @@ class ApplePay {
   };
 
   handleAuthorised = (response, resolve) => {
-    resolve(this.APPLE_PAY_SUCCESS);
+    resolve({
+      newTotal: {
+        type: 'final',
+        label: this.config.merchantName,
+        amount: `${response.fullResponse?.amount.value}`,
+      },
+    });
     if (document.querySelector('#result')) {
       document.querySelector('#result').value = JSON.stringify({
         pspReference: response.fullResponse?.pspReference,
