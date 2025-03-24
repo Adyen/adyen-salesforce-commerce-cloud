@@ -12,11 +12,11 @@ class Paypal {
       basketAmount,
       makeExpressPaymentsCall,
       saveShopperData,
-      checkoutReview,
       makeExpressPaymentDetailsCall,
       showConfirmationAction,
       shippingMethodsUrl,
       selectShippingMethodUrl,
+      saveExpressPaymentDataUrl,
     } = window;
     this.store = store;
     this.helpers = helpers;
@@ -27,11 +27,11 @@ class Paypal {
     this.userAction = paypalReviewPageEnabled ? 'continue' : null;
     this.makeExpressPaymentsCallUrl = makeExpressPaymentsCall;
     this.saveShopperDataUrl = saveShopperData;
-    this.checkoutReviewUrl = checkoutReview;
     this.makeExpressPaymentDetailsCallUrl = makeExpressPaymentDetailsCall;
     this.showConfirmationAction = showConfirmationAction;
     this.shippingMethodsUrl = shippingMethodsUrl;
     this.selectShippingMethodUrl = selectShippingMethodUrl;
+    this.saveExpressPaymentDataUrl = saveExpressPaymentDataUrl;
     this.applicationInfo = applicationInfo;
     this.config = config;
   }
@@ -55,14 +55,14 @@ class Paypal {
     $.spinner().stop();
   }
 
-  async callPaymentFromComponent(data, component) {
+  async callPaymentFromComponent(state, component) {
     try {
       $.spinner().start();
       const response = await httpClient({
         method: 'POST',
         url: this.makeExpressPaymentsCallUrl,
         data: {
-          data: JSON.stringify(data),
+          data: JSON.stringify(state.data),
         },
       });
       const { action } = response.fullResponse;
@@ -72,45 +72,38 @@ class Paypal {
         component.handleError();
       }
     } catch (e) {
-      component.handleError();
+      component.handleError(e);
     }
   }
 
-  async saveShopperDetails(shopperDetails, rawData, actions) {
+  async onAuthorized(data, actions) {
     try {
+      const {
+        authorizedEvent: { payer = {} },
+        billingAddress,
+        deliveryAddress,
+      } = data;
+      const shopperDetails = {
+        shopperEmail: payer.email_address,
+        telephoneNumber: payer.phone?.phone_number?.national_number,
+        shopperName: {
+          firstName: payer.name?.given_name,
+          lastName: payer.name?.surname,
+        },
+        shippingAddress: deliveryAddress,
+        billingAddress,
+      };
       await httpClient({
         method: 'POST',
         url: this.saveShopperDataUrl,
         data: {
-          shopperDetails: JSON.stringify(shopperDetails),
+          data: JSON.stringify(shopperDetails),
         },
       });
       actions.resolve();
     } catch (e) {
       $.spinner().stop();
     }
-  }
-
-  redirectToReviewPage(data) {
-    const redirect = $('<form>').appendTo(document.body).attr({
-      method: 'POST',
-      action: this.checkoutReviewUrl,
-    });
-    $('<input>')
-      .appendTo(redirect)
-      .attr({
-        name: 'data',
-        value: JSON.stringify(data),
-      });
-
-    $('<input>')
-      .appendTo(redirect)
-      .attr({
-        name: 'csrf_token',
-        value: $('#adyen-token').val(),
-      });
-
-    redirect.submit();
   }
 
   async makeExpressPaymentDetailsCall(data) {
@@ -185,15 +178,28 @@ class Paypal {
     }
   }
 
-  async onAdditionalDetails(state) {
-    if (this.userAction) {
-      this.redirectToReviewPage(state.data);
-    } else {
-      await this.makeExpressPaymentDetailsCall(state.data);
-      document.querySelector('#additionalDetailsHidden').value = JSON.stringify(
-        state.data,
-      );
-      document.querySelector('#showConfirmationForm').submit();
+  async onAdditionalDetails(state, component) {
+    try {
+      if (this.userAction) {
+        const response = await httpClient({
+          method: 'POST',
+          url: this.saveExpressPaymentDataUrl,
+          data: {
+            data: JSON.stringify(state.data),
+          },
+        });
+        if (response.success && response.redirectUrl) {
+          window.location.href = response.redirectUrl;
+        }
+      } else {
+        await this.makeExpressPaymentDetailsCall(state.data);
+        document.querySelector('#additionalDetailsHidden').value =
+          JSON.stringify(state.data);
+        document.querySelector('#showConfirmationForm').submit();
+      }
+    } catch (e) {
+      component.handleError(e);
+      $.spinner().stop();
     }
   }
 
@@ -205,12 +211,14 @@ class Paypal {
       amount: this.amount,
       isExpress: this.isExpress,
       ...(this.userAction ? { userAction: this.userAction } : {}),
-      onSubmit: this.callPaymentFromComponent,
+      onSubmit: this.callPaymentFromComponent.bind(this),
       onError: Paypal.onError,
-      onShopperDetails: this.saveShopperDetails,
-      onAdditionalDetails: this.onAdditionalDetails,
-      onShippingAddressChange: this.onShippingAddressChange,
-      onShippingOptionsChange: this.onShippingOptionsChange,
+      onAuthorized: this.onAuthorized.bind(this),
+      onAdditionalDetails: this.onAdditionalDetails.bind(this),
+      onShippingAddressChange: this.onShippingAddressChange.bind(this),
+      onShippingOptionsChange: this.onShippingOptionsChange.bind(this),
+      blockPayPalCreditButton: true,
+      blockPayPalPayLaterButton: true,
     };
   }
 

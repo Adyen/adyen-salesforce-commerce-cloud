@@ -5,7 +5,6 @@ const BasketMgr = require('dw/order/BasketMgr');
 const adyenCheckout = require('*/cartridge/adyen/scripts/payments/adyenCheckout');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
-const paypalHelper = require('*/cartridge/adyen/utils/paypalHelper');
 const constants = require('*/cartridge/adyen/config/constants');
 const hooksHelper = require('*/cartridge/scripts/helpers/hooks');
 
@@ -36,10 +35,8 @@ function makeExpressPaymentDetailsCall(req, res, next) {
       productQuantity,
     );
     if (hashedProducts !== currentBasket.custom.adyenProductLineItems) {
-      throw new Error('Basket products changed, cannot complete trasaction');
+      throw new Error('Basket products changed, cannot complete transaction');
     }
-
-    paypalHelper.setBillingAndShippingAddress(currentBasket);
 
     const validationOrderStatus = hooksHelper(
       'app.validate.order',
@@ -53,15 +50,17 @@ function makeExpressPaymentDetailsCall(req, res, next) {
     }
 
     // create order
-    const order = OrderMgr.createOrder(
-      currentBasket,
-      session.privacy.paypalExpressOrderNo,
-    );
-
+    let order = null;
+    Transaction.wrap(() => {
+      order = OrderMgr.createOrder(
+        currentBasket,
+        session.privacy.paypalExpressOrderNo,
+      );
+    });
+    if (!order) {
+      throw new Error('Order could not be created for paypal express');
+    }
     const response = adyenCheckout.doPaymentsDetailsCall(request.data);
-
-    // Setting the session variable to null after assigning the shopper data to basket level
-    session.privacy.shopperDetails = null;
 
     response.orderNo = order.orderNo;
     response.orderToken = order.orderToken;

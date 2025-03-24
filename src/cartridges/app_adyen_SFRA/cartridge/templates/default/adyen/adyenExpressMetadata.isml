@@ -34,5 +34,6 @@
    window.saveShopperData = "${URLUtils.https('Adyen-SaveShopperData')}";
    window.paypalUpdateOrder = "${URLUtils.https('Adyen-paypalUpdateOrder')}";
    window.paypalReviewPageEnabled = ${AdyenConfigs.isPayPalExpressReviewPageEnabled()};
-   window.checkoutReview = "${URLUtils.https('Adyen-CheckoutReview')}";
+   window.checkoutReviewUrl = "${URLUtils.https('Adyen-CheckoutReview')}";
+   window.saveExpressPaymentDataUrl = "${URLUtils.https('Adyen-SaveExpressPaymentData')}";
 </script>
