@@ -163,6 +163,9 @@ export const getCurrentBasket = jest.fn(() => ({
   removeAllPaymentInstruments: jest.fn(),
   removePaymentInstrument: jest.fn(),
   custom: {
+    paypalExpressPaymentData: JSON.stringify({
+      details: 'test_paymentsDetails',
+    }),
     adyenProductLineItems: 'mocked_hash',
     amazonExpressShopperDetails: JSON.stringify({
       billingAddressDetails: {

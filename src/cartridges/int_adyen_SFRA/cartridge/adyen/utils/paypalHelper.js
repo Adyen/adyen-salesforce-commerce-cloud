@@ -169,7 +169,6 @@ function setBillingAndShippingAddress(currentBasket, shopperDetails) {
     billingAddress.setCountryCode(shopperDetails.billingAddress.country);
 
     shippingAddress.setFirstName(shopperDetails.shippingAddress.firstName);
-    // shippingAddress.setLastName(shopperDetails.shopperName.lastName);
     shippingAddress.setAddress1(shopperDetails.shippingAddress.street);
     shippingAddress.setCity(shopperDetails.shippingAddress.city);
     shippingAddress.setPhone(shopperDetails.telephoneNumber);

@@ -42,6 +42,11 @@ function handleCheckoutReview(req, res, next) {
 
     const accountModel = new AccountModel(req.currentCustomer);
     const { paypalExpressPaymentData } = currentBasket.custom;
+
+    if (!paypalExpressPaymentData) {
+      res.redirect(URLUtils.url('Cart-Show'));
+      return next();
+    }
     res.render('cart/checkoutReview', {
       data: paypalExpressPaymentData,
       showConfirmationUrl: URLUtils.https(
