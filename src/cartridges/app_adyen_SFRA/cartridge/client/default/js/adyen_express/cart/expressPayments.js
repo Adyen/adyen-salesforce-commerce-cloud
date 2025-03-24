@@ -3,14 +3,18 @@ const {
   getPaymentMethods,
   updateLoadedExpressMethods,
 } = require('../../commons');
-const { Paypal } = require('../paymentMethods/index');
+const { Paypal, ApplePay } = require('../paymentMethods/index');
 const { APPLE_PAY, GOOGLE_PAY, PAYPAL } = require('../../constants');
+
+function getPaymentMethodConfig(adyenPaymentMethods, paymentMethodType) {
+  return adyenPaymentMethods?.paymentMethods.find(
+    (pm) => pm.type === paymentMethodType,
+  )?.configuration;
+}
 
 async function renderPayPalButton(paymentMethodsResponse) {
   const { AdyenPaymentMethods, applicationInfo } = paymentMethodsResponse;
-  const paypalConfig = AdyenPaymentMethods?.paymentMethods.find(
-    (pm) => pm.type === PAYPAL,
-  )?.configuration;
+  const paypalConfig = getPaymentMethodConfig(AdyenPaymentMethods, PAYPAL);
   if (!paypalConfig) {
     updateLoadedExpressMethods(PAYPAL);
     checkIfExpressMethodsAreReady();
@@ -20,6 +24,21 @@ async function renderPayPalButton(paymentMethodsResponse) {
   const paypalComponent = await paypal.getComponent();
   paypalComponent.mount('.paypal');
   updateLoadedExpressMethods(PAYPAL);
+  checkIfExpressMethodsAreReady();
+}
+
+async function renderApplePayButton(paymentMethodsResponse) {
+  const { AdyenPaymentMethods, applicationInfo } = paymentMethodsResponse;
+  const applePayConfig = getPaymentMethodConfig(AdyenPaymentMethods, APPLE_PAY);
+  if (!applePayConfig) {
+    updateLoadedExpressMethods(APPLE_PAY);
+    checkIfExpressMethodsAreReady();
+    return;
+  }
+  const applePay = new ApplePay(applePayConfig, applicationInfo);
+  const applePayComponent = await applePay.getComponent();
+  applePayComponent.mount('.applepay');
+  updateLoadedExpressMethods(APPLE_PAY);
   checkIfExpressMethodsAreReady();
 }
 
@@ -52,6 +71,7 @@ function renderExpressPaymentButtons() {
     $expressPaymentButtonsContainer.replaceChildren(...expressPaymentButtons);
     $('#express-container').spinner().start();
     await renderPayPalButton(paymentMethodsResponse);
+    await renderApplePayButton(paymentMethodsResponse);
     $.spinner().stop();
   });
 }
