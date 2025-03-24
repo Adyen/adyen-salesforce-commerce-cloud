@@ -459,11 +459,11 @@ jest.mock(
 );
 
 jest.mock(
-	'*/cartridge/adyen/scripts/pos/getConnectedTerminals',
-	() =>
-	  require('../src/cartridges/int_adyen_SFRA/cartridge/adyen/scripts/pos/getConnectedTerminals'),
-	{ virtual: true },
-  );
+  '*/cartridge/adyen/scripts/pos/getConnectedTerminals',
+  () =>
+    require('../src/cartridges/int_adyen_SFRA/cartridge/adyen/scripts/pos/getConnectedTerminals'),
+  { virtual: true },
+);
 
 jest.mock(
   '*/cartridge/adyen/logs/adyenCustomLogs',
@@ -476,5 +476,12 @@ jest.mock(
   '*/cartridge/adyen/utils/giftCardsHelper',
   () =>
     require('../src/cartridges/int_adyen_SFRA/cartridge/adyen/utils/giftCardsHelper'),
+  { virtual: true },
+);
+
+jest.mock(
+  '*/cartridge/adyen/scripts/expressPayments/paypal/saveExpressPaymentData',
+  () =>
+    require('../src/cartridges/int_adyen_SFRA/cartridge/adyen/scripts/expressPayments/paypal/saveExpressPaymentData'),
   { virtual: true },
 );

@@ -97,7 +97,6 @@ function doPaymentsCall(order, paymentInstrument, paymentRequest) {
     ];
 
     const { resultCode } = paymentResponse;
-    AdyenLogs.debug_log(JSON.stringify(responseObject.action));
     // Check the response object from /payment call
     if (acceptedResultCodes.indexOf(resultCode) !== -1) {
       paymentResponse.decision = 'ACCEPT';

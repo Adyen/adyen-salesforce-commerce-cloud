@@ -1,35 +1,10 @@
 const URLUtils = require('dw/web/URLUtils');
 const BasketMgr = require('dw/order/BasketMgr');
 const Locale = require('dw/util/Locale');
-const Transaction = require('dw/system/Transaction');
 const AccountModel = require('*/cartridge/models/account');
 const OrderModel = require('*/cartridge/models/order');
 const validationHelpers = require('*/cartridge/scripts/helpers/basketValidationHelpers');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
-const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
-const paypalHelper = require('*/cartridge/adyen/utils/paypalHelper');
-
-/**
- * Sets Shipping and Billing address for the basket,
- * also updated payment method on the paymentInstrument of Basket.
- * @param {dw.order.Basket} currentBasket - the current basket
- * @param {sfra.Request} req - request object
- * @returns {undefined}
- */
-function updateCurrentBasket(currentBasket, req) {
-  const { details } = JSON.parse(req.form.data);
-  if (currentBasket.shipments?.length <= 1) {
-    req.session.privacyCache.set('usingMultiShipping', false);
-  }
-
-  paypalHelper.setBillingAndShippingAddress(currentBasket);
-
-  const paymentInstrument = currentBasket.getPaymentInstruments()[0];
-  Transaction.wrap(() => {
-    paymentInstrument.custom.adyenPaymentMethod =
-      AdyenHelper.getAdyenComponentType(details?.paymentSource);
-  });
-}
 
 /**
  * Controller for the checkout review page for express payment methods
@@ -40,9 +15,6 @@ function updateCurrentBasket(currentBasket, req) {
  */
 function handleCheckoutReview(req, res, next) {
   try {
-    if (!req.form.data) {
-      throw new Error('State data not present in the request');
-    }
     const currentBasket = BasketMgr.getCurrentBasket();
     if (!currentBasket) {
       res.redirect(URLUtils.url('Cart-Show'));
@@ -54,8 +26,6 @@ function handleCheckoutReview(req, res, next) {
       res.redirect(URLUtils.url('Cart-Show'));
       return next();
     }
-
-    updateCurrentBasket(currentBasket, req);
 
     const currentCustomer = req.currentCustomer.raw;
     const currentLocale = Locale.getLocale(req.locale.id);
@@ -71,9 +41,14 @@ function handleCheckoutReview(req, res, next) {
     });
 
     const accountModel = new AccountModel(req.currentCustomer);
+    const { paypalExpressPaymentData } = currentBasket.custom;
 
+    if (!paypalExpressPaymentData) {
+      res.redirect(URLUtils.url('Cart-Show'));
+      return next();
+    }
     res.render('cart/checkoutReview', {
-      data: req.form.data,
+      data: paypalExpressPaymentData,
       showConfirmationUrl: URLUtils.https(
         'Adyen-ShowConfirmationPaymentFromComponent',
       ),

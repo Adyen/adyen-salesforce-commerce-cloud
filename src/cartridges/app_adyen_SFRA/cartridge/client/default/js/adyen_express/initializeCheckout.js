@@ -1,5 +1,4 @@
-async function initializeCheckout(paymentMethodsResponse) {
-  const applicationInfo = paymentMethodsResponse?.applicationInfo;
+async function initializeCheckout(applicationInfo) {
   return window.AdyenWeb.AdyenCheckout({
     environment: window.environment,
     clientKey: window.clientKey,

@@ -11,7 +11,7 @@ const saveShopperData = require('../saveShopperData');
 beforeEach(() => {
   jest.clearAllMocks();
   req = {
-    form: {shopperDetails: JSON.stringify({})}
+    form: {data: JSON.stringify({})}
   };
 
   res = {
