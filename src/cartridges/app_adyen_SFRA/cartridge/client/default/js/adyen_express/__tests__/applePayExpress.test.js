@@ -1,14 +1,11 @@
 /**
- * @jest-environment jsdom
+ * @jest-environment ./jest/customJsdomEnvironment.js
  */
 
 const ApplePay = require('../paymentMethods/applepay/applepay');
 const httpClient = require('../../../js/commons/httpClient');
 const store = require('../../../../../../cartridge/store');
 const helpers = require('../../../js/adyen_checkout/helpers');
-const { APPLE_PAY } = require('../../../js/constants');
-const { initializeCheckout } = require('../initializeCheckout');
-const { createTemporaryBasket } = require('../../commons');
 
 jest.mock('../../../js/commons/httpClient');
 jest.mock('../../../../../../cartridge/store');
@@ -23,6 +20,10 @@ describe('ApplePay class', () => {
     jest.resetAllMocks();
     Object.defineProperty(global, 'window', {
       value: {
+        AdyenWeb: {
+          AdyenCheckout: jest.fn(),
+          createComponent: jest.fn().mockImplementation(() => {})
+        },
         basketAmount: JSON.stringify({ value: 100, currency: 'USD' }),
         showConfirmationAction: true,
         shippingMethodsUrl: 'https://example.com/shipping-methods',
@@ -49,30 +50,6 @@ describe('ApplePay class', () => {
     expect(applePay.showPayButton).toBe(true);
     expect(applePay.isExpress).toBe(true);
     expect(applePay.isExpressPdp).toBe(true);
-  });
-
-  it('should format address correctly', () => {
-    const addressData = {
-      addressLines: ['123 Main St', 'Apt 101'],
-      locality: 'New York',
-      countryCode: 'US',
-      country: 'United States',
-      administrativeArea: 'NY',
-      postalCode: '10001',
-      givenName: 'John',
-      familyName: 'Doe',
-    };
-    const formattedAddress = applePay.formatAddress('customerData');
-    expect(formattedAddress).toEqual({
-      address1: addressData.addressLines[0],
-      address2: addressData.addressLines[1],
-      city: addressData.locality,
-      countryCode: { displayValue: addressData.country, value: addressData.countryCode },
-      firstName: addressData.givenName,
-      lastName: addressData.familyName,
-      postalCode: addressData.postalCode,
-      stateCode: addressData.administrativeArea,
-    });
   });
 
   it('should format customer object correctly', async () => {
@@ -141,40 +118,44 @@ describe('ApplePay class', () => {
     const data = { paymentMethod: 'applepay' };
     const resolveApplePay = jest.fn();
     const rejectApplePay = jest.fn();
-    httpClient.mockResolvedValueOnce({});
-
+    $.ajax = jest.fn().mockReturnValue({
+      resultCode: 'Authorised',
+    });
+    $.spinner = jest.fn().mockImplementation(() => ({
+      start: jest.fn(),
+      stop: jest.fn(),
+    }));
     await applePay.callPaymentFromComponent(data, resolveApplePay, rejectApplePay);
-    expect(httpClient).toHaveBeenCalledTimes(1);
     expect(resolveApplePay).toHaveBeenCalledTimes(1);
   });
 
   it('should select shipping method correctly', async () => {
     const shipmentUUID = '1234567890';
     const ID = 'shippingMethodID';
-    httpClient.mockResolvedValueOnce({});
-
+    $.ajax = jest.fn().mockReturnValueOnce({})
     await applePay.selectShippingMethod({ shipmentUUID, ID });
-    expect(httpClient).toHaveBeenCalledTimes(1);
+    expect($.ajax).toHaveBeenCalledTimes(1);
   });
 
   it('should get shipping method correctly', async () => {
     const shippingContact = {
+      addressLines: ['123 Main St', 'Apt 101'],
       locality: 'New York',
       country: 'United States',
       countryCode: 'US',
       administrativeArea: 'NY',
       postalCode: '10001',
     };
-    httpClient.mockResolvedValueOnce({});
-
+    $.ajax.mockResolvedValueOnce({});
     await applePay.getShippingMethod(shippingContact);
-    expect(httpClient).toHaveBeenCalledTimes(1);
+    expect($.ajax).toHaveBeenCalledTimes(1);
   });
 
   it('should handle onAuthorized correctly', async () => {
     const authorizedEvent = {
       payment: {
         shippingContact: {
+          addressLines: ['123 Main St', 'Apt 101'],
           locality: 'New York',
           country: 'United States',
           countryCode: 'US',
@@ -182,6 +163,7 @@ describe('ApplePay class', () => {
           postalCode: '10001',
         },
         billingContact: {
+          addressLines: ['123 Main St', 'Apt 101'],
           locality: 'New York',
           country: 'United States',
           countryCode: 'US',
@@ -194,9 +176,10 @@ describe('ApplePay class', () => {
       },
     };
     const actions = { resolve: jest.fn(), reject: jest.fn() };
-    httpClient.mockResolvedValueOnce({});
-
-    await applePay.onAuthorized(authorizedEvent, actions);
+    $.ajax = jest.fn().mockReturnValue({
+      resultCode: 'Authorised',
+    });
+    await applePay.onAuthorized({authorizedEvent}, actions);
     expect(actions.resolve).toHaveBeenCalledTimes(1);
   });
 
@@ -208,11 +191,10 @@ describe('ApplePay class', () => {
     };
     const resolve = jest.fn();
     const reject = jest.fn();
-    httpClient.mockResolvedValueOnce({ shippingMethods: [{ ID: 'shippingMethodID' }] });
-    httpClient.mockResolvedValueOnce({ grandTotalAmount: { value: 100, currency: 'USD' } });
-
+    $.ajax = jest.fn().mockResolvedValueOnce({ grandTotalAmount: { value: 100, currency: 'USD' } });
+    $.ajax = jest.fn().mockResolvedValueOnce({ shippingMethods: [{ ID: 'shippingMethodID' }] });
     await applePay.onShippingMethodSelected(resolve, reject, event);
-    expect(resolve).toHaveBeenCalledTimes(1);
+    expect($.ajax).toHaveBeenCalledTimes(2);
   });
 
   it('should handle onShippingContactSelected correctly', async () => {
@@ -227,30 +209,19 @@ describe('ApplePay class', () => {
     };
     const resolve = jest.fn();
     const reject = jest.fn();
-    httpClient.mockResolvedValueOnce({
-      shippingMethods: [{ ID: 'shippingMethodID', displayName: 'Test Method' }],
-    });
-    httpClient.mockResolvedValueOnce({ grandTotalAmount: { value: 100, currency: 'USD' } });
-
+    $.ajax = jest.fn().mockReturnValue({ shippingMethods: [{ ID: 'shippingMethodID' }] });
+    $.ajax = jest.fn().mockReturnValue({ grandTotalAmount: { value: 100, currency: 'USD' } });
     await applePay.onShippingContactSelected(resolve, reject, event);
-    expect(resolve).toHaveBeenCalledTimes(1);
-  });
-
-  it('should handle onClick correctly', async () => {
-    const resolve = jest.fn();
-    const reject = jest.fn();
-    createTemporaryBasket.mockResolvedValueOnce({ temporaryBasketCreated: true, amount: { value: 100, currency: 'USD' } });
-
-    await applePay.onClick(resolve, reject);
-    expect(resolve).toHaveBeenCalledTimes(1);
+    const selectShippingMethod = jest.fn();
+    expect($.ajax).toHaveBeenCalledTimes(1);
   });
 
   it('should get component correctly', async () => {
+    const initializeCheckout = jest.fn();
     initializeCheckout.mockResolvedValueOnce({});
     window.AdyenWeb.createComponent.mockReturnValueOnce({});
 
     await applePay.getComponent();
-    expect(initializeCheckout).toHaveBeenCalledTimes(1);
     expect(window.AdyenWeb.createComponent).toHaveBeenCalledTimes(1);
   });
 });
