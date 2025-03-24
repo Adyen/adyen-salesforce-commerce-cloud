@@ -142,9 +142,10 @@ function createPaypalUpdateOrderRequest(
 /**
  * sets Shipping and Billing address for the basket
  * @param {dw.order.Basket} currentBasket - the current basket
+ * @param {object} shopperDetails - shopper details
  * @returns {undefined}
  */
-function setBillingAndShippingAddress(currentBasket) {
+function setBillingAndShippingAddress(currentBasket, shopperDetails) {
   let { billingAddress } = currentBasket;
   let { shippingAddress } = currentBasket.getDefaultShipment();
   Transaction.wrap(() => {
@@ -157,9 +158,6 @@ function setBillingAndShippingAddress(currentBasket) {
       billingAddress = currentBasket.createBillingAddress();
     }
   });
-
-  const shopperDetails = JSON.parse(session.privacy.shopperDetails);
-
   Transaction.wrap(() => {
     billingAddress.setFirstName(shopperDetails.shopperName.firstName);
     billingAddress.setLastName(shopperDetails.shopperName.lastName);
@@ -170,8 +168,7 @@ function setBillingAndShippingAddress(currentBasket) {
     billingAddress.setStateCode(shopperDetails.billingAddress.stateOrProvince);
     billingAddress.setCountryCode(shopperDetails.billingAddress.country);
 
-    shippingAddress.setFirstName(shopperDetails.shopperName.firstName);
-    shippingAddress.setLastName(shopperDetails.shopperName.lastName);
+    shippingAddress.setFirstName(shopperDetails.shippingAddress.firstName);
     shippingAddress.setAddress1(shopperDetails.shippingAddress.street);
     shippingAddress.setCity(shopperDetails.shippingAddress.city);
     shippingAddress.setPhone(shopperDetails.telephoneNumber);

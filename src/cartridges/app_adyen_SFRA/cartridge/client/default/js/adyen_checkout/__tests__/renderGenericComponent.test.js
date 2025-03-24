@@ -4,7 +4,8 @@
 jest.mock('../../commons');
 jest.mock('../../../../../store');
 
-const { renderGenericComponent, setInstallments, renderPosTerminals, isCartModified, renderGiftCardLogo, setGiftCardContainerVisibility, applyGiftCards } = require('../renderGenericComponent');
+const { renderGenericComponent, setInstallments, renderPosTerminals } = require('../renderGenericComponent');
+const { applyGiftCards, setGiftCardContainerVisibility, renderGiftCardLogo, isCartModified } = require('../giftcards/index');
 const { getPaymentMethods } = require('../../commons');
 const { fetchGiftCards } = require('../../commons');
 const store = require('../../../../../store');
@@ -93,8 +94,17 @@ describe('Render Generic Component', () => {
     store.paymentMethodsConfiguration = {
       amazonpay: {}
     };
-    await renderGenericComponent();
-    expect(getPaymentMethods).toBeCalled();
+    await renderGenericComponent({
+      amount: {
+        currency: "mocked_currency",
+        value: "mocked_amount",
+      },
+      countryCode: "mocked_countrycode",
+      imagePath: 'example.com',
+      adyenDescriptions: {
+        amazonpay: 'testDescription'
+      }
+    });
     expect(store.checkoutConfiguration).toMatchSnapshot();
     expect(
       document.querySelector('input[type=radio][name=brandCode]').value,
@@ -115,15 +125,18 @@ describe('Render Generic Component', () => {
     store.paymentMethodsConfiguration = {
       amazonpay: {}
     }
-    await renderGenericComponent();
-    expect(getPaymentMethods).toBeCalled();
+    await renderGenericComponent({
+      amount: {
+        currency: "mocked_currency",
+        value: "mocked_amount",
+      },
+      countryCode: "mocked_countrycode",
+      imagePath: 'example.com',
+      adyenDescriptions: {
+        amazonpay: 'testDescription'
+      }
+    });
     expect(store.checkoutConfiguration).toMatchSnapshot();
-    expect(
-      document.querySelector('.gift-card-selection').style.display,
-    ).toEqual('none');
-    expect(
-      document.querySelector('.gift-card-separator').style.display,
-    ).toEqual('none');
   });
 
   it('should set installment options correctly', () => {
@@ -186,11 +199,6 @@ describe('Render Generic Component', () => {
     }); // Timeout needed for completition of the test
   });
 
-  it('handles errors in initializeCheckout', async () => {
-    getPaymentMethods.mockRejectedValue(new Error('Payments method call failed'));
-    await expect(renderGenericComponent()).rejects.toThrow('Payments method call failed');
-  });
-
   it('correctly sets Pos Terminals', () => {
     document.body.innerHTML = '<div id="adyenPosTerminals"></div>';
     const adyenConnectedTerminals = { uniqueTerminalIds: ['term1'] };
@@ -215,25 +223,8 @@ describe('Render Generic Component', () => {
     expect(headingImg.src).toBe('http://localhost/example.com/genericgiftcard.png');
   });
 
-  it('correctly sets gift card container visibility', () => {
-    document.body.innerHTML = `
-    <div class="gift-card-selection"></div>
-    <div class="gift-card-separator"></div>`;
-    store.checkout.paymentMethodsResponse = {
-      paymentMethods: {
-        filter: jest.fn(() => [
-        ]),
-      },
-    }
-    setGiftCardContainerVisibility();
-    const giftCardSelection = document.querySelector('.gift-card-selection');
-    const giftCardSeparator = document.querySelector('.gift-card-separator');
-    expect(giftCardSelection.style.display).toBe('none');
-    expect(giftCardSeparator.style.display).toBe('none');
-  });
-
   it('should call removeGiftCards with isPartialPaymentExpired', () => {
-    const renderGiftCardComponent = require('*/cartridge/client/default/js/adyen_checkout/renderGiftcardComponent');
+    const renderGiftCardComponent = require('*/cartridge/client/default/js/adyen_checkout/giftcards');
     const now = new Date().toISOString();
     store.checkoutConfiguration = {
       amount : { currency: 'USD', value: 50 }
@@ -262,7 +253,7 @@ describe('Render Generic Component', () => {
   });
 
   it('should call removeGiftCards with cartModified', () => {
-    const renderGiftCardComponent = require('*/cartridge/client/default/js/adyen_checkout/renderGiftcardComponent');
+    const renderGiftCardComponent = require('*/cartridge/client/default/js/adyen_checkout/giftcards');
     store.checkoutConfiguration = {
       amount : { currency: 'USD', value: 50 }
     }
@@ -289,7 +280,7 @@ describe('Render Generic Component', () => {
   });
 
   it('should handle the else part correctly', () => {
-    const renderGiftCardComponent = require('*/cartridge/client/default/js/adyen_checkout/renderGiftcardComponent');
+    const renderGiftCardComponent = require('*/cartridge/client/default/js/adyen_checkout/giftcards');
     store.checkoutConfiguration = {
       amount: { currency: 'USD', value: 50 },
       paymentMethodsResponse: {

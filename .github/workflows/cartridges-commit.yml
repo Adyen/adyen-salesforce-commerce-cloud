@@ -1,0 +1,98 @@
+name: Build cartridges
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+
+permissions:
+  contents: write
+
+jobs:
+  commit-the-cartridge-and-project-files:
+    if: |
+      github.event_name == 'pull_request' &&
+      contains(github.head_ref, 'release') &&
+      github.event.pull_request.base.ref == 'main' 
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - sfra-version: 'v6.1.0'
+            sfcc-hostname-secret: 'SFCC_HOSTNAME_SFRA6'
+            code-version-secret: 'SFCC_CODE_VERSION_SFRA6'
+    steps:
+      - name: Checkout SFRA code
+        uses: actions/checkout@v3
+        with:
+          repository: SalesforceCommerceCloud/storefront-reference-architecture
+          ref: ${{ matrix.sfra-version }}
+          ssh-key: ${{ secrets.SERVICE_ACCOUNT_SSH_KEY }}
+          path: storefront-reference-architecture
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '14'
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          path: adyen-salesforce-commerce-cloud
+          fetch-depth: 0
+      - name: Install SFRA dependencies
+        working-directory: storefront-reference-architecture
+        run: npm install
+      - name: Install Adyen SFCC dependencies
+        working-directory: adyen-salesforce-commerce-cloud
+        run: npm install
+      - name: Build the code 
+        working-directory: adyen-salesforce-commerce-cloud
+        run: |
+          npm run transpile && npm run compile:js
+          mkdir -p $GITHUB_WORKSPACE/cartridges
+          cp -R cartridges/* $GITHUB_WORKSPACE/cartridges
+        shell: bash
+      - name: Commit /cartridges folder
+        if: success()
+        run: | 
+          cd adyen-salesforce-commerce-cloud
+          git config --local user.email "actions@github.com"
+          git config --local user.name "GitHub Actions"
+          git add cartridges/**/*
+          git commit --no-verify -m "chore: committing the built /cartridge folder"
+          git fetch origin
+          git push origin HEAD:${{ github.head_ref }} --force-with-lease
+      - name: Commit .project files 
+        if: success()
+        run: | 
+          cd adyen-salesforce-commerce-cloud/cartridges
+          version=$(grep "^\s*VERSION:" int_adyen_SFRA/cartridge/adyen/config/constants.js | awk -F"'" '{print $2}' | tr -d '\n')
+          version="v${version}"
+          export version
+          find . -mindepth 1 -maxdepth 1 -type d -exec sh -c '
+            for dir do
+              name=$(basename "$dir")
+              echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
+              <projectDescription>
+                <name>${name}</name>
+                <comment>${version}</comment>
+                <projects></projects>
+                <buildSpec>
+                  <buildCommand>
+                    <name>com.demandware.studio.core.beehiveElementBuilder</name>
+                    <arguments></arguments>
+                  </buildCommand>
+                </buildSpec>
+                <natures>
+                  <nature>com.demandware.studio.core.beehiveNature</nature>
+                </natures>
+              </projectDescription>" > "${name}/.project"
+            done
+            ' sh {} +
+            git add .
+            git config --local user.email "actions@github.com"
+            git config --local user.name "GitHub Actions"
+            git commit --no-verify -m "chore: committing the project files"
+            git fetch origin
+            git push origin HEAD:${{ github.head_ref }} --force-with-lease

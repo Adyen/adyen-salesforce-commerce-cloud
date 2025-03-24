@@ -1,10 +1,13 @@
 const URLUtils = require('dw/web/URLUtils');
+const BasketMgr = require('dw/order/BasketMgr');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
+const paypalHelper = require('*/cartridge/adyen/utils/paypalHelper');
 
 function saveShopperData(req, res, next) {
   try {
-    const shopperDetails = JSON.parse(req.form.shopperDetails);
-    session.privacy.shopperDetails = JSON.stringify(shopperDetails);
+    const shopperDetails = JSON.parse(req.form.data);
+    const currentBasket = BasketMgr.getCurrentBasket();
+    paypalHelper.setBillingAndShippingAddress(currentBasket, shopperDetails);
     res.json({ success: true });
     return next();
   } catch (error) {
