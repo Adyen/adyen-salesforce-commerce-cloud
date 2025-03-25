@@ -84,7 +84,7 @@ let adyenHelperObj = {
    * @param {dw.order.Shipment} shipment - a shipment of the current basket
    * @returns {{currencyCode: String, value: String}} - Shipping Cost including taxes
    */
-  getShippingCost(shippingMethod) {
+  getShippingCost(shippingMethod, shipment) {
     const shipmentShippingModel = ShippingMgr.getShipmentShippingModel(shipment);
     let shippingCost = shipmentShippingModel.getShippingCost(shippingMethod).getAmount();
     collections.forEach(shipment.getProductLineItems(), (lineItem) => {
@@ -166,7 +166,7 @@ let adyenHelperObj = {
           shippingMethod,
           shipment,
         );
-        const shippingCost = adyenHelperObj.getShippingCost(shippingMethod);
+        const shippingCost = adyenHelperObj.getShippingCost(shippingMethod, shipment);
         const shipmentUUID = adyenHelperObj.getShipmentUUID(shipment);
         filteredMethods.push({
           ...shippingMethodModel,
