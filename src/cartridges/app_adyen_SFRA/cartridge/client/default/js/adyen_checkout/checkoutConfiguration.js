@@ -4,7 +4,6 @@ const { httpClient } = require('../commons/httpClient');
 const paymentMethodsConfiguration = require('./paymentMethodsConfiguration');
 
 async function handleOnChange(state) {
-  console.log('handleOnChange', state);
   const { type } = state.data.paymentMethod;
   store.isValid = state.isValid;
   if (!store.componentsObj[type]) {
@@ -15,7 +14,6 @@ async function handleOnChange(state) {
 }
 
 const actionHandler = async (action) => {
-  console.log('actionHandler', action);
   const checkout = await window.AdyenWeb.AdyenCheckout(
     store.checkoutConfiguration,
   );
