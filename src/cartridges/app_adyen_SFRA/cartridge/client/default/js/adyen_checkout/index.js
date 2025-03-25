@@ -9,12 +9,28 @@ const {
   showValidation,
   paymentFromComponent,
 } = require('./helpers');
-const { validateComponents } = require('./validateComponents');
 const billing = require('../checkout/billing');
 const { httpClient } = require('../commons/httpClient');
 const { getPaymentMethods } = require('../commons');
 const { GIFTCARD } = require('../constants');
 const { renderGiftCards } = require('./giftcards');
+
+function setAdyenInputValues() {
+  const customMethods = {};
+
+  if (store.selectedMethod in customMethods) {
+    customMethods[store.selectedMethod]();
+  }
+
+  document.querySelector('#adyenStateData').value = JSON.stringify(
+    store.stateData,
+  );
+  if (store.partialPaymentsOrderObj) {
+    document.querySelector('#adyenPartialPaymentsOrder').value = JSON.stringify(
+      store.partialPaymentsOrderObj,
+    );
+  }
+}
 
 function renderPaymentMethod() {
   $('body').on('checkout:renderPaymentMethod', async (e, response) => {
@@ -73,7 +89,7 @@ function submitPayment() {
       selectedPaymentOption === 'CREDIT_CARD'
     ) {
       assignPaymentMethodValue();
-      validateComponents();
+      setAdyenInputValues();
       showValidation();
     }
     return true;
@@ -94,6 +110,9 @@ function handlePaymentAction() {
 }
 
 async function init() {
+  $(document).on('submit', 'form', (event) => {
+    event.preventDefault();
+  });
   $(document).ready(() => {
     // TODO: render the error message box
     const name = 'paymentError';
@@ -118,7 +137,7 @@ async function init() {
     const currentStage = window.location.search.substring(
       window.location.search.indexOf('=') + 1,
     );
-    if (currentStage === ('shipping' || 'payment')) {
+    if (currentStage === 'shipping' || currentStage === 'payment') {
       $('body').trigger('checkout:renderPaymentMethod', {
         email: data?.order?.orderEmail,
       });
