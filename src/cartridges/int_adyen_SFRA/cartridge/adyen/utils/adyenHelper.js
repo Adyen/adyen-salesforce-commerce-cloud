@@ -199,51 +199,6 @@ let adyenHelperObj = {
     return filteredMethods;
   },
 
-  getAdyenGivingConfig(order) {
-    if (!order.getPaymentInstruments(
-      adyenHelperObj.getOrderMainPaymentInstrumentType(order),
-    ).length){
-      return null;
-    }
-    const paymentInstrument = order.getPaymentInstruments(
-      adyenHelperObj.getOrderMainPaymentInstrumentType(order),
-    )[0];
-    if (
-      !AdyenConfigs.getAdyenGivingEnabled() ||
-      !adyenHelperObj.isAdyenGivingAvailable(paymentInstrument)
-    ) {
-      return null;
-    }
-    const givingConfigs = {};
-    const configuredAmounts = adyenHelperObj.getDonationAmounts();
-    givingConfigs.adyenGivingAvailable = true;
-    givingConfigs.configuredAmounts = configuredAmounts;
-    givingConfigs.charityName = AdyenConfigs.getAdyenGivingCharityName();
-    givingConfigs.charityWebsite = AdyenConfigs.getAdyenGivingCharityWebsite();
-    givingConfigs.charityDescription = AdyenConfigs.getAdyenGivingCharityDescription();
-    givingConfigs.adyenGivingBackgroundUrl = AdyenConfigs.getAdyenGivingBackgroundUrl();
-    givingConfigs.adyenGivingLogoUrl = AdyenConfigs.getAdyenGivingLogoUrl();
-
-    givingConfigs.donationAmounts = JSON.stringify({
-      currency: session.currency.currencyCode,
-      values: configuredAmounts,
-    });
-    givingConfigs.pspReference =
-      paymentInstrument.paymentTransaction.custom.Adyen_pspReference;
-
-    for (const config in givingConfigs) {
-      if (Object.prototype.hasOwnProperty.call(givingConfigs, config)) {
-        if (givingConfigs[config] === null) {
-          AdyenLogs.error_log(
-            'Could not render Adyen Giving component. Please make sure all Adyen Giving fields in Custom Preferences are filled in correctly',
-          );
-          return null;
-        }
-      }
-    }
-    return givingConfigs;
-  },
-
   // get the URL for the checkout component based on the current Adyen component version
   getCheckoutUrl() {
     const checkoutUrl = this.getLoadingContext();
@@ -353,27 +308,17 @@ let adyenHelperObj = {
     return currentBasket ? currentBasket.customerEmail : '';
   },
 
-  // returns an array containing the donation amounts configured in the custom preferences for Adyen Giving
-  getDonationAmounts() {
-    let returnValue = [];
-    const configuredValue = AdyenConfigs.getAdyenGivingDonationAmounts();
-    if (!empty(configuredValue)) {
-      const configuredAmountArray = configuredValue.split(',');
-      const amountArray = [];
-      for (let i = 0; i < configuredAmountArray.length; i++) {
-        const amount = parseInt(configuredAmountArray[i]);
-        if (!isNaN(amount)) {
-          amountArray.push(amount);
-        }
-      }
-      returnValue = amountArray;
-    }
-    return returnValue;
-  },
+  isAdyenGivingAvailable(order) {
+    const paymentInstruments = order.getPaymentInstruments(adyenHelperObj.getOrderMainPaymentInstrumentType(order));
 
-  // determines whether Adyen Giving is available based on the donation token
-  isAdyenGivingAvailable(paymentInstrument) {
-    return paymentInstrument.paymentTransaction.custom.Adyen_donationToken;
+    if (!paymentInstruments.length) {
+        return false;
+    }
+
+    const paymentInstrument = paymentInstruments[0];
+
+    return AdyenConfigs.getAdyenGivingEnabled() && 
+           !!paymentInstrument.paymentTransaction.custom.Adyen_donationToken;
   },
 
   // gets the ID for ratePay using the custom preference and the encoded session ID

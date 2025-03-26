@@ -1,6 +1,7 @@
 const OrderMgr = require('dw/order/OrderMgr');
 const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
 const AdyenConfigs = require('*/cartridge/adyen/utils/adyenConfigs');
+const adyenGiving = require('*/cartridge/adyen/scripts/donations/adyenGiving');
 
 // order-confirm is POST in SFRA v6.0.0. orderID and orderToken are contained in form.
 // This was a GET call with a querystring containing ID & token in earlier versions.
@@ -17,31 +18,32 @@ function getOrderToken(req) {
 function handleAdyenGiving(req, res) {
   const clientKey = AdyenConfigs.getAdyenClientKey();
   const environment = AdyenHelper.getCheckoutEnvironment();
-  const configuredAmounts = AdyenHelper.getDonationAmounts();
-  const charityName = encodeURI(AdyenConfigs.getAdyenGivingCharityName());
-  const charityWebsite = AdyenConfigs.getAdyenGivingCharityWebsite();
-  const charityDescription = encodeURI(
-    AdyenConfigs.getAdyenGivingCharityDescription(),
-  );
-  const adyenGivingBackgroundUrl = AdyenConfigs.getAdyenGivingBackgroundUrl();
-  const adyenGivingLogoUrl = AdyenConfigs.getAdyenGivingLogoUrl();
+  const campaign = adyenGiving.getActiveCampaigns().donationCampaigns[0];
+  const {
+    campaignName,
+    nonprofitName,
+    nonprofitDescription,
+    nonprofitUrl,
+    logoUrl,
+    bannerUrl,
+    termsAndConditionsUrl,
+  } = campaign;
+  const donationProperties = JSON.stringify(campaign.donation);
   const orderToken = getOrderToken(req);
 
-  const donationAmounts = {
-    currency: session.currency.currencyCode,
-    values: configuredAmounts,
-  };
   const viewData = res.getViewData();
   viewData.adyen = {
     clientKey,
     environment,
     adyenGivingAvailable: true,
-    donationAmounts: JSON.stringify(donationAmounts),
-    charityName,
-    charityDescription,
-    charityWebsite,
-    adyenGivingBackgroundUrl,
-    adyenGivingLogoUrl,
+    campaignName,
+    donationProperties,
+    nonprofitName,
+    nonprofitDescription,
+    nonprofitUrl,
+    logoUrl,
+    bannerUrl,
+    termsAndConditionsUrl,
     orderToken,
   };
   res.setViewData(viewData);
@@ -52,7 +54,7 @@ function confirm(req, res, next) {
   const orderToken = getOrderToken(req);
   if (orderId && orderToken) {
     const order = OrderMgr.getOrder(orderId, orderToken);
-    if (AdyenHelper.getAdyenGivingConfig(order)) {
+    if (AdyenHelper.isAdyenGivingAvailable(order)) {
       handleAdyenGiving(req, res);
     }
   }

@@ -1,6 +1,19 @@
 const { httpClient } = require('./commons/httpClient');
+const store = require('../../../store');
 
+let checkout;
+let adyenGivingComponent;
 const adyenGivingNode = document.getElementById('donate-container');
+const {
+  donationProperties,
+  campaignName,
+  nonprofitName,
+  nonprofitDescription,
+  nonprofitUrl,
+  logoUrl,
+  bannerUrl,
+  termsAndConditionsUrl,
+} = window.givingConfig;
 
 async function handleOnDonate(state, component) {
   if (!state.isValid) {
@@ -10,8 +23,8 @@ async function handleOnDonate(state, component) {
   const donationData = {
     amountValue: selectedAmount.value,
     amountCurrency: selectedAmount.currency,
-    orderNo: window.orderNo,
-    orderToken: window.orderToken,
+    orderNo: window.givingConfig.orderNo,
+    orderToken: window.givingConfig.orderToken,
     csrf_token: $('#adyen-token').val(),
   };
 
@@ -34,26 +47,47 @@ function handleOnCancel(state, component) {
   component.unmount();
 }
 
-function getAmounts() {
+function getDonationProperties() {
   try {
-    return JSON.parse(donationAmounts);
+    return JSON.parse(donationProperties);
   } catch (e) {
     return [];
   }
 }
 
 const donationConfig = {
-  amounts: getAmounts(),
-  backgroundUrl: adyenGivingBackgroundUrl,
-  description: decodeURI(charityDescription),
-  logoUrl: adyenGivingLogoUrl,
-  name: decodeURI(charityName),
-  url: charityWebsite,
+  campaignName,
+  donation: getDonationProperties(),
+  nonprofitName,
+  nonprofitDescription,
+  nonprofitUrl,
+  logoUrl,
+  bannerUrl,
+  termsAndConditionsUrl,
   showCancelButton: true,
   onDonate: handleOnDonate,
   onCancel: handleOnCancel,
 };
 
-AdyenCheckout(window.Configuration).then((checkout) => {
-  checkout.create('donation', donationConfig).mount(adyenGivingNode);
-});
+store.checkoutConfiguration = {
+  ...window.Configuration,
+  countryCode: window.countryCode,
+};
+
+async function initializeGivingComponent() {
+  checkout = await window.AdyenWeb.AdyenCheckout(store.checkoutConfiguration);
+  adyenGivingComponent = window.AdyenWeb.createComponent(
+    'donation',
+    checkout,
+    donationConfig,
+  );
+  adyenGivingComponent.mount(adyenGivingNode);
+}
+
+(async () => {
+  await initializeGivingComponent();
+})();
+
+module.exports = {
+  initializeGivingComponent,
+};

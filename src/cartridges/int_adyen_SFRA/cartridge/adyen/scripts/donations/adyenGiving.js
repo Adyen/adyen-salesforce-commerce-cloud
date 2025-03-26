@@ -27,6 +27,25 @@ const AdyenConfigs = require('*/cartridge/adyen/utils/adyenConfigs');
 const constants = require('*/cartridge/adyen/config/constants');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 
+function getActiveCampaigns() {
+  try {
+    const currentLocale = request.getLocale();
+    const requestObject = {
+      merchantAccount: AdyenConfigs.getAdyenMerchantAccount(),
+      currency: session.currency.currencyCode,
+      locale: currentLocale,
+    };
+    const response = AdyenHelper.executeCall(
+      constants.SERVICE.ADYENDONATIONCAMPAIGNS,
+      requestObject,
+    );
+    return response;
+  } catch (error) {
+    AdyenLogs.error_log('/donationCampaigns call failed:', error);
+    return { error: true };
+  }
+}
+
 // eslint-disable-next-line complexity
 function donate(donationReference, donationAmount, orderToken) {
   try {
@@ -46,12 +65,11 @@ function donate(donationReference, donationAmount, orderToken) {
     const paymentData = JSON.parse(
       paymentInstrument.paymentTransaction.custom.Adyen_log,
     );
-    const paymentCurrency =
-      paymentData.amount.currency || paymentData.fullResponse?.amount?.currency;
-    const availableDonationAmounts = AdyenHelper.getDonationAmounts();
     paymentMethodVariant =
       paymentData.paymentMethod?.type ||
       paymentData.fullResponse?.paymentMethod?.type;
+
+    const donationCampaignId = getActiveCampaigns().donationCampaigns[0].id;
 
     // for iDeal donations, the payment method variant needs to be set to sepadirectdebit
     if (paymentMethodVariant === 'ideal') {
@@ -65,7 +83,7 @@ function donate(donationReference, donationAmount, orderToken) {
     }
     const requestObject = {
       merchantAccount: AdyenConfigs.getAdyenMerchantAccount(),
-      donationAccount: AdyenConfigs.getAdyenGivingCharityAccount(),
+      donationCampaignId,
       amount: donationAmount,
       reference: `${AdyenConfigs.getAdyenMerchantAccount()}-${donationReference}`,
       donationOriginalPspReference: originalReference,
@@ -73,19 +91,7 @@ function donate(donationReference, donationAmount, orderToken) {
       paymentMethod: {
         type: paymentMethodVariant,
       },
-      shopperInteraction: constants.SHOPPER_INTERACTIONS.CONT_AUTH,
     };
-
-    if (
-      availableDonationAmounts.indexOf(parseInt(donationAmount.value, 10)) ===
-      -1
-    ) {
-      throw new Error('Donation amount is invalid');
-    }
-
-    if (paymentCurrency !== donationAmount.currency) {
-      throw new Error('Donation currency is invalid');
-    }
 
     const response = AdyenHelper.executeCall(
       constants.SERVICE.ADYENGIVING,
@@ -107,5 +113,6 @@ function donate(donationReference, donationAmount, orderToken) {
 }
 
 module.exports = {
+  getActiveCampaigns,
   donate,
 };

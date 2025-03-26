@@ -2,7 +2,22 @@
 let confirm;
 let req;
 let res;
-let viewData = {"adyen": {"adyenGivingAvailable": true, "adyenGivingBackgroundUrl": "mocked_background_url", "adyenGivingLogoUrl": "mocked_logo_url", "charityDescription": "%25mocked_charity_description%25", "charityName": "%25mocked_charity_name%25", "charityWebsite": "mocked_charity_website", "clientKey": "mocked_client_key", "donationAmounts": "{\"currency\":\"EUR\",\"values\":[10,20,30]}", "environment": "test", "orderToken": "mocked_token"}}
+jest.mock('*/cartridge/adyen/scripts/donations/adyenGiving', () => ({
+	getActiveCampaigns: jest.fn(() => ({
+	  donationCampaigns: [
+		{
+		  campaignName: 'mocked_campaign',
+		  nonprofitName: 'mocked_nonprofit',
+		  nonprofitDescription: 'mocked_description',
+		  nonprofitUrl: 'mocked_url',
+		  logoUrl: 'mocked_logo_url',
+		  bannerUrl: 'mocked_banner_url',
+		  termsAndConditionsUrl: 'mocked_terms_url',
+		  donation: { currency: 'EUR', values: [10, 20, 30] },
+		},
+	  ],
+	})),
+  }));
 beforeEach(() => {
   const { order } = require('../../index');
   confirm = order.confirm;
@@ -19,7 +34,7 @@ describe('Confirm', () => {
   it('should do nothing if giving is not enabled', () => {
     const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
     AdyenHelper.getOrderMainPaymentInstrumentType.mockReturnValue('AdyenComponent');
-    AdyenHelper.getAdyenGivingConfig.mockImplementation(() => null);
+    AdyenHelper.isAdyenGivingAvailable.mockImplementation(() => null);
     confirm(req, res, jest.fn());
     expect(res.setViewData).toBeCalledTimes(0);
   });
@@ -28,9 +43,5 @@ describe('Confirm', () => {
     AdyenHelper.getOrderMainPaymentInstrumentType.mockReturnValue('AdyenComponent');
     confirm(req, res, jest.fn());
     expect(res.setViewData).toMatchSnapshot();
-  });
-  it('check if encrypted', () => {
-    confirm(req, res, jest.fn());
-    expect(res.setViewData).toBeCalledWith(viewData);
   });
 });
