@@ -133,6 +133,10 @@ describe('paypalHelper', () => {
           lastName: 'Doe'
         },
         billingAddress:{
+          shopperName:{
+            firstName: 'John',
+            lastName: 'Doe'
+          },
           street: '123 Main St',
           city: 'City',
           postalCode: '12345',
@@ -140,6 +144,10 @@ describe('paypalHelper', () => {
           country: 'United States',
         },
         shippingAddress:{
+          shopperName:{
+            firstName: 'John',
+            lastName: 'Doe'
+          },
           street: '123 Main St',
           city: 'City',
           postalCode: '12345',
@@ -149,20 +157,19 @@ describe('paypalHelper', () => {
         telephoneNumber: '+1234567890',
         shopperEmail: 'john@example.com'
       }
-      session.privacy.shopperDetails = JSON.stringify(shopperDetails);
     });
     afterEach(() => {
       jest.resetModules();
     });
     it('should update billing and shipping address for current basket', () => {
       const currentBasket = BasketMgr.getCurrentBasket();
-      paypalHelper.setBillingAndShippingAddress(currentBasket);
+      paypalHelper.setBillingAndShippingAddress(currentBasket, shopperDetails);
       expect(currentBasket.billingAddress.setFirstName).toHaveBeenCalledWith('John');
     })
     it('should set billing and shipping address if current basket has no billing Address', () => {
       const currentBasket = BasketMgr.getCurrentBasket();
       currentBasket.billingAddress= '';
-      paypalHelper.setBillingAndShippingAddress(currentBasket);
+      paypalHelper.setBillingAndShippingAddress(currentBasket, shopperDetails);
       expect(currentBasket.createBillingAddress).toHaveBeenCalled();
     })
     it('should set billing and shipping address if current basket has no shipping Address', () => {
@@ -181,7 +188,7 @@ describe('paypalHelper', () => {
       currentBasket.getDefaultShipment= jest.fn(() => ({
         createShippingAddress: createShippingAddress
       }));
-      paypalHelper.setBillingAndShippingAddress(currentBasket);
+      paypalHelper.setBillingAndShippingAddress(currentBasket, shopperDetails);
       expect(currentBasket.getDefaultShipment).toHaveBeenCalled();
       expect(createShippingAddress).toHaveBeenCalled();
     })
