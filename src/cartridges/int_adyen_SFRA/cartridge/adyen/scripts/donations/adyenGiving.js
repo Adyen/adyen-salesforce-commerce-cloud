@@ -55,6 +55,9 @@ function donate(donationReference, donationAmount, orderToken) {
 
     let paymentMethodVariant;
     const order = OrderMgr.getOrder(donationReference, orderToken);
+    const orderAmount = AdyenHelper.getCurrencyValueForApi(
+      order.getTotalGrossPrice(),
+    );
     const paymentInstrument = order.getPaymentInstruments(
       AdyenHelper.getOrderMainPaymentInstrumentType(order),
     )[0];
@@ -69,7 +72,9 @@ function donate(donationReference, donationAmount, orderToken) {
       paymentData.paymentMethod?.type ||
       paymentData.fullResponse?.paymentMethod?.type;
 
-    const donationCampaignId = getActiveCampaigns().donationCampaigns[0].id;
+    const donationCampaign = getActiveCampaigns().donationCampaigns[0];
+    const donationCampaignId = donationCampaign.id;
+    const donationCampaignType = donationCampaign.donation?.donationType;
 
     // for iDeal donations, the payment method variant needs to be set to sepadirectdebit
     if (paymentMethodVariant === 'ideal') {
@@ -92,6 +97,14 @@ function donate(donationReference, donationAmount, orderToken) {
         type: paymentMethodVariant,
       },
     };
+
+    if (donationCampaignType === 'roundup') {
+      const { maxRoundupAmount } = donationCampaign.donation;
+      const roundUpAmount = maxRoundupAmount - (orderAmount % maxRoundupAmount);
+      if (roundUpAmount !== parseInt(donationAmount.value, 10)) {
+        throw new Error('Donation amount does not match the roundup amount');
+      }
+    }
 
     const response = AdyenHelper.executeCall(
       constants.SERVICE.ADYENGIVING,
