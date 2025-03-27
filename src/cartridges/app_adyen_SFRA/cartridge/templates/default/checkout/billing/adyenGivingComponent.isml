@@ -25,6 +25,7 @@
                 bannerUrl: '${pdict.adyen.bannerUrl}',
                 termsAndConditionsUrl: '${pdict.adyen.termsAndConditionsUrl}',
                 donationProperties: '${pdict.adyen.donationProperties}'.replace(/&quot;/g, '\"'),
+                orderTotal: '${pdict.order.totals.grandTotal}'.split('&')[0].trim(),
         };
     </script>
     <div id="adyenGiving" class="card confirm-details">

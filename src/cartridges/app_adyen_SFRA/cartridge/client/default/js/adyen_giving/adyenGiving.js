@@ -4,6 +4,7 @@ const store = require('../../../../store');
 let checkout;
 let adyenGivingComponent;
 const adyenGivingNode = document.getElementById('donate-container');
+const orderTotal = window.givingConfig.orderTotal.replace(/[^0-9.]/g, '');
 const {
   donationProperties,
   nonprofitName,
@@ -54,6 +55,10 @@ function getDonationProperties() {
   }
 }
 
+function isRoundupDonation(data) {
+  return data?.type === 'roundup';
+}
+
 const donationConfig = {
   donation: getDonationProperties(),
   nonprofitName,
@@ -65,6 +70,9 @@ const donationConfig = {
   showCancelButton: true,
   onDonate: handleOnDonate,
   onCancel: handleOnCancel,
+  ...(isRoundupDonation(getDonationProperties()) && {
+    commercialTxAmount: orderTotal,
+  }),
 };
 
 store.checkoutConfiguration = {
