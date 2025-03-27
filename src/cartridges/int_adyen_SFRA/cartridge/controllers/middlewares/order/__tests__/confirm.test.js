@@ -6,7 +6,6 @@ jest.mock('*/cartridge/adyen/scripts/donations/adyenGiving', () => ({
 	getActiveCampaigns: jest.fn(() => ({
 	  donationCampaigns: [
 		{
-		  campaignName: 'mocked_campaign',
 		  nonprofitName: 'mocked_nonprofit',
 		  nonprofitDescription: 'mocked_description',
 		  nonprofitUrl: 'mocked_url',

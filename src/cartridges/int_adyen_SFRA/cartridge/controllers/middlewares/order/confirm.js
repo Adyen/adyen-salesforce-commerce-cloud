@@ -20,7 +20,6 @@ function handleAdyenGiving(req, res) {
   const environment = AdyenHelper.getCheckoutEnvironment();
   const campaign = adyenGiving.getActiveCampaigns().donationCampaigns[0];
   const {
-    campaignName,
     nonprofitName,
     nonprofitDescription,
     nonprofitUrl,
@@ -36,7 +35,6 @@ function handleAdyenGiving(req, res) {
     clientKey,
     environment,
     adyenGivingAvailable: true,
-    campaignName,
     donationProperties,
     nonprofitName,
     nonprofitDescription,

@@ -5,7 +5,7 @@
     <input type="hidden" id="adyen-token" name="${pdict.csrf.tokenName}" value="${pdict.csrf.token}"/>
     <isscript>
         var assets = require('*/cartridge/scripts/assets.js');
-        assets.addJs('/js/adyenGiving.js');
+        assets.addJs('/js/adyen_giving/adyenGiving.js');
     </isscript>
     <script>
         window.Configuration = {
@@ -15,18 +15,17 @@
         };
         window.donateURL = "${URLUtils.https('Adyen-Donate')}";
         window.countryCode = window.Configuration.locale.slice(-2);
-		window.givingConfig = {
-			orderNo: '${pdict.order.orderNumber}',
-			orderToken: '${pdict.adyen.orderToken}',
-			campaignName: '${pdict.adyen.campaignName}',
-			nonprofitName: '${pdict.adyen.nonprofitName}',
-			nonprofitDescription: '${pdict.adyen.nonprofitDescription}',
-			nonprofitUrl: '${pdict.adyen.nonprofitUrl}',
-			logoUrl: '${pdict.adyen.logoUrl}',
-			bannerUrl: '${pdict.adyen.bannerUrl}',
-			termsAndConditionsUrl: '${pdict.adyen.termsAndConditionsUrl}',
-			donationProperties: '${pdict.adyen.donationProperties}'.replace(/&quot;/g, '\"'),
-		};
+        window.givingConfig = {
+                orderNo: '${pdict.order.orderNumber}',
+                orderToken: '${pdict.adyen.orderToken}',
+                nonprofitName: '${pdict.adyen.nonprofitName}',
+                nonprofitDescription: '${pdict.adyen.nonprofitDescription}',
+                nonprofitUrl: '${pdict.adyen.nonprofitUrl}',
+                logoUrl: '${pdict.adyen.logoUrl}',
+                bannerUrl: '${pdict.adyen.bannerUrl}',
+                termsAndConditionsUrl: '${pdict.adyen.termsAndConditionsUrl}',
+                donationProperties: '${pdict.adyen.donationProperties}'.replace(/&quot;/g, '\"'),
+        };
     </script>
     <div id="adyenGiving" class="card confirm-details">
         <div class="card-header">

@@ -1,12 +1,11 @@
-const { httpClient } = require('./commons/httpClient');
-const store = require('../../../store');
+const { httpClient } = require('../commons/httpClient');
+const store = require('../../../../store');
 
 let checkout;
 let adyenGivingComponent;
 const adyenGivingNode = document.getElementById('donate-container');
 const {
   donationProperties,
-  campaignName,
   nonprofitName,
   nonprofitDescription,
   nonprofitUrl,
@@ -56,7 +55,6 @@ function getDonationProperties() {
 }
 
 const donationConfig = {
-  campaignName,
   donation: getDonationProperties(),
   nonprofitName,
   nonprofitDescription,
