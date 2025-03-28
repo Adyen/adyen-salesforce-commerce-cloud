@@ -61,8 +61,8 @@ function isRoundupDonation(data) {
 
 const donationConfig = {
   donation: getDonationProperties(),
-  nonprofitName,
-  nonprofitDescription,
+  nonprofitName: decodeURI(nonprofitName),
+  nonprofitDescription: decodeURI(nonprofitDescription),
   nonprofitUrl,
   logoUrl,
   bannerUrl,

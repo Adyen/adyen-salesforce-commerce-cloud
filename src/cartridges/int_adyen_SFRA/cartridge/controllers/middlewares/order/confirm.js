@@ -19,15 +19,10 @@ function handleAdyenGiving(req, res) {
   const clientKey = AdyenConfigs.getAdyenClientKey();
   const environment = AdyenHelper.getCheckoutEnvironment();
   const campaign = adyenGiving.getActiveCampaigns().donationCampaigns[0];
-  const {
-    nonprofitName,
-    nonprofitDescription,
-    nonprofitUrl,
-    logoUrl,
-    bannerUrl,
-    termsAndConditionsUrl,
-  } = campaign;
+  const { nonprofitUrl, logoUrl, bannerUrl, termsAndConditionsUrl } = campaign;
   const donationProperties = JSON.stringify(campaign.donation);
+  const nonprofitName = encodeURI(campaign.nonprofitName);
+  const nonprofitDescription = encodeURI(campaign.nonprofitDescription);
   const orderToken = getOrderToken(req);
 
   const viewData = res.getViewData();
