@@ -142,9 +142,10 @@ function createPaypalUpdateOrderRequest(
 /**
  * sets Shipping and Billing address for the basket
  * @param {dw.order.Basket} currentBasket - the current basket
+ * @param {Object} shopperDetails - the shopper billing and shipping address details
  * @returns {undefined}
  */
-function setBillingAndShippingAddress(currentBasket) {
+function setBillingAndShippingAddress(currentBasket, shopperDetails) {
   let { billingAddress } = currentBasket;
   let { shippingAddress } = currentBasket.getDefaultShipment();
   Transaction.wrap(() => {
@@ -158,26 +159,34 @@ function setBillingAndShippingAddress(currentBasket) {
     }
   });
 
-  const shopperDetails = JSON.parse(session.privacy.shopperDetails);
-
   Transaction.wrap(() => {
-    billingAddress.setFirstName(shopperDetails.shopperName.firstName);
-    billingAddress.setLastName(shopperDetails.shopperName.lastName);
+    billingAddress.setFirstName(
+      shopperDetails.billingAddress.shopperName.firstName,
+    );
+    billingAddress.setLastName(
+      shopperDetails.billingAddress.shopperName.lastName,
+    );
     billingAddress.setAddress1(shopperDetails.billingAddress.street);
     billingAddress.setCity(shopperDetails.billingAddress.city);
     billingAddress.setPhone(shopperDetails.telephoneNumber);
     billingAddress.setPostalCode(shopperDetails.billingAddress.postalCode);
-    billingAddress.setStateCode(shopperDetails.billingAddress.stateOrProvince);
+    billingAddress.setStateCode(
+      shopperDetails.billingAddress.stateOrProvince || '',
+    );
     billingAddress.setCountryCode(shopperDetails.billingAddress.country);
 
-    shippingAddress.setFirstName(shopperDetails.shopperName.firstName);
-    shippingAddress.setLastName(shopperDetails.shopperName.lastName);
+    shippingAddress.setFirstName(
+      shopperDetails.shippingAddress.shopperName.firstName,
+    );
+    shippingAddress.setLastName(
+      shopperDetails.shippingAddress.shopperName.lastName,
+    );
     shippingAddress.setAddress1(shopperDetails.shippingAddress.street);
     shippingAddress.setCity(shopperDetails.shippingAddress.city);
     shippingAddress.setPhone(shopperDetails.telephoneNumber);
     shippingAddress.setPostalCode(shopperDetails.shippingAddress.postalCode);
     shippingAddress.setStateCode(
-      shopperDetails.shippingAddress.stateOrProvince,
+      shopperDetails.shippingAddress.stateOrProvince || '',
     );
     shippingAddress.setCountryCode(shopperDetails.shippingAddress.country);
 

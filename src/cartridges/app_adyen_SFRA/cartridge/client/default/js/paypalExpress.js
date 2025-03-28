@@ -194,6 +194,15 @@ function getPaypalButtonConfig(paypalConfig) {
       $.spinner().stop();
     },
     onShopperDetails: async (shopperDetails, rawData, actions) => {
+      if (rawData.purchase_units?.length) {
+        const shopperName = rawData.purchase_units[0].shipping?.name?.full_name;
+        const [firstName, ...rest] = shopperName.split(' ');
+        shopperDetails.shippingAddress.shopperName = {
+          firstName: firstName || '',
+          lastName: rest && rest.length ? rest.join(' ') : '',
+        };
+      }
+      shopperDetails.billingAddress.shopperName = shopperDetails.shopperName;
       await saveShopperDetails(shopperDetails, actions);
     },
     onAdditionalDetails: (state) => {
