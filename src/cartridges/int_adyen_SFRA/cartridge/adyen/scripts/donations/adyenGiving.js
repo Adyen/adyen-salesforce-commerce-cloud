@@ -29,7 +29,8 @@ const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 
 function getActiveCampaigns() {
   try {
-    const currentLocale = request.getLocale();
+    // This will be fixed on API level, replace needs to be removed once fixed
+    const currentLocale = request.getLocale().replace('_', '-');
     const requestObject = {
       merchantAccount: AdyenConfigs.getAdyenMerchantAccount(),
       currency: session.currency.currencyCode,
