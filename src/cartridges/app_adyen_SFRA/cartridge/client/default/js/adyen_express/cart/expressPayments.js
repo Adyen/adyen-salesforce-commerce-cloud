@@ -3,7 +3,7 @@ const {
   getPaymentMethods,
   updateLoadedExpressMethods,
 } = require('../../commons');
-const { Paypal, ApplePay } = require('../paymentMethods/index');
+const { Paypal, ApplePay, GooglePay } = require('../paymentMethods/index');
 const { APPLE_PAY, GOOGLE_PAY, PAYPAL } = require('../../constants');
 
 function getPaymentMethodConfig(adyenPaymentMethods, paymentMethodType) {
@@ -42,6 +42,24 @@ async function renderApplePayButton(paymentMethodsResponse) {
   checkIfExpressMethodsAreReady();
 }
 
+async function renderGooglePayButton(paymentMethodsResponse) {
+  const { AdyenPaymentMethods, applicationInfo } = paymentMethodsResponse;
+  const googlePayConfig = getPaymentMethodConfig(
+    AdyenPaymentMethods,
+    GOOGLE_PAY,
+  );
+  if (!googlePayConfig) {
+    updateLoadedExpressMethods(GOOGLE_PAY);
+    checkIfExpressMethodsAreReady();
+    return;
+  }
+  const googlePay = new GooglePay(googlePayConfig, applicationInfo);
+  const googlePayComponent = await googlePay.getComponent();
+  googlePayComponent.mount('.googlepay');
+  updateLoadedExpressMethods(GOOGLE_PAY);
+  checkIfExpressMethodsAreReady();
+}
+
 function getExpressPaymentButtons() {
   const expressMethodsConfig = {
     [APPLE_PAY]: window.isApplePayExpressEnabled === 'true',
@@ -72,6 +90,7 @@ function renderExpressPaymentButtons() {
     $('#express-container').spinner().start();
     await renderPayPalButton(paymentMethodsResponse);
     await renderApplePayButton(paymentMethodsResponse);
+    await renderGooglePayButton(paymentMethodsResponse);
     $.spinner().stop();
   });
 }
