@@ -1,102 +1,126 @@
+const { getPaymentMethods } = require('../../commons');
 const {
-  checkIfExpressMethodsAreReady,
-  getPaymentMethods,
-  updateLoadedExpressMethods,
-} = require('../../commons');
-const { Paypal, ApplePay, AmazonPay } = require('../paymentMethods/index');
+  Paypal,
+  ApplePay,
+  GooglePay,
+  AmazonPay,
+} = require('../paymentMethods/index');
 const {
   APPLE_PAY,
   GOOGLE_PAY,
   PAYPAL,
   AMAZON_PAY,
+  PAY_WITH_GOOGLE,
 } = require('../../../../../config/constants');
 
 function getPaymentMethodConfig(adyenPaymentMethods, paymentMethodType) {
   return adyenPaymentMethods?.paymentMethods.find(
-    (pm) => pm.type === paymentMethodType,
+    (pm) => paymentMethodType.indexOf(pm.type) > -1,
   )?.configuration;
 }
 
-async function renderPayPalButton(paymentMethodsResponse) {
-  const { AdyenPaymentMethods, applicationInfo } = paymentMethodsResponse;
-  const paypalConfig = getPaymentMethodConfig(AdyenPaymentMethods, PAYPAL);
-  if (!paypalConfig) {
-    updateLoadedExpressMethods(PAYPAL);
-    checkIfExpressMethodsAreReady();
-    return;
-  }
-  const paypal = new Paypal(paypalConfig, applicationInfo);
-  const paypalComponent = await paypal.getComponent();
-  paypalComponent.mount('.paypal');
-  updateLoadedExpressMethods(PAYPAL);
-  checkIfExpressMethodsAreReady();
-}
-
-async function renderApplePayButton(paymentMethodsResponse) {
-  const { AdyenPaymentMethods, applicationInfo } = paymentMethodsResponse;
-  const applePayConfig = getPaymentMethodConfig(AdyenPaymentMethods, APPLE_PAY);
-  if (!applePayConfig) {
-    updateLoadedExpressMethods(APPLE_PAY);
-    checkIfExpressMethodsAreReady();
-    return;
-  }
-  const applePay = new ApplePay(applePayConfig, applicationInfo);
-  const applePayComponent = await applePay.getComponent();
-  applePayComponent.mount('.applepay');
-  updateLoadedExpressMethods(APPLE_PAY);
-  checkIfExpressMethodsAreReady();
-}
-
-async function renderAmazonPayButton(paymentMethodsResponse) {
-  const { AdyenPaymentMethods, applicationInfo } = paymentMethodsResponse;
-  const amazonPayConfig = getPaymentMethodConfig(
-    AdyenPaymentMethods,
-    AMAZON_PAY,
-  );
-  if (!amazonPayConfig) {
-    updateLoadedExpressMethods(AMAZON_PAY);
-    checkIfExpressMethodsAreReady();
-    return;
-  }
-  const amazonPay = new AmazonPay(amazonPayConfig, applicationInfo);
-  const amazonPayComponent = await amazonPay.getComponent();
-  amazonPayComponent.mount('#amazonpay-container');
-  updateLoadedExpressMethods(AMAZON_PAY);
-  checkIfExpressMethodsAreReady();
-}
-
-function getExpressPaymentButtons() {
-  const expressMethodsConfig = {
-    [APPLE_PAY]: window.isApplePayExpressEnabled === 'true',
-    [GOOGLE_PAY]: window.isGooglePayExpressEnabled === 'true',
-    [PAYPAL]: window.isPayPalExpressEnabled === 'true',
-    [AMAZON_PAY]: window.isAmazonPayExpressEnabled === 'true',
-  };
-  const enabledExpressPaymentButtons = [];
-  Object.keys(expressMethodsConfig).forEach((key) => {
-    if (expressMethodsConfig[key]) {
-      const $container = document.createElement('div');
-      $container.setAttribute('id', `${key}-container`);
-      $container.setAttribute('class', `expressComponent ${key}`);
-      $container.setAttribute('data-method', `${key}`);
-      $container.setAttribute('style', `padding:0`);
-      enabledExpressPaymentButtons.push($container);
+function renderPayPalButton() {
+  $('body').on(`cart:render${PAYPAL}Button`, async (e, response) => {
+    const {
+      paymentMethodsResponse: { AdyenPaymentMethods, applicationInfo } = {},
+      button,
+    } = response;
+    const paypalConfig = getPaymentMethodConfig(AdyenPaymentMethods, PAYPAL);
+    if (!paypalConfig) {
+      return;
     }
+    const paypal = new Paypal(paypalConfig, applicationInfo);
+    const paypalComponent = await paypal.getComponent();
+    paypalComponent.mount(button);
   });
-  return enabledExpressPaymentButtons;
 }
 
-function renderExpressPaymentButtons() {
-  $('body').on('cart:renderExpressPaymentButtons', async (e, response) => {
+function renderApplePayButton() {
+  $('body').on(`cart:render${APPLE_PAY}Button`, async (e, response) => {
+    const {
+      paymentMethodsResponse: { AdyenPaymentMethods, applicationInfo } = {},
+      button,
+    } = response;
+    const applePayConfig = getPaymentMethodConfig(
+      AdyenPaymentMethods,
+      APPLE_PAY,
+    );
+    if (!applePayConfig) {
+      return;
+    }
+    const applePay = new ApplePay(applePayConfig, applicationInfo);
+    const applePayComponent = await applePay.getComponent();
+    applePayComponent.mount(button);
+  });
+}
+
+function renderAmazonPayButton() {
+  $('body').on(`cart:render${AMAZON_PAY}Button`, async (e, response) => {
+    const {
+      paymentMethodsResponse: { AdyenPaymentMethods, applicationInfo } = {},
+      button,
+    } = response;
+    const amazonPayConfig = getPaymentMethodConfig(
+      AdyenPaymentMethods,
+      AMAZON_PAY,
+    );
+    if (!amazonPayConfig) {
+      return;
+    }
+    const amazonPay = new AmazonPay(amazonPayConfig, applicationInfo);
+    const amazonPayComponent = await amazonPay.getComponent();
+    amazonPayComponent.mount(button);
+  });
+}
+
+function renderGooglePayButton() {
+  $('body').on(`cart:render${GOOGLE_PAY}Button`, async (e, response) => {
+    const {
+      paymentMethodsResponse: { AdyenPaymentMethods, applicationInfo } = {},
+      button,
+    } = response;
+    const googlePayConfig = getPaymentMethodConfig(AdyenPaymentMethods, [
+      GOOGLE_PAY,
+      PAY_WITH_GOOGLE,
+    ]);
+    if (!googlePayConfig) {
+      return;
+    }
+    const googlePay = new GooglePay(googlePayConfig, applicationInfo);
+    const googlePayComponent = await googlePay.getComponent();
+    googlePayComponent.mount(button);
+  });
+}
+
+function getExpressPaymentButtons(paymentMethodsResponse) {
+  const { cartExpressMethods } = paymentMethodsResponse;
+  return cartExpressMethods.map((pm) => {
+    const $container = document.createElement('div');
+    $container.setAttribute('id', `${pm}-container`);
+    $container.setAttribute('class', `expressComponent ${pm}`);
+    $container.setAttribute('data-method', `${pm}`);
+    $container.setAttribute('style', `padding:0`);
+    return $container;
+  });
+}
+
+function renderExpressPaymentContainer() {
+  $('body').on('cart:renderExpressPaymentContainer', async (e, response) => {
     const { paymentMethodsResponse } = response;
     const $expressPaymentButtonsContainer =
       document.getElementById('express-container');
-    const expressPaymentButtons = getExpressPaymentButtons();
+    const expressPaymentButtons = getExpressPaymentButtons(
+      paymentMethodsResponse,
+    );
     $expressPaymentButtonsContainer.replaceChildren(...expressPaymentButtons);
     $('#express-container').spinner().start();
-    await renderPayPalButton(paymentMethodsResponse);
-    await renderApplePayButton(paymentMethodsResponse);
-    await renderAmazonPayButton(paymentMethodsResponse);
+    expressPaymentButtons.forEach((button) => {
+      const expressType = button.getAttribute('data-method');
+      $('body').trigger(`cart:render${expressType}Button`, {
+        paymentMethodsResponse,
+        button,
+      });
+    });
     $.spinner().stop();
   });
 }
@@ -104,12 +128,16 @@ function renderExpressPaymentButtons() {
 async function init() {
   const paymentMethodsResponse = await getPaymentMethods();
   $(document).ready(async () => {
-    $('body').trigger('cart:renderExpressPaymentButtons', {
+    $('body').trigger('cart:renderExpressPaymentContainer', {
       paymentMethodsResponse,
     });
   });
 }
 module.exports = {
   init,
-  renderExpressPaymentButtons,
+  renderExpressPaymentContainer,
+  renderPayPalButton,
+  renderApplePayButton,
+  renderGooglePayButton,
+  renderAmazonPayButton,
 };

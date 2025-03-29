@@ -1,6 +1,7 @@
 .idea
 .DS_Store
 .vagrant
+.env
 node_modules
 dw.json
 /.vscode/

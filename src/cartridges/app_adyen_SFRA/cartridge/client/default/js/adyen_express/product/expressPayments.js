@@ -1,8 +1,11 @@
-const googlePayExpressModule = require('../googlePayExpress');
-const { APPLE_PAY, GOOGLE_PAY } = require('../../../../../config/constants');
+const {
+  APPLE_PAY,
+  GOOGLE_PAY,
+  PAY_WITH_GOOGLE,
+} = require('../../../../../config/constants');
 const { getPaymentMethods } = require('../../commons');
 const { httpClient } = require('../../commons/httpClient');
-const { ApplePay } = require('../paymentMethods');
+const { ApplePay, GooglePay } = require('../paymentMethods');
 
 function getProductForm(product) {
   const $productInputEl = document.createElement('input');
@@ -24,58 +27,94 @@ function getValueForCurrency(amount, currency) {
   return { value, currency };
 }
 
-function getExpressPaymentButtons(product) {
-  const expressMethodsConfig = {
-    [APPLE_PAY]: window.isApplePayExpressOnPdpEnabled === 'true',
-    [GOOGLE_PAY]: window.isGooglePayExpressOnPdpEnabled === 'true',
-  };
-  const enabledExpressPaymentButtons = [];
-  Object.keys(expressMethodsConfig).forEach((key) => {
-    if (expressMethodsConfig[key]) {
-      const $container = document.createElement('div');
-      $container.setAttribute('id', `${key}-pdp`);
-      $container.setAttribute('class', `expressComponent ${key}`);
-      $container.setAttribute('data-method', `${key}`);
-      $container.setAttribute('data-pid', `${product.id}`);
-      enabledExpressPaymentButtons.push($container);
-    }
-  });
-  return enabledExpressPaymentButtons;
-}
-
-async function renderApplePayButton(paymentMethodsResponse) {
-  const { AdyenPaymentMethods, applicationInfo } = paymentMethodsResponse;
-  const applePayConfig = AdyenPaymentMethods?.paymentMethods.find(
-    (pm) => pm.type === APPLE_PAY,
+function getPaymentMethodConfig(adyenPaymentMethods, paymentMethodType) {
+  return adyenPaymentMethods?.paymentMethods.find(
+    (pm) => paymentMethodType.indexOf(pm.type) > -1,
   )?.configuration;
-  const applePay = new ApplePay(applePayConfig, applicationInfo, true);
-  const applePayComponent = await applePay.getComponent();
-  applePayComponent.mount('.applepay');
 }
 
-function renderGooglePayButton(paymentMethods) {
-  googlePayExpressModule.init(paymentMethods, true);
+function renderApplePayButton() {
+  $('body').on(`product:render${APPLE_PAY}Button`, async (e, response) => {
+    const {
+      paymentMethodsResponse: { AdyenPaymentMethods, applicationInfo } = {},
+      button,
+    } = response;
+    const applePayConfig = getPaymentMethodConfig(
+      AdyenPaymentMethods,
+      APPLE_PAY,
+    );
+    if (!applePayConfig) {
+      return;
+    }
+    const applePay = new ApplePay(applePayConfig, applicationInfo, true);
+    const applePayComponent = await applePay.getComponent();
+    applePayComponent.mount(button);
+  });
 }
 
-function renderExpressPaymentButtons() {
-  $('body').on('product:renderExpressPaymentButtons', (e, response) => {
-    const { product = {}, paymentMethods } = response;
+function renderGooglePayButton() {
+  $('body').on(`product:render${GOOGLE_PAY}Button`, async (e, response) => {
+    const {
+      paymentMethodsResponse: { AdyenPaymentMethods, applicationInfo } = {},
+      button,
+    } = response;
+    const googlePayConfig = getPaymentMethodConfig(AdyenPaymentMethods, [
+      GOOGLE_PAY,
+      PAY_WITH_GOOGLE,
+    ]);
+    if (!googlePayConfig) {
+      return;
+    }
+    const googlePay = new GooglePay(googlePayConfig, applicationInfo, true);
+    const googlePayComponent = await googlePay.getComponent();
+    googlePayComponent.mount(button);
+  });
+}
+
+function getExpressPaymentButtons(paymentMethodsResponse, product) {
+  const { pdpExpressMethods } = paymentMethodsResponse;
+  return pdpExpressMethods.map((pm) => {
+    const $container = document.createElement('div');
+    $container.setAttribute('id', `${pm}-pdp`);
+    $container.setAttribute('class', `expressComponent ${pm}`);
+    $container.setAttribute('data-method', `${pm}`);
+    $container.setAttribute('data-pid', `${product.id}`);
+    $container.setAttribute('style', `padding:0`);
+    return $container;
+  });
+}
+
+function renderExpressPaymentContainer() {
+  $('body').on('product:renderExpressPaymentContainer', (e, response) => {
+    const { product = {}, paymentMethodsResponse } = response;
     const $expressPaymentButtonsContainer = document.getElementById(
       'express-payment-buttons',
     );
-    if (product.readyToOrder && product.available) {
+    if (
+      product.readyToOrder &&
+      product.available &&
+      paymentMethodsResponse?.pdpExpressMethods?.length
+    ) {
       const { price, selectedQuantity } = product;
       const { value, currency } = price.sales;
       const amount = getValueForCurrency(value * selectedQuantity, currency);
       window.basketAmount = JSON.stringify(amount);
-      const expressPaymentButtons = getExpressPaymentButtons(product);
+      const expressPaymentButtons = getExpressPaymentButtons(
+        paymentMethodsResponse,
+        product,
+      );
       const $productForm = getProductForm(product);
       $expressPaymentButtonsContainer.replaceChildren(
         ...expressPaymentButtons,
         $productForm,
       );
-      renderApplePayButton(paymentMethods);
-      renderGooglePayButton(paymentMethods);
+      expressPaymentButtons.forEach((button) => {
+        const expressType = button.getAttribute('data-method');
+        $('body').trigger(`product:render${expressType}Button`, {
+          paymentMethodsResponse,
+          button,
+        });
+      });
     } else {
       $expressPaymentButtonsContainer.replaceChildren();
     }
@@ -85,9 +124,9 @@ function renderExpressPaymentButtons() {
 async function init() {
   const paymentMethodsResponse = await getPaymentMethods();
   $('body').on('product:updateAddToCart', (e, response) => {
-    $('body').trigger('product:renderExpressPaymentButtons', {
+    $('body').trigger('product:renderExpressPaymentContainer', {
       product: response.product,
-      paymentMethods: paymentMethodsResponse,
+      paymentMethodsResponse,
     });
   });
   $(document).ready(async () => {
@@ -98,9 +137,9 @@ async function init() {
       method: 'GET',
     });
     if (productVariation?.product) {
-      $('body').trigger('product:renderExpressPaymentButtons', {
+      $('body').trigger('product:renderExpressPaymentContainer', {
         product: productVariation?.product,
-        paymentMethods: paymentMethodsResponse,
+        paymentMethodsResponse,
       });
     }
     $.spinner().stop();
@@ -109,5 +148,7 @@ async function init() {
 
 module.exports = {
   init,
-  renderExpressPaymentButtons,
+  renderExpressPaymentContainer,
+  renderApplePayButton,
+  renderGooglePayButton,
 };
