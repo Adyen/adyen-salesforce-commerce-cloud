@@ -4,8 +4,10 @@
 jest.mock('../../commons');
 jest.mock('../../../../../store');
 
-const { renderGenericComponent, setInstallments, renderPosTerminals } = require('../renderGenericComponent');
-const { applyGiftCards, setGiftCardContainerVisibility, renderGiftCardLogo, isCartModified } = require('../giftcards/index');
+const { renderGenericComponent, setInstallments } = require('../renderGenericComponent');
+const { renderPosTerminals } = require('../pos');
+
+const { applyGiftCards, renderGiftCardLogo, isCartModified } = require('../giftcards/index');
 const { getPaymentMethods } = require('../../commons');
 const { fetchGiftCards } = require('../../commons');
 const store = require('../../../../../store');

@@ -14,6 +14,7 @@ const { httpClient } = require('../commons/httpClient');
 const { getPaymentMethods } = require('../commons');
 const { GIFTCARD } = require('../constants');
 const { renderGiftCards } = require('./giftcards');
+const { addStores } = require('./pos');
 
 function setAdyenInputValues() {
   const customMethods = {};
@@ -44,6 +45,9 @@ function renderPaymentMethod() {
       );
     if (areGiftCardsEnabled) {
       await renderGiftCards(paymentMethodsResponse);
+    }
+    if (window.activeTerminalApiStores) {
+      addStores(window.activeTerminalApiStores);
     }
   });
 }
