@@ -133,6 +133,10 @@ describe('paypalHelper', () => {
           lastName: 'Doe'
         },
         billingAddress:{
+          shopperName:{
+            firstName: 'John',
+            lastName: 'Doe'
+          },
           street: '123 Main St',
           city: 'City',
           postalCode: '12345',
@@ -140,6 +144,10 @@ describe('paypalHelper', () => {
           country: 'United States',
         },
         shippingAddress:{
+          shopperName:{
+            firstName: 'John',
+            lastName: 'Doe'
+          },
           street: '123 Main St',
           city: 'City',
           postalCode: '12345',

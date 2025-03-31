@@ -60,6 +60,7 @@ function makeExpressPaymentDetailsCall(req, res, next) {
     if (!order) {
       throw new Error('Order could not be created for paypal express');
     }
+
     const response = adyenCheckout.doPaymentsDetailsCall(request.data);
 
     response.orderNo = order.orderNo;
