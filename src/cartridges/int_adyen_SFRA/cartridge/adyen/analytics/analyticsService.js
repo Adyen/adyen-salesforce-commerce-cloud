@@ -43,7 +43,8 @@ function createCheckoutAttemptId() {
       applicationInfo: AdyenHelper.getApplicationInfo(),
       channel: 'Web',
       platform: 'Web',
-      pluginType: analyticsConstants.pluginType,
+      plugin: analyticsConstants.pluginType,
+      pluginVersion: constants.VERSION,
     };
 
     const response = execute(constants.SERVICE.ADYEN_ANALYTICS, requestObject);

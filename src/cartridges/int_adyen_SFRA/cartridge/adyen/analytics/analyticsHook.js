@@ -79,6 +79,13 @@ function onCompleteHandler(req, res) {
         analyticsConstants.eventStatus.UNEXPECTED,
         analyticsConstants.eventCode.INFO,
       );
+      analyticsEvent.createAnalyticsEvent(
+        session.sessionID,
+        path.join('-'),
+        analyticsConstants.eventType.UNEXPECTED_END,
+        analyticsConstants.eventStatus.UNEXPECTED,
+        analyticsConstants.eventCode.ERROR,
+      );
     } else {
       analyticsEvent.createAnalyticsEvent(
         session.sessionID,

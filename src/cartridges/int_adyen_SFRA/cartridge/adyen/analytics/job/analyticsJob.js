@@ -1,6 +1,7 @@
 const CustomObjectMgr = require('dw/object/CustomObjectMgr');
 const Transaction = require('dw/system/Transaction');
-const constants = require('../constants');
+const analyticsConstants = require('*/cartridge/adyen/analytics/constants');
+const constants = require('*/cartridge/adyen/config/constants');
 const AnalyticsService = require('../analyticsService');
 const AdyenLogs = require('../../logs/adyenCustomLogs');
 
@@ -8,7 +9,6 @@ function createRequestObjectForAllReferenceIds(groupedObjects) {
   const requestObject = {
     channel: 'Web',
     platform: 'Web',
-    pluginType: constants.pluginType,
   };
 
   // Iterate over all referenceIds and group events into one requestObject
@@ -16,19 +16,23 @@ function createRequestObjectForAllReferenceIds(groupedObjects) {
     const events = groupedObjects[referenceId];
 
     events.forEach((event) => {
+      const eventCode = event.eventCode.toLowerCase();
       const eventObject = {
         timestamp: new Date(event.creationDate).getTime().toString(),
         type: event.eventType,
-        target: event.eventStatus,
+        target: event.referenceId,
         id: event.eventId,
         component: event.eventSource,
       };
-
-      const eventCode = event.eventCode.toLowerCase();
+      if (eventCode === analyticsConstants.eventCode.ERROR) {
+        delete eventObject.type;
+        delete eventObject.target;
+        eventObject.errorType = constants.errorType;
+      }
       const eventCodeList = [
-        constants.eventCode.INFO,
-        constants.eventCode.ERROR,
-        constants.eventCode.LOG,
+        analyticsConstants.eventCode.INFO,
+        analyticsConstants.eventCode.ERROR,
+        analyticsConstants.eventCode.LOG,
       ];
 
       if (eventCodeList.includes(eventCode)) {
@@ -90,14 +94,14 @@ function updateCounter(customObject) {
 
 function processData() {
   const query = 'custom.processingStatus = {0}';
-  const queryArgs = [constants.processingStatus.NOT_PROCESSED];
+  const queryArgs = [analyticsConstants.processingStatus.NOT_PROCESSED];
   let customObjectIterator = null;
   const groupedObjects = {};
 
   try {
     // Query the custom objects by processing status
     customObjectIterator = CustomObjectMgr.queryCustomObjects(
-      constants.analyticsEventObjectId,
+      analyticsConstants.analyticsEventObjectId,
       query,
       null,
       queryArgs,
