@@ -110,9 +110,6 @@ function handlePaymentAction() {
 }
 
 async function init() {
-  $(document).on('submit', 'form', (event) => {
-    event.preventDefault();
-  });
   $(document).ready(() => {
     // TODO: render the error message box
     const name = 'paymentError';

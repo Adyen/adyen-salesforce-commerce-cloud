@@ -3,7 +3,7 @@ const collections = require('*/cartridge/scripts/util/collections');
 
 function processPayment(order, handlePaymentResult, req, res, emit) {
   res.json({
-    error: false,
+    error: true,
     adyenAction: handlePaymentResult.action,
     orderID: order.orderNo,
     orderToken: order.orderToken,
