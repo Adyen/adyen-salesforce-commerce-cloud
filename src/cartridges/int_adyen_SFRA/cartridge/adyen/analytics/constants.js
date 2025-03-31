@@ -12,13 +12,14 @@ module.exports = {
     UNEXPECTED: 'UNEXPECTED',
   },
   eventCode: {
-    ERROR: 'error',
+    ERROR: 'errors',
     INFO: 'info',
-    LOG: 'log',
+    LOG: 'logs',
   },
   processingStatus: {
     NOT_PROCESSED: 'NOT_PROCESSED',
     PROCESSED: 'PROCESSED',
     SKIPPED: 'SKIPPED',
   },
+  errorType: 'Plugin',
 };
