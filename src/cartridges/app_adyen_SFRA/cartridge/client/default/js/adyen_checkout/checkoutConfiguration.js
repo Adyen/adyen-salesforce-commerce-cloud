@@ -51,7 +51,6 @@ function setCheckoutConfiguration({ email, amount }) {
     email,
     amount,
   );
-  console.log(paymentMethodsConfiguration);
   store.checkoutConfiguration.onChange = handleOnChange;
   store.checkoutConfiguration.onAdditionalDetails = handleOnAdditionalDetails;
   store.checkoutConfiguration.showPayButton = false;
