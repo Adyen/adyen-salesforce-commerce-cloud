@@ -84,42 +84,6 @@ function setAmazonPayConfig(adyenPaymentMethods) {
   }
 }
 
-function setInstallments(amount) {
-  try {
-    const installmentLocales = ['pt_BR', 'ja_JP', 'tr_TR', 'es_MX'];
-    if (installmentLocales.indexOf(window.Configuration.locale) < 0) {
-      return;
-    }
-    const installments = JSON.parse(
-      window.installments.replace(/&quot;/g, '"'),
-    );
-    if (installments.length) {
-      store.paymentMethodsConfiguration.scheme.installmentOptions = {};
-    }
-    installments.forEach((installment) => {
-      const [minAmount, numOfInstallments, cards] = installment;
-      if (minAmount <= amount.value) {
-        cards.forEach((cardType) => {
-          const { installmentOptions } =
-            store.paymentMethodsConfiguration.scheme;
-          if (!installmentOptions[cardType]) {
-            installmentOptions[cardType] = {
-              values: [1],
-            };
-          }
-          if (
-            !installmentOptions[cardType].values.includes(numOfInstallments)
-          ) {
-            installmentOptions[cardType].values.push(numOfInstallments);
-            installmentOptions[cardType].values.sort((a, b) => a - b);
-          }
-        });
-      }
-    });
-    store.paymentMethodsConfiguration.scheme.showInstallmentAmounts = true;
-  } catch (e) {} // eslint-disable-line no-empty
-}
-
 export async function initializeCheckout(paymentMethodsResponse) {
   setCheckoutConfiguration(paymentMethodsResponse);
 
@@ -131,7 +95,6 @@ export async function initializeCheckout(paymentMethodsResponse) {
     store.checkoutConfiguration,
   );
 
-  setInstallments(paymentMethodsResponse.amount);
   setAmazonPayConfig(store.checkout.paymentMethodsResponse);
   document.querySelector('#paymentMethodsList').innerHTML = '';
 
@@ -186,7 +149,6 @@ async function renderGenericComponent(paymentMethodsResponse) {
 module.exports = {
   renderGenericComponent,
   initializeCheckout,
-  setInstallments,
   setAmazonPayConfig,
   renderStoredPaymentMethods,
   renderPaymentMethods,

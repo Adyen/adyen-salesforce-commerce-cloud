@@ -14,7 +14,6 @@ const store = require('../../../../../store');
 const helpers = require('../helpers');
 const { httpClient } = require('../../commons/httpClient');
 
-const cardConfig = new CardConfig(store, helpers).getConfig();
 const storedCardConfig = new StoredCardConfig(store, helpers).getConfig();
 const bcmcConfig = new BcmcConfig(store, helpers).getConfig();
 const boletoConfig = new BoletoConfig().getConfig();
@@ -34,22 +33,24 @@ const giftCardsConfig = new GiftCardsConfig(
   helpers,
 ).getConfig();
 
-const paymentMethodsConfiguration = {
-  scheme: cardConfig,
-  bcmc: bcmcConfig,
-  storedCard: storedCardConfig,
-  boletobancario: boletoConfig,
-  paywithgoogle: googlePayConfig,
-  googlepay: googlePayConfig,
-  paypal: payPalConfig,
-  amazonpay: amazonPayConfig,
-  giftcard: giftCardsConfig,
-  applepay: applePayConfig,
-  klarna: klarnaConfig,
-  klarna_account: klarnaConfig,
-  klarna_paynow: klarnaConfig,
-  cashapp: cashAppConfig,
-  upi: upiConfig,
-};
+function getPaymentMethodsConfiguration(email, amount) {
+  return {
+    scheme: new CardConfig(store, helpers, email, amount).getConfig(),
+    bcmc: bcmcConfig,
+    storedCard: storedCardConfig,
+    boletobancario: boletoConfig,
+    paywithgoogle: googlePayConfig,
+    googlepay: googlePayConfig,
+    paypal: payPalConfig,
+    amazonpay: amazonPayConfig,
+    giftcard: giftCardsConfig,
+    applepay: applePayConfig,
+    klarna: klarnaConfig,
+    klarna_account: klarnaConfig,
+    klarna_paynow: klarnaConfig,
+    cashapp: cashAppConfig,
+    upi: upiConfig,
+  };
+}
 
-module.exports = paymentMethodsConfiguration;
+module.exports = getPaymentMethodsConfiguration;

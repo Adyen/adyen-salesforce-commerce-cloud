@@ -36,13 +36,13 @@ function setAdyenInputValues() {
 function renderPaymentMethod() {
   $('body').on('checkout:renderPaymentMethod', async (e, response) => {
     const paymentMethodsResponse = await getPaymentMethods();
+    const { amount, AdyenPaymentMethods } = paymentMethodsResponse;
     const { email } = response;
-    setCheckoutConfiguration({ email });
+    setCheckoutConfiguration({ email, amount });
     await renderGenericComponent(paymentMethodsResponse);
-    const areGiftCardsEnabled =
-      paymentMethodsResponse?.AdyenPaymentMethods?.paymentMethods?.some(
-        (pm) => pm.type === GIFTCARD,
-      );
+    const areGiftCardsEnabled = AdyenPaymentMethods?.paymentMethods?.some(
+      (pm) => pm.type === GIFTCARD,
+    );
     if (areGiftCardsEnabled) {
       await renderGiftCards(paymentMethodsResponse);
     }
