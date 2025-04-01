@@ -17,7 +17,7 @@ class CardConfig {
 
   setInstallments(config) {
     const installmentLocales = ['pt_BR', 'ja_JP', 'tr_TR', 'es_MX'];
-    if (installmentLocales.indexOf(window.Configuration.locale) < 0) {
+    if (installmentLocales.indexOf(window.Configuration?.locale) < 0) {
       return;
     }
     const installments = JSON.parse(
