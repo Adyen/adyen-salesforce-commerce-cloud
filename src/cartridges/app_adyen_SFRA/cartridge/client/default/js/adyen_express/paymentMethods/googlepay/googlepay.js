@@ -211,7 +211,7 @@ class GooglePay {
     }
   }
 
-  async onShippingAddressChange(shippingAddress) {
+  onShippingAddressChange = async (shippingAddress) => {
     const shippingMethodsData = await this.getShippingMethods(shippingAddress);
     if (shippingMethodsData?.shippingMethods?.length) {
       const selectedShippingMethod = shippingMethodsData.shippingMethods[0];
@@ -238,7 +238,7 @@ class GooglePay {
         intent: 'SHIPPING_ADDRESS',
       },
     };
-  }
+  };
 
   async onShippingOptionChange(shippingAddress, shippingOptionData) {
     const shippingMethodsData = await this.getShippingMethods(shippingAddress);
@@ -266,79 +266,73 @@ class GooglePay {
     };
   }
 
-  getConfig() {
-    return {
-      showPayButton: this.showPayButton,
-      isExpress: this.isExpress,
-      buttonType: 'buy',
-      emailRequired: true,
-      shippingAddressRequired: true,
-      shippingOptionRequired: true,
-      shippingAddressParameters: {
-        phoneNumberRequired: true,
-      },
-      billingAddressRequired: true,
-      billingAddressParameters: {
-        format: 'FULL',
-        phoneNumberRequired: true,
-      },
-      gatewayMerchantId: window.merchantAccount,
-      configuration: this.config,
-      callbackIntents: ['SHIPPING_ADDRESS', 'SHIPPING_OPTION'],
-      amount: JSON.parse(window.basketAmount),
-      onAuthorized: async (state) => {
-        // const componentData = googlePayButton.data;
-        // const customer = GooglePay.formatCustomerObject(data);
-        // const requestData = {
-        //   paymentMethod: {
-        //     type: GOOGLE_PAY,
-        //     googlePayToken: componentData.paymentMethod.googlePayToken,
-        //   },
-        //   paymentType: 'express',
-        //   customer,
-        //   isExpressPdp: this.isExpressPdp,
-        // };
-        await this.paymentFromComponent(state.data);
-      },
-      onSubmit: async () => {},
-      paymentDataCallbacks: {
-        async onPaymentDataChanged(intermediatePaymentData) {
-          const { callbackTrigger, shippingAddress, shippingOptionData } =
-            intermediatePaymentData;
+  getConfig = () => ({
+    showPayButton: this.showPayButton,
+    isExpress: this.isExpress,
+    buttonType: 'buy',
+    emailRequired: true,
+    shippingAddressRequired: true,
+    shippingOptionRequired: true,
+    shippingAddressParameters: {
+      phoneNumberRequired: true,
+    },
+    billingAddressRequired: true,
+    billingAddressParameters: {
+      format: 'FULL',
+      phoneNumberRequired: true,
+    },
+    gatewayMerchantId: window.merchantAccount,
+    configuration: this.config,
+    callbackIntents: ['SHIPPING_ADDRESS', 'SHIPPING_OPTION'],
+    amount: JSON.parse(window.basketAmount),
+    onAuthorized: async (state) => {
+      // const componentData = googlePayButton.data;
+      // const customer = GooglePay.formatCustomerObject(data);
+      // const requestData = {
+      //   paymentMethod: {
+      //     type: GOOGLE_PAY,
+      //     googlePayToken: componentData.paymentMethod.googlePayToken,
+      //   },
+      //   paymentType: 'express',
+      //   customer,
+      //   isExpressPdp: this.isExpressPdp,
+      // };
+      await this.paymentFromComponent(state.data);
+    },
+    onSubmit: async () => {},
+    paymentDataCallbacks: {
+      onPaymentDataChanged: async (intermediatePaymentData) => {
+        const { callbackTrigger, shippingAddress, shippingOptionData } =
+          intermediatePaymentData;
 
-          let paymentDataRequestUpdate = {};
+        let paymentDataRequestUpdate = {};
 
-          if (callbackTrigger === GOOGLE_PAY_CALLBACK_TRIGGERS.INITIALIZE) {
-            if (this.isExpressPdp) {
-              await createTemporaryBasket();
-            }
-            paymentDataRequestUpdate =
-              await this.onShippingAddressChange(shippingAddress);
+        if (callbackTrigger === GOOGLE_PAY_CALLBACK_TRIGGERS.INITIALIZE) {
+          if (this.isExpressPdp) {
+            await createTemporaryBasket();
           }
+          paymentDataRequestUpdate =
+            await this.onShippingAddressChange(shippingAddress);
+        }
 
-          if (
-            callbackTrigger === GOOGLE_PAY_CALLBACK_TRIGGERS.SHIPPING_ADDRESS
-          ) {
-            paymentDataRequestUpdate =
-              await this.onShippingAddressChange(shippingAddress);
-          }
+        if (callbackTrigger === GOOGLE_PAY_CALLBACK_TRIGGERS.SHIPPING_ADDRESS) {
+          paymentDataRequestUpdate =
+            await this.onShippingAddressChange(shippingAddress);
+        }
 
-          if (
-            callbackTrigger === GOOGLE_PAY_CALLBACK_TRIGGERS.SHIPPING_OPTION
-          ) {
-            paymentDataRequestUpdate = await this.onShippingOptionChange(
-              shippingAddress,
-              shippingOptionData,
-            );
-          }
+        if (callbackTrigger === GOOGLE_PAY_CALLBACK_TRIGGERS.SHIPPING_OPTION) {
+          paymentDataRequestUpdate = await this.onShippingOptionChange(
+            shippingAddress,
+            shippingOptionData,
+          );
+        }
 
-          return new Promise((resolve) => {
-            resolve(paymentDataRequestUpdate);
-          });
-        },
+        return new Promise((resolve) => {
+          resolve(paymentDataRequestUpdate);
+        });
       },
-    };
-  }
+    },
+  });
 
   async getComponent() {
     const checkout = await initializeCheckout(this.applicationInfo);
