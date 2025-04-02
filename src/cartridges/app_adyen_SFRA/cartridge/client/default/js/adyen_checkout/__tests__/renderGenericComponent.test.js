@@ -155,7 +155,7 @@ describe('Render Generic Component', () => {
       value: 50,
     };
     store.checkoutConfiguration = {};
-    setCheckoutConfiguration({email, amount});
+    setCheckoutConfiguration({email, paymentMethodsResponse: {amount}});
     expect(store.paymentMethodsConfiguration.scheme.installmentOptions).toEqual({
       amex: {
         values: [1, 2],
@@ -176,7 +176,7 @@ describe('Render Generic Component', () => {
       value: 50,
     };
     store.checkoutConfiguration = {};
-    setCheckoutConfiguration({email, amount});
+    setCheckoutConfiguration({email, paymentMethodsResponse: { amount } });
     expect(store.paymentMethodsConfiguration.scheme.installmentOptions).toEqual(undefined);
     expect(store.paymentMethodsConfiguration.scheme.showInstallmentAmounts).toBe(undefined);
   });

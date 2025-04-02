@@ -14,28 +14,35 @@ const store = require('../../../../../store');
 const helpers = require('../helpers');
 const { httpClient } = require('../../commons/httpClient');
 
-const storedCardConfig = new StoredCardConfig(store, helpers).getConfig();
-const bcmcConfig = new BcmcConfig(store, helpers).getConfig();
-const boletoConfig = new BoletoConfig().getConfig();
-const googlePayConfig = new GooglePayConfig(helpers).getConfig();
-const klarnaConfig = new KlarnaConfig(
-  helpers,
-  window.klarnaWidgetEnabled,
-).getConfig();
-const cashAppConfig = new CashAppConfig(helpers).getConfig();
-const upiConfig = new UpiConfig(helpers).getConfig();
-const applePayConfig = new ApplePayConfig(helpers).getConfig();
-const payPalConfig = new PayPalConfig(store, helpers).getConfig();
-const amazonPayConfig = new AmazonPayConfig(store, helpers).getConfig();
-const giftCardsConfig = new GiftCardsConfig(
-  store,
-  httpClient,
-  helpers,
-).getConfig();
+function getPaymentMethodsConfiguration(email, paymentMethodsResponse) {
+  const { amount, AdyenPaymentMethods } = paymentMethodsResponse;
 
-function getPaymentMethodsConfiguration(email, amount) {
+  const cardConfig = new CardConfig(store, helpers, email, amount).getConfig();
+  const storedCardConfig = new StoredCardConfig(store, helpers).getConfig();
+  const bcmcConfig = new BcmcConfig(store, helpers).getConfig();
+  const boletoConfig = new BoletoConfig().getConfig();
+  const googlePayConfig = new GooglePayConfig(helpers).getConfig();
+  const klarnaConfig = new KlarnaConfig(
+    helpers,
+    window.klarnaWidgetEnabled,
+  ).getConfig();
+  const cashAppConfig = new CashAppConfig(helpers).getConfig();
+  const upiConfig = new UpiConfig(helpers).getConfig();
+  const applePayConfig = new ApplePayConfig(helpers).getConfig();
+  const payPalConfig = new PayPalConfig(store, helpers).getConfig();
+  const amazonPayConfig = new AmazonPayConfig(
+    store,
+    helpers,
+    AdyenPaymentMethods,
+  ).getConfig();
+  const giftCardsConfig = new GiftCardsConfig(
+    store,
+    httpClient,
+    helpers,
+  ).getConfig();
+
   return {
-    scheme: new CardConfig(store, helpers, email, amount).getConfig(),
+    scheme: cardConfig,
     bcmc: bcmcConfig,
     storedCard: storedCardConfig,
     boletobancario: boletoConfig,

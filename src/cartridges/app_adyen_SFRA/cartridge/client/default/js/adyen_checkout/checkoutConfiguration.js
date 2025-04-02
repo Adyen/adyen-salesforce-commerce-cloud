@@ -46,10 +46,10 @@ async function handleOnAdditionalDetails(state) {
   }
 }
 
-function setCheckoutConfiguration({ email, amount }) {
+function setCheckoutConfiguration({ email, paymentMethodsResponse }) {
   const paymentMethodsConfiguration = getPaymentMethodsConfiguration(
     email,
-    amount,
+    paymentMethodsResponse,
   );
   store.checkoutConfiguration.onChange = handleOnChange;
   store.checkoutConfiguration.onAdditionalDetails = handleOnAdditionalDetails;
