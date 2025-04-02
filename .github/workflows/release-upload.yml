@@ -3,6 +3,9 @@ name: Release upload
 on:
   pull_request:
 
+permissions:
+  contents: read
+
 jobs:
   upload-release:
     if: |

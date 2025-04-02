@@ -148,5 +148,6 @@ module.exports = {
     '/.well-known/apple-developer-merchantid-domain-association',
 
   CHECKOUT_COMPONENT_VERSION: '5.68.0',
-  VERSION: '25.2.1',
+  CHECKOUT_API_VERSION: 'v71',
+  VERSION: '25.2.2',
 };

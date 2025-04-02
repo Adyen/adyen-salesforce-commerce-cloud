@@ -4,6 +4,10 @@ on:
   pull_request:
     paths:
       - 'metadata/**'
+
+permissions:
+  contents: read
+
 jobs:
   upload-metadata:
     runs-on: ubuntu-latest

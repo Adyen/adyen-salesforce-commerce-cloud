@@ -37,8 +37,6 @@ var ShippingMgr = require('dw/order/ShippingMgr');
 var PaymentInstrument = require('dw/order/PaymentInstrument');
 var StringUtils = require('dw/util/StringUtils');
 var Money = require('dw/value/Money');
-var TaxMgr = require('dw/order/TaxMgr');
-var ShippingLocation = require('dw/order/ShippingLocation');
 var BasketMgr = require('dw/order/BasketMgr');
 var OrderMgr = require('dw/order/OrderMgr');
 //script includes
@@ -91,7 +89,6 @@ var adyenHelperObj = {
    * @returns {{currencyCode: String, value: String}} - Shipping Cost including taxes
    */
   getShippingCost: function getShippingCost(shippingMethod, shipment) {
-    var shippingAddress = shipment.shippingAddress;
     var shipmentShippingModel = ShippingMgr.getShipmentShippingModel(shipment);
     var shippingCost = shipmentShippingModel.getShippingCost(shippingMethod).getAmount();
     collections.forEach(shipment.getProductLineItems(), function (lineItem) {
@@ -101,22 +98,10 @@ var adyenHelperObj = {
       var productShippingCost = productShippingModel.getShippingCost(shippingMethod) ? productShippingModel.getShippingCost(shippingMethod).getAmount().multiply(productQuantity) : new Money(0, product.getPriceModel().getPrice().getCurrencyCode());
       shippingCost = shippingCost.add(productShippingCost);
     });
-    shippingCost = TaxMgr.taxationPolicy === TaxMgr.TAX_POLICY_GROSS ? shippingCost.subtractRate(adyenHelperObj.getShippingTaxRate(shippingMethod, shippingAddress)) : shippingCost;
     return {
       value: shippingCost.getValue(),
       currencyCode: shippingCost.getCurrencyCode()
     };
-  },
-  /**
-   * Returns tax rate for specific Shipment / ShippingMethod pair.
-   * @param {dw.order.ShippingMethod} shippingMethod - the default shipment of the current basket
-   * @param {dw.order.shippingAddress} shippingAddress - shippingAddress for the default shipment
-   * @returns {Number} - tax rate in decimals.(eg.: 0.02 for 2%)
-   */
-  getShippingTaxRate: function getShippingTaxRate(shippingMethod, shippingAddress) {
-    var taxClassID = shippingMethod.getTaxClassID();
-    var taxJurisdictionID = shippingAddress ? TaxMgr.getTaxJurisdictionID(new ShippingLocation(shippingAddress)) : TaxMgr.getDefaultTaxJurisdictionID();
-    return TaxMgr.getTaxRate(taxClassID, taxJurisdictionID);
   },
   /**
    * Returns applicable shipping methods for specific Shipment / ShippingAddress pair.
@@ -782,6 +767,8 @@ var adyenHelperObj = {
     if (service === null) {
       throw new Error("Could not create ".concat(serviceType, " service object"));
     }
+    var serviceApiVersion = service.getURL().replace("[CHECKOUT_API_VERSION]", constants.CHECKOUT_API_VERSION);
+    service.setURL(serviceApiVersion);
     if (AdyenConfigs.getAdyenEnvironment() === constants.MODE.LIVE) {
       var livePrefix = AdyenConfigs.getLivePrefix();
       var serviceUrl = service.getURL().replace("[YOUR_LIVE_PREFIX]", livePrefix);
