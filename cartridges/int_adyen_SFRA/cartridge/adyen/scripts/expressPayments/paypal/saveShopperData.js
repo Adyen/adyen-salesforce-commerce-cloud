@@ -1,11 +1,14 @@
 "use strict";
 
 var URLUtils = require('dw/web/URLUtils');
+var BasketMgr = require('dw/order/BasketMgr');
 var AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
+var paypalHelper = require('*/cartridge/adyen/utils/paypalHelper');
 function saveShopperData(req, res, next) {
   try {
     var shopperDetails = JSON.parse(req.form.shopperDetails);
-    session.privacy.shopperDetails = JSON.stringify(shopperDetails);
+    var currentBasket = BasketMgr.getCurrentBasket();
+    paypalHelper.setBillingAndShippingAddress(currentBasket, shopperDetails);
     res.json({
       success: true
     });

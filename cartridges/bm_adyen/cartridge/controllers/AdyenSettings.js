@@ -44,6 +44,13 @@ server.post('TestConnection', server.middleware.https, function (req, res, next)
     if (!service) {
       throw new Error('Could not do /paymentMethods call');
     }
+    var serviceApiVersion = service.getURL().replace('[CHECKOUT_API_VERSION]', constants.CHECKOUT_API_VERSION);
+    service.setURL(serviceApiVersion);
+    if (AdyenConfigs.getAdyenEnvironment() === constants.MODE.LIVE) {
+      var livePrefix = AdyenConfigs.getLivePrefix();
+      var serviceUrl = service.getURL().replace('[YOUR_LIVE_PREFIX]', livePrefix);
+      service.setURL(serviceUrl);
+    }
     var requestBody = JSON.parse(req.body);
     var xApiKey = requestBody.xApiKey,
       merchantAccount = requestBody.merchantAccount;

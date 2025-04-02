@@ -7,7 +7,6 @@ var BasketMgr = require('dw/order/BasketMgr');
 var adyenCheckout = require('*/cartridge/adyen/scripts/payments/adyenCheckout');
 var AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 var AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
-var paypalHelper = require('*/cartridge/adyen/utils/paypalHelper');
 var constants = require('*/cartridge/adyen/config/constants');
 var hooksHelper = require('*/cartridge/scripts/helpers/hooks');
 function setPaymentInstrumentFields(paymentInstrument, response) {
@@ -31,7 +30,6 @@ function makeExpressPaymentDetailsCall(req, res, next) {
     if (hashedProducts !== currentBasket.custom.adyenProductLineItems) {
       throw new Error('Basket products changed, cannot complete trasaction');
     }
-    paypalHelper.setBillingAndShippingAddress(currentBasket);
     var validationOrderStatus = hooksHelper('app.validate.order', 'validateOrder', currentBasket,
     // eslint-disable-next-line global-require
     require('*/cartridge/scripts/hooks/validateOrder').validateOrder);
@@ -40,11 +38,14 @@ function makeExpressPaymentDetailsCall(req, res, next) {
     }
 
     // create order
-    var order = OrderMgr.createOrder(currentBasket, session.privacy.paypalExpressOrderNo);
+    var order = null;
+    Transaction.wrap(function () {
+      order = OrderMgr.createOrder(currentBasket, session.privacy.paypalExpressOrderNo);
+    });
+    if (!order) {
+      throw new Error('Order could not be created for paypal express');
+    }
     var response = adyenCheckout.doPaymentsDetailsCall(request.data);
-
-    // Setting the session variable to null after assigning the shopper data to basket level
-    session.privacy.shopperDetails = null;
     response.orderNo = order.orderNo;
     response.orderToken = order.orderToken;
     var paymentInstrument = order.getPaymentInstruments(AdyenHelper.getOrderMainPaymentInstrumentType(order))[0];
