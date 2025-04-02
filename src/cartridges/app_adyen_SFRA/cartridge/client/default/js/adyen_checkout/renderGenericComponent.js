@@ -33,32 +33,16 @@ function unmountComponents() {
   return Promise.all(promises);
 }
 
-function renderStoredPaymentMethod(imagePath) {
-  return (pm) => {
-    if (
-      pm.supportedShopperInteractions.includes('Ecommerce') &&
-      pm.type === constants.SCHEME
-    ) {
-      renderPaymentMethod(pm, true, imagePath);
-    }
-  };
-}
-
-function renderStoredPaymentMethods(data, imagePath) {
-  if (data.length) {
-    data.forEach(renderStoredPaymentMethod(imagePath));
-  }
-}
-
 async function renderPaymentMethods(
   paymentMethods,
+  isStored,
   imagePath,
   adyenDescriptions,
 ) {
   for (let i = 0; i < paymentMethods.length; i += 1) {
     const pm = paymentMethods[i];
     // eslint-disable-next-line
-    await renderPaymentMethod(pm, false, imagePath, adyenDescriptions[pm.type]);
+    await renderPaymentMethod(pm, isStored, imagePath, adyenDescriptions ? adyenDescriptions[pm.type] : null);
   }
 }
 
@@ -75,26 +59,27 @@ export async function initializeCheckout(paymentMethodsResponse) {
 
   document.querySelector('#paymentMethodsList').innerHTML = '';
 
-  const paymentMethodsWithoutGiftCards =
-    store.checkout.paymentMethodsResponse.paymentMethods.filter(
-      (pm) => pm.type !== constants.GIFTCARD,
-    );
-
-  const storedPaymentMethodsWithoutGiftCards =
-    store.checkout.paymentMethodsResponse.storedPaymentMethods.filter(
-      (pm) => pm.type !== constants.GIFTCARD,
-    );
-
-  // Rendering stored payment methods if one-click is enabled in BM
   if (window.adyenRecurringPaymentsEnabled) {
-    renderStoredPaymentMethods(
-      storedPaymentMethodsWithoutGiftCards,
+    const storedSchemePaymentMethods =
+      store.checkout.paymentMethodsResponse.storedPaymentMethods.filter(
+        (pm) =>
+          pm.type === constants.SCHEME &&
+          pm.supportedShopperInteractions.includes('Ecommerce'),
+      );
+    await renderPaymentMethods(
+      storedSchemePaymentMethods,
+      true,
       paymentMethodsResponse.imagePath,
     );
   }
 
+  const paymentMethodsWithoutGiftCards =
+    store.checkout.paymentMethodsResponse.paymentMethods.filter(
+      (pm) => pm.type !== constants.GIFTCARD,
+    );
   await renderPaymentMethods(
     paymentMethodsWithoutGiftCards,
+    false,
     paymentMethodsResponse.imagePath,
     paymentMethodsResponse.adyenDescriptions,
   );
@@ -126,7 +111,6 @@ async function renderGenericComponent(paymentMethodsResponse) {
 module.exports = {
   renderGenericComponent,
   initializeCheckout,
-  renderStoredPaymentMethods,
   renderPaymentMethods,
   resolveUnmount,
 };
