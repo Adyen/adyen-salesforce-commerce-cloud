@@ -37,7 +37,10 @@ function renderPaymentMethod() {
   $('body').on('checkout:renderPaymentMethod', async (e, response) => {
     const paymentMethodsResponse = await getPaymentMethods();
     const { email } = response;
-    setCheckoutConfiguration({ email });
+    setCheckoutConfiguration({
+      email,
+      paymentMethodsResponse,
+    });
     await renderGenericComponent(paymentMethodsResponse);
     const areGiftCardsEnabled =
       paymentMethodsResponse?.AdyenPaymentMethods?.paymentMethods?.some(
