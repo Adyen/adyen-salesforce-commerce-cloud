@@ -39,11 +39,16 @@ async function renderPaymentMethods(
   imagePath,
   adyenDescriptions,
 ) {
-  for (let i = 0; i < paymentMethods.length; i += 1) {
-    const pm = paymentMethods[i];
-    // eslint-disable-next-line
-    await renderPaymentMethod(pm, isStored, imagePath, adyenDescriptions ? adyenDescriptions[pm.type] : null);
-  }
+  const promises = paymentMethods.map((pm) =>
+    renderPaymentMethod(
+      pm,
+      isStored,
+      imagePath,
+      adyenDescriptions ? adyenDescriptions[pm.type] : null,
+    ),
+  );
+
+  await Promise.all(promises);
 }
 
 export async function initializeCheckout(paymentMethodsResponse) {
