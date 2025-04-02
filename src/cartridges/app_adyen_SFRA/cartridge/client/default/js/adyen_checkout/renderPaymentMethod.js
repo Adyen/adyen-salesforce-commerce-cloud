@@ -22,12 +22,9 @@ function getPersonalDetails() {
 }
 
 const getComponentConfig = (paymentMethodID, paymentMethod) => {
-  const personalDetails = getPersonalDetails();
-
   const baseConfig = {
     data: {
-      ...personalDetails,
-      personalDetails,
+      personalDetails: getPersonalDetails(),
     },
     visibility: {
       personalDetails: 'editable',
