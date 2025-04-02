@@ -7,7 +7,6 @@ const OrderModel = require('*/cartridge/models/order');
 const validationHelpers = require('*/cartridge/scripts/helpers/basketValidationHelpers');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
-const paypalHelper = require('*/cartridge/adyen/utils/paypalHelper');
 
 /**
  * Sets Shipping and Billing address for the basket,
@@ -21,8 +20,6 @@ function updateCurrentBasket(currentBasket, req) {
   if (currentBasket.shipments?.length <= 1) {
     req.session.privacyCache.set('usingMultiShipping', false);
   }
-
-  paypalHelper.setBillingAndShippingAddress(currentBasket);
 
   const paymentInstrument = currentBasket.getPaymentInstruments()[0];
   Transaction.wrap(() => {
