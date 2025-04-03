@@ -61,6 +61,7 @@ module.exports = {
     CHECKOUTPAYMENTMETHODS: 'AdyenCheckoutPaymentMethods',
     CONNECTEDTERMINALS: 'AdyenConnectedTerminals',
     ADYENGIVING: 'AdyenGiving',
+    ADYENDONATIONCAMPAIGNS: 'AdyenDonationCampaigns',
     CHECKBALANCE: 'AdyenCheckBalance',
     CANCELPARTIALPAYMENTORDER: 'AdyenCancelPartialPaymentOrder',
     PARTIALPAYMENTSORDER: 'AdyenPartialPaymentsOrder',
