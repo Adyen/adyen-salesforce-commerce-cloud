@@ -91,7 +91,7 @@ function displaySelectedMethod(type) {
 }
 
 function displayValidationErrors() {
-  if (store.selectedMethod?.node) {
+  if (store.selectedPayment?.node) {
     store.selectedPayment.node.showValidation();
   }
   return false;
