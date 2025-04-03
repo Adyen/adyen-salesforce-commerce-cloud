@@ -75,7 +75,7 @@ function donate(donationReference, donationAmount, orderToken) {
 
     const donationCampaign = getActiveCampaigns().donationCampaigns[0];
     const donationCampaignId = donationCampaign.id;
-    const donationCampaignType = donationCampaign.donation?.donationType;
+    const donationCampaignType = donationCampaign.donation?.type;
 
     // for iDeal donations, the payment method variant needs to be set to sepadirectdebit
     if (paymentMethodVariant === 'ideal') {
