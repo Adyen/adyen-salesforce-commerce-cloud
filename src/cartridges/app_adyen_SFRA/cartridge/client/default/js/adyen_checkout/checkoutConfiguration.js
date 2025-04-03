@@ -12,7 +12,7 @@ const {
   attachGiftCardCancelListener,
 } = require('./renderGiftcardComponent');
 
-function getCardConfig() {
+function getCardConfig(type) {
   return {
     hasHolderName: true,
     holderNameRequired: true,
@@ -26,7 +26,7 @@ function getCardConfig() {
     onChange(state) {
       const method = state.data.paymentMethod.storedPaymentMethodId
         ? `storedCard${state.data.paymentMethod.storedPaymentMethodId}`
-        : 'scheme';
+        : type;
       store.updateSelectedPayment(method, 'isValid', state.isValid);
       store.updateSelectedPayment(method, 'stateData', state.data);
     },
@@ -417,10 +417,10 @@ function setCheckoutConfiguration() {
   store.checkoutConfiguration.clientKey = window.adyenClientKey;
 
   store.checkoutConfiguration.paymentMethodsConfiguration = {
-    card: getCardConfig(),
-    bcmc: getCardConfig(),
+    card: getCardConfig('scheme'),
+    bcmc: getCardConfig('bcmc'),
     storedCard: {
-      ...getCardConfig(),
+      ...getCardConfig('scheme'),
       holderNameRequired: false,
     },
     boletobancario: {
