@@ -1,8 +1,7 @@
-const googlePayExpressModule = require('../googlePayExpress');
 const { APPLE_PAY, GOOGLE_PAY } = require('../../constants');
 const { getPaymentMethods } = require('../../commons');
 const { httpClient } = require('../../commons/httpClient');
-const { ApplePay } = require('../paymentMethods');
+const { ApplePay, GooglePay } = require('../paymentMethods');
 
 function getProductForm(product) {
   const $productInputEl = document.createElement('input');
@@ -24,6 +23,50 @@ function getValueForCurrency(amount, currency) {
   return { value, currency };
 }
 
+function getPaymentMethodConfig(adyenPaymentMethods, paymentMethodType) {
+  return adyenPaymentMethods?.paymentMethods.find(
+    (pm) => pm.type === paymentMethodType,
+  )?.configuration;
+}
+
+function renderApplePayButton() {
+  $('body').on(`product:render${APPLE_PAY}Button`, async (e, response) => {
+    const {
+      paymentMethodsResponse: { AdyenPaymentMethods, applicationInfo } = {},
+      button,
+    } = response;
+    const applePayConfig = getPaymentMethodConfig(
+      AdyenPaymentMethods,
+      APPLE_PAY,
+    );
+    if (!applePayConfig) {
+      return;
+    }
+    const applePay = new ApplePay(applePayConfig, applicationInfo, true);
+    const applePayComponent = await applePay.getComponent();
+    applePayComponent.mount(button);
+  });
+}
+
+function renderGooglePayButton() {
+  $('body').on(`product:render${GOOGLE_PAY}Button`, async (e, response) => {
+    const {
+      paymentMethodsResponse: { AdyenPaymentMethods, applicationInfo } = {},
+      button,
+    } = response;
+    const googlePayConfig = getPaymentMethodConfig(
+      AdyenPaymentMethods,
+      GOOGLE_PAY,
+    );
+    if (!googlePayConfig) {
+      return;
+    }
+    const googlePay = new GooglePay(googlePayConfig, applicationInfo, true);
+    const googlePayComponent = await googlePay.getComponent();
+    googlePayComponent.mount(button);
+  });
+}
+
 function getExpressPaymentButtons(product) {
   const expressMethodsConfig = {
     [APPLE_PAY]: window.isApplePayExpressOnPdpEnabled === 'true',
@@ -43,23 +86,9 @@ function getExpressPaymentButtons(product) {
   return enabledExpressPaymentButtons;
 }
 
-async function renderApplePayButton(paymentMethodsResponse) {
-  const { AdyenPaymentMethods, applicationInfo } = paymentMethodsResponse;
-  const applePayConfig = AdyenPaymentMethods?.paymentMethods.find(
-    (pm) => pm.type === APPLE_PAY,
-  )?.configuration;
-  const applePay = new ApplePay(applePayConfig, applicationInfo, true);
-  const applePayComponent = await applePay.getComponent();
-  applePayComponent.mount('.applepay');
-}
-
-function renderGooglePayButton(paymentMethods) {
-  googlePayExpressModule.init(paymentMethods, true);
-}
-
-function renderExpressPaymentButtons() {
-  $('body').on('product:renderExpressPaymentButtons', (e, response) => {
-    const { product = {}, paymentMethods } = response;
+function renderExpressPaymentContainer() {
+  $('body').on('product:renderExpressPaymentContainer', (e, response) => {
+    const { product = {}, paymentMethodsResponse } = response;
     const $expressPaymentButtonsContainer = document.getElementById(
       'express-payment-buttons',
     );
@@ -74,8 +103,13 @@ function renderExpressPaymentButtons() {
         ...expressPaymentButtons,
         $productForm,
       );
-      renderApplePayButton(paymentMethods);
-      renderGooglePayButton(paymentMethods);
+      expressPaymentButtons.forEach((button) => {
+        const expressType = button.getAttribute('data-method');
+        $('body').trigger(`product:render${expressType}Button`, {
+          paymentMethodsResponse,
+          button,
+        });
+      });
     } else {
       $expressPaymentButtonsContainer.replaceChildren();
     }
@@ -85,9 +119,9 @@ function renderExpressPaymentButtons() {
 async function init() {
   const paymentMethodsResponse = await getPaymentMethods();
   $('body').on('product:updateAddToCart', (e, response) => {
-    $('body').trigger('product:renderExpressPaymentButtons', {
+    $('body').trigger('product:renderExpressPaymentContainer', {
       product: response.product,
-      paymentMethods: paymentMethodsResponse,
+      paymentMethodsResponse,
     });
   });
   $(document).ready(async () => {
@@ -98,9 +132,9 @@ async function init() {
       method: 'GET',
     });
     if (productVariation?.product) {
-      $('body').trigger('product:renderExpressPaymentButtons', {
+      $('body').trigger('product:renderExpressPaymentContainer', {
         product: productVariation?.product,
-        paymentMethods: paymentMethodsResponse,
+        paymentMethodsResponse,
       });
     }
     $.spinner().stop();
@@ -109,5 +143,7 @@ async function init() {
 
 module.exports = {
   init,
-  renderExpressPaymentButtons,
+  renderExpressPaymentContainer,
+  renderApplePayButton,
+  renderGooglePayButton,
 };

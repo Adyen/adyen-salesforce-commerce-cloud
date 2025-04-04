@@ -29,10 +29,6 @@ class GooglePay {
     this.selectShippingMethodUrl = selectShippingMethodUrl;
     this.applicationInfo = applicationInfo;
     this.config = config;
-    this.customerData = null;
-    this.billingData = null;
-    this.APPLE_PAY_SUCCESS = 1;
-    this.APPLE_PAY_ERROR = 0;
   }
 
   static formatCustomerObject(customerData) {
@@ -145,7 +141,8 @@ class GooglePay {
     };
   }
 
-  static handleAuthorised(response) {
+  static handleAuthorised(response, resolve) {
+    resolve();
     if (document.querySelector('#result')) {
       document.querySelector('#result').value = JSON.stringify({
         pspReference: response.fullResponse?.pspReference,
@@ -163,7 +160,8 @@ class GooglePay {
     }
   }
 
-  static handleError() {
+  static handleError(reject) {
+    reject();
     if (document.querySelector('#result')) {
       document.querySelector('#result').value = JSON.stringify({
         error: true,
@@ -178,15 +176,15 @@ class GooglePay {
     }
   }
 
-  static handleGooglePayResponse(response) {
+  static handleGooglePayResponse(response, resolve, reject) {
     if (response.resultCode === 'Authorised') {
-      GooglePay.handleAuthorised(response);
+      GooglePay.handleAuthorised(response, resolve);
     } else {
-      GooglePay.handleError();
+      GooglePay.handleError(reject);
     }
   }
 
-  async paymentFromComponent(data) {
+  paymentFromComponent = async (data, resolve, reject) => {
     try {
       $.spinner().start();
       const response = await httpClient({
@@ -205,11 +203,11 @@ class GooglePay {
           ...response,
         },
       );
-      GooglePay.handleGooglePayResponse(response);
+      GooglePay.handleGooglePayResponse(response, resolve, reject);
     } catch (error) {
       $.spinner().stop();
     }
-  }
+  };
 
   onShippingAddressChange = async (shippingAddress) => {
     const shippingMethodsData = await this.getShippingMethods(shippingAddress);
@@ -240,7 +238,7 @@ class GooglePay {
     };
   };
 
-  async onShippingOptionChange(shippingAddress, shippingOptionData) {
+  onShippingOptionChange = async (shippingAddress, shippingOptionData) => {
     const shippingMethodsData = await this.getShippingMethods(shippingAddress);
     const shippingMethods = shippingMethodsData?.shippingMethods;
     const matchingShippingMethod = shippingMethods.find(
@@ -264,7 +262,62 @@ class GooglePay {
         intent: 'SHIPPING_OPTION',
       },
     };
-  }
+  };
+
+  onAuthorized = async (data, actions) => {
+    const { authorizedEvent } = data;
+    const { resolve, reject } = actions;
+    try {
+      const customer = GooglePay.formatCustomerObject(authorizedEvent);
+      const stateData = {
+        paymentMethod: {
+          type: GOOGLE_PAY,
+          googlePayToken:
+            authorizedEvent?.paymentMethodData?.tokenizationData?.token,
+        },
+        paymentType: 'express',
+      };
+
+      await this.paymentFromComponent(
+        { ...stateData, customer, isExpressPdp: this.isExpressPdp },
+        resolve,
+        reject,
+      );
+    } catch (error) {
+      reject(error);
+    }
+  };
+
+  onPaymentDataChanged = async (intermediatePaymentData) => {
+    const { callbackTrigger, shippingAddress, shippingOptionData } =
+      intermediatePaymentData;
+
+    let paymentDataRequestUpdate = {};
+
+    if (callbackTrigger === GOOGLE_PAY_CALLBACK_TRIGGERS.INITIALIZE) {
+      if (this.isExpressPdp) {
+        await createTemporaryBasket();
+      }
+      paymentDataRequestUpdate =
+        await this.onShippingAddressChange(shippingAddress);
+    }
+
+    if (callbackTrigger === GOOGLE_PAY_CALLBACK_TRIGGERS.SHIPPING_ADDRESS) {
+      paymentDataRequestUpdate =
+        await this.onShippingAddressChange(shippingAddress);
+    }
+
+    if (callbackTrigger === GOOGLE_PAY_CALLBACK_TRIGGERS.SHIPPING_OPTION) {
+      paymentDataRequestUpdate = await this.onShippingOptionChange(
+        shippingAddress,
+        shippingOptionData,
+      );
+    }
+
+    return new Promise((resolve) => {
+      resolve(paymentDataRequestUpdate);
+    });
+  };
 
   getConfig = () => ({
     showPayButton: this.showPayButton,
@@ -285,52 +338,10 @@ class GooglePay {
     configuration: this.config,
     callbackIntents: ['SHIPPING_ADDRESS', 'SHIPPING_OPTION'],
     amount: JSON.parse(window.basketAmount),
-    onAuthorized: async (state) => {
-      // const componentData = googlePayButton.data;
-      // const customer = GooglePay.formatCustomerObject(data);
-      // const requestData = {
-      //   paymentMethod: {
-      //     type: GOOGLE_PAY,
-      //     googlePayToken: componentData.paymentMethod.googlePayToken,
-      //   },
-      //   paymentType: 'express',
-      //   customer,
-      //   isExpressPdp: this.isExpressPdp,
-      // };
-      await this.paymentFromComponent(state.data);
-    },
-    onSubmit: async () => {},
+    onAuthorized: this.onAuthorized,
+    onSubmit: () => {},
     paymentDataCallbacks: {
-      onPaymentDataChanged: async (intermediatePaymentData) => {
-        const { callbackTrigger, shippingAddress, shippingOptionData } =
-          intermediatePaymentData;
-
-        let paymentDataRequestUpdate = {};
-
-        if (callbackTrigger === GOOGLE_PAY_CALLBACK_TRIGGERS.INITIALIZE) {
-          if (this.isExpressPdp) {
-            await createTemporaryBasket();
-          }
-          paymentDataRequestUpdate =
-            await this.onShippingAddressChange(shippingAddress);
-        }
-
-        if (callbackTrigger === GOOGLE_PAY_CALLBACK_TRIGGERS.SHIPPING_ADDRESS) {
-          paymentDataRequestUpdate =
-            await this.onShippingAddressChange(shippingAddress);
-        }
-
-        if (callbackTrigger === GOOGLE_PAY_CALLBACK_TRIGGERS.SHIPPING_OPTION) {
-          paymentDataRequestUpdate = await this.onShippingOptionChange(
-            shippingAddress,
-            shippingOptionData,
-          );
-        }
-
-        return new Promise((resolve) => {
-          resolve(paymentDataRequestUpdate);
-        });
-      },
+      onPaymentDataChanged: this.onPaymentDataChanged,
     },
   });
 
