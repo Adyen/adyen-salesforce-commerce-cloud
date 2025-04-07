@@ -62,24 +62,16 @@ function renderGooglePayButton() {
   });
 }
 
-function getExpressPaymentButtons() {
-  const expressMethodsConfig = {
-    [APPLE_PAY]: window.isApplePayExpressEnabled === 'true',
-    [GOOGLE_PAY]: window.isGooglePayExpressEnabled === 'true',
-    [PAYPAL]: window.isPayPalExpressEnabled === 'true',
-  };
-  const enabledExpressPaymentButtons = [];
-  Object.keys(expressMethodsConfig).forEach((key) => {
-    if (expressMethodsConfig[key]) {
-      const $container = document.createElement('div');
-      $container.setAttribute('id', `${key}-container`);
-      $container.setAttribute('class', `expressComponent ${key}`);
-      $container.setAttribute('data-method', `${key}`);
-      $container.setAttribute('style', `padding:0`);
-      enabledExpressPaymentButtons.push($container);
-    }
+function getExpressPaymentButtons(paymentMethodsResponse) {
+  const { cartExpressMethods } = paymentMethodsResponse;
+  return cartExpressMethods.map((pm) => {
+    const $container = document.createElement('div');
+    $container.setAttribute('id', `${pm}-container`);
+    $container.setAttribute('class', `expressComponent ${pm}`);
+    $container.setAttribute('data-method', `${pm}`);
+    $container.setAttribute('style', `padding:0`);
+    return $container;
   });
-  return enabledExpressPaymentButtons;
 }
 
 function renderExpressPaymentContainer() {
@@ -87,7 +79,9 @@ function renderExpressPaymentContainer() {
     const { paymentMethodsResponse } = response;
     const $expressPaymentButtonsContainer =
       document.getElementById('express-container');
-    const expressPaymentButtons = getExpressPaymentButtons();
+    const expressPaymentButtons = getExpressPaymentButtons(
+      paymentMethodsResponse,
+    );
     $expressPaymentButtonsContainer.replaceChildren(...expressPaymentButtons);
     $('#express-container').spinner().start();
     expressPaymentButtons.forEach((button) => {

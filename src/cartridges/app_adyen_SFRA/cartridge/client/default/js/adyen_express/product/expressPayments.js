@@ -67,23 +67,17 @@ function renderGooglePayButton() {
   });
 }
 
-function getExpressPaymentButtons(product) {
-  const expressMethodsConfig = {
-    [APPLE_PAY]: window.isApplePayExpressOnPdpEnabled === 'true',
-    [GOOGLE_PAY]: window.isGooglePayExpressOnPdpEnabled === 'true',
-  };
-  const enabledExpressPaymentButtons = [];
-  Object.keys(expressMethodsConfig).forEach((key) => {
-    if (expressMethodsConfig[key]) {
-      const $container = document.createElement('div');
-      $container.setAttribute('id', `${key}-pdp`);
-      $container.setAttribute('class', `expressComponent ${key}`);
-      $container.setAttribute('data-method', `${key}`);
-      $container.setAttribute('data-pid', `${product.id}`);
-      enabledExpressPaymentButtons.push($container);
-    }
+function getExpressPaymentButtons(paymentMethodsResponse, product) {
+  const { pdpExpressMethods } = paymentMethodsResponse;
+  return pdpExpressMethods.map((pm) => {
+    const $container = document.createElement('div');
+    $container.setAttribute('id', `${pm}-pdp`);
+    $container.setAttribute('class', `expressComponent ${pm}`);
+    $container.setAttribute('data-method', `${pm}`);
+    $container.setAttribute('data-pid', `${product.id}`);
+    $container.setAttribute('style', `padding:0`);
+    return $container;
   });
-  return enabledExpressPaymentButtons;
 }
 
 function renderExpressPaymentContainer() {
@@ -92,12 +86,19 @@ function renderExpressPaymentContainer() {
     const $expressPaymentButtonsContainer = document.getElementById(
       'express-payment-buttons',
     );
-    if (product.readyToOrder && product.available) {
+    if (
+      product.readyToOrder &&
+      product.available &&
+      paymentMethodsResponse?.pdpExpressMethods?.length
+    ) {
       const { price, selectedQuantity } = product;
       const { value, currency } = price.sales;
       const amount = getValueForCurrency(value * selectedQuantity, currency);
       window.basketAmount = JSON.stringify(amount);
-      const expressPaymentButtons = getExpressPaymentButtons(product);
+      const expressPaymentButtons = getExpressPaymentButtons(
+        paymentMethodsResponse,
+        product,
+      );
       const $productForm = getProductForm(product);
       $expressPaymentButtonsContainer.replaceChildren(
         ...expressPaymentButtons,
