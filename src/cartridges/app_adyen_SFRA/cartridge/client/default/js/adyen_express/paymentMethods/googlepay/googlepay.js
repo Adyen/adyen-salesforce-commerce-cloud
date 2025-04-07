@@ -31,7 +31,7 @@ class GooglePay {
     this.config = config;
   }
 
-  static formatCustomerObject(customerData) {
+  static formatCustomerObject = (customerData) => {
     const shippingData = customerData.shippingAddress;
     const billingData = customerData.paymentMethodData.info.billingAddress;
     const nameParts = customerData.shippingAddress.name.split(' ');
@@ -76,9 +76,9 @@ class GooglePay {
         phone: shippingData.phoneNumber,
       },
     };
-  }
+  };
 
-  async getShippingMethods(shippingAddress) {
+  getShippingMethods = async (shippingAddress) => {
     const requestBody = {
       paymentMethodType: GOOGLE_PAY,
       isExpressPdp: this.isExpressPdp,
@@ -99,9 +99,9 @@ class GooglePay {
         data: JSON.stringify(requestBody),
       },
     });
-  }
+  };
 
-  async selectShippingMethod({ shipmentUUID, ID }) {
+  selectShippingMethod = async ({ shipmentUUID, ID }) => {
     const requestBody = {
       paymentMethodType: GOOGLE_PAY,
       shipmentUUID,
@@ -115,33 +115,29 @@ class GooglePay {
         data: JSON.stringify(requestBody),
       },
     });
-  }
+  };
 
-  static getTransactionInfo(newCalculation) {
-    return {
-      countryCode: newCalculation?.locale?.slice(-2),
-      currencyCode: newCalculation?.grandTotalAmount?.currency,
-      totalPriceStatus: 'FINAL',
-      totalPriceLabel: 'Total',
-      totalPrice: `${newCalculation?.grandTotalAmount?.value}`,
-    };
-  }
+  static getTransactionInfo = (newCalculation) => ({
+    countryCode: newCalculation?.locale?.slice(-2),
+    currencyCode: newCalculation?.grandTotalAmount?.currency,
+    totalPriceStatus: 'FINAL',
+    totalPriceLabel: 'Total',
+    totalPrice: `${newCalculation?.grandTotalAmount?.value}`,
+  });
 
-  static getShippingOptionsParameters(
+  static getShippingOptionsParameters = (
     selectedShippingMethod,
     shippingMethodsData,
-  ) {
-    return {
-      defaultSelectedOptionId: selectedShippingMethod.ID,
-      shippingOptions: shippingMethodsData.shippingMethods.map((sm) => ({
-        label: sm.displayName,
-        description: sm.description,
-        id: sm.ID,
-      })),
-    };
-  }
+  ) => ({
+    defaultSelectedOptionId: selectedShippingMethod.ID,
+    shippingOptions: shippingMethodsData.shippingMethods.map((sm) => ({
+      label: sm.displayName,
+      description: sm.description,
+      id: sm.ID,
+    })),
+  });
 
-  static handleAuthorised(response, resolve) {
+  static handleAuthorised = (response, resolve) => {
     resolve();
     if (document.querySelector('#result')) {
       document.querySelector('#result').value = JSON.stringify({
@@ -158,9 +154,9 @@ class GooglePay {
     if ($?.spinner) {
       $.spinner()?.stop();
     }
-  }
+  };
 
-  static handleError(reject) {
+  static handleError = (reject) => {
     reject();
     if (document.querySelector('#result')) {
       document.querySelector('#result').value = JSON.stringify({
@@ -174,15 +170,15 @@ class GooglePay {
         $.spinner()?.stop();
       }
     }
-  }
+  };
 
-  static handleGooglePayResponse(response, resolve, reject) {
+  static handleGooglePayResponse = (response, resolve, reject) => {
     if (response.resultCode === 'Authorised') {
       GooglePay.handleAuthorised(response, resolve);
     } else {
       GooglePay.handleError(reject);
     }
-  }
+  };
 
   paymentFromComponent = async (data, resolve, reject) => {
     try {
@@ -345,7 +341,7 @@ class GooglePay {
     },
   });
 
-  async getComponent() {
+  getComponent = async () => {
     const checkout = await initializeCheckout(this.applicationInfo);
     const applePayConfig = this.getConfig();
     return window.AdyenWeb.createComponent(
@@ -353,7 +349,7 @@ class GooglePay {
       checkout,
       applePayConfig,
     );
-  }
+  };
 }
 
 module.exports = GooglePay;

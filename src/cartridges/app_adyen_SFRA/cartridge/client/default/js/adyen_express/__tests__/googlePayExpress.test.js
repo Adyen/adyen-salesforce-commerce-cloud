@@ -2,82 +2,113 @@
  * @jest-environment ./jest/customJsdomEnvironment.js
  */
 
-const {
-  formatCustomerObject,
-  getShippingOptionsParameters,
-  getTransactionInfo,
-  onShippingAddressChange,
-  onShippingOptionChange,
-  getShippingMethods,
-  selectShippingMethod,
-  handleAuthorised,
-  handleError,
-  paymentFromComponent
-} = require('../googlePayExpress');
+const GooglePay = require('../paymentMethods/googlepay/googlepay');
+const httpClient = require('../../../js/commons/httpClient');
+const store = require('../../../../../../cartridge/store');
+const helpers = require('../../../js/adyen_checkout/helpers');
 
-jest.mock('../googlePayExpress.js', () => ({
-  ...jest.requireActual('../googlePayExpress.js'),
-  getShippingMethods: jest.fn(),
-  selectShippingMethod: jest.fn(),
-  getTransactionInfo: jest.fn(),
-}));
+jest.mock('../../../js/commons/httpClient');
+jest.mock('../../../../../../cartridge/store');
+jest.mock('../../../js/adyen_checkout/helpers');
+jest.mock('../initializeCheckout');
+jest.mock('../../commons');
 
-describe('getTransactionInfo', () => {
-  it('should correctly format transaction information', () => {
-    const newCalculation = {
-      locale: 'en-US',
-      totals: {
-        totalShippingCost: '$10.00',
-        totalTax: '$5.00',
-        subTotal: '$50.00',
+
+describe('GooglePay class', () => {
+  let googlePay;
+
+  beforeEach(() => {
+    jest.resetAllMocks();
+    Object.defineProperty(global, 'window', {
+      value: {
+        AdyenWeb: {
+          AdyenCheckout: jest.fn(),
+          createComponent: jest.fn().mockImplementation(() => {})
+        },
+        basketAmount: JSON.stringify({ value: 100, currency: 'USD' }),
+        showConfirmationAction: true,
+        shippingMethodsUrl: 'https://example.com/shipping-methods',
+        selectShippingMethodUrl: 'https://example.com/select-shipping-method',
+        paymentFromComponentURL: 'https://example.com/payment-from-component',
       },
-      grandTotalAmount: {
-        value: '65.00',
-        currency: 'USD',
-      },
-    };
-
-    const expectedOutput = {
-      countryCode: 'US',
-      currencyCode: 'USD',
-      totalPriceStatus: 'FINAL',
-      totalPriceLabel: 'Total',
-      totalPrice: '65.00',
-    };
-
-    const result = getTransactionInfo(newCalculation);
-    expect(result).toEqual(expectedOutput);
+      writable: true,
+    });
+    googlePay = new GooglePay(
+      { merchantName: 'Test Merchant' },
+      { applicationInfo: 'Test Info' },
+      true,
+    );
   });
 
-  it('should handle missing or empty fields', () => {
-    const newCalculation = {
-      locale: 'fr-FR',
-      totals: {
-        totalShippingCost: '$0.00',
-        totalTax: '$0.00',
-        subTotal: '$0.00',
-      },
-      grandTotalAmount: {
-        value: '0.00',
-        currency: 'EUR',
-      },
-    };
-
-    const expectedOutput = {
-      countryCode: 'FR',
-      currencyCode: 'EUR',
-      totalPriceStatus: 'FINAL',
-      totalPriceLabel: 'Total',
-      totalPrice: '0.00',
-    };
-
-    const result = getTransactionInfo(newCalculation);
-    expect(result).toEqual(expectedOutput);
+  afterEach(() => {
+    jest.clearAllMocks();
   });
+
+  it('should initialize correctly', () => {
+    expect(googlePay.store).toBe(store);
+    expect(googlePay.helpers).toBe(helpers);
+    expect(googlePay.amount).toEqual({ value: 100, currency: 'USD' });
+    expect(googlePay.showPayButton).toBe(true);
+    expect(googlePay.isExpress).toBe(true);
+    expect(googlePay.isExpressPdp).toBe(true);
+  });
+
+  describe('getTransactionInfo', () => {
+    it('should correctly format transaction information', () => {
+      const newCalculation = {
+        locale: 'en-US',
+        totals: {
+          totalShippingCost: '$10.00',
+          totalTax: '$5.00',
+          subTotal: '$50.00',
+        },
+        grandTotalAmount: {
+          value: '65.00',
+          currency: 'USD',
+        },
+      };
+
+      const expectedOutput = {
+        countryCode: 'US',
+        currencyCode: 'USD',
+        totalPriceStatus: 'FINAL',
+        totalPriceLabel: 'Total',
+        totalPrice: '65.00',
+      };
+
+      const result = GooglePay.getTransactionInfo(newCalculation);
+      expect(result).toEqual(expectedOutput);
+    });
+
+    it('should handle missing or empty fields', () => {
+      const newCalculation = {
+        locale: 'fr-FR',
+        totals: {
+          totalShippingCost: '$0.00',
+          totalTax: '$0.00',
+          subTotal: '$0.00',
+        },
+        grandTotalAmount: {
+          value: '0.00',
+          currency: 'EUR',
+        },
+      };
+
+      const expectedOutput = {
+        countryCode: 'FR',
+        currencyCode: 'EUR',
+        totalPriceStatus: 'FINAL',
+        totalPriceLabel: 'Total',
+        totalPrice: '0.00',
+      };
+
+      const result = GooglePay.getTransactionInfo(newCalculation);
+      expect(result).toEqual(expectedOutput);
+    });
 });
 
 describe('formatCustomerObject', () => {
-  it('should correctly format customer data', () => {
+  it('should format customer object correctly', async () => {
     const customerData = {
       shippingAddress: {
         name: 'John Doe',
@@ -143,91 +174,65 @@ describe('formatCustomerObject', () => {
         phone: '123-456-7890',
       },
     };
-
-    const result = formatCustomerObject(customerData);
-    expect(result).toEqual(expectedOutput);
-  });
-
-  it('should handle single-word names correctly', () => {
-    const customerData = {
-      shippingAddress: {
-        name: 'Alice',
-        address1: '789 Pine St',
-        locality: 'Los Angeles',
-        country: 'USA',
-        administrativeArea: 'CA',
-        postalCode: '90001',
-        phoneNumber: null,
-      },
-      paymentMethodData: {
-        info: {
-          billingAddress: {
-            address1: null,
-            locality: null,
-            country: null,
-            administrativeArea: null,
-            postalCode: null
-          }
-        }
-      }
-    }
+    const customerObject = GooglePay.formatCustomerObject(customerData);
+    expect(customerObject).toEqual(expectedOutput);
   });
 })
 
-describe('getShippingOptionsParameters', () => {
-  it('should return correct shipping options parameters', () => {
-    const selectedShippingMethod = { ID: 'SM001' };
-    const shippingMethodsData = {
-      shippingMethods: [
-        { ID: 'SM001', displayName: 'Standard Shipping', description: '3-5 business days' },
-        { ID: 'SM002', displayName: 'Express Shipping', description: '1-2 business days' },
-      ],
-    };
+  describe('getShippingOptionsParameters', () => {
+    it('should return correct shipping options parameters', () => {
+      const selectedShippingMethod = { ID: 'SM001' };
+      const shippingMethodsData = {
+        shippingMethods: [
+          { ID: 'SM001', displayName: 'Standard Shipping', description: '3-5 business days' },
+          { ID: 'SM002', displayName: 'Express Shipping', description: '1-2 business days' },
+        ],
+      };
 
-    const result = getShippingOptionsParameters(selectedShippingMethod, shippingMethodsData);
+      const result = GooglePay.getShippingOptionsParameters(selectedShippingMethod, shippingMethodsData);
 
-    expect(result).toEqual({
-      defaultSelectedOptionId: 'SM001',
-      shippingOptions: [
-        { label: 'Standard Shipping', description: '3-5 business days', id: 'SM001' },
-        { label: 'Express Shipping', description: '1-2 business days', id: 'SM002' },
-      ],
+      expect(result).toEqual({
+        defaultSelectedOptionId: 'SM001',
+        shippingOptions: [
+          { label: 'Standard Shipping', description: '3-5 business days', id: 'SM001' },
+          { label: 'Express Shipping', description: '1-2 business days', id: 'SM002' },
+        ],
+      });
     });
-  });
 
-  it('should handle empty shipping methods', () => {
-    const selectedShippingMethod = { ID: 'SM001' };
-    const shippingMethodsData = { shippingMethods: [] };
+    it('should handle empty shipping methods', () => {
+      const selectedShippingMethod = { ID: 'SM001' };
+      const shippingMethodsData = { shippingMethods: [] };
 
-    const result = getShippingOptionsParameters(selectedShippingMethod, shippingMethodsData);
+      const result = GooglePay.getShippingOptionsParameters(selectedShippingMethod, shippingMethodsData);
 
-    expect(result).toEqual({
-      defaultSelectedOptionId: 'SM001',
-      shippingOptions: [],
+      expect(result).toEqual({
+        defaultSelectedOptionId: 'SM001',
+        shippingOptions: [],
+      });
     });
-  });
 
-  it('should handle missing properties in shipping methods', () => {
-    const selectedShippingMethod = { ID: 'SM001' };
-    const shippingMethodsData = {
-      shippingMethods: [
-        { ID: 'SM001' },
-        { displayName: 'Express Shipping' },
-        { description: 'Next day delivery' },
-      ],
-    };
+    it('should handle missing properties in shipping methods', () => {
+      const selectedShippingMethod = { ID: 'SM001' };
+      const shippingMethodsData = {
+        shippingMethods: [
+          { ID: 'SM001' },
+          { displayName: 'Express Shipping' },
+          { description: 'Next day delivery' },
+        ],
+      };
 
-    const result = getShippingOptionsParameters(selectedShippingMethod, shippingMethodsData);
+      const result = GooglePay.getShippingOptionsParameters(selectedShippingMethod, shippingMethodsData);
 
-    expect(result).toEqual({
-      defaultSelectedOptionId: 'SM001',
-      shippingOptions: [
-        { label: undefined, description: undefined, id: 'SM001' },
-        { label: 'Express Shipping', description: undefined, id: undefined },
-        { label: undefined, description: 'Next day delivery', id: undefined },
-      ],
+      expect(result).toEqual({
+        defaultSelectedOptionId: 'SM001',
+        shippingOptions: [
+          { label: undefined, description: undefined, id: 'SM001' },
+          { label: 'Express Shipping', description: undefined, id: undefined },
+          { label: undefined, description: 'Next day delivery', id: undefined },
+        ],
+      });
     });
-  });
 });
 
 describe('getShippingMethods', () => {
@@ -245,7 +250,7 @@ describe('getShippingMethods', () => {
       postalCode: '10001'
     };
 
-    const result = await getShippingMethods(shippingAddress);
+    const result = await googlePay.getShippingMethods(shippingAddress);
 
     expect($.ajax).toHaveBeenCalledWith({
       method: 'POST',
@@ -255,6 +260,7 @@ describe('getShippingMethods', () => {
         csrf_token: undefined,
         data: JSON.stringify({
           paymentMethodType: 'googlepay',
+          isExpressPdp: true,
           address: {
             city: 'New York',
             country: 'United States',
@@ -271,7 +277,7 @@ describe('getShippingMethods', () => {
     const mockResponse = { success: true };
     $.ajax.mockResolvedValue(mockResponse);
 
-    const result = await getShippingMethods();
+    const result = await googlePay.getShippingMethods();
 
     expect($.ajax).toHaveBeenCalledWith({
       method: 'POST',
@@ -281,6 +287,7 @@ describe('getShippingMethods', () => {
         csrf_token: undefined,
         data: JSON.stringify({
           paymentMethodType: 'googlepay',
+          isExpressPdp: true,
         })
       },
     });
@@ -290,7 +297,7 @@ describe('getShippingMethods', () => {
     const mockError = new Error('AJAX request failed');
     $.ajax.mockRejectedValue(mockError);
 
-    await expect(getShippingMethods()).rejects.toThrow('AJAX request failed');
+    await expect(googlePay.getShippingMethods()).rejects.toThrow('AJAX request failed');
   });
 });
 
@@ -306,7 +313,7 @@ describe('selectShippingMethod', () => {
     const shipmentUUID = 'test-shipment-uuid';
     const ID = 'test-method-id';
 
-    const result = await selectShippingMethod({ shipmentUUID, ID });
+    const result = await googlePay.selectShippingMethod({ shipmentUUID, ID });
 
     expect($.ajax).toHaveBeenCalledWith({
       method: 'POST',
@@ -318,6 +325,7 @@ describe('selectShippingMethod', () => {
           paymentMethodType: 'googlepay',
           shipmentUUID: 'test-shipment-uuid',
           methodID: 'test-method-id',
+          isExpressPdp: true,
         })
       },
     });
@@ -329,12 +337,14 @@ describe('selectShippingMethod', () => {
     const mockError = new Error('AJAX request failed');
     $.ajax.mockRejectedValue(mockError);
 
-    await expect(selectShippingMethod({ shipmentUUID: 'uuid', ID: 'id' }))
+    await expect(googlePay.selectShippingMethod({ shipmentUUID: 'uuid', ID: 'id' }))
       .rejects.toThrow('AJAX request failed');
   });
 
   it('should handle missing parameters', async () => {
-    await expect(selectShippingMethod({})).rejects.toThrow();
+    const mockError = new Error('AJAX request failed');
+    $.ajax.mockRejectedValue(mockError);
+    await expect(googlePay.selectShippingMethod({})).rejects.toThrow();
   });
 });
 
@@ -356,10 +366,12 @@ describe('handleAuthorised', () => {
         amount: 100
       }
     };
+    const resolve = jest.fn();
 
-    handleAuthorised(response);
+    GooglePay.handleAuthorised(response, resolve);
 
     const resultInput = document.querySelector('#result');
+    expect(resolve).toHaveBeenCalled();
     expect(resultInput.value).toBe(JSON.stringify({
       pspReference: 'PSP123',
       resultCode: 'SUCCESS',
@@ -381,10 +393,12 @@ describe('handleAuthorised', () => {
         amount: 200
       }
     };
+    const resolve = jest.fn();
 
-    handleAuthorised(response);
+    GooglePay.handleAuthorised(response, resolve);
 
     const resultInput = document.querySelector('#result');
+    expect(resolve).toHaveBeenCalled();
     expect(resultInput.value).toBe(JSON.stringify({
       pspReference: 'PSP456',
       resultCode: 'SUCCESS',
@@ -408,39 +422,48 @@ describe('handleError', () => {
   });
 
   it('updates #result with error information', () => {
-    handleError();
+    const reject = jest.fn();
+
+    GooglePay.handleError(reject);
 
     const resultInput = document.querySelector('#result');
     expect(resultInput.value).toBe(JSON.stringify({ error: true }));
+    expect(reject).toHaveBeenCalled();
   });
 
   it('submits #showConfirmationForm form', () => {
     const form = document.querySelector('#showConfirmationForm');
     form.submit = jest.fn();
+    const reject = jest.fn();
 
-    handleError();
+    GooglePay.handleError(reject);
 
     expect(form.submit).toHaveBeenCalled();
+    expect(reject).toHaveBeenCalled();
   });
 
   it('handles missing #result element gracefully', () => {
     document.body.innerHTML = '<form id="showConfirmationForm"></form>';
+    const reject = jest.fn();
 
-    handleError();
+    GooglePay.handleError(reject);
 
     const form = document.querySelector('#showConfirmationForm');
     form.submit = jest.fn();
 
     expect(form.submit).not.toThrow();
+    expect(reject).toHaveBeenCalled();
   });
 
   it('handles missing #showConfirmationForm element gracefully', () => {
     document.body.innerHTML = '<input id="result" />';
+    const reject = jest.fn();
 
-    handleError();
+    GooglePay.handleError(reject);
 
     const resultInput = document.querySelector('#result');
     expect(resultInput.value).toBe(JSON.stringify({ error: true }));
+    expect(reject).toHaveBeenCalled();
   });
 });
 
@@ -461,7 +484,19 @@ describe('paymentFromComponent', () => {
     global.$.ajax = jest.fn().mockImplementation(({ success }) => {
       success({ action : {}})
     });
-    await paymentFromComponent({});
+    await googlePay.paymentFromComponent({});
     expect(start).toHaveBeenCalledTimes(1);
   })
 });
+
+});
+
+
+//
+
+//
+
+//
+
+//
+
