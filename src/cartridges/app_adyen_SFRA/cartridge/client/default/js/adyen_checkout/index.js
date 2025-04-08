@@ -104,37 +104,63 @@ function submitPayment() {
 }
 
 function handlePaymentAction() {
-  $(document).on('ajaxSuccess', (event, xhr, settings) => {
-    if (settings.url === $('.place-order').data('action')) {
-      xhr.done((data) => {
-        if (data.adyenAction) {
-          window.orderToken = data.orderToken;
-          actionHandler(data.adyenAction);
-        }
+  $(document).ajaxSend(async (event, xhr, settings) => {
+    // Handle request before sending
+    const isPlaceOrderUrl = settings.url === $('.place-order').data('action');
+    let shouldResend = true;
+    if (isPlaceOrderUrl && shouldResend) {
+      xhr.abort();
+      shouldResend = false;
+      const data = await httpClient({
+        url: settings.url,
+        method: 'POST',
       });
+      $('body').trigger('checkout:enableButton', '.next-step-button button');
+      if (data.error) {
+        if (data.cartError) {
+          window.location.href = data.redirectUrl;
+        } else {
+          // go to appropriate stage and display error message
+        }
+      } else if (data.adyenAction) {
+        window.orderToken = data.orderToken;
+        actionHandler(data.adyenAction);
+      } else {
+        const redirect = $('<form>').appendTo(document.body).attr({
+          method: 'POST',
+          action: data.continueUrl,
+        });
+
+        $('<input>').appendTo(redirect).attr({
+          name: 'orderID',
+          value: data.orderID,
+        });
+
+        $('<input>').appendTo(redirect).attr({
+          name: 'orderToken',
+          value: data.orderToken,
+        });
+
+        redirect.submit();
+      }
     }
   });
 }
 
 async function init() {
   $(document).ready(() => {
-    // TODO: render the error message box
     const name = 'paymentError';
     const error = new RegExp(`[?&]${encodeURIComponent(name)}=([^&]*)`).exec(
       window.location.search,
     );
-    const paymentStage = /[?&]stage=payment([^&]*)/.exec(
-      window.location.search,
-    );
-    if (error || paymentStage) {
-      if (error) {
-        $('.error-message').show();
-        $('.error-message-text').text(decodeURIComponent(error[1]));
-      }
-      $('body').trigger('checkout:renderPaymentMethod', {
-        email: null,
-      });
+    console.log(error);
+    if (error) {
+      $('.error-message').show();
+      $('.error-message-text').text(decodeURIComponent(error[1]));
     }
+    $('body').trigger('checkout:renderPaymentMethod', {
+      email: null,
+    });
   });
 
   $('body').on('checkout:updateCheckoutView', (event, data) => {

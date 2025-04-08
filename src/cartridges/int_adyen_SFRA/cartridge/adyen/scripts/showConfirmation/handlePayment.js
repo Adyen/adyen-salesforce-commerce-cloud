@@ -2,8 +2,10 @@ const URLUtils = require('dw/web/URLUtils');
 const Resource = require('dw/web/Resource');
 const Transaction = require('dw/system/Transaction');
 const OrderMgr = require('dw/order/OrderMgr');
+const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 
 function handleRedirect(page, { res }) {
+  AdyenLogs.error_log(`handle redirect ${page}`);
   res.redirect(
     URLUtils.url(
       'Checkout-Begin',
