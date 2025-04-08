@@ -16,6 +16,20 @@ const { GIFTCARD } = require('../constants');
 const { renderGiftCards } = require('./giftcards');
 const { addStores } = require('./pos');
 
+$(document).ready(() => {
+  const name = 'paymentError';
+  const error = new RegExp(`[?&]${encodeURIComponent(name)}=([^&]*)`).exec(
+    window.location.search,
+  );
+  if (error) {
+    $('.error-message').show();
+    $('.error-message-text').text(decodeURIComponent(error[1]));
+  }
+  $('body').trigger('checkout:renderPaymentMethod', {
+    email: null,
+  });
+});
+
 function setAdyenInputValues() {
   const customMethods = {};
 
@@ -103,6 +117,45 @@ function submitPayment() {
   });
 }
 
+async function overridePlaceOrderRequest(url) {
+  try {
+    $('body').trigger('checkout:enableButton', '.next-step-button button');
+    const data = await httpClient({
+      url,
+      method: 'POST',
+    });
+    if (data.error) {
+      if (data.cartError) {
+        window.location.href = data.redirectUrl;
+      } else {
+        // go to appropriate stage and display error message
+      }
+    } else if (data.adyenAction) {
+      window.orderToken = data.orderToken;
+      actionHandler(data.adyenAction);
+    } else {
+      const redirect = $('<form>').appendTo(document.body).attr({
+        method: 'POST',
+        action: data.continueUrl,
+      });
+
+      $('<input>').appendTo(redirect).attr({
+        name: 'orderID',
+        value: data.orderID,
+      });
+
+      $('<input>').appendTo(redirect).attr({
+        name: 'orderToken',
+        value: data.orderToken,
+      });
+
+      redirect.submit();
+    }
+  } catch (err) {
+    $('body').trigger('checkout:enableButton', $('.next-step-button button'));
+  }
+}
+
 function handlePaymentAction() {
   $(document).ajaxSend(async (event, xhr, settings) => {
     // Handle request before sending
@@ -111,58 +164,12 @@ function handlePaymentAction() {
     if (isPlaceOrderUrl && shouldResend) {
       xhr.abort();
       shouldResend = false;
-      const data = await httpClient({
-        url: settings.url,
-        method: 'POST',
-      });
-      $('body').trigger('checkout:enableButton', '.next-step-button button');
-      if (data.error) {
-        if (data.cartError) {
-          window.location.href = data.redirectUrl;
-        } else {
-          // go to appropriate stage and display error message
-        }
-      } else if (data.adyenAction) {
-        window.orderToken = data.orderToken;
-        actionHandler(data.adyenAction);
-      } else {
-        const redirect = $('<form>').appendTo(document.body).attr({
-          method: 'POST',
-          action: data.continueUrl,
-        });
-
-        $('<input>').appendTo(redirect).attr({
-          name: 'orderID',
-          value: data.orderID,
-        });
-
-        $('<input>').appendTo(redirect).attr({
-          name: 'orderToken',
-          value: data.orderToken,
-        });
-
-        redirect.submit();
-      }
+      await overridePlaceOrderRequest(settings.url);
     }
   });
 }
 
 async function init() {
-  $(document).ready(() => {
-    const name = 'paymentError';
-    const error = new RegExp(`[?&]${encodeURIComponent(name)}=([^&]*)`).exec(
-      window.location.search,
-    );
-    console.log(error);
-    if (error) {
-      $('.error-message').show();
-      $('.error-message-text').text(decodeURIComponent(error[1]));
-    }
-    $('body').trigger('checkout:renderPaymentMethod', {
-      email: null,
-    });
-  });
-
   $('body').on('checkout:updateCheckoutView', (event, data) => {
     const currentStage = window.location.search.substring(
       window.location.search.indexOf('=') + 1,
