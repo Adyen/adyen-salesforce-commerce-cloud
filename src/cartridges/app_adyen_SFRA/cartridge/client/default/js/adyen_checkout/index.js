@@ -167,9 +167,9 @@ function submitPayment() {
 }
 
 function handlePaymentAction() {
+  let shouldResend = true;
   $(document).ajaxSend(async (event, xhr, settings) => {
     const isPlaceOrderUrl = settings.url === $('.place-order').data('action');
-    let shouldResend = true;
     if (isPlaceOrderUrl && shouldResend) {
       xhr.abort();
       shouldResend = false;
