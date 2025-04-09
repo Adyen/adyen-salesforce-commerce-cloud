@@ -88,10 +88,9 @@ async function overridePlaceOrderRequest(url) {
       if (data.cartError) {
         window.location.href = data.redirectUrl;
       } else {
-        $('body').trigger(
-          'checkout:enableButton',
-          $('.next-step-button button'),
-        );
+        $('body').trigger('checkout:enableButton', '.next-step-button button');
+        $('.error-message').show();
+        $('.error-message-text').text(data.errorMessage);
       }
     } else if (data.adyenAction) {
       window.orderToken = data.orderToken;
@@ -115,7 +114,7 @@ async function overridePlaceOrderRequest(url) {
       redirect.submit();
     }
   } catch (err) {
-    $('body').trigger('checkout:enableButton', $('.next-step-button button'));
+    $('body').trigger('checkout:enableButton', '.next-step-button button');
   }
 }
 
