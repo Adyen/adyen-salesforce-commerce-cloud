@@ -16,7 +16,10 @@ const { GIFTCARD } = require('../constants');
 const { renderGiftCards } = require('./giftcards');
 const { addStores } = require('./pos');
 
-$(document).ready(() => {
+let customerEmail = null;
+let paymentMethodsResponse = null;
+
+function checkForError() {
   const name = 'paymentError';
   const error = new RegExp(`[?&]${encodeURIComponent(name)}=([^&]*)`).exec(
     window.location.search,
@@ -25,8 +28,36 @@ $(document).ready(() => {
     $('.error-message').show();
     $('.error-message-text').text(decodeURIComponent(error[1]));
   }
+}
+
+async function renderPaymentMethod() {
+  paymentMethodsResponse = await getPaymentMethods();
+  $('body').on('checkout:renderPaymentMethod', async (e, response) => {
+    const { email } = response;
+    setCheckoutConfiguration({
+      email,
+      paymentMethodsResponse,
+    });
+    await renderGenericComponent(paymentMethodsResponse);
+    const areGiftCardsEnabled =
+      paymentMethodsResponse?.AdyenPaymentMethods?.paymentMethods?.some(
+        (pm) => pm.type === GIFTCARD,
+      );
+    if (areGiftCardsEnabled) {
+      await renderGiftCards(paymentMethodsResponse);
+    }
+    if (window.activeTerminalApiStores) {
+      addStores(window.activeTerminalApiStores);
+    }
+    window.arePaymentMethodsRendering = false;
+  });
+}
+
+$(document).ready(async () => {
+  checkForError();
+  await renderPaymentMethod();
   $('body').trigger('checkout:renderPaymentMethod', {
-    email: null,
+    email: customerEmail,
   });
 });
 
@@ -46,27 +77,46 @@ function setAdyenInputValues() {
     );
   }
 }
-
-function renderPaymentMethod() {
-  $('body').on('checkout:renderPaymentMethod', async (e, response) => {
-    const paymentMethodsResponse = await getPaymentMethods();
-    const { email } = response;
-    setCheckoutConfiguration({
-      email,
-      paymentMethodsResponse,
+async function overridePlaceOrderRequest(url) {
+  try {
+    $('body').trigger('checkout:disableButton', '.next-step-button button');
+    const data = await httpClient({
+      url,
+      method: 'POST',
     });
-    await renderGenericComponent(paymentMethodsResponse);
-    const areGiftCardsEnabled =
-      paymentMethodsResponse?.AdyenPaymentMethods?.paymentMethods?.some(
-        (pm) => pm.type === GIFTCARD,
-      );
-    if (areGiftCardsEnabled) {
-      await renderGiftCards(paymentMethodsResponse);
+    if (data.error) {
+      if (data.cartError) {
+        window.location.href = data.redirectUrl;
+      } else {
+        $('body').trigger(
+          'checkout:enableButton',
+          $('.next-step-button button'),
+        );
+      }
+    } else if (data.adyenAction) {
+      window.orderToken = data.orderToken;
+      actionHandler(data.adyenAction);
+    } else {
+      const redirect = $('<form>').appendTo(document.body).attr({
+        method: 'POST',
+        action: data.continueUrl,
+      });
+
+      $('<input>').appendTo(redirect).attr({
+        name: 'orderID',
+        value: data.orderID,
+      });
+
+      $('<input>').appendTo(redirect).attr({
+        name: 'orderToken',
+        value: data.orderToken,
+      });
+
+      redirect.submit();
     }
-    if (window.activeTerminalApiStores) {
-      addStores(window.activeTerminalApiStores);
-    }
-  });
+  } catch (err) {
+    $('body').trigger('checkout:enableButton', $('.next-step-button button'));
+  }
 }
 
 function submitPayment() {
@@ -117,48 +167,8 @@ function submitPayment() {
   });
 }
 
-async function overridePlaceOrderRequest(url) {
-  try {
-    $('body').trigger('checkout:enableButton', '.next-step-button button');
-    const data = await httpClient({
-      url,
-      method: 'POST',
-    });
-    if (data.error) {
-      if (data.cartError) {
-        window.location.href = data.redirectUrl;
-      } else {
-        // go to appropriate stage and display error message
-      }
-    } else if (data.adyenAction) {
-      window.orderToken = data.orderToken;
-      actionHandler(data.adyenAction);
-    } else {
-      const redirect = $('<form>').appendTo(document.body).attr({
-        method: 'POST',
-        action: data.continueUrl,
-      });
-
-      $('<input>').appendTo(redirect).attr({
-        name: 'orderID',
-        value: data.orderID,
-      });
-
-      $('<input>').appendTo(redirect).attr({
-        name: 'orderToken',
-        value: data.orderToken,
-      });
-
-      redirect.submit();
-    }
-  } catch (err) {
-    $('body').trigger('checkout:enableButton', $('.next-step-button button'));
-  }
-}
-
 function handlePaymentAction() {
   $(document).ajaxSend(async (event, xhr, settings) => {
-    // Handle request before sending
     const isPlaceOrderUrl = settings.url === $('.place-order').data('action');
     let shouldResend = true;
     if (isPlaceOrderUrl && shouldResend) {
@@ -171,12 +181,13 @@ function handlePaymentAction() {
 
 async function init() {
   $('body').on('checkout:updateCheckoutView', (event, data) => {
+    customerEmail = data?.order?.orderEmail;
     const currentStage = window.location.search.substring(
       window.location.search.indexOf('=') + 1,
     );
     if (currentStage === 'shipping' || currentStage === 'payment') {
       $('body').trigger('checkout:renderPaymentMethod', {
-        email: data?.order?.orderEmail,
+        email: customerEmail,
       });
     }
     billing.methods.updatePaymentInformation(data.order, data.options);
@@ -185,16 +196,16 @@ async function init() {
   $('input[id="email"]').on('change', (e) => {
     const emailPattern = /^[\w.%+-]+@[\w.-]+\.[\w]{2,6}$/;
     if (emailPattern.test(e.target.value)) {
+      customerEmail = e.target.value?.trim();
       $('body').trigger('checkout:renderPaymentMethod', {
-        email: e.target.value?.trim(),
+        email: customerEmail,
       });
     }
   });
 }
 
 module.exports = {
-  init,
-  renderPaymentMethod,
   submitPayment,
   handlePaymentAction,
+  init,
 };
