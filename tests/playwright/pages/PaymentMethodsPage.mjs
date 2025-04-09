@@ -509,7 +509,7 @@ export default class PaymentMethodsPage {
     await this.page.locator("div[data-testid='qr-modal-body']").waitFor({
       state: 'visible',
     });
-  }
+  };
 
   confirmSimulator = async () => {
     //Confirm the simulator

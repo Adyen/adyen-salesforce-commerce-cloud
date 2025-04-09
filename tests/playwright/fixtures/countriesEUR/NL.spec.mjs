@@ -110,13 +110,17 @@ for (const environment of environments) {
       checkoutPage = new environment.CheckoutPage(page);
     });
     test('Click to Pay renders @quick', async () => {
-        await checkoutPage.goToCheckoutPageWithFullCart(regionsEnum.EU, 1, paymentData.ClickToPay.email);
-        await checkoutPage.setShopperDetails(shopperData.NL);
-        if (environment.name.indexOf('v5') !== -1) {
-            test.skip();
-        };
-        await checkoutPage.expectClickToPay();
+      await checkoutPage.goToCheckoutPageWithFullCart(
+        regionsEnum.EU,
+        1,
+        paymentData.ClickToPay.email,
+      );
+      await checkoutPage.setShopperDetails(shopperData.NL);
+      await this.page.click('#rb_scheme');
+      if (environment.name.indexOf('v5') !== -1) {
+        test.skip();
+      }
+      await checkoutPage.expectClickToPay();
     });
   });
 }
-
