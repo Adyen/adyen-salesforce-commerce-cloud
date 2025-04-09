@@ -13,7 +13,7 @@
           locale: '${request.locale}',
           clientKey: '${pdict.adyen.clientKey}',
           environment: '${pdict.adyen.environment}',
-		  countryCode: '${request.locale}'.slice(-2),
+          countryCode: '${request.locale}'.slice(-2),
       };
       window.adyenClientKey = '${pdict.adyen.adyenClientKey}';
       window.returnURL = "${URLUtils.https('Checkout-Begin', 'stage', 'payment')}";

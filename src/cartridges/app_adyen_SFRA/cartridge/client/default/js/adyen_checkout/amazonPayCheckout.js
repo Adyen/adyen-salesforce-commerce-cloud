@@ -1,5 +1,6 @@
 const store = require('../../../../store');
 const helpers = require('./helpers');
+const { AMAZON_PAY } = require('../constants');
 const { httpClient } = require('../commons/httpClient');
 
 function handleAuthorised(response) {
@@ -44,7 +45,7 @@ async function paymentFromComponent(data, component) {
     url: window.paymentFromComponentURL,
     data: {
       data: JSON.stringify(requestData),
-      paymentMethod: 'amazonpay',
+      paymentMethod: AMAZON_PAY,
       merchantReference: document.querySelector('#merchantReference').value,
       orderToken: document.querySelector('#orderToken').value,
     },
@@ -77,7 +78,7 @@ async function mountAmazonPayComponent() {
       await paymentFromComponent(state.data, component);
     },
     onAdditionalDetails: async (state) => {
-      state.data.paymentMethod = 'amazonpay';
+      state.data.paymentMethod = AMAZON_PAY;
       const requestData = JSON.stringify({
         data: state.data,
         orderToken: window.orderToken,
@@ -101,7 +102,7 @@ async function mountAmazonPayComponent() {
   };
 
   const amazonPayComponent = window.AdyenWeb.createComponent(
-    'amazonpay',
+    AMAZON_PAY,
     checkout,
     amazonConfig,
   );

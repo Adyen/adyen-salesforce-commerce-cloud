@@ -19,7 +19,7 @@
           locale: '${request.locale}',
           clientKey: "${AdyenConfigs.getAdyenClientKey()}",
           environment: "${AdyenConfigs.getAdyenEnvironment()}",
-		  countryCode: '${request.locale}'.slice(-2),
+          countryCode: '${request.locale}'.slice(-2),
         };
         window.basketAmount = "${AdyenHelper.getBasketAmount()}".replace(/&quot;/g, '\"');
         window.adyenClientKey = "${AdyenConfigs.getAdyenClientKey()}";

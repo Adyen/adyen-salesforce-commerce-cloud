@@ -1,4 +1,5 @@
 const { getPaymentMethods } = require('../../../commons');
+const { AMAZON_PAY } = require('../../../constants');
 const { httpClient } = require('../../../commons/httpClient');
 
 async function saveShopperDetails(details) {
@@ -7,7 +8,7 @@ async function saveShopperDetails(details) {
     url: window.saveShopperDetailsURL,
     data: {
       shopperDetails: JSON.stringify(details),
-      paymentMethod: 'amazonpay',
+      paymentMethod: AMAZON_PAY,
     },
   });
   const select = document.querySelector('#shippingMethods');
@@ -87,7 +88,7 @@ async function mountAmazonPayComponent() {
       },
     });
     const amazonPayConfig = paymentMethodsResponse?.paymentMethods.find(
-      (pm) => pm.type === 'amazonpay',
+      (pm) => pm.type === AMAZON_PAY,
     )?.configuration;
     if (!amazonPayConfig) return;
     const amazonConfig = {
@@ -104,7 +105,7 @@ async function mountAmazonPayComponent() {
       amazonCheckoutSessionId: window.amazonCheckoutSessionId,
     };
     const amazonPayComponent = window.AdyenWeb.createComponent(
-      'amazonpay',
+      AMAZON_PAY,
       checkout,
       amazonConfig,
     );
