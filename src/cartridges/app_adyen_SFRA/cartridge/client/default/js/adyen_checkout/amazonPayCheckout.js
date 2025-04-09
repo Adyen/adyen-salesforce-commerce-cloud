@@ -1,6 +1,6 @@
-const store = require('../../../store');
-const helpers = require('./adyen_checkout/helpers');
-const { httpClient } = require('./commons/httpClient');
+const store = require('../../../../store');
+const helpers = require('./helpers');
+const { httpClient } = require('../commons/httpClient');
 
 function handleAuthorised(response) {
   document.querySelector('#result').value = JSON.stringify({
@@ -56,7 +56,7 @@ async function paymentFromComponent(data, component) {
 
 async function mountAmazonPayComponent() {
   const amazonPayNode = document.getElementById('amazon-container');
-  const checkout = await AdyenCheckout(window.Configuration);
+  const checkout = await window.AdyenWeb.AdyenCheckout(window.Configuration);
 
   const amazonConfig = {
     showOrderButton: false,
@@ -100,10 +100,12 @@ async function mountAmazonPayComponent() {
     },
   };
 
-  const amazonPayComponent = checkout
-    .create('amazonpay', amazonConfig)
-    .mount(amazonPayNode);
-
+  const amazonPayComponent = window.AdyenWeb.createComponent(
+    'amazonpay',
+    checkout,
+    amazonConfig,
+  );
+  amazonPayComponent.mount(amazonPayNode);
   helpers.createShowConfirmationForm(
     window.ShowConfirmationPaymentFromComponent,
   );
