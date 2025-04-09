@@ -1,4 +1,9 @@
 <input type="hidden" id="adyen-token" name="${pdict.csrf.tokenName}" value="${pdict.csrf.token}"/>
+<isset name="AdyenHelper" value="${require('*/cartridge/adyen/utils/adyenHelper')}" scope="page"/>
+<isset name="AdyenConfigs" value="${require('*/cartridge/adyen/utils/adyenConfigs')}" scope="page" />
+<script src="${AdyenHelper.getCheckoutUrl()}" type="text/javascript"></script>
+<link rel="stylesheet" type="text/css" href="${AdyenHelper.getCheckoutCSS()}"/>
+<link rel="stylesheet" type="text/css" href="${URLUtils.staticURL('/css/adyenCss.css')}" />
 <isif condition="${request.getHttpQueryString() && request.getHttpQueryString().indexOf('amazonCheckoutSessionId') > -1} ">
     <script type="text/javascript">
         window.clientKey = "${AdyenConfigs.getAdyenClientKey()}",
@@ -7,20 +12,21 @@
         window.returnUrl = "${URLUtils.https('Checkout-Begin', 'stage', 'payment')}";
         window.getPaymentMethodsURL = "${URLUtils.https('Adyen-GetPaymentMethods')}";
 
-        var amazonCheckoutSessionId ="${pdict.AdyenHelper.encodeHtml(request.getHttpQueryString().split("=").pop())}";
+        var amazonCheckoutSessionId ="${AdyenHelper.encodeHtml(request.getHttpQueryString().split("=").pop())}";
         window.amazonCheckoutSessionId = amazonCheckoutSessionId;
 
         window.Configuration = {
           locale: '${request.locale}',
           clientKey: "${AdyenConfigs.getAdyenClientKey()}",
           environment: "${AdyenConfigs.getAdyenEnvironment()}",
+          countryCode: '${request.locale}'.slice(-2),
         };
-        window.basketAmount = "${pdict.AdyenHelper.getBasketAmount()}".replace(/&quot;/g, '\"');
+        window.basketAmount = "${AdyenHelper.getBasketAmount()}".replace(/&quot;/g, '\"');
         window.adyenClientKey = "${AdyenConfigs.getAdyenClientKey()}";
     </script>
     <isscript>
         var assets = require('*/cartridge/scripts/assets.js');
-        assets.addJs('/js/amazonPayExpressPart2.js');
+        assets.addJs('/js/adyen_express/paymentMethods/amazonpay/amazonPayExpressPart2.js');
     </isscript>
     <input id="adyenStateData" type="hidden" name="${adyenPaymentFields.adyenStateData.htmlName}"/>
     <div id="amazonPayAddressDetails">
