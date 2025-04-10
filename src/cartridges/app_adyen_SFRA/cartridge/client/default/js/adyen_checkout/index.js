@@ -31,7 +31,6 @@ async function renderPaymentMethod() {
   const paymentMethodsResponse = await getPaymentMethods();
   $('body').on('checkout:renderPaymentMethod', async (e, response) => {
     const { email } = response;
-    console.log('checkout:renderPaymentMethod', email);
     setCheckoutConfiguration({
       email,
       paymentMethodsResponse,
