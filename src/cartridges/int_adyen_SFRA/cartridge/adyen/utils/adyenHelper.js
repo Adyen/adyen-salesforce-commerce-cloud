@@ -664,7 +664,7 @@ let adyenHelperObj = {
 
   // gets the Adyen card type name based on the SFCC card type name
   getSfccCardType(cardType) {
-	const cardTypeMapping = require('*/cartridge/adyen/config/card-type-mapping.json');
+    const cardTypeMapping = require('*/cartridge/adyen/config/card-type-mapping.json');
     if (empty(cardType)) {
         throw new Error('cardType argument is not passed to getSfccCardType function');
     }
