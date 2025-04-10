@@ -27,9 +27,9 @@ function checkForError() {
   }
 }
 
-async function renderPaymentMethod() {
-  const paymentMethodsResponse = await getPaymentMethods();
+async function registerRenderPaymentMethodListener() {
   $('body').on('checkout:renderPaymentMethod', async (e, response) => {
+    const paymentMethodsResponse = await getPaymentMethods();
     const { email } = response;
     setCheckoutConfiguration({
       email,
@@ -52,7 +52,7 @@ async function renderPaymentMethod() {
 
 $(document).ready(async () => {
   checkForError();
-  await renderPaymentMethod();
+  await registerRenderPaymentMethodListener();
   const storedCustomerEmail = sessionStorage.getItem('customerEmail');
   $('body').trigger('checkout:renderPaymentMethod', {
     email: storedCustomerEmail,
@@ -75,6 +75,7 @@ function setAdyenInputValues() {
     );
   }
 }
+
 async function overridePlaceOrderRequest(url) {
   try {
     $('body').trigger('checkout:disableButton', '.next-step-button button');
