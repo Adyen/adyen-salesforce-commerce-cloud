@@ -16,9 +16,6 @@ const { GIFTCARD } = require('../constants');
 const { renderGiftCards } = require('./giftcards');
 const { addStores } = require('./pos');
 
-let customerEmail = null;
-let paymentMethodsResponse = null;
-
 function checkForError() {
   const name = 'paymentError';
   const error = new RegExp(`[?&]${encodeURIComponent(name)}=([^&]*)`).exec(
@@ -31,9 +28,10 @@ function checkForError() {
 }
 
 async function renderPaymentMethod() {
-  paymentMethodsResponse = await getPaymentMethods();
+  const paymentMethodsResponse = await getPaymentMethods();
   $('body').on('checkout:renderPaymentMethod', async (e, response) => {
     const { email } = response;
+    console.log('checkout:renderPaymentMethod', email);
     setCheckoutConfiguration({
       email,
       paymentMethodsResponse,
@@ -56,8 +54,9 @@ async function renderPaymentMethod() {
 $(document).ready(async () => {
   checkForError();
   await renderPaymentMethod();
+  const storedCustomerEmail = sessionStorage.getItem('customerEmail');
   $('body').trigger('checkout:renderPaymentMethod', {
-    email: customerEmail,
+    email: storedCustomerEmail,
   });
 });
 
@@ -180,13 +179,16 @@ function handlePaymentAction() {
 
 async function init() {
   $('body').on('checkout:updateCheckoutView', (event, data) => {
-    customerEmail = data?.order?.orderEmail;
+    const storedCustomerEmail = sessionStorage.getItem('customerEmail');
+    if (storedCustomerEmail !== data?.order?.orderEmail) {
+      sessionStorage.setItem('customerEmail', data?.order?.orderEmail);
+    }
     const currentStage = window.location.search.substring(
       window.location.search.indexOf('=') + 1,
     );
     if (currentStage === 'shipping' || currentStage === 'payment') {
       $('body').trigger('checkout:renderPaymentMethod', {
-        email: customerEmail,
+        email: data?.order?.orderEmail,
       });
     }
     billing.methods.updatePaymentInformation(data.order, data.options);
@@ -195,10 +197,14 @@ async function init() {
   $('input[id="email"]').on('change', (e) => {
     const emailPattern = /^[\w.%+-]+@[\w.-]+\.[\w]{2,6}$/;
     if (emailPattern.test(e.target.value)) {
-      customerEmail = e.target.value?.trim();
-      $('body').trigger('checkout:renderPaymentMethod', {
-        email: customerEmail,
-      });
+      const emailValue = e.target.value?.trim();
+      const storedCustomerEmail = sessionStorage.getItem('customerEmail');
+      if (storedCustomerEmail !== emailValue) {
+        sessionStorage.setItem('customerEmail', emailValue);
+        $('body').trigger('checkout:renderPaymentMethod', {
+          email: emailValue,
+        });
+      }
     }
   });
 }

@@ -116,7 +116,6 @@ for (const environment of environments) {
         paymentData.ClickToPay.email,
       );
       await checkoutPage.setShopperDetails(shopperData.NL);
-      await this.page.click('#rb_scheme');
       if (environment.name.indexOf('v5') !== -1) {
         test.skip();
       }
