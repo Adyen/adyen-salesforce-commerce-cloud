@@ -127,8 +127,7 @@ class Paypal {
       const { shippingAddress } = data;
       const currentPaymentData = component.paymentData;
       if (!shippingAddress) {
-        actions.reject();
-        return;
+        return actions.reject();
       }
       const requestBody = {
         paymentMethodType: PAYPAL,
@@ -149,8 +148,9 @@ class Paypal {
         },
       });
       Paypal.updateComponent(response, component);
+      return null;
     } catch (e) {
-      actions.reject();
+      return actions.reject(data.errors.ADDRESS_ERROR);
     }
   }
 
@@ -158,23 +158,23 @@ class Paypal {
     try {
       const { selectedShippingOption } = data;
       if (!selectedShippingOption) {
-        actions.reject();
-      } else {
-        const response = await httpClient({
-          method: 'POST',
-          url: this.selectShippingMethodUrl,
-          data: {
-            data: JSON.stringify({
-              paymentMethodType: PAYPAL,
-              currentPaymentData: component.paymentData,
-              methodID: selectedShippingOption?.id,
-            }),
-          },
-        });
-        Paypal.updateComponent(response, component);
+        return actions.reject();
       }
+      const response = await httpClient({
+        method: 'POST',
+        url: this.selectShippingMethodUrl,
+        data: {
+          data: JSON.stringify({
+            paymentMethodType: PAYPAL,
+            currentPaymentData: component.paymentData,
+            methodID: selectedShippingOption?.id,
+          }),
+        },
+      });
+      Paypal.updateComponent(response, component);
+      return null;
     } catch (e) {
-      actions.reject();
+      return actions.reject(data.errors.METHOD_UNAVAILABLE);
     }
   }
 
