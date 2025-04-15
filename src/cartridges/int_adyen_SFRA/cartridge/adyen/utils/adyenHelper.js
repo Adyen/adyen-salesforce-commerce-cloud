@@ -664,56 +664,11 @@ let adyenHelperObj = {
 
   // gets the Adyen card type name based on the SFCC card type name
   getSfccCardType(cardType) {
-    if (!empty(cardType)) {
-      switch (cardType) {
-        case 'visa':
-        case 'visa_applepay':
-          cardType = 'Visa';
-          break;
-        case 'mc':
-        case 'mc_applepay':
-          cardType = 'Mastercard';
-          break;
-        case 'amex':
-        case 'amex_applepay':
-          cardType = 'Amex';
-          break;
-        case 'discover':
-        case 'discover_applepay':
-          cardType = 'Discover';
-          break;
-        case 'maestro':
-        case 'maestrouk':
-        case 'maestro_applepay':
-          cardType = 'Maestro';
-          break;
-        case 'diners':
-        case 'diners_applepay':
-          cardType = 'Diners';
-          break;
-        case 'bcmc':
-          cardType = 'Bancontact';
-          break;
-        case 'jcb':
-        case 'jcb_applepay':
-          cardType = 'JCB';
-          break;
-        case 'cup':
-          cardType = 'CUP';
-          break;
-        case 'cartebancaire':
-        case 'cartebancaire_applepay':
-          cardType = 'Carte Bancaire';
-          break;
-        default:
-          cardType = '';
-          break;
-      }
-      return cardType;
+    const cardTypeMapping = require('*/cartridge/adyen/config/card-type-mapping.json');
+    if (empty(cardType)) {
+        throw new Error('cardType argument is not passed to getSfccCardType function');
     }
-    throw new Error(
-      'cardType argument is not passed to getSfccCardType function',
-    );
+    return cardTypeMapping[cardType] || '';
   },
 
   // saves the payment details in the paymentInstrument's custom object
