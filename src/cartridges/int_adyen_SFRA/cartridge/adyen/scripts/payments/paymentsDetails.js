@@ -6,20 +6,16 @@ const adyenCheckout = require('*/cartridge/adyen/scripts/payments/adyenCheckout'
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 
 function getRedirectUrl(paymentInstruments, orderNo, orderToken) {
-  const redirectUrl = AdyenHelper.createRedirectUrl(
-    paymentInstruments[0],
-    orderNo,
-    orderToken,
-  );
-  return redirectUrl;
-}
-
-function getOrderAndValidate(orderNo, orderToken) {
   const order = OrderMgr.getOrder(orderNo, orderToken);
-  if (!order) {
-    throw new Error('Cannot perform /payments/details for invalid order');
+  if (order) {
+    const redirectUrl = AdyenHelper.createRedirectUrl(
+      paymentInstruments[0],
+      orderNo,
+      orderToken,
+    );
+    return redirectUrl;
   }
-  return order;
+  return {};
 }
 
 function updatePaymentInstrument(paymentInstrument, paymentsDetailsResponse) {
@@ -45,26 +41,29 @@ function paymentsDetails(req, res, next) {
     const paymentsDetailsResponse = adyenCheckout.doPaymentsDetailsCall(
       request.data,
     );
-    const order = getOrderAndValidate(orderNo, orderToken);
-    const paymentInstruments = order.getPaymentInstruments(
-      AdyenHelper.getOrderMainPaymentInstrumentType(order),
-    );
-    updatePaymentInstrument(paymentInstruments[0], paymentsDetailsResponse);
+    let order;
+    let paymentInstruments;
+    let response = {};
+    if (orderNo) {
+      order = OrderMgr.getOrder(orderNo, orderToken);
+      paymentInstruments = order.getPaymentInstruments(
+        AdyenHelper.getOrderMainPaymentInstrumentType(order),
+      );
+      updatePaymentInstrument(paymentInstruments[0], paymentsDetailsResponse);
+      response.redirectUrl = getRedirectUrl(
+        paymentInstruments,
+        orderNo,
+        orderToken,
+      );
+    }
 
-    const response = AdyenHelper.createAdyenCheckoutResponse(
-      paymentsDetailsResponse,
-    );
-    // Create signature to verify returnUrl
-    const redirectUrl = getRedirectUrl(paymentInstruments, orderNo, orderToken);
+    response = AdyenHelper.createAdyenCheckoutResponse(paymentsDetailsResponse);
     if (isAmazonpay) {
       response.fullResponse = {
         pspReference: paymentsDetailsResponse.pspReference,
         paymentMethod: paymentsDetailsResponse.additionalData.paymentMethod,
         resultCode: paymentsDetailsResponse.resultCode,
       };
-    }
-    if (redirectUrl) {
-      response.redirectUrl = redirectUrl;
     }
 
     res.json(response);
