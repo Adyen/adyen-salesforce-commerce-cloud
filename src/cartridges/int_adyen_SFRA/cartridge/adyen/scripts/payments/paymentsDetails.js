@@ -6,16 +6,12 @@ const adyenCheckout = require('*/cartridge/adyen/scripts/payments/adyenCheckout'
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 
 function getRedirectUrl(paymentInstruments, orderNo, orderToken) {
-  const order = OrderMgr.getOrder(orderNo, orderToken);
-  if (order) {
-    const redirectUrl = AdyenHelper.createRedirectUrl(
-      paymentInstruments[0],
-      orderNo,
-      orderToken,
-    );
-    return redirectUrl;
-  }
-  return {};
+  const redirectUrl = AdyenHelper.createRedirectUrl(
+    paymentInstruments[0],
+    orderNo,
+    orderToken,
+  );
+  return redirectUrl;
 }
 
 function updatePaymentInstrument(paymentInstrument, paymentsDetailsResponse) {
@@ -33,6 +29,7 @@ function paymentsDetails(req, res, next) {
     const request = JSON.parse(req.form.data);
     const { orderNo } = session.privacy;
     const { orderToken } = request;
+    const order = OrderMgr.getOrder(orderNo, orderToken);
     const isAmazonpay = request?.data?.paymentMethod === 'amazonpay';
     if (request.data) {
       request.data.paymentMethod = undefined;
@@ -41,15 +38,15 @@ function paymentsDetails(req, res, next) {
     const paymentsDetailsResponse = adyenCheckout.doPaymentsDetailsCall(
       request.data,
     );
-    let order;
-    let paymentInstruments;
-    let response = {};
-    if (orderNo) {
-      order = OrderMgr.getOrder(orderNo, orderToken);
-      paymentInstruments = order.getPaymentInstruments(
+    const response = AdyenHelper.createAdyenCheckoutResponse(
+      paymentsDetailsResponse,
+    );
+    if (order) {
+      const paymentInstruments = order.getPaymentInstruments(
         AdyenHelper.getOrderMainPaymentInstrumentType(order),
       );
       updatePaymentInstrument(paymentInstruments[0], paymentsDetailsResponse);
+      // Create signature to verify returnUrl
       response.redirectUrl = getRedirectUrl(
         paymentInstruments,
         orderNo,
@@ -57,7 +54,6 @@ function paymentsDetails(req, res, next) {
       );
     }
 
-    response = AdyenHelper.createAdyenCheckoutResponse(paymentsDetailsResponse);
     if (isAmazonpay) {
       response.fullResponse = {
         pspReference: paymentsDetailsResponse.pspReference,
