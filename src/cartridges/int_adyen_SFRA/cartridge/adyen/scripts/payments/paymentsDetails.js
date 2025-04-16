@@ -21,6 +21,10 @@ function updatePaymentInstrument(paymentInstrument, paymentsDetailsResponse) {
   });
 }
 
+function getOrder(orderNo, orderToken) {
+  return orderNo ? OrderMgr.getOrder(orderNo, orderToken) : undefined;
+}
+
 /*
  * Makes a payment details call to Adyen to confirm the current status of a payment
  */
@@ -29,7 +33,7 @@ function paymentsDetails(req, res, next) {
     const request = JSON.parse(req.form.data);
     const { orderNo } = session.privacy;
     const { orderToken } = request;
-    const order = OrderMgr.getOrder(orderNo, orderToken);
+    const order = getOrder(orderNo, orderToken);
     const isAmazonpay = request?.data?.paymentMethod === 'amazonpay';
     if (request.data) {
       request.data.paymentMethod = undefined;
