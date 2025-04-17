@@ -1,5 +1,5 @@
-const store = require('../../../../../../utils/store');
-const { AMAZON_PAY } = require('../../../../../../utils/constants');
+const store = require('../../../../../../config/store');
+const { AMAZON_PAY } = require('../../../../../../config/constants');
 const { initializeCheckout } = require('../../initializeCheckout');
 
 class AmazonPay {

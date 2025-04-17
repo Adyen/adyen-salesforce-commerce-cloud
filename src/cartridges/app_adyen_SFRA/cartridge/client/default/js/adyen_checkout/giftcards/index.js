@@ -1,5 +1,5 @@
-const store = require('../../../../../utils/store');
-const constants = require('../../../../../utils/constants');
+const store = require('../../../../../config/store');
+const constants = require('../../../../../config/constants');
 const { httpClient } = require('../../commons/httpClient');
 const { fetchGiftCards } = require('../../commons');
 

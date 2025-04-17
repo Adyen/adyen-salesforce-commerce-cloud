@@ -10,7 +10,7 @@ const {
   GIFTCARD,
   SUCCESS,
   NOTENOUGHBALANCE,
-} = require('../../../../../../utils/constants');
+} = require('../../../../../../config/constants');
 const { initializeCheckout } = require('../../renderGenericComponent');
 
 class GiftCardConfig {

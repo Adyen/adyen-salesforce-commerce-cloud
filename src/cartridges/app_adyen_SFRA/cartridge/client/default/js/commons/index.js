@@ -1,10 +1,10 @@
-const store = require('../../../../utils/store');
+const store = require('../../../../config/store');
 const {
   PAYPAL,
   APPLE_PAY,
   AMAZON_PAY,
   GOOGLE_PAY,
-} = require('../../../../utils/constants');
+} = require('../../../../config/constants');
 const { httpClient } = require('./httpClient');
 
 module.exports.onFieldValid = function onFieldValid(data) {

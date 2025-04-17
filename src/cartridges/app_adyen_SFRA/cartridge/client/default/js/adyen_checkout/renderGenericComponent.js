@@ -1,8 +1,8 @@
 /* eslint-disable no-unsafe-optional-chaining */
-const store = require('../../../../utils/store');
+const store = require('../../../../config/store');
 const { renderPaymentMethod } = require('./renderPaymentMethod');
 const helpers = require('./helpers');
-const constants = require('../../../../utils/constants');
+const constants = require('../../../../config/constants');
 
 function setCheckoutConfiguration(checkoutOptions) {
   const setField = (key, val) => val && { [key]: val };

@@ -1,5 +1,5 @@
 const googlePayExpressModule = require('../googlePayExpress');
-const { APPLE_PAY, GOOGLE_PAY } = require('../../../../../utils/constants');
+const { APPLE_PAY, GOOGLE_PAY } = require('../../../../../config/constants');
 const { getPaymentMethods } = require('../../commons');
 const { httpClient } = require('../../commons/httpClient');
 const { ApplePay } = require('../paymentMethods');

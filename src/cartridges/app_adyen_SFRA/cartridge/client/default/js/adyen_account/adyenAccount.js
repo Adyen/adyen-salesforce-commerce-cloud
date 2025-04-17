@@ -1,4 +1,4 @@
-const store = require('../../../../utils/store');
+const store = require('../../../../config/store');
 const { onFieldValid, onBrand, getPaymentMethods } = require('../commons');
 const { httpClient } = require('../commons/httpClient');
 

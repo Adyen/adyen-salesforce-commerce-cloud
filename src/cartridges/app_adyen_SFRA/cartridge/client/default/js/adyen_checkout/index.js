@@ -1,4 +1,4 @@
-const store = require('../../../../utils/store');
+const store = require('../../../../config/store');
 const {
   setCheckoutConfiguration,
   actionHandler,
@@ -12,7 +12,7 @@ const {
 const billing = require('../checkout/billing');
 const { httpClient } = require('../commons/httpClient');
 const { getPaymentMethods } = require('../commons');
-const { GIFTCARD } = require('../../../../utils/constants');
+const { GIFTCARD } = require('../../../../config/constants');
 const { renderGiftCards } = require('./giftcards');
 const { addStores } = require('./pos');
 
