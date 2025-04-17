@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 jest.mock('../../commons');
-jest.mock('../../../../../store');
+jest.mock('../../../../../utils/store');
 
 const { renderGenericComponent, setInstallments } = require('../renderGenericComponent');
 const { renderPosTerminals } = require('../pos');
@@ -10,7 +10,7 @@ const { renderPosTerminals } = require('../pos');
 const { applyGiftCards, renderGiftCardLogo, isCartModified } = require('../giftcards/index');
 const { getPaymentMethods } = require('../../commons');
 const { fetchGiftCards } = require('../../commons');
-const store = require('../../../../../store');
+const store = require('../../../../../utils/store');
 const {setCheckoutConfiguration} = require("../checkoutConfiguration");
 const giftCardHtml = `
       <div id="paymentMethodsList"></div>

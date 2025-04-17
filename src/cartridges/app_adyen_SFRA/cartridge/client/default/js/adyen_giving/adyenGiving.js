@@ -1,5 +1,5 @@
 const { httpClient } = require('../commons/httpClient');
-const store = require('../../../../store');
+const store = require('../../../../utils/store');
 
 let checkout;
 let adyenGivingComponent;

@@ -1,5 +1,5 @@
-const store = require('../../../../store');
-const constants = require('../constants');
+const store = require('../../../../utils/store');
+const constants = require('../../../../utils/constants');
 const { httpClient } = require('../commons/httpClient');
 const getPaymentMethodsConfiguration = require('./paymentMethodsConfiguration');
 

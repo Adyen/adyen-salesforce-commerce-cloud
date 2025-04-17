@@ -1,5 +1,5 @@
 const { getPaymentMethods } = require('../../../commons');
-const { AMAZON_PAY } = require('../../../constants');
+const { AMAZON_PAY } = require('../../../../../../utils/constants');
 const { httpClient } = require('../../../commons/httpClient');
 
 async function saveShopperDetails(details) {

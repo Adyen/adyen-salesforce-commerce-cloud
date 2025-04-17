@@ -1,7 +1,7 @@
 /**
  * @jest-environment jsdom
  */
-const store = require('../../../../../store');
+const store = require('../../../../../utils/store');
 const helpers = require('../helpers');
 const httpClient = require('../../../js/commons/httpClient');
 const {

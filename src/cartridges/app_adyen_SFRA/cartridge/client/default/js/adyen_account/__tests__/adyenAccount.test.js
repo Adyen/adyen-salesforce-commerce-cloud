@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 
-const store = require('../../../../../store');
+const store = require('../../../../../utils/store');
 const {initializeCardComponent, handleAction, handleAddNewPayment} = require('../adyenAccount')
 $.fn.modal = jest.fn();
 
@@ -10,10 +10,10 @@ jest.mock('../adyenAccount.js', () => ({
   handleAction: jest.fn()
 }));
 jest.mock('../../commons');
-jest.mock('../../../../../store');
+jest.mock('../../../../../utils/store');
 let checkout;
 // Mocking external dependencies
-jest.mock('../../../../../store', () => ({
+jest.mock('../../../../../utils/store', () => ({
   checkoutConfiguration: {
     amount: { value: 0, currency: 'EUR' },
     onAdditionalDetails: jest.fn(),

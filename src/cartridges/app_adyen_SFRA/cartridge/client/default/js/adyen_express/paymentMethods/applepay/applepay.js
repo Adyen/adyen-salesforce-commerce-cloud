@@ -1,7 +1,7 @@
 const { httpClient } = require('../../../commons/httpClient');
-const store = require('../../../../../../store');
+const store = require('../../../../../../utils/store');
 const helpers = require('../../../adyen_checkout/helpers');
-const { APPLE_PAY } = require('../../../constants');
+const { APPLE_PAY } = require('../../../../../../utils/constants');
 const { initializeCheckout } = require('../../initializeCheckout');
 const { createTemporaryBasket } = require('../../../commons');
 

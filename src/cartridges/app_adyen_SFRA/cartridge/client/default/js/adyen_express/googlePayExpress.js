@@ -8,7 +8,7 @@ const {
   GOOGLE_PAY,
   PAY_WITH_GOOGLE,
   GOOGLE_PAY_CALLBACK_TRIGGERS,
-} = require('../constants');
+} = require('../../../../utils/constants');
 const { httpClient } = require('../commons/httpClient');
 const { initializeCheckout } = require('./initializeCheckout');
 
