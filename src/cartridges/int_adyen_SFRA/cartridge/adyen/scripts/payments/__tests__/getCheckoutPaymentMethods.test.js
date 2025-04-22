@@ -48,28 +48,29 @@ describe('getCheckoutPaymentMethods', () => {
       BasketMgr.getCurrentBasket.mockReturnValueOnce(currentBasket);
       getCheckoutPaymentMethods(req, res, next);
       expect(res.json).toHaveBeenCalledWith({
-         AdyenPaymentMethods:  {
-            paymentMethods: [
-               {
-                  "type": "visa",
-               },
-            ],
-         },
-         amount: {
-            currency: "EUR",
-            value: 1000,
-         },
-          adyenDescriptions: {
-            "ideal": "Dutch payment method example description",
-            "paypal": "PayPal example description",
+        AdyenPaymentMethods: {
+          paymentMethods: [
+            {
+              type: 'visa',
+            },
+          ],
+        },
+        amount: {
+          currency: 'EUR',
+          value: 1000,
+        },
+        adyenDescriptions: {
+          ideal: 'Dutch payment method example description',
+          paypal: 'PayPal example description',
+        },
+        adyenTranslations: expect.anything(),
+        imagePath: 'mocked_loading_contextimages/logos/medium/',
+        countryCode: 'NL',
+        applicationInfo: {
+          externalPlatform: {
+            version: 'SFRA',
           },
-          imagePath: "mocked_loading_contextimages/logos/medium/",
-          countryCode: "NL",
-		  applicationInfo: {
-			externalPlatform: {
-				"version" : "SFRA",
-			}
-		  }
+        },
       });
       expect(next).toHaveBeenCalled();
    });

@@ -7,6 +7,10 @@ jest.mock('*/cartridge/models/cart', () => jest.fn(), { virtual: true });
 
 jest.mock('*/cartridge/models/account', () => jest.fn(), { virtual: true });
 
+jest.mock('*/cartridge/config/adyenTranslations', () => jest.fn(), {
+  virtual: true,
+});
+
 jest.mock('*/cartridge/models/shipping/shippingMethod', () => jest.fn(), {
   virtual: true,
 });
@@ -307,14 +311,15 @@ jest.mock(
     setPaymentTransactionType: jest.fn(() => {}),
     getOrderMainPaymentInstrumentType: jest.fn(() => {}),
     getPaymentInstrumentType: jest.fn((isCreditCard) =>
-      (isCreditCard ? 'CREDIT_CARD' : 'AdyenComponent'),),
+      isCreditCard ? 'CREDIT_CARD' : 'AdyenComponent',
+    ),
     validatePayment: jest.fn(() => ({ error: false })),
     handlePayments: jest.fn(() => ({
       error: false,
       action: { type: 'mockedAction' },
     })),
     createRedirectUrl: jest.fn(() => 'mocked_RedirectUrl'),
-	getCustomerEmail: jest.fn(() => 'mocked_email'),
+    getCustomerEmail: jest.fn(() => 'mocked_email'),
   }),
   { virtual: true },
 );
