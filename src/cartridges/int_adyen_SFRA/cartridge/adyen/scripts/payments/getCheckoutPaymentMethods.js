@@ -1,6 +1,7 @@
 const BasketMgr = require('dw/order/BasketMgr');
 const Locale = require('dw/util/Locale');
 const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
+const translations = require('*/cartridge/config/adyenTranslations');
 const paymentMethodDescriptions = require('*/cartridge/adyen/config/paymentMethodDescriptions');
 const getPaymentMethods = require('*/cartridge/adyen/scripts/payments/adyenGetPaymentMethods');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
@@ -51,6 +52,7 @@ function getCheckoutPaymentMethods(req, res, next) {
       AdyenPaymentMethods: paymentMethods,
       imagePath: adyenURL,
       adyenDescriptions: paymentMethodDescriptions,
+      adyenTranslations: translations,
       amount: { value: paymentAmount.value, currency },
       countryCode,
       applicationInfo: AdyenHelper.getApplicationInfo(),
