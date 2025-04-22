@@ -16,24 +16,18 @@ const { GIFTCARD } = require('../../../../config/constants');
 const { renderGiftCards } = require('./giftcards');
 const { addStores } = require('./pos');
 
-function setAdyenInputValues() {
-  const customMethods = {};
-
-  if (store.selectedMethod in customMethods) {
-    customMethods[store.selectedMethod]();
-  }
-
-  document.querySelector('#adyenStateData').value = JSON.stringify(
-    store.stateData,
+function checkForError() {
+  const name = 'paymentError';
+  const error = new RegExp(`[?&]${encodeURIComponent(name)}=([^&]*)`).exec(
+    window.location.search,
   );
-  if (store.partialPaymentsOrderObj) {
-    document.querySelector('#adyenPartialPaymentsOrder').value = JSON.stringify(
-      store.partialPaymentsOrderObj,
-    );
+  if (error) {
+    $('.error-message').show();
+    $('.error-message-text').text(decodeURIComponent(error[1]));
   }
 }
 
-function renderPaymentMethod() {
+async function registerRenderPaymentMethodListener() {
   $('body').on('checkout:renderPaymentMethod', async (e, response) => {
     const paymentMethodsResponse = await getPaymentMethods();
     const { email } = response;
@@ -52,7 +46,75 @@ function renderPaymentMethod() {
     if (window.activeTerminalApiStores) {
       addStores(window.activeTerminalApiStores);
     }
+    window.arePaymentMethodsRendering = false;
   });
+}
+
+$(document).ready(async () => {
+  checkForError();
+  await registerRenderPaymentMethodListener();
+  const storedCustomerEmail = sessionStorage.getItem('customerEmail');
+  $('body').trigger('checkout:renderPaymentMethod', {
+    email: storedCustomerEmail,
+  });
+});
+
+function setAdyenInputValues() {
+  const customMethods = {};
+
+  if (store.selectedMethod in customMethods) {
+    customMethods[store.selectedMethod]();
+  }
+
+  document.querySelector('#adyenStateData').value = JSON.stringify(
+    store.stateData,
+  );
+  if (store.partialPaymentsOrderObj) {
+    document.querySelector('#adyenPartialPaymentsOrder').value = JSON.stringify(
+      store.partialPaymentsOrderObj,
+    );
+  }
+}
+
+async function overridePlaceOrderRequest(url) {
+  try {
+    $('body').trigger('checkout:disableButton', '.next-step-button button');
+    const data = await httpClient({
+      url,
+      method: 'POST',
+    });
+    if (data.error) {
+      if (data.cartError) {
+        window.location.href = data.redirectUrl;
+      } else {
+        $('body').trigger('checkout:enableButton', '.next-step-button button');
+        $('.error-message').show();
+        $('.error-message-text').text(data.errorMessage);
+      }
+    } else if (data.adyenAction) {
+      window.orderToken = data.orderToken;
+      actionHandler(data.adyenAction);
+    } else {
+      const redirect = $('<form>').appendTo(document.body).attr({
+        method: 'POST',
+        action: data.continueUrl,
+      });
+
+      $('<input>').appendTo(redirect).attr({
+        name: 'orderID',
+        value: data.orderID,
+      });
+
+      $('<input>').appendTo(redirect).attr({
+        name: 'orderToken',
+        value: data.orderToken,
+      });
+
+      redirect.submit();
+    }
+  } catch (err) {
+    $('body').trigger('checkout:enableButton', '.next-step-button button');
+  }
 }
 
 function submitPayment() {
@@ -104,40 +166,23 @@ function submitPayment() {
 }
 
 function handlePaymentAction() {
-  $(document).on('ajaxSuccess', (event, xhr, settings) => {
-    if (settings.url === $('.place-order').data('action')) {
-      xhr.done((data) => {
-        if (data.adyenAction) {
-          window.orderToken = data.orderToken;
-          actionHandler(data.adyenAction);
-        }
-      });
+  let shouldResend = true;
+  $(document).ajaxSend(async (event, xhr, settings) => {
+    const isPlaceOrderUrl = settings.url === $('.place-order').data('action');
+    if (isPlaceOrderUrl && shouldResend) {
+      xhr.abort();
+      shouldResend = false;
+      await overridePlaceOrderRequest(settings.url);
     }
   });
 }
 
 async function init() {
-  $(document).ready(() => {
-    // TODO: render the error message box
-    const name = 'paymentError';
-    const error = new RegExp(`[?&]${encodeURIComponent(name)}=([^&]*)`).exec(
-      window.location.search,
-    );
-    const paymentStage = /[?&]stage=payment([^&]*)/.exec(
-      window.location.search,
-    );
-    if (error || paymentStage) {
-      if (error) {
-        $('.error-message').show();
-        $('.error-message-text').text(decodeURIComponent(error[1]));
-      }
-      $('body').trigger('checkout:renderPaymentMethod', {
-        email: null,
-      });
-    }
-  });
-
   $('body').on('checkout:updateCheckoutView', (event, data) => {
+    const storedCustomerEmail = sessionStorage.getItem('customerEmail');
+    if (storedCustomerEmail !== data?.order?.orderEmail) {
+      sessionStorage.setItem('customerEmail', data?.order?.orderEmail);
+    }
     const currentStage = window.location.search.substring(
       window.location.search.indexOf('=') + 1,
     );
@@ -152,16 +197,20 @@ async function init() {
   $('input[id="email"]').on('change', (e) => {
     const emailPattern = /^[\w.%+-]+@[\w.-]+\.[\w]{2,6}$/;
     if (emailPattern.test(e.target.value)) {
-      $('body').trigger('checkout:renderPaymentMethod', {
-        email: e.target.value?.trim(),
-      });
+      const emailValue = e.target.value?.trim();
+      const storedCustomerEmail = sessionStorage.getItem('customerEmail');
+      if (storedCustomerEmail !== emailValue) {
+        sessionStorage.setItem('customerEmail', emailValue);
+        $('body').trigger('checkout:renderPaymentMethod', {
+          email: emailValue,
+        });
+      }
     }
   });
 }
 
 module.exports = {
-  init,
-  renderPaymentMethod,
   submitPayment,
   handlePaymentAction,
+  init,
 };
