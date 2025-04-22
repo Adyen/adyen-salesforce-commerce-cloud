@@ -1,6 +1,6 @@
-const store = require('../../../../store');
+const store = require('../../../../config/store');
 const helpers = require('./helpers');
-const { AMAZON_PAY } = require('../constants');
+const { AMAZON_PAY } = require('../../../../config/constants');
 const { httpClient } = require('../commons/httpClient');
 
 function handleAuthorised(response) {

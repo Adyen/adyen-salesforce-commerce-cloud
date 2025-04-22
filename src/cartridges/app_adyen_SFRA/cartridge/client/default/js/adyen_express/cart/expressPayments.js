@@ -9,7 +9,7 @@ const {
   GOOGLE_PAY,
   PAYPAL,
   AMAZON_PAY,
-} = require('../../constants');
+} = require('../../../../../config/constants');
 
 function getPaymentMethodConfig(adyenPaymentMethods, paymentMethodType) {
   return adyenPaymentMethods?.paymentMethods.find(
