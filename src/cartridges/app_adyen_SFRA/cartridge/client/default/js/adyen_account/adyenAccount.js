@@ -82,8 +82,7 @@ store.checkoutConfiguration = {
   },
 };
 
-async function getCardConfig() {
-  const paymentMethodsData = await getPaymentMethods();
+async function getCardConfig(paymentMethodsData) {
   const paymentMethodsResponse = paymentMethodsData.AdyenPaymentMethods;
   const cardBrands = paymentMethodsResponse.paymentMethods
     .filter((method) => method.type === 'scheme')
@@ -105,8 +104,11 @@ async function getCardConfig() {
 }
 
 async function initializeCardComponent() {
-  const cardConfig = await getCardConfig();
+  const paymentMethodsData = await getPaymentMethods();
+  const cardConfig = await getCardConfig(paymentMethodsData);
   const cardNode = document.getElementById('card');
+  store.checkoutConfiguration.translations =
+    paymentMethodsData.adyenTranslations;
   checkout = await window.AdyenWeb.AdyenCheckout(store.checkoutConfiguration);
   card = window.AdyenWeb.createComponent('scheme', checkout, cardConfig).mount(
     cardNode,
