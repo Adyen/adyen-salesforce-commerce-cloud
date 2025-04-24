@@ -31,7 +31,7 @@ const StringUtils = require('dw/util/StringUtils');
 const Money = require('dw/value/Money');
 const BasketMgr = require('dw/order/BasketMgr');
 const OrderMgr = require('dw/order/OrderMgr');
-//script includes
+// script includes
 const ShippingMethodModel = require('*/cartridge/models/shipping/shippingMethod');
 const collections = require('*/cartridge/scripts/util/collections');
 const constants = require('*/cartridge/adyen/config/constants');
@@ -39,7 +39,7 @@ const AdyenConfigs = require('*/cartridge/adyen/utils/adyenConfigs');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 
 /* eslint no-var: off */
-let adyenHelperObj = {
+const adyenHelperObj = {
   // Create the service config used to make calls to the Adyen Checkout API (used for all services)
   getService(service, reqMethod = 'POST') {
     let adyenService = null;
@@ -62,7 +62,10 @@ let adyenHelperObj = {
       });
       AdyenLogs.info_log(`Successfully retrieve service with name ${service}`);
     } catch (error) {
-      AdyenLogs.error_log(`Can't get service instance with name ${service}`, error);
+      AdyenLogs.error_log(
+        `Can't get service instance with name ${service}`,
+        error,
+      );
     }
     return adyenService;
   },
@@ -85,17 +88,25 @@ let adyenHelperObj = {
    * @returns {{currencyCode: String, value: String}} - Shipping Cost including taxes
    */
   getShippingCost(shippingMethod, shipment) {
-    const shipmentShippingModel = ShippingMgr.getShipmentShippingModel(shipment);
-    let shippingCost = shipmentShippingModel.getShippingCost(shippingMethod).getAmount();
+    const shipmentShippingModel =
+      ShippingMgr.getShipmentShippingModel(shipment);
+    let shippingCost = shipmentShippingModel
+      .getShippingCost(shippingMethod)
+      .getAmount();
     collections.forEach(shipment.getProductLineItems(), (lineItem) => {
       const product = lineItem.getProduct();
       const productQuantity = lineItem.getQuantity();
       const productShippingModel = ShippingMgr.getProductShippingModel(product);
-      let productShippingCost = productShippingModel.getShippingCost(shippingMethod)
-        ? productShippingModel.getShippingCost(shippingMethod).getAmount().multiply(productQuantity)
+      const productShippingCost = productShippingModel.getShippingCost(
+        shippingMethod,
+      )
+        ? productShippingModel
+          .getShippingCost(shippingMethod)
+          .getAmount()
+          .multiply(productQuantity)
         : new Money(0, product.getPriceModel().getPrice().getCurrencyCode());
       shippingCost = shippingCost.add(productShippingCost);
-    })
+    });
     return {
       value: shippingCost.getValue(),
       currencyCode: shippingCost.getCurrencyCode(),
@@ -111,13 +122,13 @@ let adyenHelperObj = {
   getShippingMethods(shipment, address) {
     if (!shipment) return null;
 
-    const shipmentShippingModel = ShippingMgr.getShipmentShippingModel(shipment);
+    const shipmentShippingModel =
+      ShippingMgr.getShipmentShippingModel(shipment);
 
     let shippingMethods;
     if (address) {
-      shippingMethods = shipmentShippingModel.getApplicableShippingMethods(
-        address,
-      );
+      shippingMethods =
+        shipmentShippingModel.getApplicableShippingMethods(address);
     } else {
       shippingMethods = shipmentShippingModel.getApplicableShippingMethods();
     }
@@ -153,7 +164,10 @@ let adyenHelperObj = {
    * @returns {dw.util.ArrayList<ApplicableShippingMethodModel> | null} - list of applicable shipping methods or null
    */
   getApplicableShippingMethods(shipment, address) {
-    const shippingMethods = adyenHelperObj.getShippingMethods(shipment, address);
+    const shippingMethods = adyenHelperObj.getShippingMethods(
+      shipment,
+      address,
+    );
     if (!shippingMethods) {
       return null;
     }
@@ -166,7 +180,10 @@ let adyenHelperObj = {
           shippingMethod,
           shipment,
         );
-        const shippingCost = adyenHelperObj.getShippingCost(shippingMethod, shipment);
+        const shippingCost = adyenHelperObj.getShippingCost(
+          shippingMethod,
+          shipment,
+        );
         const shipmentUUID = adyenHelperObj.getShipmentUUID(shipment);
         filteredMethods.push({
           ...shippingMethodModel,
@@ -180,9 +197,11 @@ let adyenHelperObj = {
   },
 
   getAdyenGivingConfig(order) {
-    if (!order.getPaymentInstruments(
-      adyenHelperObj.getOrderMainPaymentInstrumentType(order),
-    ).length){
+    if (
+      !order.getPaymentInstruments(
+        adyenHelperObj.getOrderMainPaymentInstrumentType(order),
+      ).length
+    ) {
       return null;
     }
     const paymentInstrument = order.getPaymentInstruments(
@@ -200,8 +219,10 @@ let adyenHelperObj = {
     givingConfigs.configuredAmounts = configuredAmounts;
     givingConfigs.charityName = AdyenConfigs.getAdyenGivingCharityName();
     givingConfigs.charityWebsite = AdyenConfigs.getAdyenGivingCharityWebsite();
-    givingConfigs.charityDescription = AdyenConfigs.getAdyenGivingCharityDescription();
-    givingConfigs.adyenGivingBackgroundUrl = AdyenConfigs.getAdyenGivingBackgroundUrl();
+    givingConfigs.charityDescription =
+      AdyenConfigs.getAdyenGivingCharityDescription();
+    givingConfigs.adyenGivingBackgroundUrl =
+      AdyenConfigs.getAdyenGivingBackgroundUrl();
     givingConfigs.adyenGivingLogoUrl = AdyenConfigs.getAdyenGivingLogoUrl();
 
     givingConfigs.donationAmounts = JSON.stringify({
@@ -315,17 +336,16 @@ let adyenHelperObj = {
   },
 
   getBasketAmount() {
-      const currentBasket = BasketMgr.getCurrentBasket();
-      if(!currentBasket) {
-        return;
-      }
-       const amount =  {
-         currency: currentBasket.currencyCode,
-         value: this.getCurrencyValueForApi(
-           currentBasket.getTotalGrossPrice(),
-         ).value,
-       };
-      return JSON.stringify(amount);
+    const currentBasket = BasketMgr.getCurrentBasket();
+    if (!currentBasket) {
+      return;
+    }
+    const amount = {
+      currency: currentBasket.currencyCode,
+      value: this.getCurrencyValueForApi(currentBasket.getTotalGrossPrice())
+        .value,
+    };
+    return JSON.stringify(amount);
   },
 
   getCustomerEmail() {
@@ -358,13 +378,13 @@ let adyenHelperObj = {
 
   // gets the ID for ratePay using the custom preference and the encoded session ID
   getRatePayID: function getRatePayID() {
-    let returnValue = {};
+    const returnValue = {};
     const ratePayMerchantID = AdyenConfigs.getRatePayMerchantID();
     if (ratePayMerchantID) {
       returnValue.ratePayID = ratePayMerchantID;
     }
 
-    let digestSHA512 = new MessageDigest(MessageDigest.DIGEST_SHA_512);
+    const digestSHA512 = new MessageDigest(MessageDigest.DIGEST_SHA_512);
     returnValue.sessionID = Encoding.toHex(
       digestSHA512.digestBytes(new Bytes(session.sessionID, 'UTF-8')),
     );
@@ -373,7 +393,9 @@ let adyenHelperObj = {
   },
 
   isOpenInvoiceMethod(paymentMethod) {
-    return constants.OPEN_INVOICE_METHODS.some(method => paymentMethod.indexOf(method) > -1);
+    return constants.OPEN_INVOICE_METHODS.some(
+      (method) => paymentMethod.indexOf(method) > -1,
+    );
   },
 
   isMolpayMethod(paymentMethod) {
@@ -384,11 +406,14 @@ let adyenHelperObj = {
     return false;
   },
 
-  isPayPalExpress(paymentMethod){
-	if (paymentMethod.type === 'paypal' && paymentMethod.subtype === 'express'){
-		return true;
-	}
-	return false;
+  isPayPalExpress(paymentMethod) {
+    if (
+      paymentMethod.type === 'paypal' &&
+      paymentMethod.subtype === 'express'
+    ) {
+      return true;
+    }
+    return false;
   },
 
   // Get stored card token of customer saved card based on matched cardUUID
@@ -473,7 +498,8 @@ let adyenHelperObj = {
   // populates the paymentRequest with address information using the order and payment method and returns it
   createAddressObjects(order, paymentMethod, paymentRequest) {
     const { shippingAddress } = order.defaultShipment;
-    paymentRequest.countryCode = shippingAddress.countryCode.value.toUpperCase();
+    paymentRequest.countryCode =
+      shippingAddress.countryCode.value.toUpperCase();
 
     let shippingStreet = '';
     let shippingHouseNumberOrName = '';
@@ -494,8 +520,8 @@ let adyenHelperObj = {
     paymentRequest.deliveryAddress = {
       city: shippingAddress.city ? shippingAddress.city : 'N/A',
       country: shippingAddress.countryCode
-       ? shippingAddress.countryCode.value.toUpperCase()
-       : 'ZZ',
+        ? shippingAddress.countryCode.value.toUpperCase()
+        : 'ZZ',
       houseNumberOrName: shippingHouseNumberOrName,
       postalCode: shippingAddress.postalCode ? shippingAddress.postalCode : '',
       stateOrProvince: shippingAddress.stateCode
@@ -524,8 +550,8 @@ let adyenHelperObj = {
     paymentRequest.billingAddress = {
       city: billingAddress.city ? billingAddress.city : 'N/A',
       country: billingAddress.countryCode
-       ? billingAddress.countryCode.value.toUpperCase()
-       : 'ZZ',
+        ? billingAddress.countryCode.value.toUpperCase()
+        : 'ZZ',
       houseNumberOrName: billingHouseNumberOrName,
       postalCode: billingAddress.postalCode ? billingAddress.postalCode : '',
       stateOrProvince: billingAddress.stateCode
@@ -537,20 +563,53 @@ let adyenHelperObj = {
     return paymentRequest;
   },
 
+  setPaymentInstrumentFields(paymentInstrument, stateData) {
+    const paymentMethodType = stateData.paymentMethod.type;
+	// Currently this doesn't set the fields for cards and giftcards, they are handled by other flow
+    if (
+      [constants.SCHEME, constants.ACTIONTYPES.GIFTCARD].indexOf(paymentMethodType) ===
+      -1
+    ) {
+      AdyenLogs.fatal_log('going inside the setPaymentInstrumentFields');
+      Transaction.wrap(() => {
+        paymentInstrument.custom.adyenPaymentMethod =
+          adyenHelperObj.getAdyenComponentType(stateData.paymentMethod.type);
+        paymentInstrument.custom[
+          `${constants.OMS_NAMESPACE}__Adyen_Payment_Method`
+        ] = adyenHelperObj.getAdyenComponentType(stateData.paymentMethod.type);
+        paymentInstrument.custom.Adyen_Payment_Method_Variant =
+          stateData.paymentMethod.type.toLowerCase();
+        paymentInstrument.custom[
+          `${constants.OMS_NAMESPACE}__Adyen_Payment_Method_Variant`
+        ] = stateData.paymentMethod.type.toLowerCase();
+      });
+    }
+  },
+
   // creates a request object to send to the Adyen Checkout API
-  createAdyenRequestObject(orderNo, orderToken, paymentInstrument, customerEmail) {
+  createAdyenRequestObject(
+    orderNo,
+    orderToken,
+    paymentInstrument,
+    customerEmail,
+  ) {
     const jsonObject = JSON.parse(paymentInstrument.custom.adyenPaymentData);
 
     const filteredJson = adyenHelperObj.validateStateData(jsonObject);
     const { stateData } = filteredJson;
 
+    Transaction.wrap(() => {
+      adyenHelperObj.setPaymentInstrumentFields(paymentInstrument, stateData);
+    });
     // Add recurringProcessingModel in case shopper wants to save the card from checkout
-    if (stateData.storePaymentMethod){
-      stateData.recurringProcessingModel = constants.RECURRING_PROCESSING_MODEL.CARD_ON_FILE;
+    if (stateData.storePaymentMethod) {
+      stateData.recurringProcessingModel =
+        constants.RECURRING_PROCESSING_MODEL.CARD_ON_FILE;
     }
 
     if (stateData.paymentMethod?.storedPaymentMethodId) {
-      stateData.recurringProcessingModel = constants.RECURRING_PROCESSING_MODEL.CARD_ON_FILE;
+      stateData.recurringProcessingModel =
+        constants.RECURRING_PROCESSING_MODEL.CARD_ON_FILE;
       stateData.shopperInteraction = constants.SHOPPER_INTERACTIONS.CONT_AUTH;
       if (customerEmail) {
         stateData.shopperEmail = customerEmail;
@@ -561,7 +620,11 @@ let adyenHelperObj = {
 
     stateData.merchantAccount = AdyenConfigs.getAdyenMerchantAccount();
     stateData.reference = orderNo;
-    stateData.returnUrl = adyenHelperObj.createRedirectUrl(paymentInstrument, orderNo, orderToken)
+    stateData.returnUrl = adyenHelperObj.createRedirectUrl(
+      paymentInstrument,
+      orderNo,
+      orderToken,
+    );
     stateData.applicationInfo = adyenHelperObj.getApplicationInfo();
 
     stateData.additionalData = {};
@@ -577,8 +640,9 @@ let adyenHelperObj = {
    */
   createSignature(paymentInstrument, value, salt) {
     const newSignature = adyenHelperObj.getAdyenHash(value, salt);
-    Transaction.wrap(function () {
-      paymentInstrument.paymentTransaction.custom.Adyen_merchantSig = newSignature;
+    Transaction.wrap(() => {
+      paymentInstrument.paymentTransaction.custom.Adyen_merchantSig =
+        newSignature;
     });
     return newSignature;
   },
@@ -591,8 +655,8 @@ let adyenHelperObj = {
    * @returns {String<dw.web.URL>} - returns String representation of the redirectURL
    */
   createRedirectUrl(paymentInstrument, orderNo, orderToken) {
-    if(!(paymentInstrument instanceof dw.order.OrderPaymentInstrument)) {
-      return null
+    if (!(paymentInstrument instanceof dw.order.OrderPaymentInstrument)) {
+      return null;
     }
     const signature = adyenHelperObj.createSignature(
       paymentInstrument,
@@ -666,7 +730,9 @@ let adyenHelperObj = {
   getSfccCardType(cardType) {
     const cardTypeMapping = require('*/cartridge/adyen/config/card-type-mapping.json');
     if (empty(cardType)) {
-        throw new Error('cardType argument is not passed to getSfccCardType function');
+      throw new Error(
+        'cardType argument is not passed to getSfccCardType function',
+      );
     }
     return cardTypeMapping[cardType] || '';
   },
@@ -683,9 +749,8 @@ let adyenHelperObj = {
         result.additionalData.paymentMethod;
       order.custom.Adyen_paymentMethod = result.additionalData.paymentMethod;
     } else if (result.paymentMethod) {
-      paymentInstrument.paymentTransaction.custom.Adyen_paymentMethod = JSON.stringify(
-        result.paymentMethod.type,
-      );
+      paymentInstrument.paymentTransaction.custom.Adyen_paymentMethod =
+        JSON.stringify(result.paymentMethod.type);
       order.custom.Adyen_paymentMethod = JSON.stringify(
         result.paymentMethod.type,
       );
@@ -694,44 +759,50 @@ let adyenHelperObj = {
     // For authenticated shoppers we are setting the token on other place already
     // SFRA throws an error if you try to set token again that's why this check is added
     const tokenAlreadyExists = paymentInstrument.getCreditCardToken();
-    if (!tokenAlreadyExists && result.additionalData && result.additionalData['recurring.recurringDetailReference']) {
-      paymentInstrument.setCreditCardToken(result.additionalData['recurring.recurringDetailReference']);
+    if (
+      !tokenAlreadyExists &&
+      result.additionalData &&
+      result.additionalData['recurring.recurringDetailReference']
+    ) {
+      paymentInstrument.setCreditCardToken(
+        result.additionalData['recurring.recurringDetailReference'],
+      );
     }
 
     paymentInstrument.paymentTransaction.custom.authCode = result.resultCode
       ? result.resultCode
       : '';
     order.custom.Adyen_value = '0';
-    if (result.donationToken || result.fullResponse?.donationToken){
-      paymentInstrument.paymentTransaction.custom.Adyen_donationToken = result.donationToken || result.fullResponse.donationToken;
+    if (result.donationToken || result.fullResponse?.donationToken) {
+      paymentInstrument.paymentTransaction.custom.Adyen_donationToken =
+        result.donationToken || result.fullResponse.donationToken;
     }
     // Save full response to transaction custom attribute
-    paymentInstrument.paymentTransaction.custom.Adyen_log = JSON.stringify(
-      result,
-    );
+    paymentInstrument.paymentTransaction.custom.Adyen_log =
+      JSON.stringify(result);
     return true;
   },
 
   getFirstTwoNumbersFromYear() {
-    return Math.floor(
-      new Date().getFullYear() / 100,
-    );
+    return Math.floor(new Date().getFullYear() / 100);
   },
 
   // converts the currency value for the Adyen Checkout API
   getCurrencyValueForApi(amount) {
-    const currencyCode = Currency.getCurrency(amount.currencyCode) || session.currency.currencyCode;
+    const currencyCode =
+      Currency.getCurrency(amount.currencyCode) ||
+      session.currency.currencyCode;
     const digitsNumber = adyenHelperObj.getFractionDigits(
       currencyCode.toString(),
     );
-    const value = Math.round(amount.multiply(Math.pow(10, digitsNumber)).value); // eslint-disable-line no-restricted-properties
+    const value = Math.round(amount.multiply(10 ** digitsNumber).value); // eslint-disable-line no-restricted-properties
     return new dw.value.Money(value, currencyCode);
   },
 
   // get the fraction digits based on the currency code used to convert amounts of currency for the Adyen Checkout API
   getFractionDigits(currencyCode) {
     let format;
-    let currency = currencyCode || session.currency.currencyCode;
+    const currency = currencyCode || session.currency.currencyCode;
     switch (currency) {
       case 'CVE':
       case 'DJF':
@@ -787,9 +858,9 @@ let adyenHelperObj = {
     return applicationInfo;
   },
 
-    isApplePay(paymentMethod) {
-      return paymentMethod === constants.PAYMENTMETHODS.APPLEPAY;
-    },
+  isApplePay(paymentMethod) {
+    return paymentMethod === constants.PAYMENTMETHODS.APPLEPAY;
+  },
 
   // validates all fields in a state data object. Filters out all invalid fields
   validateStateData(stateData) {
@@ -869,16 +940,18 @@ let adyenHelperObj = {
     };
   },
 
-  getPaymentMethodType(paymentMethod){
-    return paymentMethod.type === constants.ACTIONTYPES.GIFTCARD ? paymentMethod.brand : paymentMethod.type;
+  getPaymentMethodType(paymentMethod) {
+    return paymentMethod.type === constants.ACTIONTYPES.GIFTCARD
+      ? paymentMethod.brand
+      : paymentMethod.type;
   },
 
-//SALE payment methods require payment transaction type to be Capture
+  // SALE payment methods require payment transaction type to be Capture
   setPaymentTransactionType(paymentInstrument, paymentMethod) {
     const salePaymentMethods = AdyenConfigs.getAdyenSalePaymentMethods();
     const paymentMethodType = this.getPaymentMethodType(paymentMethod);
     if (salePaymentMethods.indexOf(paymentMethodType) > -1) {
-      Transaction.wrap(function () {
+      Transaction.wrap(() => {
         paymentInstrument
           .getPaymentTransaction()
           .setType(dw.order.PaymentTransaction.TYPE_CAPTURE);
@@ -889,11 +962,14 @@ let adyenHelperObj = {
   isIntermediateResultCode(orderNo) {
     const order = OrderMgr.getOrder(orderNo);
     const paymentInstrument = order.getPaymentInstruments(
-        adyenHelperObj.getOrderMainPaymentInstrumentType(order),
+      adyenHelperObj.getOrderMainPaymentInstrumentType(order),
     )[0];
-    const resultCode = paymentInstrument.paymentTransaction.custom.authCode;    
-    return resultCode === constants.RESULTCODES.PENDING || resultCode === constants.RESULTCODES.RECEIVED;
-},
+    const resultCode = paymentInstrument.paymentTransaction.custom.authCode;
+    return (
+      resultCode === constants.RESULTCODES.PENDING ||
+      resultCode === constants.RESULTCODES.RECEIVED
+    );
+  },
 
   executeCall(serviceType, requestObject) {
     const service = this.getService(serviceType);
@@ -901,12 +977,16 @@ let adyenHelperObj = {
       throw new Error(`Could not create ${serviceType} service object`);
     }
 
-	const serviceApiVersion = service.getURL().replace(`[CHECKOUT_API_VERSION]`, constants.CHECKOUT_API_VERSION);
-	service.setURL(serviceApiVersion);
+    const serviceApiVersion = service
+      .getURL()
+      .replace('[CHECKOUT_API_VERSION]', constants.CHECKOUT_API_VERSION);
+    service.setURL(serviceApiVersion);
 
     if (AdyenConfigs.getAdyenEnvironment() === constants.MODE.LIVE) {
       const livePrefix = AdyenConfigs.getLivePrefix();
-      const serviceUrl = service.getURL().replace(`[YOUR_LIVE_PREFIX]`, livePrefix);
+      const serviceUrl = service
+        .getURL()
+        .replace('[YOUR_LIVE_PREFIX]', livePrefix);
       service.setURL(serviceUrl);
     }
 
