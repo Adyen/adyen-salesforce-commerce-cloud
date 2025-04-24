@@ -245,7 +245,7 @@ class GooglePay {
     );
     if (newCalculation?.grandTotalAmount) {
       return {
-        newTransactionInfo: this.getTransactionInfo(
+        newTransactionInfo: GooglePay.getTransactionInfo(
           newCalculation,
           shippingMethodsData,
         ),
