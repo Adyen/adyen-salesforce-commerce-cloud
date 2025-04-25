@@ -564,14 +564,15 @@ const adyenHelperObj = {
   },
 
   setPaymentInstrumentFields(paymentInstrument, stateData) {
+	if (!(paymentInstrument instanceof dw.order.OrderPaymentInstrument)) {
+		return null;
+	}
     const paymentMethodType = stateData.paymentMethod.type;
 	// Currently this doesn't set the fields for cards and giftcards, they are handled by other flow
     if (
       [constants.SCHEME, constants.ACTIONTYPES.GIFTCARD].indexOf(paymentMethodType) ===
       -1
     ) {
-      AdyenLogs.fatal_log('going inside the setPaymentInstrumentFields');
-      Transaction.wrap(() => {
         paymentInstrument.custom.adyenPaymentMethod =
           adyenHelperObj.getAdyenComponentType(stateData.paymentMethod.type);
         paymentInstrument.custom[
@@ -582,7 +583,6 @@ const adyenHelperObj = {
         paymentInstrument.custom[
           `${constants.OMS_NAMESPACE}__Adyen_Payment_Method_Variant`
         ] = stateData.paymentMethod.type.toLowerCase();
-      });
     }
   },
 
