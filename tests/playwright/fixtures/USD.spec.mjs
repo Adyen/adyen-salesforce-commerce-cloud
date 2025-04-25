@@ -310,7 +310,7 @@ for (const environment of environments) {
 
     test('Google Pay Express @quick', async ({page}) => {
       checkoutPage = new environment.CheckoutPage(page);
-      await checkoutPage.addProductToCart();
+      await checkoutPage.addProductToCart(regionsEnum.US);
       await checkoutPage.navigateToCart(regionsEnum.US);
       redirectShopper = new RedirectShopper(page);
       await redirectShopper.doGooglePayExpressPayment();
