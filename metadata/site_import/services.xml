@@ -71,6 +71,16 @@
         <user-id></user-id>
         <password/>
     </service-credential>
+    <service-credential service-credential-id="AdyenDonationCampaigns">
+        <url>https://checkout-test.adyen.com/checkout/[CHECKOUT_API_VERSION]/donationCampaigns</url>
+        <user-id></user-id>
+        <password/>
+    </service-credential>
+    <service-credential service-credential-id="AdyenDonationCampaignsLive">
+        <url>https://[YOUR_LIVE_PREFIX]-checkout-live.adyenpayments.com/[CHECKOUT_API_VERSION]/donationCampaigns</url>
+        <user-id></user-id>
+        <password/>
+    </service-credential>
     <service-credential service-credential-id="AdyenPartialPaymentsOrder">
         <url>https://checkout-test.adyen.com/[CHECKOUT_API_VERSION]/orders</url>
         <user-id></user-id>
@@ -193,6 +203,15 @@
         <mock-mode-enabled>false</mock-mode-enabled>
         <profile-id>Adyen</profile-id>
         <credential-id>AdyenGiving</credential-id>
+    </service>
+    <service service-id="AdyenDonationCampaigns">
+        <service-type>HTTP</service-type>
+        <enabled>true</enabled>
+        <log-prefix>adyen</log-prefix>
+        <comm-log-enabled>true</comm-log-enabled>
+        <mock-mode-enabled>false</mock-mode-enabled>
+        <profile-id>Adyen</profile-id>
+        <credential-id>AdyenDonationCampaigns</credential-id>
     </service>
     <service service-id="AdyenPartialPaymentsOrder">
         <service-type>HTTP</service-type>

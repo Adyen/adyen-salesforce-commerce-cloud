@@ -1,7 +1,7 @@
-const store = require('../../../../store');
-const constants = require('../constants');
+const store = require('../../../../config/store');
+const constants = require('../../../../config/constants');
 const { httpClient } = require('../commons/httpClient');
-const paymentMethodsConfiguration = require('./paymentMethodsConfiguration');
+const getPaymentMethodsConfiguration = require('./paymentMethodsConfiguration');
 
 async function handleOnChange(state) {
   const { type } = state.data.paymentMethod;
@@ -46,21 +46,16 @@ async function handleOnAdditionalDetails(state) {
   }
 }
 
-function setCheckoutConfiguration({ email }) {
+function setCheckoutConfiguration({ email, paymentMethodsResponse }) {
+  const paymentMethodsConfiguration = getPaymentMethodsConfiguration(
+    email,
+    paymentMethodsResponse,
+  );
   store.checkoutConfiguration.onChange = handleOnChange;
   store.checkoutConfiguration.onAdditionalDetails = handleOnAdditionalDetails;
   store.checkoutConfiguration.showPayButton = false;
   store.checkoutConfiguration.clientKey = window.adyenClientKey;
-  store.paymentMethodsConfiguration = {
-    ...paymentMethodsConfiguration,
-    scheme: {
-      ...paymentMethodsConfiguration.scheme,
-      clickToPayConfiguration: {
-        ...paymentMethodsConfiguration.scheme.clickToPayConfiguration,
-        ...(email && { shopperEmail: email }),
-      },
-    },
-  };
+  store.paymentMethodsConfiguration = paymentMethodsConfiguration;
 }
 
 module.exports = {

@@ -1,10 +1,10 @@
 const { httpClient } = require('../../../commons/httpClient');
-const store = require('../../../../../../store');
+const store = require('../../../../../../config/store');
 const helpers = require('../../../adyen_checkout/helpers');
 const {
   GOOGLE_PAY,
   GOOGLE_PAY_CALLBACK_TRIGGERS,
-} = require('../../../constants');
+} = require('../../../../../../config/constants');
 const { initializeCheckout } = require('../../initializeCheckout');
 const { createTemporaryBasket } = require('../../../commons');
 
@@ -245,7 +245,7 @@ class GooglePay {
     );
     if (newCalculation?.grandTotalAmount) {
       return {
-        newTransactionInfo: this.getTransactionInfo(
+        newTransactionInfo: GooglePay.getTransactionInfo(
           newCalculation,
           shippingMethodsData,
         ),

@@ -2,13 +2,16 @@
  * @jest-environment jsdom
  */
 jest.mock('../../commons');
-jest.mock('../../../../../store');
+jest.mock('../../../../../config/store');
 
-const { renderGenericComponent, setInstallments, renderPosTerminals } = require('../renderGenericComponent');
-const { applyGiftCards, setGiftCardContainerVisibility, renderGiftCardLogo, isCartModified } = require('../giftcards/index');
+const { renderGenericComponent, setInstallments } = require('../renderGenericComponent');
+const { renderPosTerminals } = require('../pos');
+
+const { applyGiftCards, renderGiftCardLogo, isCartModified } = require('../giftcards/index');
 const { getPaymentMethods } = require('../../commons');
 const { fetchGiftCards } = require('../../commons');
-const store = require('../../../../../store');
+const store = require('../../../../../config/store');
+const {setCheckoutConfiguration} = require("../checkoutConfiguration");
 const giftCardHtml = `
       <div id="paymentMethodsList"></div>
       <input type="radio" name="brandCode" value="card" />
@@ -146,11 +149,13 @@ describe('Render Generic Component', () => {
         installmentOptions: {},
       },
     };
+    const email = 'test@email.com';
     const amount = {
-      currency: 'BRL',
-      value: 150,
+      currency: 'USD',
+      value: 50,
     };
-    setInstallments(amount);
+    store.checkoutConfiguration = {};
+    setCheckoutConfiguration({email, paymentMethodsResponse: {amount}});
     expect(store.paymentMethodsConfiguration.scheme.installmentOptions).toEqual({
       amex: {
         values: [1, 2],
@@ -164,17 +169,15 @@ describe('Render Generic Component', () => {
 
   it('should not set installment options for US', () => {
     window.Configuration = { amount: 0, locale : 'en_US' };
-    store.paymentMethodsConfiguration = {
-      scheme: {
-        installmentOptions: {},
-      },
-    };
+    window.merchantAccount = 'test_merchant';
+    const email = 'test@email.com';
     const amount = {
       currency: 'USD',
       value: 50,
     };
-    setInstallments(amount);
-    expect(store.paymentMethodsConfiguration.scheme.installmentOptions).toEqual({});
+    store.checkoutConfiguration = {};
+    setCheckoutConfiguration({email, paymentMethodsResponse: { amount } });
+    expect(store.paymentMethodsConfiguration.scheme.installmentOptions).toEqual(undefined);
     expect(store.paymentMethodsConfiguration.scheme.showInstallmentAmounts).toBe(undefined);
   });
 

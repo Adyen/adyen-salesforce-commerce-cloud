@@ -28,15 +28,11 @@ const getRemainingAmount = (giftCardResponse, currency, currentBasket) => {
     : new dw.value.Money(1000, currency);
 };
 
-const getExpressPaymentMethods = (
-  expressPaymentMethods,
-  paymentMethods = [],
-) => {
-  const paymentMethodOrder = AdyenConfigs.getExpressPaymentsOrder();
+const getExpressPaymentMethods = (expressPaymentMethods) => {
+  const paymentMethodOrder = AdyenConfigs.getExpressPaymentsOrder() || '';
 
   return Object.keys(expressPaymentMethods)
     .filter((item) => expressPaymentMethods[item])
-    .filter((item) => paymentMethods.some((pm) => pm.type === item))
     .sort(
       (a, b) => paymentMethodOrder.indexOf(a) - paymentMethodOrder.indexOf(b),
     );
@@ -89,14 +85,8 @@ function getCheckoutPaymentMethods(req, res, next) {
       amount: { value: paymentAmount.value, currency },
       countryCode,
       applicationInfo: AdyenHelper.getApplicationInfo(),
-      cartExpressMethods: getExpressPaymentMethods(
-        expressPaymentMethodsCart,
-        paymentMethods?.paymentMethods,
-      ),
-      pdpExpressMethods: getExpressPaymentMethods(
-        expressPaymentMethodsPdp,
-        paymentMethods?.paymentMethods,
-      ),
+      cartExpressMethods: getExpressPaymentMethods(expressPaymentMethodsCart),
+      pdpExpressMethods: getExpressPaymentMethods(expressPaymentMethodsPdp),
     });
   } catch (error) {
     AdyenLogs.fatal_log('Failed to fetch payment methods', error);

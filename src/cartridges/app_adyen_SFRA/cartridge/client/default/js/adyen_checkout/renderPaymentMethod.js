@@ -1,6 +1,6 @@
-const store = require('../../../../store');
+const store = require('../../../../config/store');
 const helpers = require('./helpers');
-const constants = require('../constants');
+const constants = require('../../../../config/constants');
 
 function getFallback(paymentMethod) {
   const fallback = {};
@@ -22,12 +22,9 @@ function getPersonalDetails() {
 }
 
 const getComponentConfig = (paymentMethodID, paymentMethod) => {
-  const personalDetails = getPersonalDetails();
-
   const baseConfig = {
     data: {
-      ...personalDetails,
-      personalDetails,
+      personalDetails: getPersonalDetails(),
     },
     visibility: {
       personalDetails: 'editable',
@@ -47,18 +44,14 @@ function setNode(paymentMethod, paymentMethodID) {
   if (!store.componentsObj[paymentMethodID]) {
     store.componentsObj[paymentMethodID] = {};
   }
-  try {
-    const componentConfig = getComponentConfig(paymentMethodID, paymentMethod);
-    const node = window.AdyenWeb.createComponent(
-      paymentMethod.type,
-      store.checkout,
-      componentConfig,
-    );
-    store.componentsObj[paymentMethodID].node = node;
-    store.componentsObj[paymentMethodID].isValid = node.isValid;
-  } catch (e) {
-    /* No component for payment method */
-  }
+  const componentConfig = getComponentConfig(paymentMethodID, paymentMethod);
+  const node = window.AdyenWeb.createComponent(
+    paymentMethod.type,
+    store.checkout,
+    componentConfig,
+  );
+  store.componentsObj[paymentMethodID].node = node;
+  store.componentsObj[paymentMethodID].isValid = node.isValid;
 }
 
 function getPaymentMethodID(isStored, paymentMethod) {

@@ -1,5 +1,6 @@
-const { getPaymentMethods } = require('../commons');
-const { httpClient } = require('../commons/httpClient');
+const { getPaymentMethods } = require('../../../commons');
+const { AMAZON_PAY } = require('../../../../../../config/constants');
+const { httpClient } = require('../../../commons/httpClient');
 
 async function saveShopperDetails(details) {
   const data = await httpClient({
@@ -7,7 +8,7 @@ async function saveShopperDetails(details) {
     url: window.saveShopperDetailsURL,
     data: {
       shopperDetails: JSON.stringify(details),
-      paymentMethod: 'amazonpay',
+      paymentMethod: AMAZON_PAY,
     },
   });
   const select = document.querySelector('#shippingMethods');
@@ -80,16 +81,14 @@ async function mountAmazonPayComponent() {
     const paymentMethodsData = await getPaymentMethods();
     const paymentMethodsResponse = paymentMethodsData?.AdyenPaymentMethods;
     const applicationInfo = paymentMethodsData?.applicationInfo;
-    const checkout = await AdyenCheckout({
-      environment: window.Configuration.environment,
-      clientKey: window.Configuration.clientKey,
-      locale: window.Configuration.locale,
+    const checkout = await window.AdyenWeb.AdyenCheckout({
+      ...window.Configuration,
       analytics: {
         analyticsData: { applicationInfo },
       },
     });
     const amazonPayConfig = paymentMethodsResponse?.paymentMethods.find(
-      (pm) => pm.type === 'amazonpay',
+      (pm) => pm.type === AMAZON_PAY,
     )?.configuration;
     if (!amazonPayConfig) return;
     const amazonConfig = {
@@ -105,9 +104,12 @@ async function mountAmazonPayComponent() {
       amount: JSON.parse(window.basketAmount),
       amazonCheckoutSessionId: window.amazonCheckoutSessionId,
     };
-    const amazonPayComponent = checkout
-      .create('amazonpay', amazonConfig)
-      .mount(amazonPayNode);
+    const amazonPayComponent = window.AdyenWeb.createComponent(
+      AMAZON_PAY,
+      checkout,
+      amazonConfig,
+    );
+    amazonPayComponent.mount(amazonPayNode);
     const shopperDetails = await amazonPayComponent.getShopperDetails();
     saveShopperDetails(shopperDetails);
     showAddressDetails(shopperDetails);
@@ -116,7 +118,9 @@ async function mountAmazonPayComponent() {
   }
 }
 
-mountAmazonPayComponent();
+(async () => {
+  await mountAmazonPayComponent();
+})();
 
 module.exports = {
   saveShopperDetails,

@@ -29,8 +29,6 @@ const ShippingMgr = require('dw/order/ShippingMgr');
 const PaymentInstrument = require('dw/order/PaymentInstrument');
 const StringUtils = require('dw/util/StringUtils');
 const Money = require('dw/value/Money');
-const TaxMgr = require('dw/order/TaxMgr');
-const ShippingLocation = require('dw/order/ShippingLocation');
 const BasketMgr = require('dw/order/BasketMgr');
 const OrderMgr = require('dw/order/OrderMgr');
 //script includes
@@ -91,7 +89,6 @@ let adyenHelperObj = {
    * @returns {{currencyCode: String, value: String}} - Shipping Cost including taxes
    */
   getShippingCost(shippingMethod, shipment) {
-    const { shippingAddress } = shipment;
     const shipmentShippingModel = ShippingMgr.getShipmentShippingModel(shipment);
     let shippingCost = shipmentShippingModel.getShippingCost(shippingMethod).getAmount();
     collections.forEach(shipment.getProductLineItems(), (lineItem) => {
@@ -103,23 +100,10 @@ let adyenHelperObj = {
         : new Money(0, product.getPriceModel().getPrice().getCurrencyCode());
       shippingCost = shippingCost.add(productShippingCost);
     })
-    shippingCost = TaxMgr.taxationPolicy === TaxMgr.TAX_POLICY_GROSS ? shippingCost.subtractRate(adyenHelperObj.getShippingTaxRate(shippingMethod, shippingAddress)) : shippingCost;
     return {
       value: shippingCost.getValue(),
       currencyCode: shippingCost.getCurrencyCode(),
     };
-  },
-
-  /**
-   * Returns tax rate for specific Shipment / ShippingMethod pair.
-   * @param {dw.order.ShippingMethod} shippingMethod - the default shipment of the current basket
-   * @param {dw.order.shippingAddress} shippingAddress - shippingAddress for the default shipment
-   * @returns {Number} - tax rate in decimals.(eg.: 0.02 for 2%)
-   */
-  getShippingTaxRate(shippingMethod, shippingAddress) {
-    const taxClassID = shippingMethod.getTaxClassID();
-    const taxJurisdictionID = shippingAddress ? TaxMgr.getTaxJurisdictionID(new ShippingLocation(shippingAddress)) : TaxMgr.getDefaultTaxJurisdictionID();
-    return TaxMgr.getTaxRate(taxClassID, taxJurisdictionID);
   },
 
   /**
@@ -197,51 +181,6 @@ let adyenHelperObj = {
     });
 
     return filteredMethods;
-  },
-
-  getAdyenGivingConfig(order) {
-    if (!order.getPaymentInstruments(
-      adyenHelperObj.getOrderMainPaymentInstrumentType(order),
-    ).length){
-      return null;
-    }
-    const paymentInstrument = order.getPaymentInstruments(
-      adyenHelperObj.getOrderMainPaymentInstrumentType(order),
-    )[0];
-    if (
-      !AdyenConfigs.getAdyenGivingEnabled() ||
-      !adyenHelperObj.isAdyenGivingAvailable(paymentInstrument)
-    ) {
-      return null;
-    }
-    const givingConfigs = {};
-    const configuredAmounts = adyenHelperObj.getDonationAmounts();
-    givingConfigs.adyenGivingAvailable = true;
-    givingConfigs.configuredAmounts = configuredAmounts;
-    givingConfigs.charityName = AdyenConfigs.getAdyenGivingCharityName();
-    givingConfigs.charityWebsite = AdyenConfigs.getAdyenGivingCharityWebsite();
-    givingConfigs.charityDescription = AdyenConfigs.getAdyenGivingCharityDescription();
-    givingConfigs.adyenGivingBackgroundUrl = AdyenConfigs.getAdyenGivingBackgroundUrl();
-    givingConfigs.adyenGivingLogoUrl = AdyenConfigs.getAdyenGivingLogoUrl();
-
-    givingConfigs.donationAmounts = JSON.stringify({
-      currency: session.currency.currencyCode,
-      values: configuredAmounts,
-    });
-    givingConfigs.pspReference =
-      paymentInstrument.paymentTransaction.custom.Adyen_pspReference;
-
-    for (const config in givingConfigs) {
-      if (Object.prototype.hasOwnProperty.call(givingConfigs, config)) {
-        if (givingConfigs[config] === null) {
-          AdyenLogs.error_log(
-            'Could not render Adyen Giving component. Please make sure all Adyen Giving fields in Custom Preferences are filled in correctly',
-          );
-          return null;
-        }
-      }
-    }
-    return givingConfigs;
   },
 
   // get the URL for the checkout component based on the current Adyen component version
@@ -353,27 +292,17 @@ let adyenHelperObj = {
     return currentBasket ? currentBasket.customerEmail : '';
   },
 
-  // returns an array containing the donation amounts configured in the custom preferences for Adyen Giving
-  getDonationAmounts() {
-    let returnValue = [];
-    const configuredValue = AdyenConfigs.getAdyenGivingDonationAmounts();
-    if (!empty(configuredValue)) {
-      const configuredAmountArray = configuredValue.split(',');
-      const amountArray = [];
-      for (let i = 0; i < configuredAmountArray.length; i++) {
-        const amount = parseInt(configuredAmountArray[i]);
-        if (!isNaN(amount)) {
-          amountArray.push(amount);
-        }
-      }
-      returnValue = amountArray;
-    }
-    return returnValue;
-  },
+  isAdyenGivingAvailable(order) {
+    const paymentInstruments = order.getPaymentInstruments(adyenHelperObj.getOrderMainPaymentInstrumentType(order));
 
-  // determines whether Adyen Giving is available based on the donation token
-  isAdyenGivingAvailable(paymentInstrument) {
-    return paymentInstrument.paymentTransaction.custom.Adyen_donationToken;
+    if (!paymentInstruments.length) {
+        return false;
+    }
+
+    const paymentInstrument = paymentInstruments[0];
+
+    return AdyenConfigs.getAdyenGivingEnabled() && 
+           !!paymentInstrument.paymentTransaction.custom.Adyen_donationToken;
   },
 
   // gets the ID for ratePay using the custom preference and the encoded session ID

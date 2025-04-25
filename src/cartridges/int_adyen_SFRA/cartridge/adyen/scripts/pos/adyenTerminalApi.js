@@ -167,10 +167,6 @@ function createTerminalPayment(order, paymentInstrument, terminalId) {
       }
       if (paymentResponse.result === constants.RESULTCODES.SUCCESS) {
         order.custom.Adyen_eventCode = constants.RESULTCODES.AUTHORISATION;
-        // Set payment status and export status
-        order.setPaymentStatus(Order.PAYMENT_STATUS_PAID);
-        order.setConfirmationStatus(Order.CONFIRMATION_STATUS_CONFIRMED);
-        order.setExportStatus(Order.EXPORT_STATUS_READY);
         result = { error: false, authorized: true };
       } else if(paymentResponse.result === constants.RESULTCODES.FAILURE) {
         order.custom.Adyen_eventCode = constants.RESULTCODES.FAILURE;

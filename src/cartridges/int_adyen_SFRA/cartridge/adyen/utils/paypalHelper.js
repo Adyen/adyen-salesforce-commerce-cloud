@@ -47,7 +47,7 @@ function getLineItems({ Order: order, Basket: basket }, isExpress) {
         LineItemHelper.getItemAmount(lineItem).divide(quantity);
       const vatAmount = LineItemHelper.getVatAmount(lineItem).divide(quantity);
       // eslint-disable-next-line
-    if (lineItem.hasOwnProperty('category')) {
+      if (lineItem.hasOwnProperty('category')) {
         if (PAYPAL_ITEM_CATEGORY.indexOf(lineItem.category) > -1) {
           lineItemObject.itemCategory = lineItem.category;
         }

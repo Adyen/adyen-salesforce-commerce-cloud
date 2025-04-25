@@ -1,4 +1,8 @@
-const { APPLE_PAY, GOOGLE_PAY } = require('../../constants');
+const {
+  APPLE_PAY,
+  GOOGLE_PAY,
+  PAY_WITH_GOOGLE,
+} = require('../../../../../config/constants');
 const { getPaymentMethods } = require('../../commons');
 const { httpClient } = require('../../commons/httpClient');
 const { ApplePay, GooglePay } = require('../paymentMethods');
@@ -25,7 +29,7 @@ function getValueForCurrency(amount, currency) {
 
 function getPaymentMethodConfig(adyenPaymentMethods, paymentMethodType) {
   return adyenPaymentMethods?.paymentMethods.find(
-    (pm) => pm.type === paymentMethodType,
+    (pm) => paymentMethodType.indexOf(pm.type) > -1,
   )?.configuration;
 }
 
@@ -54,10 +58,10 @@ function renderGooglePayButton() {
       paymentMethodsResponse: { AdyenPaymentMethods, applicationInfo } = {},
       button,
     } = response;
-    const googlePayConfig = getPaymentMethodConfig(
-      AdyenPaymentMethods,
+    const googlePayConfig = getPaymentMethodConfig(AdyenPaymentMethods, [
       GOOGLE_PAY,
-    );
+      PAY_WITH_GOOGLE,
+    ]);
     if (!googlePayConfig) {
       return;
     }

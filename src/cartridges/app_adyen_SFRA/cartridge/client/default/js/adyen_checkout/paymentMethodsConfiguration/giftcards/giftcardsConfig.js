@@ -6,7 +6,11 @@ const {
   attachGiftCardCancelListener,
   createElementsToShowRemainingGiftCardAmount,
 } = require('../../giftcards');
-const { GIFTCARD, SUCCESS, NOTENOUGHBALANCE } = require('../../../constants');
+const {
+  GIFTCARD,
+  SUCCESS,
+  NOTENOUGHBALANCE,
+} = require('../../../../../../config/constants');
 const { initializeCheckout } = require('../../renderGenericComponent');
 
 class GiftCardConfig {

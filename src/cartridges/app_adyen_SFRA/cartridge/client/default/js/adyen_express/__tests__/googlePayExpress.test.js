@@ -4,11 +4,11 @@
 
 const GooglePay = require('../paymentMethods/googlepay/googlepay');
 const httpClient = require('../../../js/commons/httpClient');
-const store = require('../../../../../../cartridge/store');
+const store = require('../../../../../config/store');
 const helpers = require('../../../js/adyen_checkout/helpers');
 
 jest.mock('../../../js/commons/httpClient');
-jest.mock('../../../../../../cartridge/store');
+jest.mock('../../../../../config/store');
 jest.mock('../../../js/adyen_checkout/helpers');
 jest.mock('../initializeCheckout');
 jest.mock('../../commons');

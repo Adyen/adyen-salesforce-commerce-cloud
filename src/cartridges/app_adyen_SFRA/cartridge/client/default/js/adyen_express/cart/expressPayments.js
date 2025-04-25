@@ -1,10 +1,21 @@
 const { getPaymentMethods } = require('../../commons');
-const { Paypal, ApplePay, GooglePay } = require('../paymentMethods/index');
-const { APPLE_PAY, GOOGLE_PAY, PAYPAL } = require('../../constants');
+const {
+  Paypal,
+  ApplePay,
+  GooglePay,
+  AmazonPay,
+} = require('../paymentMethods/index');
+const {
+  APPLE_PAY,
+  GOOGLE_PAY,
+  PAYPAL,
+  AMAZON_PAY,
+  PAY_WITH_GOOGLE,
+} = require('../../../../../config/constants');
 
 function getPaymentMethodConfig(adyenPaymentMethods, paymentMethodType) {
   return adyenPaymentMethods?.paymentMethods.find(
-    (pm) => pm.type === paymentMethodType,
+    (pm) => paymentMethodType.indexOf(pm.type) > -1,
   )?.configuration;
 }
 
@@ -43,16 +54,35 @@ function renderApplePayButton() {
   });
 }
 
+function renderAmazonPayButton() {
+  $('body').on(`cart:render${AMAZON_PAY}Button`, async (e, response) => {
+    const {
+      paymentMethodsResponse: { AdyenPaymentMethods, applicationInfo } = {},
+      button,
+    } = response;
+    const amazonPayConfig = getPaymentMethodConfig(
+      AdyenPaymentMethods,
+      AMAZON_PAY,
+    );
+    if (!amazonPayConfig) {
+      return;
+    }
+    const amazonPay = new AmazonPay(amazonPayConfig, applicationInfo);
+    const amazonPayComponent = await amazonPay.getComponent();
+    amazonPayComponent.mount(button);
+  });
+}
+
 function renderGooglePayButton() {
   $('body').on(`cart:render${GOOGLE_PAY}Button`, async (e, response) => {
     const {
       paymentMethodsResponse: { AdyenPaymentMethods, applicationInfo } = {},
       button,
     } = response;
-    const googlePayConfig = getPaymentMethodConfig(
-      AdyenPaymentMethods,
+    const googlePayConfig = getPaymentMethodConfig(AdyenPaymentMethods, [
       GOOGLE_PAY,
-    );
+      PAY_WITH_GOOGLE,
+    ]);
     if (!googlePayConfig) {
       return;
     }
@@ -109,4 +139,5 @@ module.exports = {
   renderPayPalButton,
   renderApplePayButton,
   renderGooglePayButton,
+  renderAmazonPayButton,
 };
