@@ -570,7 +570,7 @@ const adyenHelperObj = {
     const paymentMethodType = stateData.paymentMethod.type;
 	// Currently this doesn't set the fields for cards and giftcards, they are handled by other flow
     if (
-      [constants.SCHEME, constants.ACTIONTYPES.GIFTCARD].indexOf(paymentMethodType) ===
+      [constants.PAYMENTMETHODS.SCHEME, constants.PAYMENTMETHODS.GIFTCARD].indexOf(paymentMethodType) ===
       -1
     ) {
         paymentInstrument.custom.adyenPaymentMethod =
