@@ -6,7 +6,7 @@ const { initializeCheckout } = require('../../initializeCheckout');
 const { createTemporaryBasket } = require('../../../commons');
 
 class ApplePay {
-  constructor(config, applicationInfo, isExpressPdp) {
+  constructor(config, applicationInfo, adyenTranslations, isExpressPdp) {
     const {
       basketAmount,
       showConfirmationAction,
@@ -28,6 +28,7 @@ class ApplePay {
     this.config = config;
     this.customerData = null;
     this.billingData = null;
+    this.translations = adyenTranslations;
     this.APPLE_PAY_SUCCESS = 1;
     this.APPLE_PAY_ERROR = 0;
   }
@@ -289,7 +290,10 @@ class ApplePay {
   }
 
   async getComponent() {
-    const checkout = await initializeCheckout(this.applicationInfo);
+    const checkout = await initializeCheckout(
+      this.applicationInfo,
+      this.translations,
+    );
     const applePayConfig = this.getConfig();
     return window.AdyenWeb.createComponent(APPLE_PAY, checkout, applePayConfig);
   }

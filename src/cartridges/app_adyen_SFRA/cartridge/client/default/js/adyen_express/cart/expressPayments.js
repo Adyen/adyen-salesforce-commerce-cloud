@@ -22,14 +22,18 @@ function getPaymentMethodConfig(adyenPaymentMethods, paymentMethodType) {
 function renderPayPalButton() {
   $('body').on(`cart:render${PAYPAL}Button`, async (e, response) => {
     const {
-      paymentMethodsResponse: { AdyenPaymentMethods, applicationInfo } = {},
+      paymentMethodsResponse: {
+        AdyenPaymentMethods,
+        applicationInfo,
+        adyenTranslations,
+      } = {},
       button,
     } = response;
     const paypalConfig = getPaymentMethodConfig(AdyenPaymentMethods, PAYPAL);
     if (!paypalConfig) {
       return;
     }
-    const paypal = new Paypal(paypalConfig, applicationInfo);
+    const paypal = new Paypal(paypalConfig, applicationInfo, adyenTranslations);
     const paypalComponent = await paypal.getComponent();
     paypalComponent.mount(button);
   });
@@ -38,7 +42,11 @@ function renderPayPalButton() {
 function renderApplePayButton() {
   $('body').on(`cart:render${APPLE_PAY}Button`, async (e, response) => {
     const {
-      paymentMethodsResponse: { AdyenPaymentMethods, applicationInfo } = {},
+      paymentMethodsResponse: {
+        AdyenPaymentMethods,
+        applicationInfo,
+        adyenTranslations,
+      } = {},
       button,
     } = response;
     const applePayConfig = getPaymentMethodConfig(
@@ -48,7 +56,12 @@ function renderApplePayButton() {
     if (!applePayConfig) {
       return;
     }
-    const applePay = new ApplePay(applePayConfig, applicationInfo);
+    const applePay = new ApplePay(
+      applePayConfig,
+      applicationInfo,
+      adyenTranslations,
+      false,
+    );
     const applePayComponent = await applePay.getComponent();
     applePayComponent.mount(button);
   });
@@ -57,7 +70,11 @@ function renderApplePayButton() {
 function renderAmazonPayButton() {
   $('body').on(`cart:render${AMAZON_PAY}Button`, async (e, response) => {
     const {
-      paymentMethodsResponse: { AdyenPaymentMethods, applicationInfo } = {},
+      paymentMethodsResponse: {
+        AdyenPaymentMethods,
+        applicationInfo,
+        adyenTranslations,
+      } = {},
       button,
     } = response;
     const amazonPayConfig = getPaymentMethodConfig(
@@ -67,7 +84,11 @@ function renderAmazonPayButton() {
     if (!amazonPayConfig) {
       return;
     }
-    const amazonPay = new AmazonPay(amazonPayConfig, applicationInfo);
+    const amazonPay = new AmazonPay(
+      amazonPayConfig,
+      applicationInfo,
+      adyenTranslations,
+    );
     const amazonPayComponent = await amazonPay.getComponent();
     amazonPayComponent.mount(button);
   });
@@ -76,7 +97,11 @@ function renderAmazonPayButton() {
 function renderGooglePayButton() {
   $('body').on(`cart:render${GOOGLE_PAY}Button`, async (e, response) => {
     const {
-      paymentMethodsResponse: { AdyenPaymentMethods, applicationInfo } = {},
+      paymentMethodsResponse: {
+        AdyenPaymentMethods,
+        applicationInfo,
+        adyenTranslations,
+      } = {},
       button,
     } = response;
     const googlePayConfig = getPaymentMethodConfig(AdyenPaymentMethods, [
@@ -86,7 +111,12 @@ function renderGooglePayButton() {
     if (!googlePayConfig) {
       return;
     }
-    const googlePay = new GooglePay(googlePayConfig, applicationInfo);
+    const googlePay = new GooglePay(
+      googlePayConfig,
+      applicationInfo,
+      adyenTranslations,
+      false,
+    );
     const googlePayComponent = await googlePay.getComponent();
     googlePayComponent.mount(button);
   });

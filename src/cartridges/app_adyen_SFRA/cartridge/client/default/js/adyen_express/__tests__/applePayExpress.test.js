@@ -35,6 +35,7 @@ describe('ApplePay class', () => {
     applePay = new ApplePay(
       { merchantName: 'Test Merchant' },
       { applicationInfo: 'Test Info' },
+      { 'en-US': {} },
       true,
     );
   });
