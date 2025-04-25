@@ -69,7 +69,9 @@ describe('getCheckoutPaymentMethods', () => {
 			externalPlatform: {
 				"version" : "SFRA",
 			}
-		  }
+		  },
+         cartExpressMethods: [],
+         pdpExpressMethods: []
       });
       expect(next).toHaveBeenCalled();
    });

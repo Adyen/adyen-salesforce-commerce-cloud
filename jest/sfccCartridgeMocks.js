@@ -346,6 +346,13 @@ jest.mock(
     getAdyenLevel23DataEnabled: jest.fn(() => false),
     getAdyenSalePaymentMethods: jest.fn(() => []),
     getAdyenPosRegion: jest.fn(),
+    isApplePayExpressEnabled: jest.fn(() => false),
+    isAmazonPayExpressEnabled: jest.fn(() => false),
+    isGooglePayExpressEnabled: jest.fn(() => false),
+    isPayPalExpressEnabled: jest.fn(() => false),
+    isApplePayExpressOnPdpEnabled: jest.fn(() => false),
+    isGooglePayExpressOnPdpEnabled: jest.fn(() => false),
+    getExpressPaymentsOrder: jest.fn(),
   }),
   { virtual: true },
 );

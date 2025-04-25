@@ -4,6 +4,8 @@ const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
 const paymentMethodDescriptions = require('*/cartridge/adyen/config/paymentMethodDescriptions');
 const getPaymentMethods = require('*/cartridge/adyen/scripts/payments/adyenGetPaymentMethods');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
+const AdyenConfigs = require('*/cartridge/adyen/utils/adyenConfigs');
+const constants = require('*/cartridge/adyen/config/constants');
 
 function getCountryCode(currentBasket, locale) {
   let countryCode;
@@ -24,6 +26,16 @@ const getRemainingAmount = (giftCardResponse, currency, currentBasket) => {
   return currentBasket?.getTotalGrossPrice().isAvailable()
     ? AdyenHelper.getCurrencyValueForApi(currentBasket.getTotalGrossPrice())
     : new dw.value.Money(1000, currency);
+};
+
+const getExpressPaymentMethods = (expressPaymentMethods) => {
+  const paymentMethodOrder = AdyenConfigs.getExpressPaymentsOrder() || '';
+
+  return Object.keys(expressPaymentMethods)
+    .filter((item) => expressPaymentMethods[item])
+    .sort(
+      (a, b) => paymentMethodOrder.indexOf(a) - paymentMethodOrder.indexOf(b),
+    );
 };
 
 function getCheckoutPaymentMethods(req, res, next) {
@@ -47,6 +59,25 @@ function getCheckoutPaymentMethods(req, res, next) {
       countryCode,
       shopperEmail,
     );
+
+    const expressPaymentMethodsPdp = {
+      [constants.PAYMENTMETHODS.APPLEPAY]:
+        !!AdyenConfigs.isApplePayExpressOnPdpEnabled(),
+      [constants.PAYMENTMETHODS.GOOGLEPAY]:
+        !!AdyenConfigs.isGooglePayExpressOnPdpEnabled(),
+    };
+
+    const expressPaymentMethodsCart = {
+      [constants.PAYMENTMETHODS.APPLEPAY]:
+        !!AdyenConfigs.isApplePayExpressEnabled(),
+      [constants.PAYMENTMETHODS.AMAZONPAY]:
+        !!AdyenConfigs.isAmazonPayExpressEnabled(),
+      [constants.PAYMENTMETHODS.GOOGLEPAY]:
+        !!AdyenConfigs.isGooglePayExpressEnabled(),
+      [constants.PAYMENTMETHODS.PAYPAL]:
+        !!AdyenConfigs.isPayPalExpressEnabled(),
+    };
+
     res.json({
       AdyenPaymentMethods: paymentMethods,
       imagePath: adyenURL,
@@ -54,6 +85,8 @@ function getCheckoutPaymentMethods(req, res, next) {
       amount: { value: paymentAmount.value, currency },
       countryCode,
       applicationInfo: AdyenHelper.getApplicationInfo(),
+      cartExpressMethods: getExpressPaymentMethods(expressPaymentMethodsCart),
+      pdpExpressMethods: getExpressPaymentMethods(expressPaymentMethodsPdp),
     });
   } catch (error) {
     AdyenLogs.fatal_log('Failed to fetch payment methods', error);
