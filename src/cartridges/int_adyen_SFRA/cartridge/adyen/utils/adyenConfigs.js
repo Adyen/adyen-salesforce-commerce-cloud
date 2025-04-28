@@ -145,6 +145,13 @@ const adyenConfigsObj = {
     );
   },
 
+  areExpressPaymentsEnabledOnPdp() {
+    return (
+      this.isApplePayExpressOnPdpEnabled() ||
+      this.isGooglePayExpressOnPdpEnabled()
+    );
+  },
+
   isApplePayExpressEnabled() {
     return getCustomPreference('ApplePayExpress_Enabled');
   },

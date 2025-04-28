@@ -8,6 +8,7 @@
    window.clientKey = "${AdyenConfigs.getAdyenClientKey()}",
    window.locale = "${request.locale}";
    window.countryCode = window.locale.slice(-2);
+   window.areExpressPaymentsEnabledOnPdp = "${AdyenConfigs.areExpressPaymentsEnabledOnPdp()}";
 
    window.getPaymentMethodsURL = "${URLUtils.https('Adyen-GetPaymentMethods')}";
    window.shippingMethodsUrl = "${URLUtils.https('Adyen-ShippingMethods')}";
