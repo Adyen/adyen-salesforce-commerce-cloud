@@ -1,4 +1,4 @@
-const { getPaymentMethods } = require('../../commons');
+const { getPaymentMethods } = require('../../../commons');
 const {
   Paypal,
   ApplePay,
@@ -11,7 +11,7 @@ const {
   PAYPAL,
   AMAZON_PAY,
   PAY_WITH_GOOGLE,
-} = require('../../../../../config/constants');
+} = require('../../../../../../config/constants');
 
 function getPaymentMethodConfig(adyenPaymentMethods, paymentMethodType) {
   return adyenPaymentMethods?.paymentMethods.find(

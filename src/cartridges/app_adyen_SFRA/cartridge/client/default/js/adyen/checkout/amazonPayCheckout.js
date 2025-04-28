@@ -1,7 +1,7 @@
-const store = require('../../../../config/store');
+const store = require('../../../../../config/store');
 const helpers = require('./helpers');
-const { AMAZON_PAY } = require('../../../../config/constants');
-const { httpClient } = require('../commons/httpClient');
+const { AMAZON_PAY } = require('../../../../../config/constants');
+const { httpClient } = require('../../commons/httpClient');
 
 function handleAuthorised(response) {
   document.querySelector('#result').value = JSON.stringify({

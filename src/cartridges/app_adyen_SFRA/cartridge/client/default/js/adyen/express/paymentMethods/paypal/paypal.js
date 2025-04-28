@@ -1,7 +1,7 @@
-const { httpClient } = require('../../../commons/httpClient');
-const store = require('../../../../../../config/store');
-const helpers = require('../../../adyen/checkout/helpers');
-const { PAYPAL } = require('../../../../../../config/constants');
+const { httpClient } = require('../../../../commons/httpClient');
+const store = require('../../../../../../../config/store');
+const helpers = require('../../../checkout/helpers');
+const { PAYPAL } = require('../../../../../../../config/constants');
 const { initializeCheckout } = require('../../initializeCheckout');
 
 class Paypal {

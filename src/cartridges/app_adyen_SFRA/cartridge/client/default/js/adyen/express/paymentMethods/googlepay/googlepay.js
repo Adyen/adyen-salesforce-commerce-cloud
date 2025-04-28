@@ -1,12 +1,12 @@
-const { httpClient } = require('../../../commons/httpClient');
-const store = require('../../../../../../config/store');
-const helpers = require('../../../adyen/checkout/helpers');
+const { httpClient } = require('../../../../commons/httpClient');
+const store = require('../../../../../../../config/store');
+const helpers = require('../../../checkout/helpers');
 const {
   GOOGLE_PAY,
   GOOGLE_PAY_CALLBACK_TRIGGERS,
-} = require('../../../../../../config/constants');
+} = require('../../../../../../../config/constants');
 const { initializeCheckout } = require('../../initializeCheckout');
-const { createTemporaryBasket } = require('../../../commons');
+const { createTemporaryBasket } = require('../../../../commons');
 
 class GooglePay {
   constructor(config, applicationInfo, adyenTranslations, isExpressPdp) {

@@ -3,5 +3,5 @@ const processInclude = require('base/util');
 
 $(document).ready(() => {
   processInclude(require('base/product/detail'));
-  processInclude(require('./adyen_express/product/expressPayments'));
+  processInclude(require('./adyen/express/product/expressPayments'));
 });

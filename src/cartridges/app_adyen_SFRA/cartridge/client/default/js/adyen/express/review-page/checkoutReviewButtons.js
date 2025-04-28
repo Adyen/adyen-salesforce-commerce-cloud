@@ -1,5 +1,5 @@
-const helpers = require('../../adyen/checkout/helpers');
-const { httpClient } = require('../../commons/httpClient');
+const helpers = require('../../checkout/helpers');
+const { httpClient } = require('../../../commons/httpClient');
 
 /**
  * make payment details call for express payment methods from review page .

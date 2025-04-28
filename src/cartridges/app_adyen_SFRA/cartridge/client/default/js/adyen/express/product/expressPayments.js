@@ -2,9 +2,9 @@ const {
   APPLE_PAY,
   GOOGLE_PAY,
   PAY_WITH_GOOGLE,
-} = require('../../../../../config/constants');
-const { getPaymentMethods } = require('../../commons');
-const { httpClient } = require('../../commons/httpClient');
+} = require('../../../../../../config/constants');
+const { getPaymentMethods } = require('../../../commons/index');
+const { httpClient } = require('../../../commons/httpClient');
 const { ApplePay, GooglePay } = require('../paymentMethods');
 
 function getProductForm(product) {

@@ -1,6 +1,6 @@
-const { getPaymentMethods } = require('../../../commons');
-const { AMAZON_PAY } = require('../../../../../../config/constants');
-const { httpClient } = require('../../../commons/httpClient');
+const { getPaymentMethods } = require('../../../../commons');
+const { AMAZON_PAY } = require('../../../../../../../config/constants');
+const { httpClient } = require('../../../../commons/httpClient');
 
 async function saveShopperDetails(details) {
   const data = await httpClient({
