@@ -1,4 +1,4 @@
-const { httpClient } = require('../../../../commons/httpClient');
+const { httpClient } = require('../../../commons/httpClient');
 const store = require('../../../../../../../config/store');
 const helpers = require('../../../checkout/helpers');
 const { PAYPAL } = require('../../../../../../../config/constants');

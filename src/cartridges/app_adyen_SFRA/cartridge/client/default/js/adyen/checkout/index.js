@@ -10,8 +10,8 @@ const {
   paymentFromComponent,
 } = require('./helpers');
 const billing = require('../../checkout/billing');
-const { httpClient } = require('../../commons/httpClient');
-const { getPaymentMethods } = require('../../commons');
+const { httpClient } = require('../commons/httpClient');
+const { getPaymentMethods } = require('../commons');
 const { GIFTCARD } = require('../../../../../config/constants');
 const { renderGiftCards } = require('./giftcards');
 const { addStores } = require('./pos');

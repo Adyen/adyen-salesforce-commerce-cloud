@@ -1,15 +1,15 @@
 /**
  * @jest-environment jsdom
  */
-jest.mock('../../../commons');
+jest.mock('../../commons');
 jest.mock('../../../../../../config/store');
 
 const { renderGenericComponent } = require('../renderGenericComponent');
 const { renderPosTerminals } = require('../pos');
 
 const { applyGiftCards, renderGiftCardLogo, isCartModified } = require('../giftcards/index');
-const { getPaymentMethods } = require('../../../commons');
-const { fetchGiftCards } = require('../../../commons');
+const { getPaymentMethods } = require('../../commons');
+const { fetchGiftCards } = require('../../commons');
 const store = require('../../../../../../config/store');
 const {setCheckoutConfiguration} = require("../checkoutConfiguration");
 const giftCardHtml = `

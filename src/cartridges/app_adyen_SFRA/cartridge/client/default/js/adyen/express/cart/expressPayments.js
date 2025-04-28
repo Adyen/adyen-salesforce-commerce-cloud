@@ -1,4 +1,4 @@
-const { getPaymentMethods } = require('../../../commons');
+const { getPaymentMethods } = require('../../commons');
 const {
   Paypal,
   ApplePay,

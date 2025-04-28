@@ -9,7 +9,7 @@ const {
 } = require('../giftcards');
 const store = require('../../../../../../config/store');
 
-jest.mock('../../../commons');
+jest.mock('../../commons');
 jest.mock('../../../../../../config/store');
 
 beforeEach(() => {

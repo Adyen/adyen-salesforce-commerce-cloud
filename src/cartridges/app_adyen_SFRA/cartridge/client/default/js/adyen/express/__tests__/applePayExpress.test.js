@@ -5,11 +5,11 @@
 const ApplePay = require('../paymentMethods/applepay/applepay');
 const store = require('../../../../../../../cartridge/config/store');
 const helpers = require('../../../../js/adyen/checkout/helpers');
-jest.mock('../../../../js/commons/httpClient');
+jest.mock('../../commons/httpClient');
 jest.mock('../../../../../../../cartridge/config/store');
 jest.mock('../../../../js/adyen/checkout/helpers');
 jest.mock('../initializeCheckout');
-jest.mock('../../../commons');
+jest.mock('../../commons');
 
 describe('ApplePay class', () => {
   let applePay;

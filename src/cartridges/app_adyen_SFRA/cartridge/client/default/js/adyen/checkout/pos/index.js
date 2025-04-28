@@ -1,4 +1,4 @@
-const { getConnectedTerminals } = require('../../../commons');
+const { getConnectedTerminals } = require('../../commons');
 
 function addPosTerminals(terminals) {
   const ddTerminals = document.createElement('select');

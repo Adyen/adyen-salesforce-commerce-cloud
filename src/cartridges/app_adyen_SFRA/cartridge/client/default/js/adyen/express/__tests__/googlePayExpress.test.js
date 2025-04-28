@@ -5,12 +5,11 @@
 const GooglePay = require('../paymentMethods/googlepay/googlepay');
 const store = require('../../../../../../config/store');
 const helpers = require('../../../../js/adyen/checkout/helpers');
-
-jest.mock('../../../../js/commons/httpClient');
+jest.mock('../../commons/httpClient');
 jest.mock('../../../../../../config/store');
 jest.mock('../../../../js/adyen/checkout/helpers');
 jest.mock('../initializeCheckout');
-jest.mock('../../../../js/commons');
+jest.mock('../../commons');
 
 
 describe('GooglePay class', () => {

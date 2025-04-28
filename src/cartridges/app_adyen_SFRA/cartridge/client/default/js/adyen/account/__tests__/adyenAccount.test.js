@@ -10,7 +10,7 @@ $.fn.modal = jest.fn();
 jest.mock('../adyenAccount.js', () => ({
   handleAction: jest.fn()
 }));
-jest.mock('../../../commons');
+jest.mock('../../commons');
 jest.mock('../../../../../../config/store');
 // Mocking external dependencies
 jest.mock('../../../../../../config/store', () => ({

@@ -3,7 +3,7 @@
  */
 const store = require('../../../../../../config/store');
 const helpers = require('../helpers');
-const httpClient = require('../../../../js/commons/httpClient');
+const httpClient = require('../../commons/httpClient');
 const {
   setCheckoutConfiguration,
 } = require('../checkoutConfiguration');
@@ -21,7 +21,7 @@ let applepay;
 let klarna;
 let querySelector;
 
-jest.mock('../../../commons/httpClient', () => ({
+jest.mock('../../commons/httpClient', () => ({
   httpClient: jest.fn().mockImplementation(() => ({
     balance: 100,
       resultCode: 'invalid'

@@ -1,9 +1,9 @@
-const { httpClient } = require('../../../../commons/httpClient');
+const { httpClient } = require('../../../commons/httpClient');
 const store = require('../../../../../../../config/store');
 const helpers = require('../../../checkout/helpers');
 const { APPLE_PAY } = require('../../../../../../../config/constants');
 const { initializeCheckout } = require('../../initializeCheckout');
-const { createTemporaryBasket } = require('../../../../commons');
+const { createTemporaryBasket } = require('../../../commons');
 
 class ApplePay {
   constructor(config, applicationInfo, adyenTranslations, isExpressPdp) {

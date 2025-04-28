@@ -1,4 +1,4 @@
-const store = require('../../../../config/store');
+const store = require('../../../../../config/store');
 const { httpClient } = require('./httpClient');
 
 module.exports.onFieldValid = function onFieldValid(data) {
