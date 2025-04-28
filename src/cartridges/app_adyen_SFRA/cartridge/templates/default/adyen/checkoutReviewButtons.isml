@@ -1,6 +1,6 @@
 <isscript>
   var assets = require('*/cartridge/scripts/assets.js');
-  assets.addJs('/js/adyen_express/review-page/checkoutReviewButtons.js');
+  assets.addJs('/js/adyen/express/review-page/checkoutReviewButtons.js');
   assets.addCss('/css/checkout/checkout.css');
 </isscript>
 <script type="text/javascript">
