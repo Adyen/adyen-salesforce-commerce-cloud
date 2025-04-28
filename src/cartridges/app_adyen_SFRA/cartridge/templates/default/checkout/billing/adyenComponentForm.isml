@@ -44,7 +44,7 @@
 <isif condition="${request.getHttpQueryString() && request.getHttpQueryString().indexOf('amazonCheckoutSessionId') > -1} ">
     <isscript>
         var assets = require('*/cartridge/scripts/assets.js');
-        assets.addJs('/js/adyen_checkout/amazonPayCheckout.js');
+        assets.addJs('/js/adyen/checkout/amazonPayCheckout.js');
         assets.addCss('/css/adyenGiftcards.css');
         assets.addCss('/css/adyenCss.css');
     </isscript>

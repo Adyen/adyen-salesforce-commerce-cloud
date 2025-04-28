@@ -1,6 +1,6 @@
-const store = require('../../../../config/store');
-const constants = require('../../../../config/constants');
-const { httpClient } = require('../commons/httpClient');
+const store = require('../../../../../config/store');
+const constants = require('../../../../../config/constants');
+const { httpClient } = require('../../commons/httpClient');
 const getPaymentMethodsConfiguration = require('./paymentMethodsConfiguration');
 
 async function handleOnChange(state) {

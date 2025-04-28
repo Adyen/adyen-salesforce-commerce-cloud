@@ -1,6 +1,6 @@
-const store = require('../../../../config/store');
+const store = require('../../../../../config/store');
 const helpers = require('./helpers');
-const constants = require('../../../../config/constants');
+const constants = require('../../../../../config/constants');
 
 function getFallback(paymentMethod) {
   const fallback = {};

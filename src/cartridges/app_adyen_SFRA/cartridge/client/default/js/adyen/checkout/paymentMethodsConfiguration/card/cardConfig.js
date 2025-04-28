@@ -1,4 +1,4 @@
-const { onBrand, onFieldValid } = require('../../../commons');
+const { onBrand, onFieldValid } = require('../../../../commons');
 
 class CardConfig {
   constructor(store, helpers, shopperEmail, amount) {

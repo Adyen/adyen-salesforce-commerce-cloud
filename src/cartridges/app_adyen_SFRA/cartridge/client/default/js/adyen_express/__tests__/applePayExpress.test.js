@@ -3,13 +3,12 @@
  */
 
 const ApplePay = require('../paymentMethods/applepay/applepay');
-const httpClient = require('../../../js/commons/httpClient');
 const store = require('../../../../../../cartridge/config/store');
-const helpers = require('../../../js/adyen_checkout/helpers');
+const helpers = require('../../../js/adyen/checkout/helpers');
 
 jest.mock('../../../js/commons/httpClient');
 jest.mock('../../../../../../cartridge/config/store');
-jest.mock('../../../js/adyen_checkout/helpers');
+jest.mock('../../../js/adyen/checkout/helpers');
 jest.mock('../initializeCheckout');
 jest.mock('../../commons');
 

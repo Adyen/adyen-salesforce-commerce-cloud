@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 const { renderPaymentMethod } = require('../renderPaymentMethod');
-const store = require('../../../../../config/store');
+const store = require('../../../../../../config/store');
 
 let mount;
 describe('Render Payment Method', () => {

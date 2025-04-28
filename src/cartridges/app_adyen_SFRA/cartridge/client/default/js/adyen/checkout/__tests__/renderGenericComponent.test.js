@@ -1,16 +1,16 @@
 /**
  * @jest-environment jsdom
  */
-jest.mock('../../commons');
-jest.mock('../../../../../config/store');
+jest.mock('../../../commons');
+jest.mock('../../../../../../config/store');
 
-const { renderGenericComponent, setInstallments } = require('../renderGenericComponent');
+const { renderGenericComponent } = require('../renderGenericComponent');
 const { renderPosTerminals } = require('../pos');
 
 const { applyGiftCards, renderGiftCardLogo, isCartModified } = require('../giftcards/index');
-const { getPaymentMethods } = require('../../commons');
-const { fetchGiftCards } = require('../../commons');
-const store = require('../../../../../config/store');
+const { getPaymentMethods } = require('../../../commons');
+const { fetchGiftCards } = require('../../../commons');
+const store = require('../../../../../../config/store');
 const {setCheckoutConfiguration} = require("../checkoutConfiguration");
 const giftCardHtml = `
       <div id="paymentMethodsList"></div>
@@ -227,7 +227,7 @@ describe('Render Generic Component', () => {
   });
 
   it('should call removeGiftCards with isPartialPaymentExpired', () => {
-    const renderGiftCardComponent = require('*/cartridge/client/default/js/adyen_checkout/giftcards');
+    const renderGiftCardComponent = require('../../checkout/giftcards');
     const now = new Date().toISOString();
     store.checkoutConfiguration = {
       amount : { currency: 'USD', value: 50 }
@@ -256,7 +256,7 @@ describe('Render Generic Component', () => {
   });
 
   it('should call removeGiftCards with cartModified', () => {
-    const renderGiftCardComponent = require('*/cartridge/client/default/js/adyen_checkout/giftcards');
+    const renderGiftCardComponent = require('../../checkout/giftcards');
     store.checkoutConfiguration = {
       amount : { currency: 'USD', value: 50 }
     }
@@ -283,7 +283,7 @@ describe('Render Generic Component', () => {
   });
 
   it('should handle the else part correctly', () => {
-    const renderGiftCardComponent = require('*/cartridge/client/default/js/adyen_checkout/giftcards');
+    const renderGiftCardComponent = require('../../checkout/giftcards');
     store.checkoutConfiguration = {
       amount: { currency: 'USD', value: 50 },
       paymentMethodsResponse: {

@@ -1,6 +1,6 @@
 const { httpClient } = require('../../../commons/httpClient');
 const store = require('../../../../../../config/store');
-const helpers = require('../../../adyen_checkout/helpers');
+const helpers = require('../../../adyen/checkout/helpers');
 const {
   GOOGLE_PAY,
   GOOGLE_PAY_CALLBACK_TRIGGERS,

@@ -1,7 +1,7 @@
-const store = require('../../../../../config/store');
-const constants = require('../../../../../config/constants');
-const { httpClient } = require('../../commons/httpClient');
-const { fetchGiftCards } = require('../../commons');
+const store = require('../../../../../../config/store');
+const constants = require('../../../../../../config/constants');
+const { httpClient } = require('../../../commons/httpClient');
+const { fetchGiftCards } = require('../../../commons');
 
 function getGiftCardElements() {
   const elements = {

@@ -1,4 +1,4 @@
-const helpers = require('../../adyen_checkout/helpers');
+const helpers = require('../../adyen/checkout/helpers');
 const { httpClient } = require('../../commons/httpClient');
 
 /**

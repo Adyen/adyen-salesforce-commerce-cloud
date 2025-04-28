@@ -7,10 +7,10 @@ const {
   renderGiftCardSelectForm,
   showGiftCardWarningMessage,
 } = require('../giftcards');
-const store = require('../../../../../config/store');
+const store = require('../../../../../../config/store');
 
-jest.mock('../../commons');
-jest.mock('../../../../../config/store');
+jest.mock('../../../commons');
+jest.mock('../../../../../../config/store');
 
 beforeEach(() => {
   document.body.innerHTML = `

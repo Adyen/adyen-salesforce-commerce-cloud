@@ -10,9 +10,9 @@ const ApplePayConfig = require('./applePay/applePayConfig');
 const AmazonPayConfig = require('./amazonPay/amazonPayConfig');
 const PayPalConfig = require('./paypal/paypalConfig');
 const GiftCardsConfig = require('./giftcards/giftcardsConfig');
-const store = require('../../../../../config/store');
+const store = require('../../../../../../config/store');
 const helpers = require('../helpers');
-const { httpClient } = require('../../commons/httpClient');
+const { httpClient } = require('../../../commons/httpClient');
 
 function getPaymentMethodsConfiguration(email, paymentMethodsResponse) {
   const { amount, AdyenPaymentMethods } = paymentMethodsResponse;
