@@ -5,7 +5,7 @@
     <input type="hidden" id="adyen-token" name="${pdict.csrf.tokenName}" value="${pdict.csrf.token}"/>
     <isscript>
         var assets = require('*/cartridge/scripts/assets.js');
-        assets.addJs('/js/adyen_giving/adyenGiving.js');
+        assets.addJs('/js/adyen/giving/adyenGiving.js');
     </isscript>
     <script>
         window.Configuration = {
