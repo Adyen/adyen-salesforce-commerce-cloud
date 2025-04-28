@@ -5,7 +5,7 @@ const { PAYPAL } = require('../../../../../../config/constants');
 const { initializeCheckout } = require('../../initializeCheckout');
 
 class Paypal {
-  constructor(config, applicationInfo) {
+  constructor(config, applicationInfo, adyenTranslations) {
     const {
       paypalReviewPageEnabled,
       returnURL,
@@ -33,6 +33,7 @@ class Paypal {
     this.selectShippingMethodUrl = selectShippingMethodUrl;
     this.saveExpressPaymentDataUrl = saveExpressPaymentDataUrl;
     this.applicationInfo = applicationInfo;
+    this.translations = adyenTranslations;
     this.config = config;
   }
 
@@ -223,7 +224,10 @@ class Paypal {
   }
 
   async getComponent() {
-    const checkout = await initializeCheckout(this.applicationInfo);
+    const checkout = await initializeCheckout(
+      this.applicationInfo,
+      this.translations,
+    );
     const paypalConfig = this.getConfig();
     return window.AdyenWeb.createComponent(PAYPAL, checkout, paypalConfig);
   }

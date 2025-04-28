@@ -36,6 +36,7 @@ describe('GooglePay class', () => {
     googlePay = new GooglePay(
       { merchantName: 'Test Merchant' },
       { applicationInfo: 'Test Info' },
+      { 'en-US': {} },
       true,
     );
   });

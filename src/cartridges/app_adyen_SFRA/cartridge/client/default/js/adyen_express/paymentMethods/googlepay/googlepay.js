@@ -9,7 +9,7 @@ const { initializeCheckout } = require('../../initializeCheckout');
 const { createTemporaryBasket } = require('../../../commons');
 
 class GooglePay {
-  constructor(config, applicationInfo, isExpressPdp) {
+  constructor(config, applicationInfo, adyenTranslations, isExpressPdp) {
     const {
       basketAmount,
       showConfirmationAction,
@@ -28,6 +28,7 @@ class GooglePay {
     this.shippingMethodsUrl = shippingMethodsUrl;
     this.selectShippingMethodUrl = selectShippingMethodUrl;
     this.applicationInfo = applicationInfo;
+    this.translations = adyenTranslations;
     this.config = config;
   }
 
@@ -342,7 +343,10 @@ class GooglePay {
   });
 
   getComponent = async () => {
-    const checkout = await initializeCheckout(this.applicationInfo);
+    const checkout = await initializeCheckout(
+      this.applicationInfo,
+      this.translations,
+    );
     const applePayConfig = this.getConfig();
     return window.AdyenWeb.createComponent(
       GOOGLE_PAY,

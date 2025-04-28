@@ -10,6 +10,7 @@ function setCheckoutConfiguration(checkoutOptions) {
     ...store.checkoutConfiguration,
     ...setField('amount', checkoutOptions.amount),
     ...setField('countryCode', checkoutOptions.countryCode),
+    ...setField('translations', checkoutOptions.adyenTranslations),
   };
 }
 

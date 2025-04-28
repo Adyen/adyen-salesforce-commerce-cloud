@@ -36,7 +36,11 @@ function getPaymentMethodConfig(adyenPaymentMethods, paymentMethodType) {
 function renderApplePayButton() {
   $('body').on(`product:render${APPLE_PAY}Button`, async (e, response) => {
     const {
-      paymentMethodsResponse: { AdyenPaymentMethods, applicationInfo } = {},
+      paymentMethodsResponse: {
+        AdyenPaymentMethods,
+        applicationInfo,
+        adyenTranslations,
+      } = {},
       button,
     } = response;
     const applePayConfig = getPaymentMethodConfig(
@@ -46,7 +50,12 @@ function renderApplePayButton() {
     if (!applePayConfig) {
       return;
     }
-    const applePay = new ApplePay(applePayConfig, applicationInfo, true);
+    const applePay = new ApplePay(
+      applePayConfig,
+      applicationInfo,
+      adyenTranslations,
+      true,
+    );
     const applePayComponent = await applePay.getComponent();
     applePayComponent.mount(button);
   });
@@ -55,7 +64,11 @@ function renderApplePayButton() {
 function renderGooglePayButton() {
   $('body').on(`product:render${GOOGLE_PAY}Button`, async (e, response) => {
     const {
-      paymentMethodsResponse: { AdyenPaymentMethods, applicationInfo } = {},
+      paymentMethodsResponse: {
+        AdyenPaymentMethods,
+        applicationInfo,
+        adyenTranslations,
+      } = {},
       button,
     } = response;
     const googlePayConfig = getPaymentMethodConfig(AdyenPaymentMethods, [
@@ -65,7 +78,12 @@ function renderGooglePayButton() {
     if (!googlePayConfig) {
       return;
     }
-    const googlePay = new GooglePay(googlePayConfig, applicationInfo, true);
+    const googlePay = new GooglePay(
+      googlePayConfig,
+      applicationInfo,
+      adyenTranslations,
+      true,
+    );
     const googlePayComponent = await googlePay.getComponent();
     googlePayComponent.mount(button);
   });
