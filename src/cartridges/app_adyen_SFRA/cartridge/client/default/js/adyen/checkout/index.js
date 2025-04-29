@@ -29,26 +29,29 @@ function checkForError() {
 
 async function registerRenderPaymentMethodListener() {
   $('body').on('checkout:renderPaymentMethod', async (e, response) => {
-    if (!store.paymentMethodsResponse) {
-      store.paymentMethodsResponse = await getPaymentMethods();
+    const currentStage = window.location.search.substring(
+      window.location.search.indexOf('=') + 1,
+    );
+    if (currentStage === 'shipping' || currentStage === 'payment') {
+      const paymentMethodsResponse = await getPaymentMethods();
+      const { email } = response;
+      setCheckoutConfiguration({
+        email,
+        paymentMethodsResponse,
+      });
+      await renderGenericComponent(paymentMethodsResponse);
+      const areGiftCardsEnabled =
+        paymentMethodsResponse?.AdyenPaymentMethods?.paymentMethods?.some(
+          (pm) => pm.type === GIFTCARD,
+        );
+      if (areGiftCardsEnabled) {
+        await renderGiftCards(paymentMethodsResponse);
+      }
+      if (window.activeTerminalApiStores) {
+        addStores(window.activeTerminalApiStores);
+      }
+      window.arePaymentMethodsRendering = false;
     }
-    const { email } = response;
-    setCheckoutConfiguration({
-      email,
-      paymentMethodsResponse: store.paymentMethodsResponse,
-    });
-    await renderGenericComponent(store.paymentMethodsResponse);
-    const areGiftCardsEnabled =
-      store.paymentMethodsResponse?.AdyenPaymentMethods?.paymentMethods?.some(
-        (pm) => pm.type === GIFTCARD,
-      );
-    if (areGiftCardsEnabled) {
-      await renderGiftCards(store.paymentMethodsResponse);
-    }
-    if (window.activeTerminalApiStores) {
-      addStores(window.activeTerminalApiStores);
-    }
-    window.arePaymentMethodsRendering = false;
   });
 }
 
