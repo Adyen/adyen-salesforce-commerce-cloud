@@ -29,19 +29,21 @@ function checkForError() {
 
 async function registerRenderPaymentMethodListener() {
   $('body').on('checkout:renderPaymentMethod', async (e, response) => {
-    const paymentMethodsResponse = await getPaymentMethods();
+    if (!store.paymentMethodsResponse) {
+      store.paymentMethodsResponse = await getPaymentMethods();
+    }
     const { email } = response;
     setCheckoutConfiguration({
       email,
-      paymentMethodsResponse,
+      paymentMethodsResponse: store.paymentMethodsResponse,
     });
-    await renderGenericComponent(paymentMethodsResponse);
+    await renderGenericComponent(store.paymentMethodsResponse);
     const areGiftCardsEnabled =
-      paymentMethodsResponse?.AdyenPaymentMethods?.paymentMethods?.some(
+      store.paymentMethodsResponse?.AdyenPaymentMethods?.paymentMethods?.some(
         (pm) => pm.type === GIFTCARD,
       );
     if (areGiftCardsEnabled) {
-      await renderGiftCards(paymentMethodsResponse);
+      await renderGiftCards(store.paymentMethodsResponse);
     }
     if (window.activeTerminalApiStores) {
       addStores(window.activeTerminalApiStores);

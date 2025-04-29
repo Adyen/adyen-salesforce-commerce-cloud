@@ -12,6 +12,7 @@ const {
   AMAZON_PAY,
   PAY_WITH_GOOGLE,
 } = require('../../../../../../config/constants');
+const store = require('../../../../../../config/store');
 
 function getPaymentMethodConfig(adyenPaymentMethods, paymentMethodType) {
   return adyenPaymentMethods?.paymentMethods.find(
@@ -156,13 +157,17 @@ function renderExpressPaymentContainer() {
 }
 
 async function init() {
-  const paymentMethodsResponse = await getPaymentMethods();
-  $(document).ready(async () => {
-    $('body').trigger('cart:renderExpressPaymentContainer', {
-      paymentMethodsResponse,
+  if (window.areCartExpressPaymentsEnabled === 'true') {
+    const paymentMethodsResponse = await getPaymentMethods();
+    store.paymentMethodsResponse = paymentMethodsResponse;
+    $(document).ready(async () => {
+      $('body').trigger('cart:renderExpressPaymentContainer', {
+        paymentMethodsResponse,
+      });
     });
-  });
+  }
 }
+
 module.exports = {
   init,
   renderExpressPaymentContainer,
