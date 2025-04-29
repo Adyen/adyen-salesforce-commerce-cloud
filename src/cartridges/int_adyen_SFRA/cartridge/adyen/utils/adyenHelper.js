@@ -563,26 +563,38 @@ const adyenHelperObj = {
     return paymentRequest;
   },
 
-  setPaymentInstrumentFields(paymentInstrument, stateData) {
-	if (!(paymentInstrument instanceof dw.order.OrderPaymentInstrument)) {
-		return null;
-	}
-    const paymentMethodType = stateData.paymentMethod.type;
-	// Currently this doesn't set the fields for cards and giftcards, they are handled by other flow
-    if (
-      [constants.PAYMENTMETHODS.SCHEME, constants.PAYMENTMETHODS.GIFTCARD].indexOf(paymentMethodType) ===
-      -1
-    ) {
-        paymentInstrument.custom.adyenPaymentMethod =
-          adyenHelperObj.getAdyenComponentType(stateData.paymentMethod.type);
-        paymentInstrument.custom[
-          `${constants.OMS_NAMESPACE}__Adyen_Payment_Method`
-        ] = adyenHelperObj.getAdyenComponentType(stateData.paymentMethod.type);
-        paymentInstrument.custom.Adyen_Payment_Method_Variant =
-          stateData.paymentMethod.type.toLowerCase();
-        paymentInstrument.custom[
-          `${constants.OMS_NAMESPACE}__Adyen_Payment_Method_Variant`
-        ] = stateData.paymentMethod.type.toLowerCase();
+  setPaymentInstrumentFields(paymentInstrument, paymentRequest) {
+    try {
+      if (!(paymentInstrument instanceof dw.order.OrderPaymentInstrument)) {
+        return null;
+      }
+      const paymentMethodType = paymentRequest.paymentMethod.type;
+      // Currently this doesn't set the fields for cards and giftcards, they are handled by other flow
+      if (
+        [
+          constants.PAYMENTMETHODS.SCHEME,
+          constants.PAYMENTMETHODS.GIFTCARD,
+        ].indexOf(paymentMethodType) === -1
+      ) {
+        Transaction.wrap(() => {
+          paymentInstrument.custom.adyenPaymentMethod =
+            adyenHelperObj.getAdyenComponentType(
+              paymentRequest.paymentMethod.type,
+            );
+          paymentInstrument.custom[
+            `${constants.OMS_NAMESPACE}__Adyen_Payment_Method`
+          ] = adyenHelperObj.getAdyenComponentType(
+            paymentRequest.paymentMethod.type,
+          );
+          paymentInstrument.custom.Adyen_Payment_Method_Variant =
+            paymentRequest.paymentMethod.type.toLowerCase();
+          paymentInstrument.custom[
+            `${constants.OMS_NAMESPACE}__Adyen_Payment_Method_Variant`
+          ] = paymentRequest.paymentMethod.type.toLowerCase();
+        });
+      }
+    } catch (e) {
+      AdyenLogs.error_log('Failed to set the payment instrument fields', e);
     }
   },
 
@@ -598,9 +610,6 @@ const adyenHelperObj = {
     const filteredJson = adyenHelperObj.validateStateData(jsonObject);
     const { stateData } = filteredJson;
 
-    Transaction.wrap(() => {
-      adyenHelperObj.setPaymentInstrumentFields(paymentInstrument, stateData);
-    });
     // Add recurringProcessingModel in case shopper wants to save the card from checkout
     if (stateData.storePaymentMethod) {
       stateData.recurringProcessingModel =

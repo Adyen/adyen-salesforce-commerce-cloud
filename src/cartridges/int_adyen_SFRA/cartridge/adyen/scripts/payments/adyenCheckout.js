@@ -151,6 +151,8 @@ function createPaymentRequest(args) {
       paymentInstrument,
       order.getCustomerEmail(),
     );
+    // Set payment instrument fields
+    AdyenHelper.setPaymentInstrumentFields(paymentInstrument, paymentRequest);
 
     const paymentMethodType = paymentRequest.paymentMethod.type;
     paymentRequest = AdyenHelper.add3DS2Data(paymentRequest);

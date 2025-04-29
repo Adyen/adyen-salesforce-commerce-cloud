@@ -266,6 +266,7 @@ jest.mock(
   '*/cartridge/adyen/utils/adyenHelper',
   () => ({
     savePaymentDetails: jest.fn(),
+    setPaymentInstrumentFields: jest.fn(),
     getAdyenHash: jest.fn(() => 'mocked_hash'),
     getLoadingContext: jest.fn(() => 'mocked_loading_context'),
     getCurrencyValueForApi: jest.fn(() => ({
