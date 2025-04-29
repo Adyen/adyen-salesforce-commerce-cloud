@@ -17,6 +17,8 @@ var _require = require('*/cartridge/adyen/config/constants'),
   PAYMENTMETHODS = _require.PAYMENTMETHODS;
 var adyenCheckout = require('*/cartridge/adyen/scripts/payments/adyenCheckout');
 var paypalHelper = require('*/cartridge/adyen/utils/paypalHelper');
+var Collections = require('*/cartridge/scripts/util/collections');
+var shippingHelper = require('*/cartridge/scripts/checkout/shippingHelpers');
 function updateShippingAddress(currentBasket, address) {
   if (address) {
     var _currentBasket$getDef = currentBasket.getDefaultShipment(),
@@ -40,6 +42,7 @@ function getBasket(isExpressPdp) {
  */
 function callGetShippingMethods(req, res, next) {
   try {
+    var _currentShippingMetho;
     var _JSON$parse = JSON.parse(req.form.data),
       address = _JSON$parse.address,
       currentPaymentData = _JSON$parse.currentPaymentData,
@@ -54,11 +57,20 @@ function callGetShippingMethods(req, res, next) {
       return next();
     }
     updateShippingAddress(currentBasket, address);
-    Transaction.wrap(function () {
-      basketCalculationHelpers.calculateTotals(currentBasket);
+    var currentShippingMethodsModels = [];
+    var shipments = currentBasket.getShipments();
+    Collections.forEach(shipments, function (shipment) {
+      if (currentShippingMethodsModels.length > 0) return;
+      var methods = AdyenHelper.getApplicableShippingMethods(shipment, address);
+      Transaction.wrap(function () {
+        shippingHelper.selectShippingMethod(shipment);
+        basketCalculationHelpers.calculateTotals(currentBasket);
+      });
+      if (methods && methods.length > 0) {
+        currentShippingMethodsModels = methods;
+      }
     });
-    var currentShippingMethodsModels = AdyenHelper.getApplicableShippingMethods(currentBasket.getDefaultShipment(), address);
-    if (!(currentShippingMethodsModels !== null && currentShippingMethodsModels !== void 0 && currentShippingMethodsModels.length)) {
+    if (!((_currentShippingMetho = currentShippingMethodsModels) !== null && _currentShippingMetho !== void 0 && _currentShippingMetho.length)) {
       throw new Error('No applicable shipping methods found');
     }
     var response = {};

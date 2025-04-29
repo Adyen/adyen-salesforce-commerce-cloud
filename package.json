@@ -1,6 +1,6 @@
 {
   "name": "app_adyen_SFRA",
-  "version": "25.2.2",
+  "version": "25.2.3",
   "description": "Adyen's official cartridge for SFRA",
   "main": "index.js",
   "paths": {

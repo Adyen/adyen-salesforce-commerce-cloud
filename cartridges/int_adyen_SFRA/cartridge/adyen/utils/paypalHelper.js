@@ -107,17 +107,27 @@ function createPaypalUpdateOrderRequest(pspReference, currentBasket, currentShip
     var _shippingMethod$shipp = shippingMethod.shippingCost,
       currencyCode = _shippingMethod$shipp.currencyCode,
       value = _shippingMethod$shipp.value;
+    var isSelected = shippingMethod.selected;
     return {
       reference: shippingMethod.ID,
       description: shippingMethod.displayName,
       type: 'Shipping',
       amount: {
         currency: currencyCode,
-        value: AdyenHelper.getCurrencyValueForApi(shippingMethod.selected ? currentBasket.adjustedShippingTotalNetPrice : new Money(value, currencyCode)).value
+        value: AdyenHelper.getCurrencyValueForApi(isSelected ? currentBasket.adjustedShippingTotalNetPrice : new Money(value, currencyCode)).value
       },
-      selected: shippingMethod.selected
+      selected: isSelected
     };
   });
+
+  // Ensure at least one method is selected
+  var anySelected = deliveryMethods.some(function (method) {
+    return method.selected;
+  });
+  if (!anySelected && deliveryMethods.length > 0) {
+    deliveryMethods[0].selected = true;
+    deliveryMethods[0].amount.value = AdyenHelper.getCurrencyValueForApi(currentBasket.adjustedShippingTotalNetPrice).value;
+  }
   return {
     pspReference: pspReference,
     paymentData: paymentData,
