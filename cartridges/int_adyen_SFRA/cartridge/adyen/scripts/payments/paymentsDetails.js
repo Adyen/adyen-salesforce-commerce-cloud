@@ -6,17 +6,17 @@ var Transaction = require('dw/system/Transaction');
 var AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
 var adyenCheckout = require('*/cartridge/adyen/scripts/payments/adyenCheckout');
 var AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
-function getRedirectUrl(paymentsDetailsResponse, orderToken) {
-  var order = OrderMgr.getOrder(paymentsDetailsResponse.merchantReference, orderToken);
-  if (order) {
-    var paymentInstruments = order.getPaymentInstruments(AdyenHelper.getOrderMainPaymentInstrumentType(order));
-    var redirectUrl = AdyenHelper.createRedirectUrl(paymentInstruments[0], paymentsDetailsResponse.merchantReference, orderToken);
-    Transaction.wrap(function () {
-      paymentInstruments[0].paymentTransaction.custom.Adyen_authResult = JSON.stringify(paymentsDetailsResponse);
-    });
-    return redirectUrl;
-  }
-  return undefined;
+function getRedirectUrl(paymentInstruments, orderNo, orderToken) {
+  var redirectUrl = AdyenHelper.createRedirectUrl(paymentInstruments[0], orderNo, orderToken);
+  return redirectUrl;
+}
+function updatePaymentInstrument(paymentInstrument, paymentsDetailsResponse) {
+  Transaction.wrap(function () {
+    paymentInstrument.paymentTransaction.custom.Adyen_authResult = JSON.stringify(paymentsDetailsResponse);
+  });
+}
+function getOrder(orderNo, orderToken) {
+  return orderNo ? OrderMgr.getOrder(orderNo, orderToken) : undefined;
 }
 
 /*
@@ -26,23 +26,27 @@ function paymentsDetails(req, res, next) {
   try {
     var _request$data;
     var request = JSON.parse(req.form.data);
+    var orderNo = session.privacy.orderNo;
+    var orderToken = request.orderToken;
+    var order = getOrder(orderNo, orderToken);
     var isAmazonpay = (request === null || request === void 0 ? void 0 : (_request$data = request.data) === null || _request$data === void 0 ? void 0 : _request$data.paymentMethod) === 'amazonpay';
     if (request.data) {
       request.data.paymentMethod = undefined;
     }
     var paymentsDetailsResponse = adyenCheckout.doPaymentsDetailsCall(request.data);
     var response = AdyenHelper.createAdyenCheckoutResponse(paymentsDetailsResponse);
-    // Create signature to verify returnUrl
-    var redirectUrl = getRedirectUrl(paymentsDetailsResponse, request.orderToken);
+    if (order) {
+      var paymentInstruments = order.getPaymentInstruments(AdyenHelper.getOrderMainPaymentInstrumentType(order));
+      updatePaymentInstrument(paymentInstruments[0], paymentsDetailsResponse);
+      // Create signature to verify returnUrl
+      response.redirectUrl = getRedirectUrl(paymentInstruments, orderNo, orderToken);
+    }
     if (isAmazonpay) {
       response.fullResponse = {
         pspReference: paymentsDetailsResponse.pspReference,
         paymentMethod: paymentsDetailsResponse.additionalData.paymentMethod,
         resultCode: paymentsDetailsResponse.resultCode
       };
-    }
-    if (redirectUrl) {
-      response.redirectUrl = redirectUrl;
     }
     res.json(response);
     return next();
