@@ -3,7 +3,7 @@ const {
   setCheckoutConfiguration,
   actionHandler,
 } = require('./checkoutConfiguration');
-const { renderGenericComponent } = require('./renderGenericComponent');
+const { renderCheckout } = require('./renderPaymentMethod');
 const {
   assignPaymentMethodValue,
   showValidation,
@@ -15,6 +15,7 @@ const { getPaymentMethods } = require('../commons');
 const { GIFTCARD } = require('../../../../../config/constants');
 const { renderGiftCards } = require('./giftcards');
 const { addStores } = require('./pos');
+const helpers = require('./helpers');
 
 function checkForError() {
   const name = 'paymentError';
@@ -31,11 +32,11 @@ async function registerRenderPaymentMethodListener() {
   $('body').on('checkout:renderPaymentMethod', async (e, response) => {
     const paymentMethodsResponse = await getPaymentMethods();
     const { email } = response;
-    setCheckoutConfiguration({
+    await setCheckoutConfiguration({
       email,
       paymentMethodsResponse,
     });
-    await renderGenericComponent(paymentMethodsResponse);
+    await renderCheckout(paymentMethodsResponse);
     const areGiftCardsEnabled =
       paymentMethodsResponse?.AdyenPaymentMethods?.paymentMethods?.some(
         (pm) => pm.type === GIFTCARD,
@@ -46,18 +47,10 @@ async function registerRenderPaymentMethodListener() {
     if (window.activeTerminalApiStores) {
       addStores(window.activeTerminalApiStores);
     }
+    $('body').trigger('checkout:selectFirstPaymentMethod');
     window.arePaymentMethodsRendering = false;
   });
 }
-
-$(document).ready(async () => {
-  checkForError();
-  await registerRenderPaymentMethodListener();
-  const storedCustomerEmail = sessionStorage.getItem('customerEmail');
-  $('body').trigger('checkout:renderPaymentMethod', {
-    email: storedCustomerEmail,
-  });
-});
 
 function setAdyenInputValues() {
   const customMethods = {};
@@ -177,7 +170,7 @@ function handlePaymentAction() {
   });
 }
 
-async function init() {
+function registerUpdateCheckoutView() {
   $('body').on('checkout:updateCheckoutView', (event, data) => {
     const storedCustomerEmail = sessionStorage.getItem('customerEmail');
     if (storedCustomerEmail !== data?.order?.orderEmail) {
@@ -193,7 +186,9 @@ async function init() {
     }
     billing.methods.updatePaymentInformation(data.order, data.options);
   });
+}
 
+function registerEmailChangeHandler() {
   $('input[id="email"]').on('change', (e) => {
     const emailPattern = /^[\w.%+-]+@[\w.-]+\.[\w]{2,6}$/;
     if (emailPattern.test(e.target.value)) {
@@ -209,8 +204,37 @@ async function init() {
   });
 }
 
+function registerFirstPaymentMethod() {
+  $('body').on('checkout:selectFirstPaymentMethod', () => {
+    const firstPaymentMethod = document.querySelector(
+      'input[type=radio][name=brandCode]',
+    );
+    if (firstPaymentMethod) {
+      firstPaymentMethod.checked = true;
+      helpers.displaySelectedMethod(firstPaymentMethod.value);
+    }
+  });
+}
+
+function init() {
+  $(document).ready(() => {
+    checkForError();
+    const storedCustomerEmail = sessionStorage.getItem('customerEmail');
+    $('body').trigger('checkout:renderPaymentMethod', {
+      email: storedCustomerEmail,
+    });
+    helpers.createShowConfirmationForm(
+      window.ShowConfirmationPaymentFromComponent,
+    );
+  });
+}
+
 module.exports = {
   submitPayment,
   handlePaymentAction,
+  registerUpdateCheckoutView,
+  registerEmailChangeHandler,
+  registerRenderPaymentMethodListener,
+  registerFirstPaymentMethod,
   init,
 };
