@@ -188,14 +188,9 @@ async function init() {
     if (storedCustomerEmail !== data?.order?.orderEmail) {
       sessionStorage.setItem('customerEmail', data?.order?.orderEmail);
     }
-    const currentStage = window.location.search.substring(
-      window.location.search.indexOf('=') + 1,
-    );
-    if (currentStage === 'shipping' || currentStage === 'payment') {
-      $('body').trigger('checkout:renderPaymentMethod', {
-        email: data?.order?.orderEmail,
-      });
-    }
+    $('body').trigger('checkout:renderPaymentMethod', {
+      email: data?.order?.orderEmail,
+    });
     billing.methods.updatePaymentInformation(data.order, data.options);
   });
 
