@@ -1,4 +1,4 @@
-const { getPaymentMethods } = require('../../commons');
+const { getExpressPaymentMethods } = require('../../commons');
 const {
   Paypal,
   ApplePay,
@@ -143,6 +143,7 @@ function renderExpressPaymentContainer() {
     const expressPaymentButtons = getExpressPaymentButtons(
       paymentMethodsResponse,
     );
+    console.log(expressPaymentButtons);
     $expressPaymentButtonsContainer.replaceChildren(...expressPaymentButtons);
     $('#express-container').spinner().start();
     expressPaymentButtons.forEach((button) => {
@@ -158,7 +159,7 @@ function renderExpressPaymentContainer() {
 
 async function init() {
   if (window.areCartExpressPaymentsEnabled === 'true') {
-    const paymentMethodsResponse = await getPaymentMethods();
+    const paymentMethodsResponse = await getExpressPaymentMethods();
     store.paymentMethodsResponse = paymentMethodsResponse;
     $(document).ready(async () => {
       $('body').trigger('cart:renderExpressPaymentContainer', {

@@ -3,7 +3,7 @@ const {
   GOOGLE_PAY,
   PAY_WITH_GOOGLE,
 } = require('../../../../../../config/constants');
-const { getPaymentMethods } = require('../../commons/index');
+const { getExpressPaymentMethods } = require('../../commons/index');
 const { httpClient } = require('../../commons/httpClient');
 const { ApplePay, GooglePay } = require('../paymentMethods');
 
@@ -141,7 +141,7 @@ function renderExpressPaymentContainer() {
 
 async function init() {
   if (window.areExpressPaymentsEnabledOnPdp === 'true') {
-    const paymentMethodsResponse = await getPaymentMethods();
+    const paymentMethodsResponse = await getExpressPaymentMethods();
     $('body').on('product:updateAddToCart', (e, response) => {
       $('body').trigger('product:renderExpressPaymentContainer', {
         product: response.product,

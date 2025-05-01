@@ -111,6 +111,13 @@ server.post(
 );
 
 server.post(
+  'GetExpressPaymentMethods',
+  server.middleware.https,
+  csrf.validateRequest,
+  adyen.getCheckoutExpressPaymentMethods,
+);
+
+server.post(
   'GetConnectedTerminals',
   server.middleware.https,
   adyen.getConnectedTerminals,

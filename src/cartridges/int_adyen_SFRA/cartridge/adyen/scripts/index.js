@@ -1,4 +1,5 @@
 const getCheckoutPaymentMethods = require('*/cartridge/adyen/scripts/payments/getCheckoutPaymentMethods');
+const getCheckoutExpressPaymentMethods = require('*/cartridge/adyen/scripts/expressPayments/getCheckoutExpressPaymentMethods');
 const getConnectedTerminals = require('*/cartridge/adyen/scripts/pos/getConnectedTerminals');
 const paymentFromComponent = require('*/cartridge/adyen/scripts/payments/paymentFromComponent');
 const paymentsDetails = require('*/cartridge/adyen/scripts/payments/paymentsDetails');
@@ -24,6 +25,7 @@ const saveExpressPaymentData = require('*/cartridge/adyen/scripts/expressPayment
 
 module.exports = {
   getCheckoutPaymentMethods,
+  getCheckoutExpressPaymentMethods,
   paymentFromComponent,
   paymentsDetails,
   redirect3ds1Response,
