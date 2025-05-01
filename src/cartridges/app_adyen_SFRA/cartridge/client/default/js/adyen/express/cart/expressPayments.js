@@ -143,7 +143,6 @@ function renderExpressPaymentContainer() {
     const expressPaymentButtons = getExpressPaymentButtons(
       paymentMethodsResponse,
     );
-    console.log(expressPaymentButtons);
     $expressPaymentButtonsContainer.replaceChildren(...expressPaymentButtons);
     $('#express-container').spinner().start();
     expressPaymentButtons.forEach((button) => {
