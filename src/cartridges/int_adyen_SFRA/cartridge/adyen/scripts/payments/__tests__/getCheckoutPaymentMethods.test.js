@@ -72,8 +72,6 @@ describe('getCheckoutPaymentMethods', () => {
           version: 'SFRA',
         },
       },
-      cartExpressMethods: [],
-      pdpExpressMethods: [],
     });
     expect(next).toHaveBeenCalled();
   });
