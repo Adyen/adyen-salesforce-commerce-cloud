@@ -37,6 +37,8 @@ module.exports = {
     AMAZONPAY: 'amazonpay',
     PAYPAL: 'paypal',
     GOOGLEPAY: 'googlepay',
+    SCHEME: 'scheme',
+    GIFTCARD: 'giftcard',
   },
 
   CAN_SKIP_SUMMARY_PAGE: ['applepay', 'cashapp', 'upi', 'googlepay'],
