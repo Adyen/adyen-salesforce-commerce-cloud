@@ -38,6 +38,10 @@ module.exports = {
     AMAZONPAY: 'amazonpay',
     PAYPAL: 'paypal',
     GOOGLEPAY: 'googlepay',
+    PAYWITHGOOGLE: 'paywithgoogle',
+    SCHEME: 'scheme',
+    IDEAL: 'ideal',
+    SEPADIRECTDEBIT: 'sepadirectdebit',
   },
 
   CAN_SKIP_SUMMARY_PAGE: ['applepay', 'cashapp', 'upi', 'googlepay'],

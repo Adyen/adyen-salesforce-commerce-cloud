@@ -78,14 +78,18 @@ function donate(donationReference, donationAmount, orderToken) {
     const donationCampaignType = donationCampaign.donation?.type;
 
     // for iDeal donations, the payment method variant needs to be set to sepadirectdebit
-    if (paymentMethodVariant === 'ideal') {
-      paymentMethodVariant = 'sepadirectdebit';
+    if (paymentMethodVariant === constants.PAYMENTMETHODS.IDEAL) {
+      paymentMethodVariant = constants.PAYMENTMETHODS.SEPADIRECTDEBIT;
     }
     // for Apple Pay donations, the payment method variant needs to be the brand
-    if (paymentMethodVariant === 'applepay') {
-      paymentMethodVariant =
-        paymentData.paymentMethod?.brand ||
-        paymentData.fullResponse?.paymentMethod?.brand;
+    if (
+      [
+        constants.PAYMENTMETHODS.APPLEPAY,
+        constants.PAYMENTMETHODS.GOOGLEPAY,
+        constants.PAYMENTMETHODS.PAYWITHGOOGLE,
+      ].includes(paymentMethodVariant)
+    ) {
+      paymentMethodVariant = constants.PAYMENTMETHODS.SCHEME;
     }
     const requestObject = {
       merchantAccount: AdyenConfigs.getAdyenMerchantAccount(),
