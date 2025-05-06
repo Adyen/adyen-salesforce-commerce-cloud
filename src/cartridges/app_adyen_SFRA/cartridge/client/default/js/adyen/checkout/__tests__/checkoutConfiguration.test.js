@@ -28,16 +28,28 @@ jest.mock('../../commons/httpClient', () => ({
   }))
 }))
 
-beforeEach(() => {
+beforeEach(async () => {
   jest.clearAllMocks();
   querySelector = document.querySelector;
   window.Configuration = { environment: 'TEST' };
   window.klarnaWidgetEnabled = true;
   window.merchantAccount = 'test_merchant';
   window.customerEmail = 'test@email.com';
+  window.AdyenWeb = {
+    AdyenCheckout: jest.fn(async () => ({
+      create: jest.fn(),
+      paymentMethodsResponse: {
+        storedPaymentMethods: [{ supportedShopperInteractions: ['Ecommerce'] }],
+        paymentMethods: [{ type: 'amazonpay' }],
+        adyenDescriptions: {
+          amazonpay: 'testDescription'
+        }
+      },
+    }))
+  };
   store.checkoutConfiguration = {};
   const amount = { value: 150, currency: 'USD' };
-  setCheckoutConfiguration({email: window.customerEmail, paymentMethodsResponse: { amount }});
+  await setCheckoutConfiguration({email: window.customerEmail, paymentMethodsResponse: { amount }});
   card = store.paymentMethodsConfiguration.scheme
   paypal = store.paymentMethodsConfiguration.paypal
   amazonpay = store.paymentMethodsConfiguration.amazonpay

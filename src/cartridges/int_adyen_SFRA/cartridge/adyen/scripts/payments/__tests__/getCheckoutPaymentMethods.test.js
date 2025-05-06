@@ -55,6 +55,7 @@ describe('getCheckoutPaymentMethods', () => {
             type: 'visa',
           },
         ],
+        storedPaymentMethods: [],
       },
       amount: {
         currency: 'EUR',

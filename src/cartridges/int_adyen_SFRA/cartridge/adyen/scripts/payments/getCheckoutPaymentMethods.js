@@ -5,8 +5,10 @@ const translations = require('*/cartridge/config/adyenTranslations');
 const paymentMethodDescriptions = require('*/cartridge/adyen/config/paymentMethodDescriptions');
 const getPaymentMethods = require('*/cartridge/adyen/scripts/payments/adyenGetPaymentMethods');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
+const AdyenConfigs = require('*/cartridge/adyen/utils/adyenConfigs');
+const constants = require('*/cartridge/adyen/config/constants');
 
-function getCountryCode(currentBasket, locale) {
+const getCountryCode = (currentBasket, locale) => {
   let countryCode;
   if (currentBasket) {
     const { shippingAddress } = currentBasket.getDefaultShipment();
@@ -15,7 +17,7 @@ function getCountryCode(currentBasket, locale) {
     }
   }
   return countryCode || Locale.getLocale(locale.id).country;
-}
+};
 
 const getRemainingAmount = (giftCardResponse, currency, currentBasket) => {
   if (giftCardResponse && JSON.parse(giftCardResponse).remainingAmount) {
@@ -26,6 +28,17 @@ const getRemainingAmount = (giftCardResponse, currency, currentBasket) => {
     ? AdyenHelper.getCurrencyValueForApi(currentBasket.getTotalGrossPrice())
     : new dw.value.Money(1000, currency);
 };
+
+const supportedStoredPaymentMethods = (storedPaymentMethods) =>
+  AdyenConfigs.getAdyenRecurringPaymentsEnabled() && storedPaymentMethods
+    ? storedPaymentMethods.filter(
+        (pm) =>
+          pm.type === constants.SCHEME &&
+          pm.supportedShopperInteractions.includes(
+            constants.SHOPPER_INTERACTIONS.ECOMMERCE,
+          ),
+      )
+    : [];
 
 function getCheckoutPaymentMethods(req, res, next) {
   try {
@@ -50,7 +63,12 @@ function getCheckoutPaymentMethods(req, res, next) {
     );
 
     res.json({
-      AdyenPaymentMethods: paymentMethods,
+      AdyenPaymentMethods: {
+        paymentMethods: paymentMethods.paymentMethods,
+        storedPaymentMethods: supportedStoredPaymentMethods(
+          paymentMethods.storedPaymentMethods,
+        ),
+      },
       imagePath: adyenURL,
       adyenDescriptions: paymentMethodDescriptions,
       adyenTranslations: translations,

@@ -9,6 +9,7 @@ module.exports = {
   PAYMENT_INSTRUMENT_ADYEN_CREDIT: 'ADYEN_CREDIT',
   PAYMENT_INSTRUMENT_ADYEN_POS: 'Adyen_POS',
   PAYMENT_INSTRUMENT_ADYEN_COMPONENT: 'Adyen_Component',
+  SCHEME: 'scheme',
 
   // Possible checkout result codes
   RESULTCODES: {

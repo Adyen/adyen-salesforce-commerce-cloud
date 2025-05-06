@@ -11,7 +11,6 @@ const {
   SUCCESS,
   NOTENOUGHBALANCE,
 } = require('../../../../../../../config/constants');
-const { initializeCheckout } = require('../../renderGenericComponent');
 
 class GiftCardConfig {
   constructor(store, httpClient, helpers) {
@@ -205,7 +204,6 @@ class GiftCardConfig {
         sessionStorage.setItem('partialPaymentsObj', JSON.stringify(rest));
         this.store.addedGiftCards = giftCards;
         this.helpers.setOrderFormData(response);
-        initializeCheckout();
         resolve();
       }
     });
