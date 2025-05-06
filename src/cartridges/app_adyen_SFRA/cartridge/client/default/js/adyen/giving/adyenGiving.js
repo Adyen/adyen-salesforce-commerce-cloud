@@ -4,7 +4,7 @@ const store = require('../../../../../config/store');
 let checkout;
 let adyenGivingComponent;
 const adyenGivingNode = document.getElementById('donate-container');
-const orderTotal = window.givingConfig.orderTotal.replace(/[^0-9.]/g, '');
+const orderTotal = window.givingConfig.orderTotal.replace(/[^\d]/g, '');
 const {
   donationProperties,
   nonprofitName,
