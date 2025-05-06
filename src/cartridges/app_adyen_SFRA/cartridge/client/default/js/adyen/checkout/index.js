@@ -32,11 +32,8 @@ function checkForError() {
 
 async function registerRenderPaymentMethodListener() {
   $('body').on('checkout:renderPaymentMethod', async (e, response) => {
-    const { email, skipFetching } = response;
-    if (!paymentMethodsResponse && !skipFetching) {
-      paymentMethodsResponse = await getPaymentMethods();
-    }
-    setCheckoutConfiguration({
+    const { email } = response;
+    await setCheckoutConfiguration({
       email,
       paymentMethodsResponse,
     });
@@ -175,7 +172,15 @@ function handlePaymentAction() {
 }
 
 function registerUpdateCheckoutView() {
-  $('body').on('checkout:updateCheckoutView', (event, data) => {
+  $('body').on('checkout:updateCheckoutView', async (event, data) => {
+    const { shipping } = data.order;
+    if (
+      shipping.length &&
+      shipping[0].shippingAddress?.countryCode.value !==
+        paymentMethodsResponse?.countryCode
+    ) {
+      paymentMethodsResponse = await getPaymentMethods();
+    }
     const storedCustomerEmail = sessionStorage.getItem('customerEmail');
     if (storedCustomerEmail !== data?.order?.orderEmail) {
       sessionStorage.setItem('customerEmail', data?.order?.orderEmail);
@@ -217,8 +222,9 @@ function registerFirstPaymentMethod() {
 }
 
 function init() {
-  $(document).ready(() => {
+  $(document).ready(async () => {
     checkForError();
+    paymentMethodsResponse = await getPaymentMethods();
     const storedCustomerEmail = sessionStorage.getItem('customerEmail');
     $('body').trigger('checkout:renderPaymentMethod', {
       email: storedCustomerEmail,
