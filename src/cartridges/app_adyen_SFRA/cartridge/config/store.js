@@ -32,8 +32,6 @@ class Store {
 
   @observable addedGiftCards;
 
-  @observable paymentMethodsResponsePerCountry = {};
-
   @computed get maskedCardNumber() {
     return `${this.MASKED_CC_PREFIX}${this.endDigits}`;
   }

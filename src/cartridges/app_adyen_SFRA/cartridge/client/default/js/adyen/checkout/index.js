@@ -16,6 +16,8 @@ const { GIFTCARD } = require('../../../../../config/constants');
 const { renderGiftCards } = require('./giftcards');
 const { addStores } = require('./pos');
 
+let paymentMethodsResponse = null;
+
 function checkForError() {
   const name = 'paymentError';
   const error = new RegExp(`[?&]${encodeURIComponent(name)}=([^&]*)`).exec(
@@ -29,29 +31,26 @@ function checkForError() {
 
 async function registerRenderPaymentMethodListener() {
   $('body').on('checkout:renderPaymentMethod', async (e, response) => {
-    const currentStage = window.location.search.substring(
-      window.location.search.indexOf('=') + 1,
-    );
-    if (currentStage === 'shipping' || currentStage === 'payment') {
-      const paymentMethodsResponse = await getPaymentMethods();
-      const { email } = response;
-      setCheckoutConfiguration({
-        email,
-        paymentMethodsResponse,
-      });
-      await renderGenericComponent(paymentMethodsResponse);
-      const areGiftCardsEnabled =
-        paymentMethodsResponse?.AdyenPaymentMethods?.paymentMethods?.some(
-          (pm) => pm.type === GIFTCARD,
-        );
-      if (areGiftCardsEnabled) {
-        await renderGiftCards(paymentMethodsResponse);
-      }
-      if (window.activeTerminalApiStores) {
-        addStores(window.activeTerminalApiStores);
-      }
-      window.arePaymentMethodsRendering = false;
+    const { email, skipFetching } = response;
+    if (!paymentMethodsResponse && !skipFetching) {
+      paymentMethodsResponse = await getPaymentMethods();
     }
+    setCheckoutConfiguration({
+      email,
+      paymentMethodsResponse,
+    });
+    await renderGenericComponent(paymentMethodsResponse);
+    const areGiftCardsEnabled =
+      paymentMethodsResponse?.AdyenPaymentMethods?.paymentMethods?.some(
+        (pm) => pm.type === GIFTCARD,
+      );
+    if (areGiftCardsEnabled) {
+      await renderGiftCards(paymentMethodsResponse);
+    }
+    if (window.activeTerminalApiStores) {
+      addStores(window.activeTerminalApiStores);
+    }
+    window.arePaymentMethodsRendering = false;
   });
 }
 
@@ -184,6 +183,7 @@ function handlePaymentAction() {
 
 async function init() {
   $('body').on('checkout:updateCheckoutView', (event, data) => {
+    console.log(event, data);
     const storedCustomerEmail = sessionStorage.getItem('customerEmail');
     if (storedCustomerEmail !== data?.order?.orderEmail) {
       sessionStorage.setItem('customerEmail', data?.order?.orderEmail);
@@ -203,6 +203,7 @@ async function init() {
         sessionStorage.setItem('customerEmail', emailValue);
         $('body').trigger('checkout:renderPaymentMethod', {
           email: emailValue,
+          skipFetching: true,
         });
       }
     }
