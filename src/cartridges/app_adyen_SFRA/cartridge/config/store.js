@@ -1,5 +1,5 @@
 // eslint-disable-next-line
-const { observable, computed } = require('mobx');
+const { observable, computed, action } = require('mobx');
 
 class Store {
   MASKED_CC_PREFIX = '************';
@@ -8,7 +8,7 @@ class Store {
 
   @observable endDigits;
 
-  @observable selectedMethod;
+  @observable selectedMethod = '';
 
   @observable componentsObj = {};
 
@@ -55,11 +55,16 @@ class Store {
     );
   }
 
-  updateSelectedPayment(method, key, val) {
+  @action updateSelectedPayment(method, key, val) {
     if (!this.componentsObj[method]) {
       this.componentsObj[method] = {};
     }
     this.componentsObj[method][key] = val;
+  }
+
+  @action clearPaymentMethod() {
+    this.componentsObj = {};
+    this.selectedMethod = '';
   }
 }
 

@@ -154,7 +154,16 @@ async function checkIfNodeIsAvailable(node) {
   return true;
 }
 
-module.exports.renderPaymentMethod = async function renderPaymentMethod(
+/**
+ * To avoid re-rendering components twice, unmounts existing components from payment methods list
+ */
+function clearPaymentMethodsContainer() {
+  const paymentMethodContainer = document.querySelector('#paymentMethodsList');
+  paymentMethodContainer.replaceChildren();
+  store.clearPaymentMethod();
+}
+
+async function renderPaymentMethod(
   paymentMethod,
   isStored,
   path,
@@ -210,4 +219,48 @@ module.exports.renderPaymentMethod = async function renderPaymentMethod(
   }
   // eslint-disable-next-line
   return canRender;
+}
+
+/**
+ * Renders the retrieved payment methods excluding gift cards (including card component)
+ */
+async function renderCheckout(paymentMethodsResponse) {
+  const {
+    AdyenPaymentMethods: { paymentMethods, storedPaymentMethods },
+    imagePath,
+    adyenDescriptions,
+  } = paymentMethodsResponse;
+  clearPaymentMethodsContainer();
+
+  const paymentMethodsWithoutGiftCards = paymentMethods.filter(
+    (pm) => pm.type !== constants.GIFTCARD,
+  );
+
+  const renderStoredPaymentMethods = storedPaymentMethods.map((pm) =>
+    renderPaymentMethod(
+      pm,
+      true,
+      imagePath,
+      adyenDescriptions ? adyenDescriptions[pm.type] : null,
+    ),
+  );
+  const renderPaymentMethodsWithoutGiftCards =
+    paymentMethodsWithoutGiftCards.map((pm) =>
+      renderPaymentMethod(
+        pm,
+        false,
+        imagePath,
+        adyenDescriptions ? adyenDescriptions[pm.type] : null,
+      ),
+    );
+
+  await Promise.all([
+    ...renderStoredPaymentMethods,
+    ...renderPaymentMethodsWithoutGiftCards,
+  ]);
+}
+
+module.exports = {
+  renderCheckout,
+  renderPaymentMethod,
 };

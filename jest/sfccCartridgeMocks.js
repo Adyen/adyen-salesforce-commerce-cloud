@@ -358,6 +358,7 @@ jest.mock(
     isApplePayExpressOnPdpEnabled: jest.fn(() => false),
     isGooglePayExpressOnPdpEnabled: jest.fn(() => false),
     getExpressPaymentsOrder: jest.fn(),
+    getAdyenRecurringPaymentsEnabled: jest.fn(() => true),
   }),
   { virtual: true },
 );

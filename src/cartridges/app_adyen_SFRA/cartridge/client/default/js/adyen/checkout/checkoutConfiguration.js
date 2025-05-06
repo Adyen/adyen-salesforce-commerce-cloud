@@ -46,16 +46,36 @@ async function handleOnAdditionalDetails(state) {
   }
 }
 
-function setCheckoutConfiguration({ email, paymentMethodsResponse }) {
+async function setCheckoutConfiguration({ email, paymentMethodsResponse }) {
+  const {
+    amount,
+    countryCode,
+    AdyenPaymentMethods,
+    imagePath,
+    adyenTranslations,
+  } = paymentMethodsResponse;
   const paymentMethodsConfiguration = getPaymentMethodsConfiguration(
     email,
     paymentMethodsResponse,
   );
-  store.checkoutConfiguration.onChange = handleOnChange;
-  store.checkoutConfiguration.onAdditionalDetails = handleOnAdditionalDetails;
-  store.checkoutConfiguration.showPayButton = false;
-  store.checkoutConfiguration.clientKey = window.adyenClientKey;
+  store.checkoutConfiguration = {
+    ...store.checkoutConfiguration,
+    showPayButton: false,
+    onChange: handleOnChange,
+    onAdditionalDetails: handleOnAdditionalDetails,
+    clientKey: window.adyenClientKey,
+    translations: adyenTranslations,
+    amount,
+    countryCode,
+    paymentMethodsResponse: {
+      ...AdyenPaymentMethods,
+      imagePath,
+    },
+  };
   store.paymentMethodsConfiguration = paymentMethodsConfiguration;
+  store.checkout = await window.AdyenWeb.AdyenCheckout(
+    store.checkoutConfiguration,
+  );
 }
 
 module.exports = {
