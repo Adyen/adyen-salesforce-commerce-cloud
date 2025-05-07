@@ -8,8 +8,10 @@
    window.clientKey = "${AdyenConfigs.getAdyenClientKey()}",
    window.locale = "${request.locale}";
    window.countryCode = window.locale.slice(-2);
+   window.areCartExpressPaymentsEnabled = "${AdyenConfigs.areExpressPaymentsEnabled()}";
+   window.areExpressPaymentsEnabledOnPdp = "${AdyenConfigs.areExpressPaymentsEnabledOnPdp()}";
 
-   window.getPaymentMethodsURL = "${URLUtils.https('Adyen-GetPaymentMethods')}";
+   window.getExpressPaymentMethodsURL = "${URLUtils.https('Adyen-GetExpressPaymentMethods')}";
    window.shippingMethodsUrl = "${URLUtils.https('Adyen-ShippingMethods')}";
    window.selectShippingMethodUrl = "${URLUtils.https('Adyen-SelectShippingMethod')}";
    window.paymentsDetailsURL = "${URLUtils.https('Adyen-PaymentsDetails')}";

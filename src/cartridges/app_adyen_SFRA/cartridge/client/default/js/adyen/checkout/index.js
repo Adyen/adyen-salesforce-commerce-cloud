@@ -17,6 +17,8 @@ const { renderGiftCards } = require('./giftcards');
 const { addStores } = require('./pos');
 const helpers = require('./helpers');
 
+let paymentMethodsResponse = null;
+
 function checkForError() {
   const name = 'paymentError';
   const error = new RegExp(`[?&]${encodeURIComponent(name)}=([^&]*)`).exec(
@@ -30,7 +32,6 @@ function checkForError() {
 
 async function registerRenderPaymentMethodListener() {
   $('body').on('checkout:renderPaymentMethod', async (e, response) => {
-    const paymentMethodsResponse = await getPaymentMethods();
     const { email } = response;
     await setCheckoutConfiguration({
       email,
@@ -171,19 +172,22 @@ function handlePaymentAction() {
 }
 
 function registerUpdateCheckoutView() {
-  $('body').on('checkout:updateCheckoutView', (event, data) => {
+  $('body').on('checkout:updateCheckoutView', async (event, data) => {
+    const { shipping } = data.order;
+    if (
+      shipping.length &&
+      shipping[0].shippingAddress?.countryCode.value !==
+        paymentMethodsResponse?.countryCode
+    ) {
+      paymentMethodsResponse = await getPaymentMethods();
+    }
     const storedCustomerEmail = sessionStorage.getItem('customerEmail');
     if (storedCustomerEmail !== data?.order?.orderEmail) {
       sessionStorage.setItem('customerEmail', data?.order?.orderEmail);
     }
-    const currentStage = window.location.search.substring(
-      window.location.search.indexOf('=') + 1,
-    );
-    if (currentStage === 'shipping' || currentStage === 'payment') {
-      $('body').trigger('checkout:renderPaymentMethod', {
-        email: data?.order?.orderEmail,
-      });
-    }
+    $('body').trigger('checkout:renderPaymentMethod', {
+      email: data?.order?.orderEmail,
+    });
     billing.methods.updatePaymentInformation(data.order, data.options);
   });
 }
@@ -217,8 +221,9 @@ function registerFirstPaymentMethod() {
 }
 
 function init() {
-  $(document).ready(() => {
+  $(document).ready(async () => {
     checkForError();
+    paymentMethodsResponse = await getPaymentMethods();
     const storedCustomerEmail = sessionStorage.getItem('customerEmail');
     $('body').trigger('checkout:renderPaymentMethod', {
       email: storedCustomerEmail,

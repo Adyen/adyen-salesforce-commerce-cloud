@@ -32,6 +32,17 @@ module.exports.getPaymentMethods = async function getPaymentMethods() {
   });
 };
 
+/**
+ * Makes an ajax call to the controller function GetExpressPaymentMethods
+ */
+module.exports.getExpressPaymentMethods =
+  async function getExpressPaymentMethods() {
+    return httpClient({
+      method: 'POST',
+      url: window.getExpressPaymentMethodsURL,
+    });
+  };
+
 module.exports.getConnectedTerminals = async function getConnectedTerminals() {
   return $.ajax({
     url: window.getConnectedTerminalsURL,

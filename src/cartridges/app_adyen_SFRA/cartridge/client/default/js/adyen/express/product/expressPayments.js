@@ -3,7 +3,7 @@ const {
   GOOGLE_PAY,
   PAY_WITH_GOOGLE,
 } = require('../../../../../../config/constants');
-const { getPaymentMethods } = require('../../commons/index');
+const { getExpressPaymentMethods } = require('../../commons/index');
 const { httpClient } = require('../../commons/httpClient');
 const { ApplePay, GooglePay } = require('../paymentMethods');
 
@@ -140,28 +140,30 @@ function renderExpressPaymentContainer() {
 }
 
 async function init() {
-  const paymentMethodsResponse = await getPaymentMethods();
-  $('body').on('product:updateAddToCart', (e, response) => {
-    $('body').trigger('product:renderExpressPaymentContainer', {
-      product: response.product,
-      paymentMethodsResponse,
-    });
-  });
-  $(document).ready(async () => {
-    $.spinner().start();
-    const dataUrl = $('.quantity-select').find('option:selected').data('url');
-    const productVariation = await httpClient({
-      url: dataUrl,
-      method: 'GET',
-    });
-    if (productVariation?.product) {
+  if (window.areExpressPaymentsEnabledOnPdp === 'true') {
+    const paymentMethodsResponse = await getExpressPaymentMethods();
+    $('body').on('product:updateAddToCart', (e, response) => {
       $('body').trigger('product:renderExpressPaymentContainer', {
-        product: productVariation?.product,
+        product: response.product,
         paymentMethodsResponse,
       });
-    }
-    $.spinner().stop();
-  });
+    });
+    $(document).ready(async () => {
+      $.spinner().start();
+      const dataUrl = $('.quantity-select').find('option:selected').data('url');
+      const productVariation = await httpClient({
+        url: dataUrl,
+        method: 'GET',
+      });
+      if (productVariation?.product) {
+        $('body').trigger('product:renderExpressPaymentContainer', {
+          product: productVariation?.product,
+          paymentMethodsResponse,
+        });
+      }
+      $.spinner().stop();
+    });
+  }
 }
 
 module.exports = {

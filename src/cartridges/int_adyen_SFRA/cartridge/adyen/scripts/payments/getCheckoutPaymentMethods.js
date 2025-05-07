@@ -29,16 +29,6 @@ const getRemainingAmount = (giftCardResponse, currency, currentBasket) => {
     : new dw.value.Money(1000, currency);
 };
 
-const getExpressPaymentMethods = (expressPaymentMethods) => {
-  const paymentMethodOrder = AdyenConfigs.getExpressPaymentsOrder() || '';
-
-  return Object.keys(expressPaymentMethods)
-    .filter((item) => expressPaymentMethods[item])
-    .sort(
-      (a, b) => paymentMethodOrder.indexOf(a) - paymentMethodOrder.indexOf(b),
-    );
-};
-
 const supportedStoredPaymentMethods = (storedPaymentMethods) =>
   AdyenConfigs.getAdyenRecurringPaymentsEnabled() && storedPaymentMethods
     ? storedPaymentMethods.filter(
@@ -72,24 +62,6 @@ function getCheckoutPaymentMethods(req, res, next) {
       shopperEmail,
     );
 
-    const expressPaymentMethodsPdp = {
-      [constants.PAYMENTMETHODS.APPLEPAY]:
-        !!AdyenConfigs.isApplePayExpressOnPdpEnabled(),
-      [constants.PAYMENTMETHODS.GOOGLEPAY]:
-        !!AdyenConfigs.isGooglePayExpressOnPdpEnabled(),
-    };
-
-    const expressPaymentMethodsCart = {
-      [constants.PAYMENTMETHODS.APPLEPAY]:
-        !!AdyenConfigs.isApplePayExpressEnabled(),
-      [constants.PAYMENTMETHODS.AMAZONPAY]:
-        !!AdyenConfigs.isAmazonPayExpressEnabled(),
-      [constants.PAYMENTMETHODS.GOOGLEPAY]:
-        !!AdyenConfigs.isGooglePayExpressEnabled(),
-      [constants.PAYMENTMETHODS.PAYPAL]:
-        !!AdyenConfigs.isPayPalExpressEnabled(),
-    };
-
     res.json({
       AdyenPaymentMethods: {
         paymentMethods: paymentMethods.paymentMethods,
@@ -103,8 +75,6 @@ function getCheckoutPaymentMethods(req, res, next) {
       amount: { value: paymentAmount.value, currency },
       countryCode,
       applicationInfo: AdyenHelper.getApplicationInfo(),
-      cartExpressMethods: getExpressPaymentMethods(expressPaymentMethodsCart),
-      pdpExpressMethods: getExpressPaymentMethods(expressPaymentMethodsPdp),
     });
   } catch (error) {
     AdyenLogs.fatal_log('Failed to fetch payment methods', error);

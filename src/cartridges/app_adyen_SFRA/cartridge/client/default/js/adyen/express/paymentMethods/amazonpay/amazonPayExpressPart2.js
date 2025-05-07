@@ -1,4 +1,4 @@
-const { getPaymentMethods } = require('../../../commons');
+const { getExpressPaymentMethods } = require('../../../commons');
 const { AMAZON_PAY } = require('../../../../../../../config/constants');
 const { httpClient } = require('../../../commons/httpClient');
 
@@ -78,7 +78,7 @@ function showAddressDetails(shopperDetails) {
 async function mountAmazonPayComponent() {
   try {
     const amazonPayNode = document.getElementById('amazon-container');
-    const paymentMethodsData = await getPaymentMethods();
+    const paymentMethodsData = await getExpressPaymentMethods();
     const paymentMethodsResponse = paymentMethodsData?.AdyenPaymentMethods;
     const applicationInfo = paymentMethodsData?.applicationInfo;
     const checkout = await window.AdyenWeb.AdyenCheckout({
