@@ -189,7 +189,7 @@ describe('Checkout Configuration', () => {
 
   describe('GooglePay', () => {
     it('handles onSubmit', () => {
-      paywithgoogle = new GooglePayConfig(window.Configuration.environment, window.merchantAccount, helpers)
+      paywithgoogle = new GooglePayConfig(helpers)
       document.body.innerHTML = `
         <div id="lb_paywithgoogle">Google Pay</div>
         <div id="adyenPaymentMethodName"></div>
