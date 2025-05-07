@@ -202,7 +202,6 @@ function registerEmailChangeHandler() {
         sessionStorage.setItem('customerEmail', emailValue);
         $('body').trigger('checkout:renderPaymentMethod', {
           email: emailValue,
-          skipFetching: true,
         });
       }
     }
