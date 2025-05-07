@@ -29,12 +29,16 @@ async function handleOnDonate(state, component) {
   };
 
   try {
-    await httpClient({
+    const response = await httpClient({
       method: 'POST',
       url: window.donateURL,
       data: donationData,
     });
-    component.setStatus('success');
+    if (response.error) {
+      component.setStatus('error');
+    } else {
+      component.setStatus('success');
+    }
   } catch (error) {
     component.setStatus('error');
   }

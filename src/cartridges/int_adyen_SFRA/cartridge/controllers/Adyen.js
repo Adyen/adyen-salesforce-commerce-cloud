@@ -66,7 +66,7 @@ server.post(
   'Donate',
   server.middleware.https,
   csrf.validateRequest,
-  (req /* , res, next */) => {
+  (req, res, next) => {
     const { orderNo, orderToken } = req.form;
     const donationAmount = {
       value: req.form.amountValue,
@@ -77,8 +77,8 @@ server.post(
       donationAmount,
       orderToken,
     );
-
-    return donationResult.response;
+    res.json(donationResult);
+    return next();
   },
 );
 
