@@ -1,7 +1,8 @@
 name: E2E For SFRA
 
 on:
-  workflow_dispatch:
+  schedule:
+    - cron: 0 12 * * *
   pull_request:
     paths-ignore:
       - 'int_adyen_controllers/**'
