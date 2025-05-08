@@ -1,7 +1,8 @@
 class GooglePayConfig {
-  constructor(environment, merchantAccount, helpers) {
-    this.environment = environment || null;
-    this.merchantAccount = merchantAccount || null;
+  constructor(helpers) {
+    this.environment = window.Configuration?.environment || null;
+    this.merchantAccount = window.merchantAccount || null;
+    this.merchantId = window.googleMerchantID || null;
     this.showPayButton = true;
     this.buttonColor = 'white';
     this.helpers = helpers;
@@ -15,6 +16,7 @@ class GooglePayConfig {
 
   getConfiguration = () => ({
     gatewayMerchantId: this.merchantAccount,
+    merchantId: this.merchantId,
   });
 
   getConfig() {

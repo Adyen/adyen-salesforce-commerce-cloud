@@ -78,7 +78,7 @@ jobs:
     runs-on:
       group: larger-runners
       labels: ubuntu-latest-8-cores
-    timeout-minutes: 20
+    timeout-minutes: 30
     strategy:
       fail-fast: false
       matrix:
