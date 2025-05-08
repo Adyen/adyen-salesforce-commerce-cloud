@@ -1,6 +1,7 @@
 name: E2E For SFRA
 
 on:
+  workflow_dispatch:
   pull_request:
     paths-ignore:
       - 'int_adyen_controllers/**'
