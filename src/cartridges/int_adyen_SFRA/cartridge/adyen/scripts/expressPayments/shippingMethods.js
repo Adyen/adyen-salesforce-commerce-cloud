@@ -8,6 +8,8 @@ const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
 const { PAYMENTMETHODS } = require('*/cartridge/adyen/config/constants');
 const adyenCheckout = require('*/cartridge/adyen/scripts/payments/adyenCheckout');
 const paypalHelper = require('*/cartridge/adyen/utils/paypalHelper');
+const Collections = require('*/cartridge/scripts/util/collections');
+const shippingHelper = require('*/cartridge/scripts/checkout/shippingHelpers');
 
 function updateShippingAddress(currentBasket, address) {
   if (address) {
@@ -48,14 +50,24 @@ function callGetShippingMethods(req, res, next) {
       return next();
     }
     updateShippingAddress(currentBasket, address);
-    Transaction.wrap(() => {
-      basketCalculationHelpers.calculateTotals(currentBasket);
-    });
-    const currentShippingMethodsModels =
-      AdyenHelper.getApplicableShippingMethods(
-        currentBasket.getDefaultShipment(),
+    let currentShippingMethodsModels = [];
+    const shipments = currentBasket.getShipments();
+    Collections.forEach(shipments, (shipment) => {
+      if (currentShippingMethodsModels.length > 0) return;
+
+      const methods = AdyenHelper.getApplicableShippingMethods(
+        shipment,
         address,
       );
+      Transaction.wrap(() => {
+        shippingHelper.selectShippingMethod(shipment);
+        basketCalculationHelpers.calculateTotals(currentBasket);
+      });
+      if (methods && methods.length > 0) {
+        currentShippingMethodsModels = methods;
+      }
+    });
+
     if (!currentShippingMethodsModels?.length) {
       throw new Error('No applicable shipping methods found');
     }

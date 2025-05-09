@@ -42,6 +42,7 @@ module.exports = {
     SCHEME: 'scheme',
     IDEAL: 'ideal',
     SEPADIRECTDEBIT: 'sepadirectdebit',
+    GIFTCARD: 'giftcard',
   },
 
   CAN_SKIP_SUMMARY_PAGE: ['applepay', 'cashapp', 'upi', 'googlepay'],
@@ -155,5 +156,5 @@ module.exports = {
 
   CHECKOUT_COMPONENT_VERSION: '6.12.1',
   CHECKOUT_API_VERSION: 'v71',
-  VERSION: '25.2.1',
+  VERSION: '25.2.3',
 };

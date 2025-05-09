@@ -55,6 +55,15 @@ describe('Shipping methods', () => {
         }
       }),
       updateTotals: jest.fn(),
+	  getShipments: jest.fn(() => ({
+		toArray: jest.fn(() => [
+		  {
+			shippingAddress: {
+			  getCountryCode: jest.fn(() => ({ value: 'NL' })),
+			},
+		  },
+		]),
+	  })),
     };
     BasketMgr.getCurrentBasket.mockReturnValueOnce(currentBasket);
     callGetShippingMethods(req, res, next);

@@ -40,6 +40,8 @@ function makeExpressPaymentsCall(req, res, next) {
       null,
       paymentInstrument,
     );
+    // Set payment instrument fields
+    AdyenHelper.setPaymentInstrumentFields(paymentInstrument, paymentRequest);
     paymentRequest.amount = {
       currency: paymentInstrument.paymentTransaction.amount.currencyCode,
       value: AdyenHelper.getCurrencyValueForApi(

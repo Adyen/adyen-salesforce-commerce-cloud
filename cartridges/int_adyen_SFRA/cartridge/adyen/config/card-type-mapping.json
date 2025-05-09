@@ -1,0 +1,28 @@
+{
+	"visa": "Visa",
+	"visa_applepay": "Visa",
+	"mc": "Mastercard",
+	"mc_applepay": "Mastercard",
+	"amex": "Amex",
+	"amex_applepay": "Amex",
+	"discover": "Discover",
+	"discover_applepay": "Discover",
+	"maestro": "Maestro",
+	"maestrouk": "Maestro",
+	"maestro_applepay": "Maestro",
+	"diners": "Diners",
+	"diners_applepay": "Diners",
+	"bcmc": "Bancontact",
+	"jcb": "JCB",
+	"jcb_applepay": "JCB",
+	"cup": "CUP",
+	"cartebancaire": "Carte Bancaire",
+	"cartebancaire_applepay": "Carte Bancaire",
+	"star": "Star",
+	"star_applepay": "Star",
+	"nyce": "Nyce",
+	"nyce_applepay": "Nyce",
+	"accel": "Accel",
+	"accel_applepay": "Accel"
+  }
+  
