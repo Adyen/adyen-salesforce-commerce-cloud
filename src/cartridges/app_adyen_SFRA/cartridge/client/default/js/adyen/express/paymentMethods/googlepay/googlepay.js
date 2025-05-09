@@ -347,11 +347,11 @@ class GooglePay {
       this.applicationInfo,
       this.translations,
     );
-    const applePayConfig = this.getConfig();
+    const googlePayConfig = this.getConfig();
     return window.AdyenWeb.createComponent(
       GOOGLE_PAY,
       checkout,
-      applePayConfig,
+      googlePayConfig,
     );
   };
 }
