@@ -1,5 +1,4 @@
 const server = require('server');
-const consentTracking = require('*/cartridge/scripts/middleware/consentTracking');
 const adyenGiving = require('*/cartridge/adyen/scripts/donations/adyenGiving');
 const { adyen } = require('*/cartridge/controllers/middlewares/index');
 const csrf = require('*/cartridge/scripts/middleware/csrf');
@@ -17,7 +16,6 @@ server.get('ShowConfirmation', server.middleware.https, adyen.showConfirmation);
 server.post(
   'PaymentsDetails',
   server.middleware.https,
-  consentTracking.consent,
   csrf.validateRequest,
   adyen.paymentsDetails,
 );
@@ -68,7 +66,7 @@ server.post(
   'Donate',
   server.middleware.https,
   csrf.validateRequest,
-  (req /* , res, next */) => {
+  (req, res, next) => {
     const { orderNo, orderToken } = req.form;
     const donationAmount = {
       value: req.form.amountValue,
@@ -79,8 +77,8 @@ server.post(
       donationAmount,
       orderToken,
     );
-
-    return donationResult.response;
+    res.json(donationResult);
+    return next();
   },
 );
 
@@ -113,6 +111,13 @@ server.post(
 );
 
 server.post(
+  'GetExpressPaymentMethods',
+  server.middleware.https,
+  csrf.validateRequest,
+  adyen.getCheckoutExpressPaymentMethods,
+);
+
+server.post(
   'GetConnectedTerminals',
   server.middleware.https,
   adyen.getConnectedTerminals,
@@ -121,11 +126,22 @@ server.post(
 /**
  * Show the review page template.
  */
-server.post(
+server.get(
   'CheckoutReview',
   server.middleware.https,
-  csrf.validateRequest,
+  csrf.generateToken,
   adyen.handleCheckoutReview,
+);
+
+/**
+ * Save paypal express payment data for review page.
+ */
+server.post(
+  'SaveExpressPaymentData',
+  server.middleware.https,
+  csrf.validateRequest,
+  adyen.validatePaymentDataFromRequest,
+  adyen.saveExpressPaymentData,
 );
 
 /**
@@ -201,6 +217,7 @@ server.post(
   'SaveShopperData',
   server.middleware.https,
   csrf.validateRequest,
+  adyen.validatePaymentDataFromRequest,
   adyen.saveShopperData,
 );
 /**
@@ -219,6 +236,7 @@ server.post(
 server.post(
   'CreateTemporaryBasket',
   server.middleware.https,
+  csrf.validateRequest,
   adyen.createTemporaryBasket,
 );
 

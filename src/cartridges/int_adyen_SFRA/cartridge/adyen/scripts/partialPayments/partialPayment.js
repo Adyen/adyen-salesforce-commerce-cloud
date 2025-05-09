@@ -36,7 +36,7 @@ function makePartialPayment(req, res, next) {
     const request = JSON.parse(req.form.data);
     const currentBasket = BasketMgr.getCurrentBasket();
 
-    const { encryptedCardNumber, encryptedSecurityCode, brand, giftcardBrand } =
+    const { encryptedCardNumber, encryptedSecurityCode, brand, giftCardBrand } =
       request;
     const paymentMethod = {
       encryptedCardNumber,
@@ -67,7 +67,7 @@ function makePartialPayment(req, res, next) {
         ...response.order,
         ...response.amount,
         paymentMethod: response.paymentMethod,
-        brand: giftcardBrand,
+        brand: giftCardBrand,
       }); // entire response exceeds string length
     });
 
@@ -114,7 +114,7 @@ function makePartialPayment(req, res, next) {
       giftCard: {
         ...response.paymentMethod,
         amount: response.amount,
-        name: giftcardBrand,
+        name: giftCardBrand,
         pspReference: response.pspReference,
       },
       orderAmount: {

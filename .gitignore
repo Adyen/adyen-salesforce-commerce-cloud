@@ -1,6 +1,7 @@
 .idea
 .DS_Store
 .vagrant
+.env
 node_modules
 dw.json
 /.vscode/
@@ -9,3 +10,5 @@ screenshots/
 playwright-report/
 test-results/
 Vagrantfile
+cartridges
+!src/cartridges

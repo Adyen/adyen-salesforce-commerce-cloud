@@ -7,6 +7,10 @@ jest.mock('*/cartridge/models/cart', () => jest.fn(), { virtual: true });
 
 jest.mock('*/cartridge/models/account', () => jest.fn(), { virtual: true });
 
+jest.mock('*/cartridge/config/adyenTranslations', () => jest.fn(), {
+  virtual: true,
+});
+
 jest.mock('*/cartridge/models/shipping/shippingMethod', () => jest.fn(), {
   virtual: true,
 });
@@ -308,14 +312,15 @@ jest.mock(
     setPaymentTransactionType: jest.fn(() => {}),
     getOrderMainPaymentInstrumentType: jest.fn(() => {}),
     getPaymentInstrumentType: jest.fn((isCreditCard) =>
-      (isCreditCard ? 'CREDIT_CARD' : 'AdyenComponent'),),
+      isCreditCard ? 'CREDIT_CARD' : 'AdyenComponent',
+    ),
     validatePayment: jest.fn(() => ({ error: false })),
     handlePayments: jest.fn(() => ({
       error: false,
       action: { type: 'mockedAction' },
     })),
     createRedirectUrl: jest.fn(() => 'mocked_RedirectUrl'),
-	getCustomerEmail: jest.fn(() => 'mocked_email'),
+    getCustomerEmail: jest.fn(() => 'mocked_email'),
   }),
   { virtual: true },
 );
@@ -347,12 +352,20 @@ jest.mock(
     getAdyenLevel23DataEnabled: jest.fn(() => false),
     getAdyenSalePaymentMethods: jest.fn(() => []),
     getAdyenPosRegion: jest.fn(),
+    isApplePayExpressEnabled: jest.fn(() => false),
+    isAmazonPayExpressEnabled: jest.fn(() => false),
+    isGooglePayExpressEnabled: jest.fn(() => false),
+    isPayPalExpressEnabled: jest.fn(() => false),
+    isApplePayExpressOnPdpEnabled: jest.fn(() => false),
+    isGooglePayExpressOnPdpEnabled: jest.fn(() => false),
+    getExpressPaymentsOrder: jest.fn(),
+    getAdyenRecurringPaymentsEnabled: jest.fn(() => true),
   }),
   { virtual: true },
 );
 
 jest.mock(
-  '*/cartridge/client/default/js/adyen_checkout/renderGiftcardComponent',
+  '*/cartridge/client/default/js/adyen_checkout/adyenGiftards',
   () => ({
     removeGiftCards: jest.fn(),
     showGiftCardWarningMessage: jest.fn(),
@@ -475,5 +488,11 @@ jest.mock(
     createShowConfirmationForm: jest.fn(),
     getInstallmentValues: jest.fn(),
   }),
+  { virtual: true },
+);
+
+jest.mock(
+  '*/cartridge/client/default/js/adyen_checkout/paymentMethodsConfiguration',
+  () => jest.fn(),
   { virtual: true },
 );

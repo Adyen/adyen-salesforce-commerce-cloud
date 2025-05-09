@@ -1,3 +1,4 @@
+const Resource = require('dw/web/Resource');
 const Site = require('dw/system/Site');
 
 const adyenCurrentSite = Site.getCurrent();
@@ -32,14 +33,6 @@ const adyenConfigsObj = {
 
   getAdyenMerchantAccount() {
     return getCustomPreference('Adyen_merchantCode');
-  },
-
-  getAdyenSFRA6Compatibility() {
-    return getCustomPreference('Adyen_SFRA6_Compatibility');
-  },
-
-  setAdyenSFRA6Compatibility(value) {
-    return setCustomPreference('Adyen_SFRA6_Compatibility', value);
   },
 
   getAdyenNotificationUser() {
@@ -152,8 +145,11 @@ const adyenConfigsObj = {
     );
   },
 
-  arePdpExpressPaymentsEnabled() {
-    return this.isApplePayExpressOnPdpEnabled();
+  areExpressPaymentsEnabledOnPdp() {
+    return (
+      this.isApplePayExpressOnPdpEnabled() ||
+      this.isGooglePayExpressOnPdpEnabled()
+    );
   },
 
   isApplePayExpressEnabled() {
@@ -214,6 +210,13 @@ const adyenConfigsObj = {
 
   getAdyenGivingLogoUrl() {
     return getCustomPreference('AdyenGiving_logoUrl')?.getAbsURL();
+  },
+
+  getAdyenSFRA6Compatibility() {
+    const SFRA6 = 6;
+    const SFRAversion =
+      Resource.msg('global.version.number', 'version', null) || '';
+    return SFRAversion.split('.')[0] >= SFRA6;
   },
 };
 

@@ -16,12 +16,12 @@ beforeEach(() => {
     getPaymentInstruments: jest.fn(() => ([{
       custom: { adyenPaymentMethod: '' }
     }])),
+    custom: {
+      paypalExpressPaymentData: JSON.stringify({details: 'test_paymentsDetails'})
+    }
   };
 
   req = {
-    form: {
-      data: JSON.stringify({details: 'test_paymentsDetails'}),
-    },
     currentCustomer: {
       raw: ''
     },
@@ -65,7 +65,7 @@ describe('Checkout Review controller', () => {
   });
 
   it('Should fail returning Checkout Review page when no state data is submitted', () => {
-    req.form = '';
+    BasketMgr.getCurrentBasket = jest.fn().mockImplementationOnce(() => ({}))
     handleCheckoutReview(req, res, next);
     expect(AdyenLogs.error_log).toHaveBeenCalledTimes(1);
     expect(res.redirect).toHaveBeenCalledTimes(1)

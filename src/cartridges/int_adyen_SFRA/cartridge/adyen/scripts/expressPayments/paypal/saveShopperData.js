@@ -5,7 +5,7 @@ const paypalHelper = require('*/cartridge/adyen/utils/paypalHelper');
 
 function saveShopperData(req, res, next) {
   try {
-    const shopperDetails = JSON.parse(req.form.shopperDetails);
+    const shopperDetails = JSON.parse(req.form.data);
     const currentBasket = BasketMgr.getCurrentBasket();
     paypalHelper.setBillingAndShippingAddress(currentBasket, shopperDetails);
     res.json({ success: true });

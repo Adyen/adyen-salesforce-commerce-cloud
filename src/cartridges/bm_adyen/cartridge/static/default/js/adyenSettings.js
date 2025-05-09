@@ -108,11 +108,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const changedSettings = [];
   const isValid = 'is-valid';
   const isInvalid = 'is-invalid';
-  const adyenGivingBackground = document.querySelector(
-    '#fileDropBoxCharitybackground',
-  );
-  const adyenGivingLogo = document.querySelector('#fileDropBoxGivingLogo');
-  const params = 'resizable=yes,width=1000,height=500,left=100,top=100';
 
   const draggableList = document.getElementById('draggable-list');
   const availableStores = document.getElementById('storeID').value;
@@ -344,36 +339,6 @@ document.addEventListener('DOMContentLoaded', () => {
     this.classList.toggle('bi-eye');
   }
 
-  // open Adyen Giving Background upload page
-  function uploadAdyenGivingBackground() {
-    const openedWindow = window.open(
-      window.adyenGivingBackgroundUrl,
-      'backgroundPopUp',
-      params,
-    );
-    const loop = setInterval(() => {
-      if (openedWindow.closed) {
-        window.location.reload();
-        clearInterval(loop);
-      }
-    }, 1000);
-  }
-
-  // open Adyen Giving Logo upload page
-  function uploadAdyenGivingLogo() {
-    const openedWindowLogo = window.open(
-      window.adyenGivingLogoUrl,
-      'logoPopUp',
-      params,
-    );
-    const loop = setInterval(() => {
-      if (openedWindowLogo.closed) {
-        window.location.reload();
-        clearInterval(loop);
-      }
-    }, 1000);
-  }
-
   function removeRule(id) {
     const element = document.getElementById(`rule${id}`);
     if (element) {
@@ -538,10 +503,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   toggleApi.addEventListener('click', showApiKey);
 
-  adyenGivingBackground.addEventListener('click', uploadAdyenGivingBackground);
-
-  adyenGivingLogo.addEventListener('click', uploadAdyenGivingLogo);
-
   window.addEventListener('load', printBackgroundImageName);
 
   window.addEventListener('load', printLogoImageName);
@@ -568,10 +529,6 @@ document.addEventListener('DOMContentLoaded', () => {
   testRadio.addEventListener('click', () => {
     livePrefix.disabled = true;
   });
-
-  adyenGivingBackground.addEventListener('click', saveAndHideAlerts);
-
-  adyenGivingLogo.addEventListener('click', saveAndHideAlerts);
 
   troubleshootingForm.addEventListener('input', () => {
     downloadLogsButton.classList.add('disabled');

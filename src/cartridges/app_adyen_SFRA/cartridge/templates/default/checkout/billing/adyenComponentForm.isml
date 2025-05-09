@@ -13,6 +13,7 @@
           locale: '${request.locale}',
           clientKey: '${pdict.adyen.clientKey}',
           environment: '${pdict.adyen.environment}',
+          countryCode: '${request.locale}'.slice(-2),
       };
       window.adyenClientKey = '${pdict.adyen.adyenClientKey}';
       window.returnURL = "${URLUtils.https('Checkout-Begin', 'stage', 'payment')}";
@@ -20,7 +21,6 @@
       window.resultCodeAuthorised = '${AdyenConstants.RESULTCODES.AUTHORISED}';
       window.paymentsDetailsURL = "${URLUtils.https('Adyen-PaymentsDetails')}";
       window.ShowConfirmationPaymentFromComponent = "${ShowConfirmationPaymentFromComponent}";
-      window.AdyenSFRA6Enabled = '${pdict.adyen.SFRA6Enabled}';
       window.klarnaWidgetEnabled = ${adyenKlarnaWidgetEnabled};
       window.adyenRecurringPaymentsEnabled = ${adyenRecurringPaymentsEnabled};
       window.getPaymentMethodsURL = "${URLUtils.https('Adyen-GetPaymentMethods')}";
@@ -44,7 +44,8 @@
 <isif condition="${request.getHttpQueryString() && request.getHttpQueryString().indexOf('amazonCheckoutSessionId') > -1} ">
     <isscript>
         var assets = require('*/cartridge/scripts/assets.js');
-        assets.addJs('/js/amazonPayCheckout.js');
+        assets.addJs('/js/adyen/checkout/amazonPayCheckout.js');
+        assets.addCss('/css/adyenGiftcards.css');
         assets.addCss('/css/adyenCss.css');
     </isscript>
 

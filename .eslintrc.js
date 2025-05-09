@@ -6,8 +6,8 @@ module.exports = {
     "jest": true,
   },
   "extends": [
-    "prettier",
     "airbnb-base",
+    "prettier",
   ],
   "globals": {
     "$": "readonly",

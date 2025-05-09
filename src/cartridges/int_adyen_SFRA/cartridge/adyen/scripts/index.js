@@ -1,4 +1,5 @@
 const getCheckoutPaymentMethods = require('*/cartridge/adyen/scripts/payments/getCheckoutPaymentMethods');
+const getCheckoutExpressPaymentMethods = require('*/cartridge/adyen/scripts/expressPayments/getCheckoutExpressPaymentMethods');
 const getConnectedTerminals = require('*/cartridge/adyen/scripts/pos/getConnectedTerminals');
 const paymentFromComponent = require('*/cartridge/adyen/scripts/payments/paymentFromComponent');
 const paymentsDetails = require('*/cartridge/adyen/scripts/payments/paymentsDetails');
@@ -20,9 +21,11 @@ const saveShopperData = require('*/cartridge/adyen/scripts/expressPayments/paypa
 const handleCheckoutReview = require('*/cartridge/adyen/scripts/expressPayments/paypal/handleCheckoutReview');
 const validatePaymentDataFromRequest = require('*/cartridge/adyen/utils/validatePaymentData');
 const createTemporaryBasket = require('*/cartridge/adyen/scripts/expressPayments/createTemporaryBasket');
+const saveExpressPaymentData = require('*/cartridge/adyen/scripts/expressPayments/paypal/saveExpressPaymentData');
 
 module.exports = {
   getCheckoutPaymentMethods,
+  getCheckoutExpressPaymentMethods,
   paymentFromComponent,
   paymentsDetails,
   redirect3ds1Response,
@@ -44,4 +47,5 @@ module.exports = {
   validatePaymentDataFromRequest,
   createTemporaryBasket,
   getConnectedTerminals,
+  saveExpressPaymentData,
 };

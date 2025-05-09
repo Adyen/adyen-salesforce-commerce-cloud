@@ -133,6 +133,13 @@ jest.mock(
 );
 
 jest.mock(
+	'*/cartridge/adyen/scripts/donations/adyenGiving',
+	() =>
+	  require('../src/cartridges/int_adyen_SFRA/cartridge/adyen/scripts/donations/adyenGiving'),
+	{ virtual: true },
+);
+
+jest.mock(
   '*/cartridge/adyen/scripts/expressPayments/saveExpressShopperDetails',
   () =>
     require('../src/cartridges/int_adyen_SFRA/cartridge/adyen/scripts/expressPayments/saveExpressShopperDetails'),
@@ -144,6 +151,13 @@ jest.mock(
   () =>
     require('../src/cartridges/int_adyen_SFRA/cartridge/adyen/scripts/payments/getCheckoutPaymentMethods'),
   { virtual: true },
+);
+
+jest.mock(
+	'*/cartridge/adyen/scripts/expressPayments/getCheckoutExpressPaymentMethods',
+	() =>
+		require('../src/cartridges/int_adyen_SFRA/cartridge/adyen/scripts/expressPayments/getCheckoutExpressPaymentMethods'),
+	{ virtual: true },
 );
 
 jest.mock(
@@ -401,9 +415,9 @@ jest.mock(
 );
 
 jest.mock(
-  '*/cartridge/client/default/js/adyen_checkout/renderGiftcardComponent',
+  '*/cartridge/client/default/js/adyen_checkout/giftcards',
   () =>
-    require('../src/cartridges/int_adyen_SFRA/client/default/js/adyen_checkout/renderGiftcardComponent'),
+    require('../src/cartridges/app_adyen_SFRA/cartridge/client/default/js/adyen_checkout/giftcards'),
   { virtual: true },
 );
 
@@ -459,11 +473,11 @@ jest.mock(
 );
 
 jest.mock(
-	'*/cartridge/adyen/scripts/pos/getConnectedTerminals',
-	() =>
-	  require('../src/cartridges/int_adyen_SFRA/cartridge/adyen/scripts/pos/getConnectedTerminals'),
-	{ virtual: true },
-  );
+  '*/cartridge/adyen/scripts/pos/getConnectedTerminals',
+  () =>
+    require('../src/cartridges/int_adyen_SFRA/cartridge/adyen/scripts/pos/getConnectedTerminals'),
+  { virtual: true },
+);
 
 jest.mock(
   '*/cartridge/adyen/logs/adyenCustomLogs',
@@ -476,5 +490,12 @@ jest.mock(
   '*/cartridge/adyen/utils/giftCardsHelper',
   () =>
     require('../src/cartridges/int_adyen_SFRA/cartridge/adyen/utils/giftCardsHelper'),
+  { virtual: true },
+);
+
+jest.mock(
+  '*/cartridge/adyen/scripts/expressPayments/paypal/saveExpressPaymentData',
+  () =>
+    require('../src/cartridges/int_adyen_SFRA/cartridge/adyen/scripts/expressPayments/paypal/saveExpressPaymentData'),
   { virtual: true },
 );

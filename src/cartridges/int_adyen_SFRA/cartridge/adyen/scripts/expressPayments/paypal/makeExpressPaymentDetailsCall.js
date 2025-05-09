@@ -22,7 +22,7 @@ function makeExpressPaymentDetailsCall(req, res, next) {
       productQuantity,
     );
     if (hashedProducts !== currentBasket.custom.adyenProductLineItems) {
-      throw new Error('Basket products changed, cannot complete trasaction');
+      throw new Error('Basket products changed, cannot complete transaction');
     }
 
     const validationOrderStatus = hooksHelper(
