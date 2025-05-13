@@ -58,7 +58,7 @@ function onStartHandler(req) {
   const path = getPath(req);
   if (isUsedByAdyen(req) && isAdyenAnalyticsEnabled()) {
     analyticsEvent.createAnalyticsEvent(
-      session.sessionID,
+      session.sessionID.slice(0, 200),
       path.join('-'),
       analyticsConstants.eventType.EXPECTED_START,
       analyticsConstants.eventStatus.EXPECTED,
@@ -73,14 +73,14 @@ function onCompleteHandler(req, res) {
   if (isUsedByAdyen(req) && isAdyenAnalyticsEnabled()) {
     if (hasError) {
       analyticsEvent.createAnalyticsEvent(
-        session.sessionID,
+        session.sessionID.slice(0, 200),
         path.join('-'),
         analyticsConstants.eventType.UNEXPECTED_END,
         analyticsConstants.eventStatus.UNEXPECTED,
         analyticsConstants.eventCode.INFO,
       );
       analyticsEvent.createAnalyticsEvent(
-        session.sessionID,
+        session.sessionID.slice(0, 200),
         path.join('-'),
         analyticsConstants.eventType.UNEXPECTED_END,
         analyticsConstants.eventStatus.UNEXPECTED,
@@ -88,7 +88,7 @@ function onCompleteHandler(req, res) {
       );
     } else {
       analyticsEvent.createAnalyticsEvent(
-        session.sessionID,
+        session.sessionID.slice(0, 200),
         path.join('-'),
         analyticsConstants.eventType.EXPECTED_END,
         analyticsConstants.eventStatus.EXPECTED,

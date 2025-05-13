@@ -48,9 +48,7 @@ function doPaymentsCall(order, paymentInstrument, paymentRequest) {
     paymentInstrument?.paymentTransaction?.amount,
   ).getValueOrNull();
   if (session.privacy.partialPaymentData) {
-    const { remainingAmount } = JSON.parse(
-        session.privacy.partialPaymentData,
-      );
+    const { remainingAmount } = JSON.parse(session.privacy.partialPaymentData);
     if (remainingAmount.value !== paymentRequest?.amount?.value) {
       throw new AdyenError('Amounts dont match');
     }
@@ -86,9 +84,7 @@ function doPaymentsCall(order, paymentInstrument, paymentRequest) {
     constants.RESULTCODES.REDIRECTSHOPPER,
   ];
 
-  const presentToShopperResultCodes = [
-      constants.RESULTCODES.PRESENTTOSHOPPER,
-    ];
+  const presentToShopperResultCodes = [constants.RESULTCODES.PRESENTTOSHOPPER];
 
   const refusedResultCodes = [
     constants.RESULTCODES.CANCELLED,

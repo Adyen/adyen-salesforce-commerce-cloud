@@ -18,37 +18,36 @@ const { AdyenError } = require('*/cartridge/adyen/logs/adyenError');
  */
 // eslint-disable-next-line complexity
 function callSelectShippingMethod(req, res, next) {
-  const {
-    isExpressPdp,
-    shipmentUUID,
-    methodID,
-    currentPaymentData,
-    paymentMethodType,
-  } = JSON.parse(req.form.data);
-  const currentBasket = isExpressPdp
-    ? BasketMgr.getTemporaryBasket(session.privacy.temporaryBasketId)
-    : BasketMgr.getCurrentBasket();
-
-  if (!currentBasket) {
-    res.json({
-      error: true,
-      redirectUrl: URLUtils.url('Cart-Show').toString(),
-    });
-
-    return next();
-  }
   try {
+    const {
+      isExpressPdp,
+      shipmentUUID,
+      methodID,
+      currentPaymentData,
+      paymentMethodType,
+    } = JSON.parse(req.form.data);
+    const currentBasket = isExpressPdp
+      ? BasketMgr.getTemporaryBasket(session.privacy.temporaryBasketId)
+      : BasketMgr.getCurrentBasket();
+
+    if (!currentBasket) {
+      res.json({
+        error: true,
+        redirectUrl: URLUtils.url('Cart-Show').toString(),
+      });
+
+      return next();
+    }
+
     let shipment;
     if (shipmentUUID) {
       shipment = shippingHelper.getShipmentByUUID(currentBasket, shipmentUUID);
     } else {
       shipment = currentBasket.defaultShipment;
     }
-
     Transaction.wrap(() => {
       shippingHelper.selectShippingMethod(shipment, methodID);
-
-      if (currentBasket && !shipment.shippingMethod) {
+      if (currentBasket && !shipment?.shippingMethod) {
         throw new AdyenError(
           `cannot set shippingMethod: ${methodID} for shipment:${shipment?.UUID}`,
         );

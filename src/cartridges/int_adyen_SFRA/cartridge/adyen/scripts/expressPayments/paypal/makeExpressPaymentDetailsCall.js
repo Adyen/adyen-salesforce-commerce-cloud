@@ -23,7 +23,9 @@ function makeExpressPaymentDetailsCall(req, res, next) {
       productQuantity,
     );
     if (hashedProducts !== currentBasket.custom.adyenProductLineItems) {
-      throw new AdyenError('Basket products changed, cannot complete transaction');
+      throw new AdyenError(
+        'Basket products changed, cannot complete transaction',
+      );
     }
 
     const validationOrderStatus = hooksHelper(

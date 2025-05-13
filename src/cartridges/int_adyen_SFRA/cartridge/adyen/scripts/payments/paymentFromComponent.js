@@ -165,6 +165,15 @@ function canSkipSummaryPage(reqDataObj) {
   return false;
 }
 
+function createOrder(currentBasket) {
+  // Check if gift card was used
+  if (currentBasket.custom?.adyenGiftCards) {
+    const giftCardsOrderNo = currentBasket.custom.adyenGiftCardsOrderNo;
+    return OrderMgr.createOrder(currentBasket, giftCardsOrderNo);
+  }
+  return COHelpers.createOrder(currentBasket);
+}
+
 /**
  * Make a payment from inside a component, skipping the summary page. (paypal, QRcodes, MBWay)
  */
@@ -193,7 +202,8 @@ function paymentFromComponent(req, res, next) {
         paymentInstrument.paymentMethod,
       );
       paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
-      paymentInstrument.custom.adyenMainPaymentInstrument = paymentInstrumentType;
+      paymentInstrument.custom.adyenMainPaymentInstrument =
+        paymentInstrumentType;
       paymentInstrument.custom.adyenPaymentData = req.form.data;
 
       if (session.privacy.partialPaymentData) {
@@ -204,14 +214,7 @@ function paymentFromComponent(req, res, next) {
 
     handleExpressPayment(reqDataObj, currentBasket);
 
-    let order;
-    // Check if gift card was used
-    if (currentBasket.custom?.adyenGiftCards) {
-      const giftCardsOrderNo = currentBasket.custom.adyenGiftCardsOrderNo;
-      order = OrderMgr.createOrder(currentBasket, giftCardsOrderNo);
-    } else {
-      order = COHelpers.createOrder(currentBasket);
-    }
+    const order = createOrder(currentBasket);
     session.privacy.orderNo = order.orderNo;
 
     let result;

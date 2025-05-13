@@ -46,6 +46,7 @@ describe('callSelectShippingMethod', () => {
     };
     BasketMgr.getCurrentBasket.mockReturnValueOnce(currentBasket.defaultShipment);
     shippingHelper.getShipmentByUUID.mockReturnValueOnce(currentBasket.defaultShipment);
+    shippingHelper.selectShippingMethod.mockImplementationOnce(() => {});
 
     callSelectShippingMethod(req, res, next);
 
