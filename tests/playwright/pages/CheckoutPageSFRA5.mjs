@@ -97,6 +97,9 @@ export default class CheckoutPageSFRA5 {
 
   navigateToCart = async (locale) => {
     await this.page.goto(this.getCartUrl(locale));
+	if (this.consentButton.isVisible()) {
+		this.consentButton.click();
+	  }
   }
 
   goToCheckoutPageWithFullCart = async (locale, itemCount = 1) => {
@@ -244,6 +247,10 @@ export default class CheckoutPageSFRA5 {
 
   loginUser = async (credentials) => {
     await this.signInSectionButton.click();
+	if (this.consentButton.isVisible()) {
+		this.consentButton.click();
+	  }
+	await new Promise(r => setTimeout(r, 2000));
     await this.emailField.type(credentials.shopperEmail);
     await this.passwordField.type(credentials.password);
     await this.loginButton.click();
