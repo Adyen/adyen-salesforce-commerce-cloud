@@ -97,9 +97,9 @@ export default class CheckoutPageSFRA5 {
 
   navigateToCart = async (locale) => {
     await this.page.goto(this.getCartUrl(locale));
-	if (this.consentButton.isVisible()) {
-		this.consentButton.click();
-	  }
+	// if (this.consentButton.isVisible()) {
+	// 	this.consentButton.click();
+	//   }
   }
 
   goToCheckoutPageWithFullCart = async (locale, itemCount = 1) => {
