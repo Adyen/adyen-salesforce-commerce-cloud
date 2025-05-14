@@ -65,8 +65,8 @@ describe('Checkout Configuration', () => {
       const data = { paymentMethod: { type: 'scheme' } };
       card.onChange({ isValid: true, data }, { props: { holderName: 'test' } });
       expect(store.selectedPayment.isValid).toBeTruthy();
-      // expect(card.clickToPayConfiguration.shopperEmail).toBe(window.customerEmail);
-      // expect(card.clickToPayConfiguration.merchantDisplayName).toBe(window.merchantAccount);
+      expect(card.clickToPayConfiguration.shopperEmail).toBe(window.customerEmail);
+      expect(card.clickToPayConfiguration.merchantDisplayName).toBe(window.merchantAccount);
     });
 
     it('handles onFieldValid', () => {
