@@ -70,6 +70,41 @@ function setAdyenInputValues() {
   }
 }
 
+function handleSfraRedirect(data) {
+  if (window.sfra6Compatibility) {
+    const redirect = $('<form>').appendTo(document.body).attr({
+      method: 'POST',
+      action: data.continueUrl,
+    });
+
+    $('<input>').appendTo(redirect).attr({
+      name: 'orderID',
+      value: data.orderID,
+    });
+
+    $('<input>').appendTo(redirect).attr({
+      name: 'orderToken',
+      value: data.orderToken,
+    });
+
+    redirect.submit();
+  } else {
+    let { continueUrl } = data;
+    const urlParams = {
+      ID: data.orderID,
+      token: data.orderToken,
+    };
+
+    continueUrl +=
+      (continueUrl.indexOf('?') !== -1 ? '&' : '?') +
+      Object.keys(urlParams)
+        .map((key) => `${key}=${encodeURIComponent(urlParams[key])}`)
+        .join('&');
+
+    window.location.href = continueUrl;
+  }
+}
+
 async function overridePlaceOrderRequest(url) {
   try {
     $('body').trigger('checkout:disableButton', '.next-step-button button');
@@ -89,22 +124,7 @@ async function overridePlaceOrderRequest(url) {
       window.orderToken = data.orderToken;
       actionHandler(data.adyenAction);
     } else {
-      const redirect = $('<form>').appendTo(document.body).attr({
-        method: 'POST',
-        action: data.continueUrl,
-      });
-
-      $('<input>').appendTo(redirect).attr({
-        name: 'orderID',
-        value: data.orderID,
-      });
-
-      $('<input>').appendTo(redirect).attr({
-        name: 'orderToken',
-        value: data.orderToken,
-      });
-
-      redirect.submit();
+      handleSfraRedirect(data);
     }
   } catch (err) {
     $('body').trigger('checkout:enableButton', '.next-step-button button');
