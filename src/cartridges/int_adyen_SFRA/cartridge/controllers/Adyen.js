@@ -110,10 +110,13 @@ server.post(
   adyen.getCheckoutPaymentMethods,
 );
 
+/**
+ * csrf.generateToken is used since SFRA5 doens't have a token in PDP
+ */
 server.post(
   'GetExpressPaymentMethods',
   server.middleware.https,
-  csrf.validateRequest,
+  csrf.generateToken,
   adyen.getCheckoutExpressPaymentMethods,
 );
 
