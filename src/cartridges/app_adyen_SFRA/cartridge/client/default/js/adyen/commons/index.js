@@ -77,3 +77,11 @@ module.exports.createTemporaryBasket = async function createTemporaryBasket() {
     },
   });
 };
+
+/**
+ * check if an eventListener already exists on body
+ */
+module.exports.hasEventListener = function hasEventListener(eventName) {
+  const events = $._data($('body')[0], 'events');
+  return events && events[eventName];
+};
