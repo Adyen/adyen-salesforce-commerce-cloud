@@ -7,137 +7,38 @@ permissions:
   contents: read
 
 jobs:
-  _upload-release-template: &upload-release-steps
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    steps:
-      - name: Checkout SFRA code
-        uses: actions/checkout@v4
-        with:
-          repository: SalesforceCommerceCloud/storefront-reference-architecture
-          ref: ${{ env.SFRA_VERSION }}
-          ssh-key: ${{ secrets.SERVICE_ACCOUNT_SSH_KEY }}
-          path: storefront-reference-architecture
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          path: adyen-salesforce-commerce-cloud
-      - name: Install SFRA dependencies
-        working-directory: storefront-reference-architecture
-        run: npm install
-      - name: Install Adyen SFCC dependencies
-        working-directory: adyen-salesforce-commerce-cloud
-        run: npm install
-      - name: Create dw.json file
-        working-directory: adyen-salesforce-commerce-cloud
-        run: |
-          echo '{
-            "username": "${{ secrets.SFCC_USERNAME }}",
-            "password": "${{ secrets.SFCC_PASSWORD }}",
-            "hostname": "${{ env.SFCC_HOSTNAME }}",
-            "code-version": "${{ env.CODE_VERSION }}"
-          }' >> dw.json
-      - name: Transpile the code
-        working-directory: adyen-salesforce-commerce-cloud
-        run: npm run transpile
-      - name: Compile the code
-        working-directory: adyen-salesforce-commerce-cloud
-        run: npm run compile:js
-      - name: Build the cartridge
-        working-directory: adyen-salesforce-commerce-cloud
-        run: npm run uploadCartridge > output-sfra.txt
-      - name: Check build result
-        working-directory: adyen-salesforce-commerce-cloud
-        run: npm run check-build:sfra
-      - name: Install Salesforce CLI
-        run: npm install -g sfcc-ci
-      - name: Zip site_import
-        working-directory: adyen-salesforce-commerce-cloud/metadata
-        run: zip -r $GITHUB_WORKSPACE/site_import.zip site_import
-      - name: Upload the metadata to the sandbox
-        working-directory: adyen-salesforce-commerce-cloud/metadata
-        run: |
-          sfcc-ci client:auth '${{ secrets.SFCC_CLIENT_ID }}' '${{ secrets.SFCC_CLIENT_SECRET }}'
-          sfcc-ci instance:upload $GITHUB_WORKSPACE/site_import.zip -i "${{ env.SFCC_HOSTNAME }}"
-      - name: Import the metadata to the sandbox
-        working-directory: adyen-salesforce-commerce-cloud/metadata
-        run: |
-          sfcc-ci instance:import site_import.zip -i "${{ env.SFCC_HOSTNAME }}" -s
-  upload-release-004:
-    name: Upload Release - 004
+  upload-004:
     if: |
       github.event_name == 'pull_request' &&
       contains(github.head_ref, 'release') &&
       github.event.pull_request.base.ref == 'develop'
-    <<: *upload-release-steps
-    env:
-      SFRA_VERSION: 'v6.1.0'
-      NODE_VERSION: '14'
+    uses: ./.github/workflows/release-upload-template.yml
+    with:
+      sfra_version: 'v6.1.0'
+      node_version: '14'
+    secrets:
       SFCC_HOSTNAME: ${{ secrets.SFCC_STOREFRONT_URL_004 }}
       CODE_VERSION: ${{ secrets.SFCC_CODE_VERSION_COMMON }}
-  upload-release-006:
-    name: Upload Release - 006
+      SFCC_USERNAME: ${{ secrets.SFCC_USERNAME }}
+      SFCC_PASSWORD: ${{ secrets.SFCC_PASSWORD }}
+      SFCC_CLIENT_ID: ${{ secrets.SFCC_CLIENT_ID }}
+      SFCC_CLIENT_SECRET: ${{ secrets.SFCC_CLIENT_SECRET }}
+      SERVICE_ACCOUNT_SSH_KEY: ${{ secrets.SERVICE_ACCOUNT_SSH_KEY }}
+
+  upload-006:
     if: |
       github.event_name == 'pull_request' &&
       contains(github.head_ref, 'release') &&
-      github.event.pull_request.base.ref == 'main'
-    <<: *upload-release-steps
-    env:
-      SFRA_VERSION: 'v6.1.0'
-      NODE_VERSION: '14'
+      github.event.pull_request.base.ref == 'develop'
+    uses: ./.github/workflows/release-upload-template.yml
+    with:
+      sfra_version: 'v6.1.0'
+      node_version: '14'
+    secrets:
       SFCC_HOSTNAME: ${{ secrets.SFCC_STOREFRONT_URL_006 }}
       CODE_VERSION: ${{ secrets.SFCC_CODE_VERSION_COMMON }}
-  upload-release-007:
-    name: Upload Release - 007
-    if: |
-      github.event_name == 'pull_request' &&
-      contains(github.head_ref, 'release') &&
-      github.event.pull_request.base.ref == 'main'
-    <<: *upload-release-steps
-    env:
-      SFRA_VERSION: 'v5.3.0'
-      NODE_VERSION: '14'
-      SFCC_HOSTNAME: ${{ secrets.SFCC_STOREFRONT_URL_007 }}
-      CODE_VERSION: ${{ secrets.SFCC_CODE_VERSION_COMMON }}
-  upload-release-019:
-    name: Upload Release - 019
-    if: |
-      github.event_name == 'pull_request' &&
-      contains(github.head_ref, 'release') &&
-      github.event.pull_request.base.ref == 'main'
-    <<: *upload-release-steps
-    env:
-      SFRA_VERSION: 'v6.1.0'
-      NODE_VERSION: '14'
-      SFCC_HOSTNAME: ${{ secrets.SFCC_STOREFRONT_URL_019 }}
-      CODE_VERSION: ${{ secrets.SFCC_CODE_VERSION_COMMON }}
-  upload-release-020:
-    name: Upload Release - 020
-    if: |
-      github.event_name == 'pull_request' &&
-      contains(github.head_ref, 'release') &&
-      github.event.pull_request.base.ref == 'main'
-    <<: *upload-release-steps
-    env:
-      SFRA_VERSION: 'v6.1.0'
-      NODE_VERSION: '14'
-      SFCC_HOSTNAME: ${{ secrets.SFCC_STOREFRONT_URL_020 }}
-      CODE_VERSION: ${{ secrets.SFCC_CODE_VERSION_COMMON }}
-  upload-release-022:
-    name: Upload Release - 022
-    if: |
-      github.event_name == 'pull_request' &&
-      contains(github.head_ref, 'release') &&
-      github.event.pull_request.base.ref == 'main'
-    <<: *upload-release-steps
-    env:
-      SFRA_VERSION: 'v6.1.0'
-      NODE_VERSION: '14'
-      SFCC_HOSTNAME: ${{ secrets.SFCC_STOREFRONT_URL_022 }}
-      CODE_VERSION: ${{ secrets.SFCC_CODE_VERSION_COMMON }}
+      SFCC_USERNAME: ${{ secrets.SFCC_USERNAME }}
+      SFCC_PASSWORD: ${{ secrets.SFCC_PASSWORD }}
+      SFCC_CLIENT_ID: ${{ secrets.SFCC_CLIENT_ID }}
+      SFCC_CLIENT_SECRET: ${{ secrets.SFCC_CLIENT_SECRET }}
+      SERVICE_ACCOUNT_SSH_KEY: ${{ secrets.SERVICE_ACCOUNT_SSH_KEY }}
