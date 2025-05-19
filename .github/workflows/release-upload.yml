@@ -10,7 +10,7 @@ jobs:
   upload-004:
     if: |
       github.event_name == 'pull_request' &&
-      contains(github.head_ref, 'release') &&
+      contains(github.head_ref, 'improvement') &&
       github.event.pull_request.base.ref == 'develop'
     uses: ./.github/workflows/release-upload-template.yml
     with:
@@ -28,7 +28,7 @@ jobs:
   upload-006:
     if: |
       github.event_name == 'pull_request' &&
-      contains(github.head_ref, 'release') &&
+      contains(github.head_ref, 'improvement') &&
       github.event.pull_request.base.ref == 'develop'
     uses: ./.github/workflows/release-upload-template.yml
     with:
