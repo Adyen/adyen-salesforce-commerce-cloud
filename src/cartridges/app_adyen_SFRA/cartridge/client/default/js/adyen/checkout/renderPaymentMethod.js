@@ -165,7 +165,7 @@ function renderPaymentMethod(
     const paymentMethodsUI = document.querySelector('#paymentMethodsList');
     const paymentMethodID = getPaymentMethodID(isStored, paymentMethod);
     if (paymentMethodID === constants.GIFTCARD) {
-      return Promise.reject();
+      return false;
     }
 
     const isSchemeNotStored = paymentMethod.type === 'scheme' && !isStored;
