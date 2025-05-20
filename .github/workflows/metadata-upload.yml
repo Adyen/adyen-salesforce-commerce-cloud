@@ -12,16 +12,25 @@ jobs:
     with:
       sfcc_hostname: ${{ secrets.SFCC_STOREFRONT_URL_SFRA5 }}
       node_version: '16'
-    secrets: inherit
+    secrets:
+      SFCC_CLIENT_ID: ${{ secrets.SFCC_CLIENT_ID }}
+      SFCC_CLIENT_SECRET: ${{ secrets.SFCC_CLIENT_SECRET }}
+      SFCC_HOSTNAME: ${{ secrets.SFCC_STOREFRONT_URL_SFRA5 }}
   upload-sfra6:
     uses: ./.github/workflows/metadata-upload-template.yml
     with:
       sfcc_hostname: ${{ secrets.SFCC_STOREFRONT_URL_SFRA6 }}
       node_version: '16'
-    secrets: inherit
+    secrets:
+      SFCC_CLIENT_ID: ${{ secrets.SFCC_CLIENT_ID }}
+      SFCC_CLIENT_SECRET: ${{ secrets.SFCC_CLIENT_SECRET }}
+      SFCC_HOSTNAME: ${{ secrets.SFCC_STOREFRONT_URL_SFRA6 }}
   upload-sfra7:
     uses: ./.github/workflows/metadata-upload-template.yml
     with:
       sfcc_hostname: ${{ secrets.SFCC_STOREFRONT_URL_SFRA7 }}
       node_version: '18'
-    secrets: inherit
+    secrets:
+      SFCC_CLIENT_ID: ${{ secrets.SFCC_CLIENT_ID }}
+      SFCC_CLIENT_SECRET: ${{ secrets.SFCC_CLIENT_SECRET }}
+      SFCC_HOSTNAME: ${{ secrets.SFCC_STOREFRONT_URL_SFRA7 }}
