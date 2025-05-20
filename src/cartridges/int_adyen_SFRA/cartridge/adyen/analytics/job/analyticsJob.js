@@ -5,17 +5,49 @@ const constants = require('*/cartridge/adyen/config/constants');
 const AnalyticsService = require('../analyticsService');
 const AdyenLogs = require('../../logs/adyenCustomLogs');
 
-function createRequestObjectForAllReferenceIds(groupedObjects) {
-  const requestObject = {
-    channel: 'Web',
-    platform: 'Web',
-  };
+const defaultProperties = {
+  channel: 'Web',
+  platform: 'Web',
+};
 
+const eventCodeList = {
+  [analyticsConstants.eventCode.INFO]: {
+    name: analyticsConstants.eventCode.INFO,
+    limit: 50,
+  },
+  [analyticsConstants.eventCode.ERROR]: {
+    name: analyticsConstants.eventCode.ERROR,
+    limit: 10,
+  },
+  [analyticsConstants.eventCode.LOG]: {
+    name: analyticsConstants.eventCode.LOG,
+    limit: 10,
+  },
+};
+
+function getRequestObject(requestObjectList) {
+  const lastRequestObject = requestObjectList[requestObjectList.length - 1];
+  return Object.keys(eventCodeList).some((eventCode) => {
+    if (
+      Object.prototype.hasOwnProperty.call(lastRequestObject, eventCode.name) &&
+      lastRequestObject[eventCode.name].length > eventCode.limit
+    ) {
+      requestObjectList.push({ ...defaultProperties });
+      return requestObjectList[requestObjectList.length - 1];
+    }
+    return lastRequestObject;
+  });
+}
+
+function createRequestObjectForAllReferenceIds(groupedObjects) {
+  const requestObjectList = [];
+  requestObjectList.push({ ...defaultProperties });
   // Iterate over all referenceIds and group events into one requestObject
   Object.keys(groupedObjects).forEach((referenceId) => {
     const events = groupedObjects[referenceId];
 
     events.forEach((event) => {
+      const requestObject = getRequestObject(requestObjectList);
       const eventCode = event.eventCode.toLowerCase();
       const eventObject = {
         timestamp: new Date(event.creationDate).getTime().toString(),
@@ -29,13 +61,8 @@ function createRequestObjectForAllReferenceIds(groupedObjects) {
         delete eventObject.target;
         eventObject.errorType = constants.errorType;
       }
-      const eventCodeList = [
-        analyticsConstants.eventCode.INFO,
-        analyticsConstants.eventCode.ERROR,
-        analyticsConstants.eventCode.LOG,
-      ];
 
-      if (eventCodeList.includes(eventCode)) {
+      if (Object.keys(eventCodeList).includes(eventCode)) {
         if (!requestObject[eventCode]) {
           requestObject[eventCode] = [];
         }
@@ -44,7 +71,7 @@ function createRequestObjectForAllReferenceIds(groupedObjects) {
     });
   });
 
-  return requestObject;
+  return requestObjectList;
 }
 
 function deleteCustomObject(customObject) {
@@ -115,6 +142,7 @@ function processData() {
     );
 
     const payload = createRequestObjectForAllReferenceIds(groupedObjects);
+
     const submission = AnalyticsService.submitData(payload);
     if (submission.data) {
       customObjectsToDelete.forEach((customObject) => {
