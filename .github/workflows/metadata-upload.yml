@@ -2,6 +2,8 @@ name: Metadata upload
 
 on:
   pull_request:
+    paths:
+      - 'metadata/**'
 
 permissions:
   contents: read
