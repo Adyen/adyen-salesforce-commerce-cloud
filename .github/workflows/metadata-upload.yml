@@ -10,7 +10,6 @@ jobs:
   upload-sfra5:
     uses: ./.github/workflows/metadata-upload-template.yml
     with:
-      sfcc_hostname: ${{ secrets.SFCC_STOREFRONT_URL_SFRA5 }}
       node_version: '16'
     secrets:
       SFCC_CLIENT_ID: ${{ secrets.SFCC_CLIENT_ID }}
@@ -19,7 +18,6 @@ jobs:
   upload-sfra6:
     uses: ./.github/workflows/metadata-upload-template.yml
     with:
-      sfcc_hostname: ${{ secrets.SFCC_STOREFRONT_URL_SFRA6 }}
       node_version: '16'
     secrets:
       SFCC_CLIENT_ID: ${{ secrets.SFCC_CLIENT_ID }}
@@ -28,7 +26,6 @@ jobs:
   upload-sfra7:
     uses: ./.github/workflows/metadata-upload-template.yml
     with:
-      sfcc_hostname: ${{ secrets.SFCC_STOREFRONT_URL_SFRA7 }}
       node_version: '18'
     secrets:
       SFCC_CLIENT_ID: ${{ secrets.SFCC_CLIENT_ID }}
