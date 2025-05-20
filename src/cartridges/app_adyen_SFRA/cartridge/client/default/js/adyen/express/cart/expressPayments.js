@@ -191,10 +191,10 @@ async function init() {
 }
 
 module.exports = {
-  init,
   renderExpressPaymentContainer,
   renderPayPalButton,
   renderApplePayButton,
   renderGooglePayButton,
   renderAmazonPayButton,
+  init,
 };

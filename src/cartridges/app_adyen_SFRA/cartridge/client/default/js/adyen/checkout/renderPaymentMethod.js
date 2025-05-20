@@ -160,6 +160,7 @@ function renderPaymentMethod(
   description = null,
   rerender = false,
 ) {
+  let canRender;
   try {
     const paymentMethodsUI = document.querySelector('#paymentMethodsList');
     const paymentMethodID = getPaymentMethodID(isStored, paymentMethod);
@@ -199,10 +200,11 @@ function renderPaymentMethod(
     handleInput(options);
     setValid(options);
 
-    return Promise.resolve();
+    canRender = true;
   } catch (err) {
-    return Promise.reject(err);
+    canRender = false;
   }
+  return canRender;
 }
 
 /**
