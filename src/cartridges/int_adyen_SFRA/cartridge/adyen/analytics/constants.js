@@ -1,15 +1,12 @@
 module.exports = {
   analyticsEventObjectId: 'AdyenAnalyticsEvents',
   pluginType: 'salesforceCommerceCloud',
+  errorType: 'Plugin',
   eventType: {
     EXPECTED_START: 'expectedStart',
     UNEXPECTED_START: 'unexpectedStart',
     EXPECTED_END: 'expectedEnd',
     UNEXPECTED_END: 'unexpectedEnd',
-  },
-  eventStatus: {
-    EXPECTED: 'EXPECTED',
-    UNEXPECTED: 'UNEXPECTED',
   },
   eventCode: {
     ERROR: 'errors',
@@ -21,5 +18,4 @@ module.exports = {
     PROCESSED: 'PROCESSED',
     SKIPPED: 'SKIPPED',
   },
-  errorType: 'Plugin',
 };

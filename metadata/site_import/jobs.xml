@@ -63,7 +63,7 @@
 		<recurrence>
 			<date-from>2024-11-04</date-from>
 			<start-time>00:00:00</start-time>
-			<interval>1h</interval>
+			<interval>1m</interval>
 		</recurrence>
 		<rules>
 			<on-exit status="ERROR">

@@ -226,7 +226,7 @@
                 <value-definitions>
                     <value-definition>
                         <display xml:lang="x-default">ERROR</display>
-                        <value>error</value>
+                        <value>errors</value>
                     </value-definition>
                     <value-definition default="true">
                         <display xml:lang="x-default">INFO</display>
@@ -234,7 +234,7 @@
                     </value-definition>
                     <value-definition>
                         <display xml:lang="x-default">LOG</display>
-                        <value>log</value>
+                        <value>logs</value>
                     </value-definition>
                 </value-definitions>
             </attribute-definition>
@@ -275,29 +275,20 @@
                 <externally-managed-flag>false</externally-managed-flag>
                 <value-definitions>
                     <value-definition>
-                        <display xml:lang="x-default">START</display>
-                        <value>START</value>
+                        <display xml:lang="x-default">EXPECTED_START</display>
+                        <value>expectedStart</value>
                     </value-definition>
                     <value-definition>
-                        <display xml:lang="x-default">END</display>
-                        <value>END</value>
-                    </value-definition>
-                </value-definitions>
-            </attribute-definition>
-            <attribute-definition attribute-id="eventStatus">
-                <display-name xml:lang="x-default">Event Status</display-name>
-                <type>enum-of-string</type>
-                <localizable-flag>false</localizable-flag>
-                <mandatory-flag>true</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <value-definitions>
-                    <value-definition>
-                        <display xml:lang="x-default">EXPECTED</display>
-                        <value>EXPECTED</value>
+                        <display xml:lang="x-default">UNEXPECTED_START</display>
+                        <value>unexpectedStart</value>
                     </value-definition>
                     <value-definition>
-                        <display xml:lang="x-default">UNEXPECTED</display>
-                        <value>UNEXPECTED</value>
+                        <display xml:lang="x-default">EXPECTED_END</display>
+                        <value>expectedEnd</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">UNEXPECTED_END</display>
+                        <value>unexpectedEnd</value>
                     </value-definition>
                 </value-definitions>
             </attribute-definition>
@@ -322,7 +313,6 @@
             <attribute-group group-id="analyticsEvent">
                 <display-name xml:lang="x-default">analyticsEvent</display-name>
                 <attribute attribute-id="eventCode"/>
-                <attribute attribute-id="eventStatus"/>
                 <attribute attribute-id="creationDate" system="true"/>
                 <attribute attribute-id="eventType"/>
                 <attribute attribute-id="referenceId"/>

@@ -61,7 +61,6 @@ function onStartHandler(req) {
       session.sessionID.slice(0, 200),
       path.join('-'),
       analyticsConstants.eventType.EXPECTED_START,
-      analyticsConstants.eventStatus.EXPECTED,
       analyticsConstants.eventCode.INFO,
     );
   }
@@ -76,14 +75,12 @@ function onCompleteHandler(req, res) {
         session.sessionID.slice(0, 200),
         path.join('-'),
         analyticsConstants.eventType.UNEXPECTED_END,
-        analyticsConstants.eventStatus.UNEXPECTED,
         analyticsConstants.eventCode.INFO,
       );
       analyticsEvent.createAnalyticsEvent(
         session.sessionID.slice(0, 200),
         path.join('-'),
         analyticsConstants.eventType.UNEXPECTED_END,
-        analyticsConstants.eventStatus.UNEXPECTED,
         analyticsConstants.eventCode.ERROR,
       );
     } else {
@@ -91,7 +88,6 @@ function onCompleteHandler(req, res) {
         session.sessionID.slice(0, 200),
         path.join('-'),
         analyticsConstants.eventType.EXPECTED_END,
-        analyticsConstants.eventStatus.EXPECTED,
         analyticsConstants.eventCode.INFO,
       );
     }

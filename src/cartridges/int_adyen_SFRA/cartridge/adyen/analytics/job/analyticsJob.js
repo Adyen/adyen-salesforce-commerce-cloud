@@ -1,7 +1,6 @@
 const CustomObjectMgr = require('dw/object/CustomObjectMgr');
 const Transaction = require('dw/system/Transaction');
 const analyticsConstants = require('*/cartridge/adyen/analytics/constants');
-const constants = require('*/cartridge/adyen/config/constants');
 const AnalyticsService = require('../analyticsService');
 const AdyenLogs = require('../../logs/adyenCustomLogs');
 
@@ -17,7 +16,7 @@ const eventCodeList = {
   },
   [analyticsConstants.eventCode.ERROR]: {
     name: analyticsConstants.eventCode.ERROR,
-    limit: 10,
+    limit: 5,
   },
   [analyticsConstants.eventCode.LOG]: {
     name: analyticsConstants.eventCode.LOG,
@@ -27,31 +26,32 @@ const eventCodeList = {
 
 function getRequestObject(requestObjectList) {
   const lastRequestObject = requestObjectList[requestObjectList.length - 1];
-  return Object.keys(eventCodeList).some((eventCode) => {
-    if (
+  const isNotValidRequestObject = Object.keys(eventCodeList).some((key) => {
+    const eventCode = eventCodeList[key];
+    return (
       Object.prototype.hasOwnProperty.call(lastRequestObject, eventCode.name) &&
-      lastRequestObject[eventCode.name].length > eventCode.limit
-    ) {
-      requestObjectList.push({ ...defaultProperties });
-      return requestObjectList[requestObjectList.length - 1];
-    }
-    return lastRequestObject;
+      lastRequestObject[eventCode.name].length >= eventCode.limit
+    );
   });
+  if (isNotValidRequestObject) {
+    requestObjectList.push({ ...defaultProperties });
+    return requestObjectList[requestObjectList.length - 1];
+  }
+  return lastRequestObject;
 }
 
 function createRequestObjectForAllReferenceIds(groupedObjects) {
   const requestObjectList = [];
-  requestObjectList.push({ ...defaultProperties });
   // Iterate over all referenceIds and group events into one requestObject
   Object.keys(groupedObjects).forEach((referenceId) => {
     const events = groupedObjects[referenceId];
-
+    requestObjectList.push({ ...defaultProperties });
     events.forEach((event) => {
       const requestObject = getRequestObject(requestObjectList);
-      const eventCode = event.eventCode.toLowerCase();
+      const eventCode = analyticsConstants.eventCode[event.eventCode];
       const eventObject = {
         timestamp: new Date(event.creationDate).getTime().toString(),
-        type: event.eventType,
+        type: analyticsConstants.eventType[event.eventType],
         target: event.referenceId,
         id: event.eventId,
         component: event.eventSource,
@@ -59,7 +59,7 @@ function createRequestObjectForAllReferenceIds(groupedObjects) {
       if (eventCode === analyticsConstants.eventCode.ERROR) {
         delete eventObject.type;
         delete eventObject.target;
-        eventObject.errorType = constants.errorType;
+        eventObject.errorType = analyticsConstants.errorType;
       }
 
       if (Object.keys(eventCodeList).includes(eventCode)) {
@@ -70,7 +70,6 @@ function createRequestObjectForAllReferenceIds(groupedObjects) {
       }
     });
   });
-
   return requestObjectList;
 }
 
@@ -141,23 +140,25 @@ function processData() {
       customObjectsToDelete,
     );
 
-    const payload = createRequestObjectForAllReferenceIds(groupedObjects);
-
-    const submission = AnalyticsService.submitData(payload);
-    if (submission.data) {
-      customObjectsToDelete.forEach((customObject) => {
-        deleteCustomObject(customObject);
-      });
-    } else {
-      customObjectsToDelete.forEach((customObject) => {
-        if (customObject.custom.retryCount > 2) {
+    const requestObjects =
+      createRequestObjectForAllReferenceIds(groupedObjects);
+    requestObjects.forEach((payload) => {
+      const submission = AnalyticsService.submitData(payload);
+      if (submission.data) {
+        customObjectsToDelete.forEach((customObject) => {
           deleteCustomObject(customObject);
-        } else {
-          updateCounter(customObject);
-        }
-      });
-      throw new Error('Failed to submit full payload for grouped objects.');
-    }
+        });
+      } else {
+        customObjectsToDelete.forEach((customObject) => {
+          if (customObject.custom.retryCount > 2) {
+            deleteCustomObject(customObject);
+          } else {
+            updateCounter(customObject);
+          }
+        });
+        throw new Error('Failed to submit full payload for grouped objects.');
+      }
+    });
   } catch (e) {
     AdyenLogs.error_log(`Error querying custom objects: ${e}`);
     throw e;
