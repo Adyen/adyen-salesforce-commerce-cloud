@@ -1,10 +1,21 @@
 const store = require('../../../../../config/store');
-const { onFieldValid, onBrand, getPaymentMethods } = require('../commons');
+const { getPaymentMethods } = require('../commons');
 const { httpClient } = require('../commons/httpClient');
 
 let checkout;
 let card;
 let addingCardInProgress = false;
+
+function onFieldValid(data) {
+  if (data.endDigits) {
+    store.endDigits = data.endDigits;
+    document.querySelector('#cardNumber').value = store.maskedCardNumber;
+  }
+}
+
+function onBrand(brandObject) {
+  document.querySelector('#cardType').value = brandObject.brand;
+}
 
 function handleAction(action) {
   checkout.createFromAction(action).mount('#action-container');
