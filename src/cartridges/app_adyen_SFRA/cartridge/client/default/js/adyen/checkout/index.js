@@ -30,7 +30,7 @@ function checkForError() {
   }
 }
 
-$(document).ready(async () => {
+$(document).ready(() => {
   checkForError();
 });
 
