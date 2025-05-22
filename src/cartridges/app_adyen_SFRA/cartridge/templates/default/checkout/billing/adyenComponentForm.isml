@@ -80,7 +80,7 @@
         ${Resource.msg('separator.giftCard', 'adyen', null)}
     </div>
     <div class="gift-card-selection">
-        <img id="headingImg" class="heading-img" />
+        <img id="headingImg" class="heading-img" alt="Gift Card" />
         <button id="giftCardAddButton" class="adyen-checkout__button adyen-checkout__button--secondary" type="button">
             <span class="adyen-checkout__button__content">
                 <span class="adyen-checkout__button__text">

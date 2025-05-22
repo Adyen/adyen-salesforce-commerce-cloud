@@ -509,3 +509,18 @@ address {
   color: #0070d2;
   margin-bottom: 0.5rem;
 }
+
+/* Show a blue focus outline for radio buttons */
+input[type="radio"]:focus {
+    outline: 2px solid #0075FF;
+    outline-offset: 2px;
+    box-shadow: 0 0 0 2px #99c2ff;
+}
+
+/* Optional: Also highlight the label when the radio is focused */
+input[type="radio"]:focus + label,
+input[type="radio"]:focus ~ label {
+    /* Adjust selector if label is not immediately after input */
+    box-shadow: 0 0 0 2px #99c2ff;
+    border-radius: 4px;
+}
