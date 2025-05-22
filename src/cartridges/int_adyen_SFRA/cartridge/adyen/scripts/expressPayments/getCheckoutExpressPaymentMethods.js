@@ -44,6 +44,12 @@ function getCheckoutExpressPaymentMethods(req, res, next) {
           AdyenHelper.getCustomer(req.currentCustomer),
           countryCode,
           shopperEmail,
+          [
+            constants.PAYMENTMETHODS.APPLEPAY,
+            constants.PAYMENTMETHODS.AMAZONPAY,
+            constants.PAYMENTMETHODS.GOOGLEPAY,
+            constants.PAYMENTMETHODS.PAYPAL,
+          ],
         );
     req.session.privacyCache.set(
       `expressPaymentMethods_${countryCode}`,

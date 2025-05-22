@@ -80,38 +80,9 @@
      <input id="selectedIssuer" type="hidden" name="${adyenPaymentFields.issuer.htmlName}"/>
 
     <ul id="paymentMethodsList" class="payment-methods-container"></ul>
-    <div class="gift-card-separator adyen-checkout__content-separator adyen-checkout-ctp__separator">
-        ${Resource.msg('separator.giftCard', 'adyen', null)}
+    <div id="adyenGiftCards" style="display: none">
+        <isinclude template="checkout/billing/adyenGiftCards" />
     </div>
-    <div class="gift-card-selection">
-        <img id="headingImg" class="heading-img" />
-        <button id="giftCardAddButton" class="adyen-checkout__button adyen-checkout__button--secondary" type="button">
-            <span class="adyen-checkout__button__content">
-                <span class="adyen-checkout__button__text">
-                    ${Resource.msg('add.giftCard', 'adyen', null)}
-                </span>
-            </span>
-        </button>
-        <div id="giftCardSelectContainer" class="invisible">
-            <label  id="giftCardSelectWrapper" class="gift-card-select-wrapper">
-                <select id="giftCardSelect">
-                    <option value="null" selected="selected">${Resource.msg('select.giftCard', 'adyen', null)}</option>
-                </select>
-            </label>
-            <ul id="giftCardUl" class="list-cards invisible"></ul>
-            <div id="giftCardContainer"></div>
-        </div>
-        <div id="cancelGiftCardButton" class="invisible">
-            <button id="cancelGiftCardButtonStyling">
-                <img src="${URLUtils.staticURL('images/cancel.svg')}" alt="Cancel" />
-            </button>
-        </div>
-    </div>
-    <div id="giftCardsList" class="gift-cards-container"></div>
-    <div id="giftCardsCancelContainer" class="gift-cards-container-cancel invisible">
-        <a id="giftCardCancelButton">${Resource.msg('cancel.giftCard', 'adyen', null)}</a>
-    </div>
-    <div id="giftCardsInfoMessage"></div>
 
      <iscomment>
          Adyen RatePay Device Fingerprint Code

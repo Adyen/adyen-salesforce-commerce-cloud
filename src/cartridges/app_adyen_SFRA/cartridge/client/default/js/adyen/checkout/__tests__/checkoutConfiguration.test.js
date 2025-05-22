@@ -108,6 +108,7 @@ describe('Checkout Configuration', () => {
   });
   describe('PayPal', () => {
     it('handles onSubmit', () => {
+      const stateData = { foo: 'bar' };
       document.body.innerHTML = `
         <div id="lb_paypal">PayPal</div>
         <div id="adyenPaymentMethodName"></div>
@@ -115,9 +116,9 @@ describe('Checkout Configuration', () => {
       `;
       store.selectedMethod = 'paypal';
       store.componentsObj = { paypal: { stateData: { foo: 'bar' } } };
-      paypal.onSubmit({ data: {} });
+      paypal.onSubmit({ data: stateData });
       expect(document.getElementById('adyenStateData').value).toBe(
-        JSON.stringify(store.selectedPayment.stateData),
+        JSON.stringify(stateData),
       );
     });
 

@@ -10,7 +10,7 @@ class PaypalConfig {
   onSubmit = (state, component) => {
     this.helpers.assignPaymentMethodValue();
     document.querySelector('#adyenStateData').value = JSON.stringify(
-      this.store.selectedPayment.stateData,
+      state.data,
     );
     this.helpers.paymentFromComponent(state.data, component);
   };

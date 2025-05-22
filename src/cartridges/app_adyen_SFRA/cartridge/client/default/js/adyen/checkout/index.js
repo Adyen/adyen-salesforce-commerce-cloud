@@ -43,6 +43,7 @@ async function registerRenderPaymentMethodListener() {
         (pm) => pm.type === GIFTCARD,
       );
     if (areGiftCardsEnabled) {
+      document.querySelector('#adyenGiftCards').style.display = 'block';
       await renderGiftCards(paymentMethodsResponse);
     }
     if (window.activeTerminalApiStores) {

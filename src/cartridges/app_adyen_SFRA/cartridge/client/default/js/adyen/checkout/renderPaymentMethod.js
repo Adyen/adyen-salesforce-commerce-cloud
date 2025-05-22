@@ -144,16 +144,6 @@ function createListItem(rerender, paymentMethodID, liContents) {
   return li;
 }
 
-async function checkIfNodeIsAvailable(node) {
-  if (node?.isAvailable) {
-    const isNodeAvailable = await node.isAvailable();
-    if (!isNodeAvailable) {
-      return false;
-    }
-  }
-  return true;
-}
-
 /**
  * To avoid re-rendering components twice, unmounts existing components from payment methods list
  */
@@ -163,7 +153,7 @@ function clearPaymentMethodsContainer() {
   store.clearPaymentMethod();
 }
 
-async function renderPaymentMethod(
+function renderPaymentMethod(
   paymentMethod,
   isStored,
   path,
@@ -173,11 +163,9 @@ async function renderPaymentMethod(
   let canRender;
   try {
     const paymentMethodsUI = document.querySelector('#paymentMethodsList');
-
     const paymentMethodID = getPaymentMethodID(isStored, paymentMethod);
-
     if (paymentMethodID === constants.GIFTCARD) {
-      return;
+      return false;
     }
 
     const isSchemeNotStored = paymentMethod.type === 'scheme' && !isStored;
@@ -202,7 +190,6 @@ async function renderPaymentMethod(
 
     li.append(container);
 
-    await checkIfNodeIsAvailable(store.componentsObj[paymentMethodID]?.node);
     paymentMethodsUI.append(li);
     store.componentsObj[paymentMethodID]?.node?.mount(container);
 
@@ -212,12 +199,11 @@ async function renderPaymentMethod(
 
     handleInput(options);
     setValid(options);
+
     canRender = true;
   } catch (err) {
-    // method not available
     canRender = false;
   }
-  // eslint-disable-next-line
   return canRender;
 }
 
