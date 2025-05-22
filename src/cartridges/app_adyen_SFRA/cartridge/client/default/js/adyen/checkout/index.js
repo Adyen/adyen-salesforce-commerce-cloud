@@ -30,6 +30,10 @@ function checkForError() {
   }
 }
 
+$(document).ready(async () => {
+  checkForError();
+});
+
 async function registerRenderPaymentMethodListener() {
   $('body').on('checkout:renderPaymentMethod', async (e, response) => {
     const { email } = response;
@@ -243,7 +247,6 @@ function registerFirstPaymentMethod() {
 
 function init() {
   $(document).ready(async () => {
-    checkForError();
     paymentMethodsResponse = await getPaymentMethods();
     const storedCustomerEmail = sessionStorage.getItem('customerEmail');
     $('body').trigger('checkout:renderPaymentMethod', {
