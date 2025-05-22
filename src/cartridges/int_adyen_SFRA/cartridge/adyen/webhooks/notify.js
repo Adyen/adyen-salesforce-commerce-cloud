@@ -1,8 +1,9 @@
 const Transaction = require('dw/system/Transaction');
+const URLUtils = require('dw/web/URLUtils');
 const checkAuth = require('*/cartridge/adyen/webhooks/checkNotificationAuth');
 const handleNotify = require('*/cartridge/adyen/webhooks/handleNotify');
 const AdyenConfigs = require('*/cartridge/adyen/utils/adyenConfigs');
-
+const setErrorType = require('*/cartridge/adyen/logs/setErrorType');
 /**
  * Called by Adyen to update status of payments. It should always display [accepted] when finished.
  */
