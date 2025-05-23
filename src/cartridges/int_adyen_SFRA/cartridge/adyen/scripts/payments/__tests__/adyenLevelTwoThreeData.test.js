@@ -7,6 +7,7 @@ describe('getLineItems (Enhanced Scheme Data)', () => {
     productID: 'SW1234567890X',
     quantityValue: 2,
     adjustedNetPrice: 100,
+	getAdjustedTax: 20,
   };
 
   const createMockOrderOrBasket = (customerData = {}) => ({
@@ -30,10 +31,10 @@ describe('getLineItems (Enhanced Scheme Data)', () => {
     });
 
     expect(result).toEqual({
-      'enhancedSchemeData.totalTaxAmount': 50, 
+      'enhancedSchemeData.totalTaxAmount': 10, 
       'enhancedSchemeData.customerReference': 'cust-9999',
       'enhancedSchemeData.itemDetailLine1.unitPrice': '50', 
-      'enhancedSchemeData.itemDetailLine1.totalAmount': 100, 
+      'enhancedSchemeData.itemDetailLine1.totalAmount': 60, 
       'enhancedSchemeData.itemDetailLine1.quantity': 2,
       'enhancedSchemeData.itemDetailLine1.unitOfMeasure': 'EAC',
       'enhancedSchemeData.itemDetailLine1.commodityCode': 'mocked_comodity_code',

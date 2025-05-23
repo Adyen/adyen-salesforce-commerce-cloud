@@ -412,7 +412,7 @@ jest.mock(
     getVatAmount: jest.fn((lineItem) => ({
       divide: jest.fn((quantity) => ({
         getValue: jest.fn(() => lineItem.getAdjustedTax / quantity),
-        value: lineItem.adjustedNetPrice / quantity,
+        value: lineItem.getAdjustedTax / quantity,
       })),
     })),
     getAllLineItems: jest.fn((lineItem) => lineItem),
