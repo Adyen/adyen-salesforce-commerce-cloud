@@ -28,6 +28,7 @@ const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
 const AdyenConfigs = require('*/cartridge/adyen/utils/adyenConfigs');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 const constants = require('*/cartridge/adyen/config/constants');
+const { AdyenError } = require('*/cartridge/adyen/logs/adyenError');
 
 function parsePaymentResponse(paymentResult) {
   const terminalResponse = JSON.parse(paymentResult.response);
@@ -78,7 +79,7 @@ function createTerminalPayment(order, paymentInstrument, terminalId) {
     const terminalRequestObject = {};
     let result = {};
     if (!order || !paymentInstrument) {
-      throw new Error(
+      throw new AdyenError(
         `Could not retrieve payment data, order = ${JSON.stringify(
           order,
         )}, paymentInstrument = ${JSON.stringify(paymentInstrument)}`,
@@ -137,7 +138,7 @@ function createTerminalPayment(order, paymentInstrument, terminalId) {
       terminalRequestObject,
     );
     if (paymentResult.error) {
-      throw new Error(
+      throw new AdyenError(
         `Error in POS payment result: ${JSON.stringify(
           paymentResult.response,
         )}`,
@@ -217,7 +218,7 @@ function sendAbortRequest(serviceId, terminalId) {
 function executeCall(serviceType, requestObject) {
   const service = AdyenHelper.getService(serviceType);
   if (!service) {
-    throw new Error(`Error creating terminal service ${serviceType}`);
+    throw new AdyenError(`Error creating terminal service ${serviceType}`);
   }
 
   const apiKey = AdyenConfigs.getAdyenApiKey();
@@ -244,7 +245,7 @@ function executeCall(serviceType, requestObject) {
       ).response;
       return { error: true, response: `Request aborted: ${abortResult}` };
     }
-    throw new Error(
+    throw new AdyenError(
       `Call error code${callResult
         .getError()
         .toString()} Error => ResponseStatus: ${callResult.getStatus()} | ResponseErrorText: ${callResult.getErrorMessage()} | ResponseText: ${callResult.getMsg()}`,
@@ -253,7 +254,7 @@ function executeCall(serviceType, requestObject) {
 
   const resultObject = callResult.object;
   if (!resultObject || !resultObject.getText()) {
-    throw new Error(
+    throw new AdyenError(
       `No correct response from ${serviceType}, result: ${JSON.stringify(
         resultObject,
       )}`,

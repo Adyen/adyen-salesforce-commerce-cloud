@@ -7,6 +7,7 @@ const getPaymentMethods = require('*/cartridge/adyen/scripts/payments/adyenGetPa
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 const AdyenConfigs = require('*/cartridge/adyen/utils/adyenConfigs');
 const constants = require('*/cartridge/adyen/config/constants');
+const setErrorType = require('*/cartridge/adyen/logs/setErrorType');
 
 const getAmount = (currency, currentBasket) =>
   currentBasket?.getTotalGrossPrice().isAvailable()
@@ -87,7 +88,7 @@ function getCheckoutExpressPaymentMethods(req, res, next) {
     });
   } catch (error) {
     AdyenLogs.fatal_log('Failed to fetch express payment methods', error);
-    res.json({ error: true });
+    setErrorType(error, res);
   }
   return next();
 }
