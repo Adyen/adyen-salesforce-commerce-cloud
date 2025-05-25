@@ -1,13 +1,15 @@
-<div class="modal fade" id="action-modal" role="dialog">
+<div class="modal fade" id="action-modal" role="dialog" aria-modal="true" aria-labelledby="action-modal-title">
    <div class="modal-dialog" id="adyenModalDialog">
+        <h2 id="action-modal-title">[Modal Title]</h2>
         <div id="action-container">
             <div class='invisible' id="cancelQrMethodsButton">
-               <button id='cancelQrMethodsButtonStyling' onclick="location.href='${URLUtils.https('Checkout-Begin')}';">
+               <button id='cancelQrMethodsButtonStyling' onclick="location.href='${URLUtils.https('Checkout-Begin')}';" aria-label="Cancel">
                      <img src="${URLUtils.staticURL('images/cancel.svg')}" alt="Cancel" />
                </button>
             </div>
         </div>
         <div id="amazon-container"></div>
         <div id="giftcard-container"></div>
+        <div class="error-message" role="alert">Action failed, please try again.</div>
    </div>
 </div>

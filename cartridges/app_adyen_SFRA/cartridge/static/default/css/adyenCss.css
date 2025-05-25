@@ -509,3 +509,8 @@ address {
   color: #0070d2;
   margin-bottom: 0.5rem;
 }
+/* Focus styles for accessibility */
+button:focus, a:focus, input:focus {
+  outline: 2px solid #005fcc;
+  outline-offset: 2px;
+}

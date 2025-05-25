@@ -1,5 +1,11 @@
 <li class="nav-item" data-method-id="${paymentOption.ID}">
-    <a class="nav-link adyen-tab active" data-toggle="tab" href="#adyen-component-content" role="tab">
+    <a class="nav-link adyen-tab${isActive ? ' active' : ''}" 
+       data-toggle="tab" 
+       href="#adyen-component-content" 
+       role="tab"
+       id="tab-${paymentOption.ID}"
+       aria-selected="${isActive ? 'true' : 'false'}"
+       aria-controls="panel-${paymentOption.ID}">
         <img class="adyen-option"
              src="${URLUtils.staticURL('/images/payment-types.png')}"
              height="32"

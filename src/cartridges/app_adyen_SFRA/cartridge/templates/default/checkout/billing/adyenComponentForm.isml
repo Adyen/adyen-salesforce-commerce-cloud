@@ -70,11 +70,11 @@
 
      <input id="adyenStateData" type="hidden" name="${adyenPaymentFields.adyenStateData.htmlName}"/>
      <input id="adyenPartialPaymentsOrder" type="hidden" name="${adyenPaymentFields.adyenPartialPaymentsOrder.htmlName}"/>
-     <input type="text" class="form-control cardNumber" style="display:none" id="cardNumber" name="${creditFields.cardNumber.htmlName}">
+     <input type="text" class="form-control cardNumber" style="display:none" id="cardNumber" name="${creditFields.cardNumber.htmlName}" aria-label="Card Number">
      <input type="hidden" class="form-control" id="cardType" name="${creditFields.cardType.htmlName}">
 
      <input id="adyenPaymentMethodName" type="hidden" name="adyenPaymentMethod"/>
-     <input id="adyenIssuerName" type="hidden" name="adyenIssuerName"/>
+     <input id="adyenIssuerName" type="hidden" name="adyenIssuerName"/>ß
      <input id="selectedIssuer" type="hidden" name="${adyenPaymentFields.issuer.htmlName}"/>
 
     <ul id="paymentMethodsList" class="payment-methods-container"></ul>
@@ -82,8 +82,8 @@
         ${Resource.msg('separator.giftCard', 'adyen', null)}
     </div>
     <div class="gift-card-selection">
-        <img id="headingImg" class="heading-img" />
-        <button id="giftCardAddButton" class="adyen-checkout__button adyen-checkout__button--secondary" type="button">
+        <img id="headingImg" class="heading-img" alt="Gift card brand" />
+        <button id="giftCardAddButton" class="adyen-checkout__button adyen-checkout__button--secondary" type="button" aria-label="Add gift card">
             <span class="adyen-checkout__button__content">
                 <span class="adyen-checkout__button__text">
                     ${Resource.msg('add.giftCard', 'adyen', null)}
@@ -96,11 +96,11 @@
                     <option value="null" selected="selected">${Resource.msg('select.giftCard', 'adyen', null)}</option>
                 </select>
             </label>
-            <ul id="giftCardUl" class="list-cards invisible"></ul>
+            <ul id="giftCardUl" class="list-cards invisible" role="list"></ul>
             <div id="giftCardContainer"></div>
         </div>
         <div id="cancelGiftCardButton" class="invisible">
-            <button id="cancelGiftCardButtonStyling">
+            <button id="cancelGiftCardButtonStyling" aria-label="Cancel Giftcard">
                 <img src="${URLUtils.staticURL('images/cancel.svg')}" alt="Cancel" />
             </button>
         </div>
@@ -109,7 +109,7 @@
     <div id="giftCardsCancelContainer" class="gift-cards-container-cancel invisible">
         <a id="giftCardCancelButton">${Resource.msg('cancel.giftCard', 'adyen', null)}</a>
     </div>
-    <div id="giftCardsInfoMessage"></div>
+    <div id="giftCardsInfoMessage" aria-live="polite"></div>
 
      <iscomment>
          Adyen RatePay Device Fingerprint Code
