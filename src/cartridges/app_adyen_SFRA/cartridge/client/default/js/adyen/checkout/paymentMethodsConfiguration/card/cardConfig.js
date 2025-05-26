@@ -1,5 +1,3 @@
-const { onBrand, onFieldValid } = require('../../../commons');
-
 class CardConfig {
   constructor(store, helpers, shopperEmail, amount) {
     this.hasHolderName = true;
@@ -13,6 +11,9 @@ class CardConfig {
     this.store = store;
     this.helpers = helpers;
     this.amount = amount;
+    this.submitPaymentButtonSelector = 'button[value="submit-payment"]';
+    this.cardNumberSelector = '#cardNumber';
+    this.cardTypeSelector = '#cardType';
   }
 
   setInstallments(config) {
@@ -55,8 +56,23 @@ class CardConfig {
 
   onSubmit = () => {
     this.helpers.assignPaymentMethodValue();
-    document.querySelector('button[value="submit-payment"]').disabled = false;
-    document.querySelector('button[value="submit-payment"]').click();
+    const submitPaymentButton = document.querySelector(
+      this.submitPaymentButtonSelector,
+    );
+    submitPaymentButton.disabled = false;
+    submitPaymentButton.click();
+  };
+
+  onFieldValid = (data) => {
+    if (data.endDigits) {
+      this.store.endDigits = data.endDigits;
+      document.querySelector(this.cardNumberSelector).value =
+        this.store.maskedCardNumber;
+    }
+  };
+
+  onBrand = (brandObject) => {
+    document.querySelector(this.cardTypeSelector).value = brandObject.brand;
   };
 
   getConfig() {
@@ -68,8 +84,8 @@ class CardConfig {
       exposeExpiryDate: this.exposeExpiryDate,
       onChange: this.onChange,
       onSubmit: this.onSubmit,
-      onFieldValid,
-      onBrand,
+      onFieldValid: this.onFieldValid,
+      onBrand: this.onBrand,
     };
     this.setInstallments(defaultConfig);
     return defaultConfig;

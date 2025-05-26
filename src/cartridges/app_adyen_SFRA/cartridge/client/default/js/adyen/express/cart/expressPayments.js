@@ -1,4 +1,4 @@
-const { getExpressPaymentMethods, hasEventListener } = require('../../commons');
+const { getExpressPaymentMethods } = require('../../commons');
 const {
   Paypal,
   ApplePay,
@@ -13,6 +13,11 @@ const {
   PAY_WITH_GOOGLE,
 } = require('../../../../../../config/constants');
 const store = require('../../../../../../config/store');
+
+function hasEventListener(eventName) {
+  const events = $._data($('body')[0], 'events');
+  return events && events[eventName];
+}
 
 function getPaymentMethodConfig(adyenPaymentMethods, paymentMethodType) {
   return adyenPaymentMethods?.paymentMethods.find(
