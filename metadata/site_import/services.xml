@@ -136,6 +136,11 @@
         <user-id></user-id>
         <password/>
     </service-credential>
+    <service-credential service-credential-id="AdyenAnalyticsLive">
+        <url>https://checkoutanalytics-live.adyen.com/checkoutanalytics/v3/analytics</url>
+        <user-id></user-id>
+        <password/>
+    </service-credential>
 
     <service-profile service-profile-id="Adyen">
         <timeout-millis>30000</timeout-millis>

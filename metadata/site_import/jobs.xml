@@ -51,7 +51,16 @@
                     <description/>
                     <parameters>
                         <parameter name="ExecuteScriptModule.Module">int_adyen_SFRA/cartridge/adyen/analytics/job/analyticsJob.js</parameter>
-                        <parameter name="ExecuteScriptModule.FunctionName">processData</parameter>
+                        <parameter name="ExecuteScriptModule.FunctionName">processAnalytics</parameter>
+                        <parameter name="ExecuteScriptModule.Transactional">false</parameter>
+                        <parameter name="ExecuteScriptModule.TimeoutInSeconds">3600</parameter>
+                    </parameters>
+                </step>
+                <step step-id="Clean" type="ExecuteScriptModule" enforce-restart="false">
+                    <description/>
+                    <parameters>
+                        <parameter name="ExecuteScriptModule.Module">int_adyen_SFRA/cartridge/adyen/analytics/job/analyticsJob.js</parameter>
+                        <parameter name="ExecuteScriptModule.FunctionName">clearAnalytics</parameter>
                         <parameter name="ExecuteScriptModule.Transactional">false</parameter>
                         <parameter name="ExecuteScriptModule.TimeoutInSeconds">3600</parameter>
                     </parameters>

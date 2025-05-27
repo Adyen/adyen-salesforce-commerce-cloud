@@ -18,4 +18,5 @@ module.exports = {
     PROCESSED: 'PROCESSED',
     SKIPPED: 'SKIPPED',
   },
+  EVENT_LIMIT: 1000,
 };

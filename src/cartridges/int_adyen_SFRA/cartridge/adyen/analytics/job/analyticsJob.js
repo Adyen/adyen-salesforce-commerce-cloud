@@ -7,6 +7,10 @@ const AdyenLogs = require('../../logs/adyenCustomLogs');
 const defaultProperties = {
   channel: 'Web',
   platform: 'Web',
+  [analyticsConstants.eventCode.INFO]: [],
+  [analyticsConstants.eventCode.LOG]: [],
+  [analyticsConstants.eventCode.ERROR]: [],
+  customObjects: [],
 };
 
 const eventCodeList = {
@@ -24,88 +28,12 @@ const eventCodeList = {
   },
 };
 
-function getRequestObject(requestObjectList) {
+function isValidRequestObject(requestObjectList) {
   const lastRequestObject = requestObjectList[requestObjectList.length - 1];
-  const isNotValidRequestObject = Object.keys(eventCodeList).some((key) => {
+  return !Object.keys(eventCodeList).some((key) => {
     const eventCode = eventCodeList[key];
-    return (
-      Object.prototype.hasOwnProperty.call(lastRequestObject, eventCode.name) &&
-      lastRequestObject[eventCode.name].length >= eventCode.limit
-    );
+    return lastRequestObject[eventCode.name].length >= eventCode.limit;
   });
-  if (isNotValidRequestObject) {
-    requestObjectList.push({ ...defaultProperties });
-    return requestObjectList[requestObjectList.length - 1];
-  }
-  return lastRequestObject;
-}
-
-function createRequestObjectForAllReferenceIds(groupedObjects) {
-  const requestObjectList = [];
-  // Iterate over all referenceIds and group events into one requestObject
-  Object.keys(groupedObjects).forEach((referenceId) => {
-    const events = groupedObjects[referenceId];
-    requestObjectList.push({ ...defaultProperties });
-    events.forEach((event) => {
-      const requestObject = getRequestObject(requestObjectList);
-      const eventCode = analyticsConstants.eventCode[event.eventCode];
-      const eventObject = {
-        timestamp: new Date(event.creationDate).getTime().toString(),
-        type: analyticsConstants.eventType[event.eventType],
-        target: event.referenceId,
-        id: event.eventId,
-        component: event.eventSource,
-      };
-      if (eventCode === analyticsConstants.eventCode.ERROR) {
-        delete eventObject.type;
-        delete eventObject.target;
-        eventObject.errorType = analyticsConstants.errorType;
-      }
-
-      if (Object.keys(eventCodeList).includes(eventCode)) {
-        if (!requestObject[eventCode]) {
-          requestObject[eventCode] = [];
-        }
-        requestObject[eventCode].push(eventObject);
-      }
-    });
-  });
-  return requestObjectList;
-}
-
-function deleteCustomObject(customObject) {
-  try {
-    Transaction.wrap(() => {
-      CustomObjectMgr.remove(customObject);
-    });
-  } catch (e) {
-    AdyenLogs.error_log('Error deleting custom object:', e);
-  }
-}
-
-function iterateCustomObjects(
-  customObjectIterator,
-  groupedObjects,
-  customObjectsToDelete,
-) {
-  while (customObjectIterator.hasNext()) {
-    const customObject = customObjectIterator.next();
-    const { referenceId } = customObject.custom;
-    const combinedFields = {};
-
-    if (!groupedObjects[referenceId]) {
-      groupedObjects[referenceId] = [];
-    }
-
-    // Extract custom fields
-    Object.keys(customObject.custom).forEach((fieldName) => {
-      combinedFields[fieldName] = customObject.custom[fieldName]?.toString();
-    });
-    combinedFields.creationDate = customObject.creationDate;
-    groupedObjects[referenceId].push(combinedFields);
-
-    customObjectsToDelete.push(customObject);
-  }
 }
 
 function updateCounter(customObject) {
@@ -118,12 +46,85 @@ function updateCounter(customObject) {
   }
 }
 
-function processData() {
+function updateProcessingStatus(customObject, status) {
+  try {
+    Transaction.wrap(() => {
+      customObject.custom.processingStatus = status;
+    });
+  } catch (e) {
+    AdyenLogs.error_log('Error updating processingStatus:', e);
+  }
+}
+
+function getEventObject(event, creationDate) {
+  const eventObject = {
+    timestamp: new Date(creationDate).getTime().toString(),
+    type: analyticsConstants.eventType[event.eventType],
+    target: event.referenceId,
+    id: event.eventId,
+    component: event.eventSource,
+  };
+  if (event.eventCode === analyticsConstants.eventCode.ERROR) {
+    delete eventObject.type;
+    delete eventObject.target;
+    eventObject.errorType = analyticsConstants.errorType;
+  }
+  return eventObject;
+}
+
+function createAnalyticsRequest(customObjectIterator) {
+  let counter = 0;
+  const requestObjectList = [];
+  requestObjectList.push({ ...defaultProperties });
+  while (customObjectIterator.hasNext()) {
+    if (counter >= analyticsConstants.EVENT_LIMIT) {
+      break;
+    }
+    const customObject = customObjectIterator.next();
+    if (isValidRequestObject(requestObjectList)) {
+      requestObjectList.push({ ...defaultProperties });
+    }
+    const requestObject = requestObjectList[requestObjectList.length - 1];
+    const { creationDate, custom: event } = customObject;
+    const eventObject = getEventObject(event, creationDate);
+    requestObject[event.eventCode].push(eventObject);
+    requestObject.customObjects.push(customObject);
+    counter++;
+  }
+  return requestObjectList;
+}
+
+function sendAnalyticsEvents(requestObjectList) {
+  requestObjectList.forEach((requestObject) => {
+    const { customObjects, ...request } = requestObject;
+    const submission = AnalyticsService.submitData(request);
+    if (submission.data) {
+      customObjects.forEach((customObject) => {
+        updateProcessingStatus(
+          customObject,
+          analyticsConstants.processingStatus.PROCESSED,
+        );
+      });
+    } else {
+      customObjects.forEach((customObject) => {
+        if (customObject.custom.retryCount > 2) {
+          updateProcessingStatus(
+            customObject,
+            analyticsConstants.processingStatus.SKIPPED,
+          );
+        } else {
+          updateCounter(customObject);
+        }
+      });
+      throw new Error('Failed to submit full payload for grouped objects.');
+    }
+  });
+}
+
+function processAnalytics() {
   const query = 'custom.processingStatus = {0}';
   const queryArgs = [analyticsConstants.processingStatus.NOT_PROCESSED];
   let customObjectIterator = null;
-  const groupedObjects = {};
-
   try {
     // Query the custom objects by processing status
     customObjectIterator = CustomObjectMgr.queryCustomObjects(
@@ -132,33 +133,8 @@ function processData() {
       null,
       queryArgs,
     );
-    const customObjectsToDelete = [];
-
-    iterateCustomObjects(
-      customObjectIterator,
-      groupedObjects,
-      customObjectsToDelete,
-    );
-
-    const requestObjects =
-      createRequestObjectForAllReferenceIds(groupedObjects);
-    requestObjects.forEach((payload) => {
-      const submission = AnalyticsService.submitData(payload);
-      if (submission.data) {
-        customObjectsToDelete.forEach((customObject) => {
-          deleteCustomObject(customObject);
-        });
-      } else {
-        customObjectsToDelete.forEach((customObject) => {
-          if (customObject.custom.retryCount > 2) {
-            deleteCustomObject(customObject);
-          } else {
-            updateCounter(customObject);
-          }
-        });
-        throw new Error('Failed to submit full payload for grouped objects.');
-      }
-    });
+    const analyticsRequest = createAnalyticsRequest(customObjectIterator);
+    sendAnalyticsEvents(analyticsRequest);
   } catch (e) {
     AdyenLogs.error_log(`Error querying custom objects: ${e}`);
     throw e;
@@ -167,9 +143,39 @@ function processData() {
       customObjectIterator.close();
     }
   }
-  return groupedObjects;
+}
+
+function clearAnalytics() {
+  let customObjectIterator = null;
+  try {
+    const query =
+      'custom.processingStatus = {0} OR custom.processingStatus = {1}';
+    const queryArgs = [
+      analyticsConstants.processingStatus.SKIPPED,
+      analyticsConstants.processingStatus.PROCESSED,
+    ];
+    customObjectIterator = CustomObjectMgr.queryCustomObjects(
+      analyticsConstants.analyticsEventObjectId,
+      query,
+      null,
+      queryArgs,
+    );
+    while (customObjectIterator.hasNext()) {
+      const customObject = customObjectIterator.next();
+      Transaction.wrap(() => {
+        CustomObjectMgr.remove(customObject);
+      });
+    }
+  } catch (e) {
+    AdyenLogs.error_log('Error deleting custom object:', e);
+  } finally {
+    if (customObjectIterator) {
+      customObjectIterator.close();
+    }
+  }
 }
 
 module.exports = {
-  processData,
+  processAnalytics,
+  clearAnalytics,
 };
