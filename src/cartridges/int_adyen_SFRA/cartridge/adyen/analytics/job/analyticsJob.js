@@ -28,11 +28,10 @@ const eventCodeList = {
   },
 };
 
-function isValidRequestObject(requestObjectList) {
-  const lastRequestObject = requestObjectList[requestObjectList.length - 1];
-  return !Object.keys(eventCodeList).some((key) => {
+function isRequestObjectFull(requestObject) {
+  return Object.keys(eventCodeList).some((key) => {
     const eventCode = eventCodeList[key];
-    return lastRequestObject[eventCode.name].length >= eventCode.limit;
+    return requestObject[eventCode.name].length >= eventCode.limit;
   });
 }
 
@@ -56,7 +55,9 @@ function updateProcessingStatus(customObject, status) {
   }
 }
 
-function getEventObject(event, creationDate) {
+function addEventObject(customObject, requestObjectList) {
+  const { creationDate, custom: event } = customObject;
+  const requestObject = requestObjectList.slice(-1)[0];
   const eventObject = {
     timestamp: new Date(creationDate).getTime().toString(),
     type: analyticsConstants.eventType[event.eventType],
@@ -69,26 +70,40 @@ function getEventObject(event, creationDate) {
     delete eventObject.target;
     eventObject.errorType = analyticsConstants.errorType;
   }
-  return eventObject;
+
+  if (!isRequestObjectFull(requestObject)) {
+    return [
+      ...requestObjectList.slice(0, -1),
+      {
+        ...defaultProperties,
+        ...requestObject,
+        [event.eventCode]: requestObject[event.eventCode].concat([
+          { ...eventObject },
+        ]),
+        customObjects: requestObject.customObjects.concat([customObject]),
+      },
+    ];
+  }
+  return [
+    ...requestObjectList,
+    {
+      ...defaultProperties,
+      [event.eventCode]: [].concat([{ ...eventObject }]),
+      customObjects: [].concat([customObject]),
+    },
+  ];
 }
 
 function createAnalyticsRequest(customObjectIterator) {
   let counter = 0;
-  const requestObjectList = [];
+  let requestObjectList = [];
   requestObjectList.push({ ...defaultProperties });
   while (customObjectIterator.hasNext()) {
     if (counter >= analyticsConstants.EVENT_LIMIT) {
       break;
     }
     const customObject = customObjectIterator.next();
-    if (isValidRequestObject(requestObjectList)) {
-      requestObjectList.push({ ...defaultProperties });
-    }
-    const requestObject = requestObjectList[requestObjectList.length - 1];
-    const { creationDate, custom: event } = customObject;
-    const eventObject = getEventObject(event, creationDate);
-    requestObject[event.eventCode].push(eventObject);
-    requestObject.customObjects.push(customObject);
+    requestObjectList = addEventObject(customObject, requestObjectList);
     counter++;
   }
   return requestObjectList;

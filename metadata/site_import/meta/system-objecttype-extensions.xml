@@ -618,7 +618,7 @@
                 <min-length>0</min-length>
             </attribute-definition>
             <attribute-definition attribute-id="AdyenAnalytics_Enabled">
-                <display-name xml:lang="x-default">In order for Adyen to monitor the performance of my plugin, detect downtime and increase stability, make sure you have this feature enabled.</display-name>
+                <display-name xml:lang="x-default">Enable this feature to allow Adyen to monitor your plugin’s performance, detect potential issues, and proactively enhance stability. By sharing performance data, you help ensure proactive support and minimize downtime.</display-name>
                 <type>boolean</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
