@@ -360,6 +360,7 @@ jest.mock(
     isGooglePayExpressOnPdpEnabled: jest.fn(() => false),
     getExpressPaymentsOrder: jest.fn(),
     getAdyenRecurringPaymentsEnabled: jest.fn(() => true),
+    getAdyenLevel23CommodityCode: jest.fn(() => 'mocked_comodity_code'),
   }),
   { virtual: true },
 );
@@ -405,35 +406,17 @@ jest.mock(
     getItemAmount: jest.fn((lineItem) => ({
       divide: jest.fn((quantity) => ({
         getValue: jest.fn(() => lineItem.adjustedNetPrice / quantity),
+        value: lineItem.adjustedNetPrice / quantity,
       })),
     })),
     getVatAmount: jest.fn((lineItem) => ({
       divide: jest.fn((quantity) => ({
         getValue: jest.fn(() => lineItem.getAdjustedTax / quantity),
+        value: lineItem.getAdjustedTax / quantity,
       })),
     })),
     getAllLineItems: jest.fn((lineItem) => lineItem),
-  }),
-  { virtual: true },
-);
-
-jest.mock(
-  '*/cartridge/adyen/utils/lineItemHelper',
-  () => ({
-    getDescription: jest.fn((lineItem) => lineItem.productName),
-    getId: jest.fn((lineItem) => lineItem.productID),
-    getQuantity: jest.fn((lineItem) => lineItem.quantityValue),
-    getItemAmount: jest.fn((lineItem) => ({
-      divide: jest.fn((quantity) => ({
-        getValue: jest.fn(() => lineItem.adjustedNetPrice / quantity),
-      })),
-    })),
-    getVatAmount: jest.fn((lineItem) => ({
-      divide: jest.fn((quantity) => ({
-        getValue: jest.fn(() => lineItem.getAdjustedTax / quantity),
-      })),
-    })),
-    getAllLineItems: jest.fn((lineItem) => lineItem),
+    getVatPercentage: jest.fn((lineItem) => lineItem.vatRate),
   }),
   { virtual: true },
 );
