@@ -178,7 +178,7 @@ function submitPayment() {
     ) {
       assignPaymentMethodValue();
       setAdyenInputValues();
-      showValidation();
+      return showValidation();
     }
     return true;
   });
