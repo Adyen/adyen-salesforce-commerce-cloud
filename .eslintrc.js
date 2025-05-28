@@ -97,5 +97,6 @@ module.exports = {
     "no-bitwise": "off",
     "no-underscore-dangle": "off",
     'no-restricted-syntax': ['off', 'ForOfStatement'],
+    'no-unused-vars': ['error', { vars: 'all', args: 'after-used', ignoreRestSiblings: true}],
   },
 };
