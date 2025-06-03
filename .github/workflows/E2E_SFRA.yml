@@ -2,9 +2,6 @@ name: E2E For SFRA
 
 on:
   pull_request:
-    paths-ignore:
-      - 'int_adyen_controllers/**'
-      - 'adyen_controllers_changes/**'
 
 permissions:
   contents: read
@@ -19,16 +16,16 @@ jobs:
         include:
           - sfra-version: 'v5.3.0'
             node-version: '14'
-            sfcc-hostname-secret: 'SFCC_HOSTNAME_SFRA5'
-            code-version-secret: 'SFCC_CODE_VERSION_SFRA5'
+            sfcc-hostname: ${{ secrets.SFCC_HOSTNAME_SFRA5 }}
+            code-version: ${{ secrets.SFCC_CODE_VERSION_SFRA5 }}
           - sfra-version: 'v6.1.0'
             node-version: '14'
-            sfcc-hostname-secret: 'SFCC_HOSTNAME_SFRA6'
-            code-version-secret: 'SFCC_CODE_VERSION_SFRA6'
+            sfcc-hostname: ${{ secrets.SFCC_HOSTNAME_SFRA6 }}
+            code-version: ${{ secrets.SFCC_CODE_VERSION_SFRA6 }}
           - sfra-version: 'v7.0.0'
             node-version: '18'
-            sfcc-hostname-secret: 'SFCC_HOSTNAME_SFRA7'
-            code-version-secret: 'SFCC_CODE_VERSION_SFRA7'
+            sfcc-hostname: ${{ secrets.SFCC_HOSTNAME_SFRA7 }}
+            code-version: ${{ secrets.SFCC_CODE_VERSION_SFRA7 }}
     steps:
       - name: Checkout SFRA code
         uses: actions/checkout@v4
@@ -57,9 +54,9 @@ jobs:
           echo '{
             "username": "${{ secrets.SFCC_USERNAME }}",
             "password": "${{ secrets.SFCC_PASSWORD }}",
-            "hostname": "${{ secrets[matrix.sfcc-hostname-secret] }}",
-            "code-version": "${{ secrets[matrix.code-version-secret] }}"
-          }' >> dw.json
+            "hostname": "${{ matrix.sfcc-hostname }}",
+            "code-version": "${{ matrix.code-version }}"
+          }' > dw.json
       - name: Transpile the code
         working-directory: adyen-salesforce-commerce-cloud
         run: npm run transpile
@@ -73,7 +70,7 @@ jobs:
         working-directory: adyen-salesforce-commerce-cloud
         run: npm run check-build:sfra
   end-to-end-testing:
-    if: ${{ github.actor != 'renovate[bot]' || github.actor != 'lgtm-com[bot]' }}
+    if: ${{ github.actor != 'renovate[bot]' && github.actor != 'lgtm-com[bot]' }}
     needs: setup-the-cartridge
     runs-on:
       group: larger-runners
@@ -85,16 +82,13 @@ jobs:
         include:
           - sfra-version: 'v5.3.0'
             node-version: '16'
-            sfcc-hostname-secret: 'SFCC_STOREFRONT_URL_SFRA5'
-            code-version-secret: 'SFCC_CODE_VERSION_SFRA5'
+            sfcc-hostname: ${{ secrets.SFCC_STOREFRONT_URL_SFRA5 }}
           - sfra-version: 'v6.1.0'
             node-version: '16'
-            sfcc-hostname-secret: 'SFCC_STOREFRONT_URL_SFRA6'
-            code-version-secret: 'SFCC_CODE_VERSION_SFRA6'
+            sfcc-hostname: ${{ secrets.SFCC_STOREFRONT_URL_SFRA6 }}
           - sfra-version: 'v7.0.0'
             node-version: '18'
-            sfcc-hostname-secret: 'SFCC_STOREFRONT_URL_SFRA7'
-            code-version-secret: 'SFCC_CODE_VERSION_SFRA7'
+            sfcc-hostname: ${{ secrets.SFCC_STOREFRONT_URL_SFRA7 }}
     steps:
       - name: setup Node
         uses: actions/setup-node@v3
@@ -122,7 +116,7 @@ jobs:
           AMAZONPAY_USERNAME: ${{ secrets.AMAZONPAY_USERNAME }}
           AMAZONPAY_PASSWORD: ${{ secrets.AMAZONPAY_PASSWORD }}
           SFRA_VERSION: ${{ matrix.sfra-version }}
-          SFCC_HOSTNAME: ${{ secrets[matrix.sfcc-hostname-secret] }}
+          SFCC_HOSTNAME: ${{ matrix.sfcc-hostname }}
       - name: run e2e tests quick coverage
         working-directory: adyen-salesforce-commerce-cloud/tests/playwright/
         if: github.event.pull_request.base.ref != 'main'
@@ -135,7 +129,7 @@ jobs:
           AMAZONPAY_USERNAME: ${{ secrets.AMAZONPAY_USERNAME }}
           AMAZONPAY_PASSWORD: ${{ secrets.AMAZONPAY_PASSWORD }}
           SFRA_VERSION: ${{ matrix.sfra-version }}
-          SFCC_HOSTNAME: ${{ secrets[matrix.sfcc-hostname-secret] }}
+          SFCC_HOSTNAME: ${{ matrix.sfcc-hostname }}
       - name: Archive test result artifacts
         if: always()
         uses: actions/upload-artifact@v4
