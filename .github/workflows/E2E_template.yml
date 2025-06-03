@@ -3,18 +3,12 @@ name: E2E Template
 on:
   workflow_call:
     inputs:
-      sfra-version:
+      sfra_version:
         required: true
         type: string
-      node-version:
+      node_version:
         required: true
         type: string
-      code-version:
-        required: true
-        type: string
-      is-main-branch:
-        required: true
-        type: boolean
     secrets:
       SFCC_USERNAME:
         required: true
@@ -42,22 +36,22 @@ on:
         required: true
 
 jobs:
-  setup-and-test:
-    runs-on: ubuntu-22.04
-    timeout-minutes: 30
+  upload:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
       - name: Checkout SFRA code
         uses: actions/checkout@v4
         with:
           repository: SalesforceCommerceCloud/storefront-reference-architecture
-          ref: ${{ inputs.sfra-version }}
+          ref: ${{ inputs.sfra_version }}
           ssh-key: ${{ secrets.SERVICE_ACCOUNT_SSH_KEY }}
           path: storefront-reference-architecture
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: ${{ inputs.node-version }}
-      - name: Checkout Adyen integration
+          node-version: ${{ inputs.node_version }}
+      - name: Checkout Adyen Cartridge
         uses: actions/checkout@v4
         with:
           path: adyen-salesforce-commerce-cloud
@@ -67,15 +61,15 @@ jobs:
       - name: Install Adyen SFCC dependencies
         working-directory: adyen-salesforce-commerce-cloud
         run: npm install
-      - name: Create dw.json
+      - name: Create dw.json file
         working-directory: adyen-salesforce-commerce-cloud
         run: |
           echo '{
             "username": "${{ secrets.SFCC_USERNAME }}",
             "password": "${{ secrets.SFCC_PASSWORD }}",
             "hostname": "${{ secrets.SFCC_HOSTNAME }}",
-            "code-version": "${{ secrets.SFCC_CODE_VERSION }}"
-          }' > dw.json
+            "code-version": "${{ secrets.CODE_VERSION }}"
+          }' >> dw.json
       - name: Transpile the code
         working-directory: adyen-salesforce-commerce-cloud
         run: npm run transpile
@@ -84,43 +78,43 @@ jobs:
         run: npm run compile:js
       - name: Build the cartridge
         working-directory: adyen-salesforce-commerce-cloud
-        run: npm run uploadCartridge > output.txt
+        run: npm run uploadCartridge > output-sfra.txt
       - name: Check build result
         working-directory: adyen-salesforce-commerce-cloud
         run: npm run check-build:sfra
-      - name: Install e2e test dependencies
-        working-directory: adyen-salesforce-commerce-cloud/tests/playwright/
-        run: npm install
-      - name: Setup Playwright dependencies
-        working-directory: adyen-salesforce-commerce-cloud/tests/playwright/
-        run: npx playwright install --with-deps
-      - name: Run E2E Tests Full
-        if: inputs.is-main-branch
+      - name: Install E2E dependencies
         working-directory: adyen-salesforce-commerce-cloud/tests/playwright
+        run: npm install
+      - name: Install Playwright
+        working-directory: adyen-salesforce-commerce-cloud/tests/playwright
+        run: npx playwright install --with-deps
+      - name: Run E2E Tests (Full)
+        if: inputs.is-main-branch == true
+        working-directory: adyen-salesforce-commerce-cloud/tests/playwright/
         run: npm run test:ci
         env:
-          SFRA_VERSION: ${{ inputs.sfra-version }}
-          SFCC_HOSTNAME: ${{ secrets.SFCC_STOREFRONT_URL }}
           SANDBOX_HTTP_AUTH_USERNAME: ${{ secrets.SANDBOX_HTTP_AUTH_USERNAME }}
           SANDBOX_HTTP_AUTH_PASSWORD: ${{ secrets.SANDBOX_HTTP_AUTH_PASSWORD }}
           PAYPAL_USERNAME: ${{ secrets.PAYPAL_USERNAME }}
           PAYPAL_PASSWORD: ${{ secrets.PAYPAL_PASSWORD }}
           AMAZONPAY_USERNAME: ${{ secrets.AMAZONPAY_USERNAME }}
           AMAZONPAY_PASSWORD: ${{ secrets.AMAZONPAY_PASSWORD }}
-      - name: Run E2E Tests Quick
-        if: ${{ !inputs.is-main-branch }}
-        working-directory: adyen-salesforce-commerce-cloud/tests/playwright
+          SFRA_VERSION: ${{ inputs.sfra-version }}
+          SFCC_HOSTNAME: ${{ secrets.SFCC_STOREFRONT_URL }}
+      - name: Run E2E Tests (Quick)
+        if: inputs.is-main-branch == false
+        working-directory: adyen-salesforce-commerce-cloud/tests/playwright/
         run: npm run test:ci:quick
         env:
-          SFRA_VERSION: ${{ inputs.sfra-version }}
-          SFCC_HOSTNAME: ${{ secrets.SFCC_STOREFRONT_URL }}
           SANDBOX_HTTP_AUTH_USERNAME: ${{ secrets.SANDBOX_HTTP_AUTH_USERNAME }}
           SANDBOX_HTTP_AUTH_PASSWORD: ${{ secrets.SANDBOX_HTTP_AUTH_PASSWORD }}
           PAYPAL_USERNAME: ${{ secrets.PAYPAL_USERNAME }}
           PAYPAL_PASSWORD: ${{ secrets.PAYPAL_PASSWORD }}
           AMAZONPAY_USERNAME: ${{ secrets.AMAZONPAY_USERNAME }}
           AMAZONPAY_PASSWORD: ${{ secrets.AMAZONPAY_PASSWORD }}
-      - name: Upload Playwright Report
+          SFRA_VERSION: ${{ inputs.sfra-version }}
+          SFCC_HOSTNAME: ${{ secrets.SFCC_STOREFRONT_URL }}
+      - name: Archive Playwright report
         if: always()
         uses: actions/upload-artifact@v4
         with:
