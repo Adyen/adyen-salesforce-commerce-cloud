@@ -31,7 +31,6 @@ jobs:
     with:
       sfra-version: 'v6.1.0'
       node-version: '14'
-      code-version: ${{ secrets.SFCC_CODE_VERSION_SFRA6 }}
       is-main-branch: ${{ github.event.pull_request.base.ref == 'main' }}
     secrets:
       SFCC_USERNAME: ${{ secrets.SFCC_USERNAME }}
@@ -52,7 +51,6 @@ jobs:
     with:
       sfra-version: 'v7.0.0'
       node-version: '18'
-      code-version: ${{ secrets.SFCC_CODE_VERSION_SFRA7 }}
       is-main-branch: ${{ github.event.pull_request.base.ref == 'main' }}
     secrets:
       SFCC_USERNAME: ${{ secrets.SFCC_USERNAME }}
