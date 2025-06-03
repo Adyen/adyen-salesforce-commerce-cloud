@@ -420,6 +420,9 @@
                     <value-definition>
                         <value>IN</value>
                     </value-definition>
+                    <value-definition>
+                        <value>APSE</value>
+                    </value-definition>
                 </value-definitions>
             </attribute-definition>
             <attribute-definition attribute-id="Adyen_Pos_Region">
