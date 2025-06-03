@@ -1,46 +1,41 @@
-name: E2E for SFRA
+name: E2E For SFRA
 
 on:
   pull_request:
 
+permissions:
+  contents: read
+
 jobs:
-  sfra-e2e-job:
-    if: ${{ github.actor != 'renovate[bot]' || github.actor != 'lgtm-com[bot]' }}
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - sfra-version: 'v5.3.0'
-            node-version: '14'
-            secret-hostname: 'SFCC_HOSTNAME_SFRA5'
-            secret-storefront-url: 'SFCC_STOREFRONT_URL_SFRA5'
-            secret-code-version: 'SFCC_CODE_VERSION_SFRA5'
-          - sfra-version: 'v6.1.0'
-            node-version: '14'
-            secret-hostname: 'SFCC_HOSTNAME_SFRA6'
-            secret-storefront-url: 'SFCC_STOREFRONT_URL_SFRA6'
-            secret-code-version: 'SFCC_CODE_VERSION_SFRA6'
-          - sfra-version: 'v7.0.0'
-            node-version: '18'
-            secret-hostname: 'SFCC_HOSTNAME_SFRA7'
-            secret-storefront-url: 'SFCC_STOREFRONT_URL_SFRA7'
-            secret-code-version: 'SFCC_CODE_VERSION_SFRA7'
+  e2e-sfra5:
     uses: ./.github/workflows/E2E_template.yml
     with:
-      sfra-version: ${{ matrix.sfra-version }}
-      node-version: ${{ matrix.node-version }}
-      sfcc-hostname: ${{ secrets[ matrix.secret-hostname ] }}
-      code-version: ${{ secrets[ matrix.secret-code-version ] }}
-      storefront-url: ${{ secrets[ matrix.secret-storefront-url ] }}
-      is-main-branch: ${{ github.base_ref == 'main' }}
-    secrets:
-      SFCC_USERNAME: ${{ secrets.SFCC_USERNAME }}
-      SFCC_PASSWORD: ${{ secrets.SFCC_PASSWORD }}
-      SERVICE_ACCOUNT_SSH_KEY: ${{ secrets.SERVICE_ACCOUNT_SSH_KEY }}
-      SANDBOX_HTTP_AUTH_USERNAME: ${{ secrets.SANDBOX_HTTP_AUTH_USERNAME }}
-      SANDBOX_HTTP_AUTH_PASSWORD: ${{ secrets.SANDBOX_HTTP_AUTH_PASSWORD }}
-      PAYPAL_USERNAME: ${{ secrets.PAYPAL_USERNAME }}
-      PAYPAL_PASSWORD: ${{ secrets.PAYPAL_PASSWORD }}
-      AMAZONPAY_USERNAME: ${{ secrets.AMAZONPAY_USERNAME }}
-      AMAZONPAY_PASSWORD: ${{ secrets.AMAZONPAY_PASSWORD }}
+      sfra-version: 'v5.3.0'
+      node-version: '14'
+      sfcc-hostname: ${{ secrets.SFCC_HOSTNAME_SFRA5 }}
+      code-version: ${{ secrets.SFCC_CODE_VERSION_SFRA5 }}
+      storefront-url: ${{ secrets.SFCC_STOREFRONT_URL_SFRA5 }}
+      is-main-branch: ${{ github.event.pull_request.base.ref == 'main' }}
+    secrets: inherit
+
+  e2e-sfra6:
+    uses: ./.github/workflows/E2E_template.yml
+    with:
+      sfra-version: 'v6.1.0'
+      node-version: '14'
+      sfcc-hostname: ${{ secrets.SFCC_HOSTNAME_SFRA6 }}
+      code-version: ${{ secrets.SFCC_CODE_VERSION_SFRA6 }}
+      storefront-url: ${{ secrets.SFCC_STOREFRONT_URL_SFRA6 }}
+      is-main-branch: ${{ github.event.pull_request.base.ref == 'main' }}
+    secrets: inherit
+
+  e2e-sfra7:
+    uses: ./.github/workflows/E2E_template.yml
+    with:
+      sfra-version: 'v7.0.0'
+      node-version: '18'
+      sfcc-hostname: ${{ secrets.SFCC_HOSTNAME_SFRA7 }}
+      code-version: ${{ secrets.SFCC_CODE_VERSION_SFRA7 }}
+      storefront-url: ${{ secrets.SFCC_STOREFRONT_URL_SFRA7 }}
+      is-main-branch: ${{ github.event.pull_request.base.ref == 'main' }}
+    secrets: inherit

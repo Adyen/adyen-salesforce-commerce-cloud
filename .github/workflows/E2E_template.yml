@@ -42,7 +42,7 @@ on:
         required: true
 
 jobs:
-  setup-cartridge:
+  setup-and-test:
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout SFRA code
@@ -62,15 +62,12 @@ jobs:
         uses: actions/checkout@v4
         with:
           path: adyen-salesforce-commerce-cloud
-
       - name: Install SFRA dependencies
         working-directory: storefront-reference-architecture
         run: npm install
-
       - name: Install Adyen dependencies
         working-directory: adyen-salesforce-commerce-cloud
         run: npm install
-
       - name: Create dw.json
         working-directory: adyen-salesforce-commerce-cloud
         run: |
@@ -80,50 +77,28 @@ jobs:
             "hostname": "${{ inputs.sfcc-hostname }}",
             "code-version": "${{ inputs.code-version }}"
           }' > dw.json
-
       - name: Transpile Adyen code
         working-directory: adyen-salesforce-commerce-cloud
         run: npm run transpile
-
       - name: Compile JS
         working-directory: adyen-salesforce-commerce-cloud
         run: npm run compile:js
-
       - name: Upload Cartridge
         working-directory: adyen-salesforce-commerce-cloud
         run: npm run uploadCartridge > output-sfra.txt
-
       - name: Check Build
         working-directory: adyen-salesforce-commerce-cloud
         run: npm run check-build:sfra
-
-  run-e2e:
-    runs-on:
-      group: larger-runners
-      labels: ubuntu-latest-8-cores
-    needs: setup-cartridge
-    timeout-minutes: 30
-    steps:
-      - name: Setup Node
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ inputs.node-version }}
-
-      - name: Checkout Adyen code
-        uses: actions/checkout@v4
-        with:
-          path: adyen-salesforce-commerce-cloud
-
-      - name: Install E2E dependencies
+      - name: Install E2E Test Dependencies
         working-directory: adyen-salesforce-commerce-cloud/tests/playwright/
-        run: |
-          npm install
-          npx playwright install --with-deps
-
+        run: npm install
+      - name: Setup Playwright
+        working-directory: adyen-salesforce-commerce-cloud/tests/playwright/
+        run: npx playwright install --with-deps
       - name: Run E2E Tests
         working-directory: adyen-salesforce-commerce-cloud/tests/playwright/
         run: |
-          if [ "${{ inputs.is-main-branch }}" = "true" ]; then
+          if ${{ inputs.is-main-branch }}; then
             npm run test:ci
           else
             npm run test:ci:quick
@@ -142,5 +117,5 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: playwright-report
+          name: playwright-report-${{ inputs.sfra-version }}
           path: adyen-salesforce-commerce-cloud/tests/playwright/playwright-report
