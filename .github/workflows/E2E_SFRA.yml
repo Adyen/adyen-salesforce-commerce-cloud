@@ -11,7 +11,6 @@ jobs:
     with:
       sfra_version: 'v5.3.0'
       node_version: '14'
-      is-main-branch: ${{ github.event.pull_request.base.ref == 'main' }}
     secrets:
       SFCC_USERNAME: ${{ secrets.SFCC_USERNAME }}
       SFCC_PASSWORD: ${{ secrets.SFCC_PASSWORD }}
@@ -31,7 +30,6 @@ jobs:
     with:
       sfra_version: 'v6.1.0'
       node_version: '14'
-      is-main-branch: ${{ github.event.pull_request.base.ref == 'main' }}
     secrets:
       SFCC_USERNAME: ${{ secrets.SFCC_USERNAME }}
       SFCC_PASSWORD: ${{ secrets.SFCC_PASSWORD }}
@@ -46,12 +44,11 @@ jobs:
       AMAZONPAY_USERNAME: ${{ secrets.AMAZONPAY_USERNAME }}
       AMAZONPAY_PASSWORD: ${{ secrets.AMAZONPAY_PASSWORD }}
 
-  e2e-sfra-7:
+  e2e-sfra7:
     uses: ./.github/workflows/E2E_template.yml
     with:
       sfra_version: 'v7.0.0'
       node_version: '18'
-      is-main-branch: ${{ github.event.pull_request.base.ref == 'main' }}
     secrets:
       SFCC_USERNAME: ${{ secrets.SFCC_USERNAME }}
       SFCC_PASSWORD: ${{ secrets.SFCC_PASSWORD }}
