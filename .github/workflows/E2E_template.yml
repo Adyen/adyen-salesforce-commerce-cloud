@@ -9,6 +9,9 @@ on:
       node_version:
         required: true
         type: string
+      is-main-branch:
+        required: true
+        type: boolean
     secrets:
       SFCC_USERNAME:
         required: true
