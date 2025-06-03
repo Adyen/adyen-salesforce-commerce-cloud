@@ -2,7 +2,6 @@ name: E2E For SFRA
 
 on:
   pull_request:
-
 permissions:
   contents: read
 
@@ -12,30 +11,66 @@ jobs:
     with:
       sfra-version: 'v5.3.0'
       node-version: '14'
-      sfcc-hostname: ${{ secrets.SFCC_HOSTNAME_SFRA5 }}
       code-version: ${{ secrets.SFCC_CODE_VERSION_SFRA5 }}
-      storefront-url: ${{ secrets.SFCC_STOREFRONT_URL_SFRA5 }}
+      sfcc-hostname: dummy            # passed via secrets
+      storefront-url: dummy           # passed via secrets
       is-main-branch: ${{ github.event.pull_request.base.ref == 'main' }}
-    secrets: inherit
+    secrets:
+      SFCC_USERNAME: ${{ secrets.SFCC_USERNAME }}
+      SFCC_PASSWORD: ${{ secrets.SFCC_PASSWORD }}
+      SERVICE_ACCOUNT_SSH_KEY: ${{ secrets.SERVICE_ACCOUNT_SSH_KEY }}
+      SFCC_HOSTNAME: ${{ secrets.SFCC_HOSTNAME_SFRA5 }}
+      SFCC_CODE_VERSION: ${{ secrets.SFCC_CODE_VERSION_SFRA5 }}
+      SFCC_STOREFRONT_URL: ${{ secrets.SFCC_STOREFRONT_URL_SFRA5 }}
+      SANDBOX_HTTP_AUTH_USERNAME: ${{ secrets.SANDBOX_HTTP_AUTH_USERNAME }}
+      SANDBOX_HTTP_AUTH_PASSWORD: ${{ secrets.SANDBOX_HTTP_AUTH_PASSWORD }}
+      PAYPAL_USERNAME: ${{ secrets.PAYPAL_USERNAME }}
+      PAYPAL_PASSWORD: ${{ secrets.PAYPAL_PASSWORD }}
+      AMAZONPAY_USERNAME: ${{ secrets.AMAZONPAY_USERNAME }}
+      AMAZONPAY_PASSWORD: ${{ secrets.AMAZONPAY_PASSWORD }}
 
   e2e-sfra6:
     uses: ./.github/workflows/E2E_template.yml
     with:
       sfra-version: 'v6.1.0'
       node-version: '14'
-      sfcc-hostname: ${{ secrets.SFCC_HOSTNAME_SFRA6 }}
       code-version: ${{ secrets.SFCC_CODE_VERSION_SFRA6 }}
-      storefront-url: ${{ secrets.SFCC_STOREFRONT_URL_SFRA6 }}
+      sfcc-hostname: dummy
+      storefront-url: dummy
       is-main-branch: ${{ github.event.pull_request.base.ref == 'main' }}
-    secrets: inherit
+    secrets:
+      SFCC_USERNAME: ${{ secrets.SFCC_USERNAME }}
+      SFCC_PASSWORD: ${{ secrets.SFCC_PASSWORD }}
+      SERVICE_ACCOUNT_SSH_KEY: ${{ secrets.SERVICE_ACCOUNT_SSH_KEY }}
+      SFCC_HOSTNAME: ${{ secrets.SFCC_HOSTNAME_SFRA6 }}
+      SFCC_CODE_VERSION: ${{ secrets.SFCC_CODE_VERSION_SFRA6 }}
+      SFCC_STOREFRONT_URL: ${{ secrets.SFCC_STOREFRONT_URL_SFRA6 }}
+      SANDBOX_HTTP_AUTH_USERNAME: ${{ secrets.SANDBOX_HTTP_AUTH_USERNAME }}
+      SANDBOX_HTTP_AUTH_PASSWORD: ${{ secrets.SANDBOX_HTTP_AUTH_PASSWORD }}
+      PAYPAL_USERNAME: ${{ secrets.PAYPAL_USERNAME }}
+      PAYPAL_PASSWORD: ${{ secrets.PAYPAL_PASSWORD }}
+      AMAZONPAY_USERNAME: ${{ secrets.AMAZONPAY_USERNAME }}
+      AMAZONPAY_PASSWORD: ${{ secrets.AMAZONPAY_PASSWORD }}
 
   e2e-sfra7:
     uses: ./.github/workflows/E2E_template.yml
     with:
       sfra-version: 'v7.0.0'
       node-version: '18'
-      sfcc-hostname: ${{ secrets.SFCC_HOSTNAME_SFRA7 }}
       code-version: ${{ secrets.SFCC_CODE_VERSION_SFRA7 }}
-      storefront-url: ${{ secrets.SFCC_STOREFRONT_URL_SFRA7 }}
+      sfcc-hostname: dummy
+      storefront-url: dummy
       is-main-branch: ${{ github.event.pull_request.base.ref == 'main' }}
-    secrets: inherit
+    secrets:
+      SFCC_USERNAME: ${{ secrets.SFCC_USERNAME }}
+      SFCC_PASSWORD: ${{ secrets.SFCC_PASSWORD }}
+      SERVICE_ACCOUNT_SSH_KEY: ${{ secrets.SERVICE_ACCOUNT_SSH_KEY }}
+      SFCC_HOSTNAME: ${{ secrets.SFCC_HOSTNAME_SFRA7 }}
+      SFCC_CODE_VERSION: ${{ secrets.SFCC_CODE_VERSION_SFRA7 }}
+      SFCC_STOREFRONT_URL: ${{ secrets.SFCC_STOREFRONT_URL_SFRA7 }}
+      SANDBOX_HTTP_AUTH_USERNAME: ${{ secrets.SANDBOX_HTTP_AUTH_USERNAME }}
+      SANDBOX_HTTP_AUTH_PASSWORD: ${{ secrets.SANDBOX_HTTP_AUTH_PASSWORD }}
+      PAYPAL_USERNAME: ${{ secrets.PAYPAL_USERNAME }}
+      PAYPAL_PASSWORD: ${{ secrets.PAYPAL_PASSWORD }}
+      AMAZONPAY_USERNAME: ${{ secrets.AMAZONPAY_USERNAME }}
+      AMAZONPAY_PASSWORD: ${{ secrets.AMAZONPAY_PASSWORD }}
