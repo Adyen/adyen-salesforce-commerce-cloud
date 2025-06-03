@@ -9,12 +9,6 @@ on:
       node_version:
         required: true
         type: string
-      sfcc_hostname:
-        required: true
-        type: string
-      code_version:
-        required: true
-        type: string
     secrets:
       SFCC_USERNAME:
         required: true
@@ -73,8 +67,8 @@ jobs:
           echo '{
             "username": "${{ secrets.SFCC_USERNAME }}",
             "password": "${{ secrets.SFCC_PASSWORD }}",
-            "hostname": "${{ inputs.sfcc_hostname }}",
-            "code-version": "${{ inputs.code_version }}"
+            "hostname": "${{ secrets.SFCC_HOSTNAME }}",
+            "code-version": "${{ secrets.CODE_VERSION }}"
           }' >> dw.json
       - name: Transpile the code
         working-directory: adyen-salesforce-commerce-cloud

@@ -11,8 +11,6 @@ jobs:
     with:
       sfra_version: 'v5.3.0'
       node_version: '14'
-      sfcc_hostname: ${{ secrets.SFCC_HOSTNAME_SFRA5 }}
-      code_version: ${{ secrets.SFCC_CODE_VERSION_SFRA5 }}
     secrets:
       SFCC_USERNAME: ${{ secrets.SFCC_USERNAME }}
       SFCC_PASSWORD: ${{ secrets.SFCC_PASSWORD }}
@@ -32,8 +30,6 @@ jobs:
     with:
       sfra_version: 'v6.1.0'
       node_version: '14'
-      sfcc_hostname: ${{ secrets.SFCC_HOSTNAME_SFRA6 }}
-      code_version: ${{ secrets.SFCC_CODE_VERSION_SFRA6 }}
     secrets:
       SFCC_USERNAME: ${{ secrets.SFCC_USERNAME }}
       SFCC_PASSWORD: ${{ secrets.SFCC_PASSWORD }}
@@ -53,8 +49,6 @@ jobs:
     with:
       sfra_version: 'v7.0.0'
       node_version: '18'
-      sfcc_hostname: ${{ secrets.SFCC_HOSTNAME_SFRA7 }}
-      code_version: ${{ secrets.SFCC_CODE_VERSION_SFRA7 }}
     secrets:
       SFCC_USERNAME: ${{ secrets.SFCC_USERNAME }}
       SFCC_PASSWORD: ${{ secrets.SFCC_PASSWORD }}
