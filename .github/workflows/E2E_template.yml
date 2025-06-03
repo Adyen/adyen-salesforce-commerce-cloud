@@ -26,23 +26,11 @@ on:
         required: true
       AMAZONPAY_PASSWORD:
         required: true
-      SFCC_HOSTNAME_SFRA5:
+      SFCC_HOSTNAME:
         required: true
-      SFCC_CODE_VERSION_SFRA5:
+      SFCC_CODE_VERSION:
         required: true
-      SFCC_HOSTNAME_SFRA6:
-        required: true
-      SFCC_CODE_VERSION_SFRA6:
-        required: true
-      SFCC_HOSTNAME_SFRA7:
-        required: true
-      SFCC_CODE_VERSION_SFRA7:
-        required: true
-      SFCC_STOREFRONT_URL_SFRA5:
-        required: true
-      SFCC_STOREFRONT_URL_SFRA6:
-        required: true
-      SFCC_STOREFRONT_URL_SFRA7:
+      SFCC_STOREFRONT_URL:
         required: true
       SERVICE_ACCOUNT_SSH_KEY:
         required: true
@@ -80,7 +68,7 @@ jobs:
             "username": "${{ secrets.SFCC_USERNAME }}",
             "password": "${{ secrets.SFCC_PASSWORD }}",
             "hostname": "${{ secrets.SFCC_HOSTNAME }}",
-            "code-version": "${{ secrets.CODE_VERSION }}"
+            "code-version": "${{ secrets.SFCC_CODE_VERSION }}"
           }' >> dw.json
       - name: Transpile the code
         working-directory: adyen-salesforce-commerce-cloud
@@ -122,10 +110,28 @@ jobs:
         working-directory: adyen-salesforce-commerce-cloud/tests/playwright/
         if: github.event.pull_request.base.ref == 'main'
         run: npm run test:ci
+        env:
+          SANDBOX_HTTP_AUTH_USERNAME: ${{ secrets.SANDBOX_HTTP_AUTH_USERNAME }}
+          SANDBOX_HTTP_AUTH_PASSWORD: ${{ secrets.SANDBOX_HTTP_AUTH_PASSWORD }}
+          PAYPAL_USERNAME: ${{ secrets.PAYPAL_USERNAME }}
+          PAYPAL_PASSWORD: ${{ secrets.PAYPAL_PASSWORD }}
+          AMAZONPAY_USERNAME: ${{ secrets.AMAZONPAY_USERNAME }}
+          AMAZONPAY_PASSWORD: ${{ secrets.AMAZONPAY_PASSWORD }}
+          SFRA_VERSION: ${{ inputs.sfra_version }}
+          SFCC_HOSTNAME: ${{ secrets.SFCC_STOREFRONT_URL }}
       - name: run e2e tests quick coverage
         working-directory: adyen-salesforce-commerce-cloud/tests/playwright/
         if: github.event.pull_request.base.ref != 'main'
         run: npm run test:ci:quick
+        env:
+          SANDBOX_HTTP_AUTH_USERNAME: ${{ secrets.SANDBOX_HTTP_AUTH_USERNAME }}
+          SANDBOX_HTTP_AUTH_PASSWORD: ${{ secrets.SANDBOX_HTTP_AUTH_PASSWORD }}
+          PAYPAL_USERNAME: ${{ secrets.PAYPAL_USERNAME }}
+          PAYPAL_PASSWORD: ${{ secrets.PAYPAL_PASSWORD }}
+          AMAZONPAY_USERNAME: ${{ secrets.AMAZONPAY_USERNAME }}
+          AMAZONPAY_PASSWORD: ${{ secrets.AMAZONPAY_PASSWORD }}
+          SFRA_VERSION: ${{ inputs.sfra_version }}
+          SFCC_HOSTNAME: ${{ secrets.SFCC_STOREFRONT_URL }}
       - name: Archive test result artifacts
         if: always()
         uses: actions/upload-artifact@v4
