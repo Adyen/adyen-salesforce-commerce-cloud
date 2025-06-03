@@ -71,7 +71,7 @@ jobs:
             "username": "${{ secrets.SFCC_USERNAME }}",
             "password": "${{ secrets.SFCC_PASSWORD }}",
             "hostname": "${{ secrets.SFCC_HOSTNAME }}",
-            "code-version": "${{ secrets.CODE_VERSION }}"
+            "code-version": "${{ secrets.SFCC_CODE_VERSION }}"
           }' >> dw.json
       - name: Transpile the code
         working-directory: adyen-salesforce-commerce-cloud
@@ -90,8 +90,7 @@ jobs:
         run: npm install
       - name: Install Playwright
         working-directory: adyen-salesforce-commerce-cloud/tests/playwright/
-        run: | 
-          npx playwright install --with-deps
+        run: npx playwright install --with-deps
       - name: Run E2E Tests (Full)
         if: inputs.is-main-branch == true
         working-directory: adyen-salesforce-commerce-cloud/tests/playwright/
