@@ -105,10 +105,10 @@ jobs:
       - name: install e2e test dependencies
         working-directory: adyen-salesforce-commerce-cloud/tests/playwright/
         run: npm i
-      - name: Switch to Node.js 18
+      - name: setup Node 18 
         uses: actions/setup-node@v3
         with:
-          node-version: '18
+          node-version: '18'
       - name: Check node version
         run: node --version
       - name: setup playwright dependencies
