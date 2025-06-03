@@ -105,6 +105,8 @@ jobs:
       - name: install e2e test dependencies
         working-directory: adyen-salesforce-commerce-cloud/tests/playwright/
         run: npm i
+      - name: Check node version
+        run: node --version
       - name: setup playwright dependencies
         working-directory: adyen-salesforce-commerce-cloud/tests/playwright/
         run: npx playwright install --with-deps
