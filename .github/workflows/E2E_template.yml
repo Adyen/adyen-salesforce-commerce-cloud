@@ -2,6 +2,13 @@ name: E2E For SFRA - Template
 
 on:
   workflow_call:
+    inputs:
+      sfra_version:
+        required: true
+        type: string
+      node_version:
+        required: true
+        type: string
     secrets:
       SFCC_USERNAME:
         required: true
