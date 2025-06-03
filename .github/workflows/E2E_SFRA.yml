@@ -16,7 +16,6 @@ jobs:
       SFCC_PASSWORD: ${{ secrets.SFCC_PASSWORD }}
       SFCC_HOSTNAME: ${{ secrets.SFCC_HOSTNAME_SFRA5 }}
       SFCC_CODE_VERSION: ${{ secrets.SFCC_CODE_VERSION_SFRA5 }}
-      CODE_VERSION: ${{ secrets.SFCC_CODE_VERSION_SFRA5 }}
       SFCC_STOREFRONT_URL: ${{ secrets.SFCC_STOREFRONT_URL_SFRA7 }}
       SERVICE_ACCOUNT_SSH_KEY: ${{ secrets.SERVICE_ACCOUNT_SSH_KEY }}
       SANDBOX_HTTP_AUTH_USERNAME: ${{ secrets.SANDBOX_HTTP_AUTH_USERNAME }}
@@ -25,6 +24,8 @@ jobs:
       PAYPAL_PASSWORD: ${{ secrets.PAYPAL_PASSWORD }}
       AMAZONPAY_USERNAME: ${{ secrets.AMAZONPAY_USERNAME }}
       AMAZONPAY_PASSWORD: ${{ secrets.AMAZONPAY_PASSWORD }}
+      GOOGLEPAY_USERNAME: ${{ secrets.GOOGLEPAY_USERNAME }}
+      GOOGLEPAY_PASSWORD: ${{ secrets.GOOGLEPAY_PASSWORD }}
 
   e2e-sfra6:
     uses: ./.github/workflows/E2E_template.yml
@@ -35,7 +36,6 @@ jobs:
       SFCC_USERNAME: ${{ secrets.SFCC_USERNAME }}
       SFCC_PASSWORD: ${{ secrets.SFCC_PASSWORD }}
       SFCC_HOSTNAME: ${{ secrets.SFCC_HOSTNAME_SFRA6 }}
-      CODE_VERSION: ${{ secrets.SFCC_CODE_VERSION_SFRA6 }}
       SFCC_CODE_VERSION: ${{ secrets.SFCC_CODE_VERSION_SFRA6 }}
       SFCC_STOREFRONT_URL: ${{ secrets.SFCC_STOREFRONT_URL_SFRA6 }}
       SERVICE_ACCOUNT_SSH_KEY: ${{ secrets.SERVICE_ACCOUNT_SSH_KEY }}
@@ -45,6 +45,8 @@ jobs:
       PAYPAL_PASSWORD: ${{ secrets.PAYPAL_PASSWORD }}
       AMAZONPAY_USERNAME: ${{ secrets.AMAZONPAY_USERNAME }}
       AMAZONPAY_PASSWORD: ${{ secrets.AMAZONPAY_PASSWORD }}
+      GOOGLEPAY_USERNAME: ${{ secrets.GOOGLEPAY_USERNAME }}
+      GOOGLEPAY_PASSWORD: ${{ secrets.GOOGLEPAY_PASSWORD }}
 
   e2e-sfra7:
     uses: ./.github/workflows/E2E_template.yml
@@ -55,7 +57,6 @@ jobs:
       SFCC_USERNAME: ${{ secrets.SFCC_USERNAME }}
       SFCC_PASSWORD: ${{ secrets.SFCC_PASSWORD }}
       SFCC_HOSTNAME: ${{ secrets.SFCC_HOSTNAME_SFRA7 }}
-      CODE_VERSION: ${{ secrets.SFCC_CODE_VERSION_SFRA7 }}
       SFCC_CODE_VERSION: ${{ secrets.SFCC_CODE_VERSION_SFRA7 }}
       SFCC_STOREFRONT_URL: ${{ secrets.SFCC_STOREFRONT_URL_SFRA7 }}
       SERVICE_ACCOUNT_SSH_KEY: ${{ secrets.SERVICE_ACCOUNT_SSH_KEY }}
@@ -65,3 +66,5 @@ jobs:
       PAYPAL_PASSWORD: ${{ secrets.PAYPAL_PASSWORD }}
       AMAZONPAY_USERNAME: ${{ secrets.AMAZONPAY_USERNAME }}
       AMAZONPAY_PASSWORD: ${{ secrets.AMAZONPAY_PASSWORD }}
+      GOOGLEPAY_USERNAME: ${{ secrets.GOOGLEPAY_USERNAME }}
+      GOOGLEPAY_PASSWORD: ${{ secrets.GOOGLEPAY_PASSWORD }}

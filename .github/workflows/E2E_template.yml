@@ -16,8 +16,6 @@ on:
         required: true
       SFCC_HOSTNAME:
         required: true
-      CODE_VERSION:
-        required: true
       SANDBOX_HTTP_AUTH_USERNAME:
         required: true
       SANDBOX_HTTP_AUTH_PASSWORD:
@@ -29,6 +27,10 @@ on:
       AMAZONPAY_USERNAME:
         required: true
       AMAZONPAY_PASSWORD:
+        required: true
+      GOOGLEPAY_USERNAME:
+        required: true
+      GOOGLEPAY_PASSWORD:
         required: true
       SFCC_CODE_VERSION:
         required: true
@@ -70,7 +72,7 @@ jobs:
             "username": "${{ secrets.SFCC_USERNAME }}",
             "password": "${{ secrets.SFCC_PASSWORD }}",
             "hostname": "${{ secrets.SFCC_HOSTNAME }}",
-            "code-version": "${{ secrets.CODE_VERSION }}"
+            "code-version": "${{ secrets.SFCC_CODE_VERSION }}"
           }' >> dw.json
       - name: Transpile the code
         working-directory: adyen-salesforce-commerce-cloud
