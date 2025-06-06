@@ -39,6 +39,7 @@ class GiftCardConfig {
       giftCardAddButton.style.display = 'block';
       giftCardSelect.value = null;
       Object.assign(this.store.partialPaymentsOrderObj, initialPartialObject);
+      document.querySelector('button[value="submit-payment"]').disabled = false;
     });
 
     document.querySelector('button[value="submit-payment"]').disabled = true;
