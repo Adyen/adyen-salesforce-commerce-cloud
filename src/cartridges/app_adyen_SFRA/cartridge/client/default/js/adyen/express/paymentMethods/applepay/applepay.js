@@ -72,11 +72,8 @@ class ApplePay {
 
   handleAuthorised = (response, resolve) => {
     resolve({
-      newTotal: {
-        type: 'final',
-        label: this.config.merchantName,
-        amount: `${response.fullResponse?.amount.value}`,
-      },
+      resultCode: response?.resultCode,
+      status: this.APPLE_PAY_SUCCESS,
     });
     if (document.querySelector('#result')) {
       document.querySelector('#result').value = JSON.stringify({
@@ -95,7 +92,9 @@ class ApplePay {
   };
 
   handleError = (rejectApplePay) => {
-    rejectApplePay(this.APPLE_PAY_ERROR);
+    rejectApplePay({
+      status: this.APPLE_PAY_ERROR,
+    });
     if (document.querySelector('#result')) {
       document.querySelector('#result').value = JSON.stringify({
         error: true,
@@ -114,8 +113,8 @@ class ApplePay {
     }
   };
 
-  callPaymentFromComponent = async (data, resolveApplePay, rejectApplePay) => {
-    const response = await httpClient({
+  callPaymentFromComponent = (data) =>
+    httpClient({
       url: this.paymentFromComponentURL,
       method: 'POST',
       data: {
@@ -123,14 +122,6 @@ class ApplePay {
         paymentMethod: APPLE_PAY,
       },
     });
-    helpers.createShowConfirmationForm(this.showConfirmationAction);
-    helpers.setOrderFormData(response);
-    if (document.querySelector('#additionalDetailsHidden')) {
-      document.querySelector('#additionalDetailsHidden').value =
-        JSON.stringify(data);
-    }
-    this.handleApplePayResponse(response, resolveApplePay, rejectApplePay);
-  };
 
   selectShippingMethod = async ({ shipmentUUID, ID }) => {
     const requestBody = {
@@ -171,29 +162,36 @@ class ApplePay {
     });
   };
 
-  onAuthorized = async (data, actions) => {
+  onAuthorized = (data, actions) => {
     const { authorizedEvent } = data;
-    const { resolve, reject } = actions;
     try {
       this.customerData = authorizedEvent.payment.shippingContact;
       this.billingData = authorizedEvent.payment.billingContact;
-      const customer = this.formatCustomerObject();
-      const stateData = {
-        paymentMethod: {
-          type: APPLE_PAY,
-          applePayToken: authorizedEvent.payment.token.paymentData,
-        },
-        paymentType: 'express',
-      };
-
-      await this.callPaymentFromComponent(
-        { ...stateData, customer, isExpressPdp: this.isExpressPdp },
-        resolve,
-        reject,
-      );
+      this.customer = this.formatCustomerObject();
+      actions.resolve();
     } catch (error) {
-      reject(error);
+      actions.reject();
     }
+  };
+
+  onSubmit = async (state, component, actions) => {
+    const { resolve, reject } = actions;
+    const stateData = {
+      ...state.data,
+      paymentType: 'express',
+    };
+    const response = await this.callPaymentFromComponent({
+      ...stateData,
+      customer: this.customer,
+      isExpressPdp: this.isExpressPdp,
+    });
+    helpers.createShowConfirmationForm(this.showConfirmationAction);
+    helpers.setOrderFormData(response);
+    if (document.querySelector('#additionalDetailsHidden')) {
+      document.querySelector('#additionalDetailsHidden').value =
+        JSON.stringify(stateData);
+    }
+    this.handleApplePayResponse(response, resolve, reject);
   };
 
   onShippingMethodSelected = async (resolve, reject, event) => {
@@ -281,7 +279,7 @@ class ApplePay {
       isExpress: this.isExpress,
       requiredShippingContactFields: ['postalAddress', 'email', 'phone'],
       requiredBillingContactFields: ['postalAddress', 'phone'],
-      onSubmit: () => {},
+      onSubmit: this.onSubmit,
       onClick: this.onClick,
       onAuthorized: this.onAuthorized,
       onShippingMethodSelected: this.onShippingMethodSelected,
