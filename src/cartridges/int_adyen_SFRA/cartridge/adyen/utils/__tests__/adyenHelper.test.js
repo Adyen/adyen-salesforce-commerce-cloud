@@ -38,8 +38,8 @@ describe('savePaymentDetails', () => {
   it('should set Adyen_paymentMethod from paymentMethod', () => {
     result.paymentMethod = { type: 'mc' };
     savePaymentDetails(paymentInstrument, order, result);
-    expect(paymentInstrument.paymentTransaction.custom.Adyen_paymentMethod).toBe(JSON.stringify('mc'));
-    expect(order.custom.Adyen_paymentMethod).toBe(JSON.stringify('mc'));
+    expect(paymentInstrument.paymentTransaction.custom.Adyen_paymentMethod).toBe('mc');
+    expect(order.custom.Adyen_paymentMethod).toBe('mc');
   });
 
   it('should set the credit card token if not already exists', () => {

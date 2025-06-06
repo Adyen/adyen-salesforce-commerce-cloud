@@ -695,11 +695,8 @@ const adyenHelperObj = {
         result.additionalData.paymentMethod;
       order.custom.Adyen_paymentMethod = result.additionalData.paymentMethod;
     } else if (result.paymentMethod) {
-      paymentInstrument.paymentTransaction.custom.Adyen_paymentMethod =
-        JSON.stringify(result.paymentMethod.type);
-      order.custom.Adyen_paymentMethod = JSON.stringify(
-        result.paymentMethod.type,
-      );
+      paymentInstrument.paymentTransaction.custom.Adyen_paymentMethod = result.paymentMethod.type;
+      order.custom.Adyen_paymentMethod = result.paymentMethod.type;
     }
 
     // For authenticated shoppers we are setting the token on other place already
