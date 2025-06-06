@@ -81,6 +81,7 @@ describe('ApplePay class', () => {
 
   it('should handle authorized response correctly', async () => {
     const response = {
+      resultCode: 'Authorised',
       fullResponse: {
         pspReference: '1234567890',
         resultCode: 'Authorised',
@@ -92,14 +93,17 @@ describe('ApplePay class', () => {
     const resolve = jest.fn();
     applePay.handleAuthorised(response, resolve);
     expect(resolve).toHaveBeenCalledTimes(1);
-    expect(resolve).toHaveBeenCalledWith({"newTotal": {"amount": "100", "label": "Test Merchant", "type": "final"}});
+    expect(resolve).toHaveBeenCalledWith({
+      resultCode: 'Authorised',
+      status: applePay.APPLE_PAY_SUCCESS
+    });
   });
 
   it('should handle error response correctly', async () => {
     const rejectApplePay = jest.fn();
     applePay.handleError(rejectApplePay);
     expect(rejectApplePay).toHaveBeenCalledTimes(1);
-    expect(rejectApplePay).toHaveBeenCalledWith(applePay.APPLE_PAY_ERROR);
+    expect(rejectApplePay).toHaveBeenCalledWith({ status: applePay.APPLE_PAY_ERROR });
   });
 
   it('should handle Apple Pay response correctly', async () => {
@@ -115,8 +119,6 @@ describe('ApplePay class', () => {
 
   it('should call payment from component correctly', async () => {
     const data = { paymentMethod: 'applepay' };
-    const resolveApplePay = jest.fn();
-    const rejectApplePay = jest.fn();
     $.ajax = jest.fn().mockReturnValue({
       resultCode: 'Authorised',
     });
@@ -124,8 +126,8 @@ describe('ApplePay class', () => {
       start: jest.fn(),
       stop: jest.fn(),
     }));
-    await applePay.callPaymentFromComponent(data, resolveApplePay, rejectApplePay);
-    expect(resolveApplePay).toHaveBeenCalledTimes(1);
+    await applePay.callPaymentFromComponent(data);
+    expect($.ajax).toHaveBeenCalledTimes(1);
   });
 
   it('should select shipping method correctly', async () => {

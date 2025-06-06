@@ -374,6 +374,7 @@ jest.mock(
     getExpressPaymentsOrder: jest.fn(),
     getAdyenRecurringPaymentsEnabled: jest.fn(() => true),
     isAdyenAnalyticsEnabled: jest.fn(() => true),
+    getAdyenLevel23CommodityCode: jest.fn(() => 'mocked_comodity_code'),
   }),
   { virtual: true },
 );
@@ -419,14 +420,17 @@ jest.mock(
     getItemAmount: jest.fn((lineItem) => ({
       divide: jest.fn((quantity) => ({
         getValue: jest.fn(() => lineItem.adjustedNetPrice / quantity),
+        value: lineItem.adjustedNetPrice / quantity,
       })),
     })),
     getVatAmount: jest.fn((lineItem) => ({
       divide: jest.fn((quantity) => ({
         getValue: jest.fn(() => lineItem.getAdjustedTax / quantity),
+        value: lineItem.getAdjustedTax / quantity,
       })),
     })),
     getAllLineItems: jest.fn((lineItem) => lineItem),
+    getVatPercentage: jest.fn((lineItem) => lineItem.vatRate),
   }),
   { virtual: true },
 );
