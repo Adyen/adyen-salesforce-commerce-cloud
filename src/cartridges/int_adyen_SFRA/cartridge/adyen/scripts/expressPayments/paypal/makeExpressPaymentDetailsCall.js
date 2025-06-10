@@ -45,7 +45,7 @@ function makeExpressPaymentDetailsCall(req, res, next) {
       );
     });
     if (!order) {
-      throw new Error('Order could not be created for paypal express');
+      throw new Error('Order could not be created for paypal express test');
     }
 
     const response = adyenCheckout.doPaymentsDetailsCall(request.data);
