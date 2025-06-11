@@ -159,6 +159,11 @@ function handle(customObj) {
               `Partial amount ${customObj.custom.value} received for order number ${order.orderNo} with total amount ${totalAmount}`,
             );
           } else {
+			// This if scenario can be true when shopper authorised a payment and then pressed the back button on browser
+            if (order.status.value === Order.ORDER_STATUS_FAILED && amountPaid === totalAmount) {
+              OrderMgr.undoFailOrder(order);
+              order.trackOrderChange('Authorisation webhook received for failed order, moving order status to CREATED');
+            }
             const placeOrderResult = placeOrder(order);
             if (!placeOrderResult.error) {
               order.setPaymentStatus(Order.PAYMENT_STATUS_PAID);
