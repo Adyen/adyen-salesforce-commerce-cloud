@@ -29,7 +29,7 @@
             <label class="form-title mt-4" for="upliftFields">Case Management (Protect Premium)</label>
             <small id="upliftFieldsHelp" class="form-text mb-1">
             As a layer of Extra protection, you may want to manually review a transaction before it is captured. 
-			You need to enable and configure Case management in Adyen Customer Area, before enabling it in the cartridge.
+            You need to enable and configure Case management in Adyen Customer Area, before enabling it in the cartridge. 
             Navigate to <a class="text-primary" href="https://docs.adyen.com/risk-management/case-management/">Adyen docs</a> for instructions.
             </small>
             <div class="radio-buttons">
