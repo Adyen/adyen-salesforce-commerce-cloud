@@ -115,6 +115,10 @@ const adyenConfigsObj = {
     return getCustomPreference('AdyenBasketFieldsEnabled');
   },
 
+  getAdyenUpliftEnabled() {
+    return getCustomPreference('AdyenUpliftEnabled');
+  },
+
   getAdyenLevel23DataEnabled() {
     return getCustomPreference('AdyenLevel23DataEnabled');
   },
