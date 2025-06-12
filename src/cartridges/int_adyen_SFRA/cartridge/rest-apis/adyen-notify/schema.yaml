@@ -1,0 +1,48 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Adyen notify api
+components:
+  securitySchemes:
+    AmOAuth2:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: https://account.demandware.com/dwsso/oauth2/access_token
+          scopes:
+            c_notify_rw: Read loyalty information of a customer
+security:
+  - AmOAuth2: ["c_notify_rw"]
+paths:
+  /notify:
+    post:
+      summary: submit webhook for Adyen
+      operationId: notify
+      parameters:
+        - in: query
+          name: siteId
+          required: true
+          schema:
+            type: string
+            minLength: 1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties: {
+                "live" : {
+                  "description" : "Informs about the origin of the notification. The value is **true** when originating from the live environment, **false** for the test environment.",
+                  "type" : "string"
+                },
+                "notificationItems" : {
+                  "description" : "A container object for the details included in the notification.",
+                  "type" : "array",
+                    items: {}
+                }
+              }
+      responses:
+        "202":
+          description: Shows that the webhook was accepted
+        "403":
+          description: Shows that the webhook was not accepted
