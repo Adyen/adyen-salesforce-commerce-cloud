@@ -60,12 +60,12 @@ function addEventObject(customObject, requestObjectList) {
   const requestObject = requestObjectList.slice(-1)[0];
   const eventObject = {
     timestamp: new Date(creationDate).getTime().toString(),
-    type: analyticsConstants.eventType[event.eventType],
+    type: event.eventType?.value,
     target: event.referenceId,
     id: event.eventId,
     component: event.eventSource,
   };
-  if (event.eventCode === analyticsConstants.eventCode.ERROR) {
+  if (event.eventCode?.value === analyticsConstants.eventCode.ERROR) {
     delete eventObject.type;
     delete eventObject.target;
     eventObject.errorType = analyticsConstants.errorType;

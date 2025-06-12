@@ -41,7 +41,7 @@
     <job job-id="ProcessAnalytics" priority="0">
         <description/>
         <parameters/>
-        <split sequential="false">
+        <split sequential="true">
             <flow>
                 <context site-id="RefArch"/>
                 <template-ref template-id="template_48"/>
@@ -55,6 +55,11 @@
                         <parameter name="ExecuteScriptModule.Transactional">false</parameter>
                         <parameter name="ExecuteScriptModule.TimeoutInSeconds">3600</parameter>
                     </parameters>
+                    <rules>
+                        <on-exit status="*">
+                            <continue next-step="Clean"/>
+                        </on-exit>
+                    </rules>
                 </step>
                 <step step-id="Clean" type="ExecuteScriptModule" enforce-restart="false">
                     <description/>
