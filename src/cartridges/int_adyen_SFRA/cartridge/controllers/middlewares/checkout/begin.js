@@ -29,7 +29,7 @@ function restoreBasket(cachedOrderNumber, cachedOrderToken) {
     if (currentOrder.status.value === Order.ORDER_STATUS_CREATED) {
       Transaction.wrap(() => {
         currentOrder.trackOrderChange(
-          'Failing order so cart can be restored; Shopper navigated back to checkout during payment redirection',
+          'Failing order so cart can be restored; Shopper navigated back to checkout.',
         );
         OrderMgr.failOrder(currentOrder, true);
       });
