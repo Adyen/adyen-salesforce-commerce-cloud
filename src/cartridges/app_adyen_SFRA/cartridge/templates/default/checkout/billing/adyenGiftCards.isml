@@ -27,6 +27,6 @@
 </div>
 <div id="giftCardsList" class="gift-cards-container"></div>
 <div id="giftCardsCancelContainer" class="gift-cards-container-cancel invisible">
-    <a id="giftCardCancelButton">${Resource.msg('cancel.giftCard', 'adyen', null)}</a>
+    <button id="giftCardCancelButton">${Resource.msg('cancel.giftCard', 'adyen', null)}</button>
 </div>
 <div id="giftCardsInfoMessage"></div>

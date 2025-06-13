@@ -204,7 +204,7 @@ describe('Checkout Configuration', () => {
         spy();
       });
       store.selectedMethod = 'paywithgoogle';
-      paywithgoogle.onSubmit({ data: {} });
+      paywithgoogle.onSubmit({ data: {} }, null, { resolve: jest.fn(), reject: jest.fn() });
       expect(spy).toBeCalledTimes(1);
       expect(submitButton.disabled).toBeFalsy();
     });

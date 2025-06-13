@@ -8,10 +8,13 @@ class GooglePayConfig {
     this.helpers = helpers;
   }
 
-  onSubmit = () => {
+  onSubmit = (state, component, actions) => {
     this.helpers.assignPaymentMethodValue();
     document.querySelector('button[value="submit-payment"]').disabled = false;
     document.querySelector('button[value="submit-payment"]').click();
+    actions.resolve({
+      resultCode: 'Pending',
+    });
   };
 
   getConfiguration = () => ({
