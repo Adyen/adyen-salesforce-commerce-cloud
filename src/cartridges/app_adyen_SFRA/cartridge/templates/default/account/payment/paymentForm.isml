@@ -35,7 +35,7 @@
                 }
             </script>
             <input id="adyenStateData" type="hidden" name="${pdict.paymentForm.adyenStateData.htmlName}"/>
-            <input id="cardNumber" type="hidden" class="form-control cardNumber" name="${pdict.paymentForm.cardNumber.htmlName}" aria-describedby="cardError">
+            <input id="cardNumber" type="hidden" class="form-control cardNumber" name="${pdict.paymentForm.cardNumber.htmlName}">
             <input id="cardType" type="hidden" class="form-control"  name="${pdict.paymentForm.htmlName}">
             <span id="errorLoadComponent"></span>
             <div id="card"></div>
