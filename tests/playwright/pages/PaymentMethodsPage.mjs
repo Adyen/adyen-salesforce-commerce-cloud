@@ -35,7 +35,7 @@ export default class PaymentMethodsPage {
   initiateGooglePayExpressPayment = async () => {
     await this.page.waitForTimeout(5000);
     const googlePayButton = this.page.locator('#gpay-button-online-api-id');
-    expect(googlePayButton).toBeVisible();
+    await expect(googlePayButton).toBeVisible();
   }
 
   initiatePayPalPayment = async (expressFlow, shippingChange, success, taxation) => {
@@ -115,7 +115,7 @@ export default class PaymentMethodsPage {
     this.loginButton = this.page.locator("#signInSubmit");
     this.changePaymentButton = this.page.locator("#change-payment-button");
     this.confirmPaymentChangeButton = this.page.locator("#a-autoid-8");
-    this.amazonCaptcha = this.page.locator('//img[contains(@alt,"captcha")]');
+    this.amazonCaptcha = this.page.locator('#captcha-container');
 
     await this.emailInput.click();
     await this.emailInput.type(paymentData.AmazonPay.username);
