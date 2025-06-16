@@ -366,6 +366,13 @@
                 <externally-managed-flag>false</externally-managed-flag>
                 <default-value>true</default-value>
             </attribute-definition>
+            <attribute-definition attribute-id="AdyenUpliftEnabled">
+                <display-name xml:lang="x-default">Uplift Enabled</display-name>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <default-value>false</default-value>
+            </attribute-definition>
             <attribute-definition attribute-id="AdyenLevel23DataEnabled">
                 <display-name xml:lang="x-default">Level 2/3 Data Authorisation Enabled</display-name>
                 <type>boolean</type>
@@ -645,6 +652,7 @@
                 <attribute attribute-id="AdyenTokenisationEnabled"/>
                 <attribute attribute-id="AdyenCreditCardInstallments"/>
                 <attribute attribute-id="AdyenBasketFieldsEnabled"/>
+                <attribute attribute-id="AdyenUpliftEnabled"/>
                 <attribute attribute-id="AdyenLevel23DataEnabled"/>
                 <attribute attribute-id="AdyenLevel23_CommodityCode"/>
                 <attribute attribute-id="AdyenSalePaymentMethods"/>

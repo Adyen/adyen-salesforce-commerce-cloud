@@ -1,0 +1,48 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<isset name="AdyenConfigs" value="${require('*/cartridge/adyen/utils/adyenConfigs')}" scope="page"/>
+<div id="upliftSettings" class="card bg-white mt-4">
+   <div class="card-body">
+      <h5 class="card-title mb-0">
+         Adyen Conversion and Fraud Optimisation (Uplift)
+      </h5>
+      <h7 class="card-subtitle">
+         <div class="first-subtitle">Navigate to <a class="text-primary" href="https://docs.adyen.com/uplift/" target="_blank">Adyen docs</a> to learn more about Uplift and to learn how to enable Premium features.</div>
+      </h7>
+      <div class="mt-2">
+         <div class="form-group">
+            <label class="form-title mt-4" for="basketFields">Basket fields</label>
+            <small id="basketFieldsHelp" class="form-text mb-1">
+            Pass Adyen-provided risk fields that describe the items or products in the transaction. These fields are also necessary for Buy-Now-Pay-Later payment methods, e.g. Klarna.
+            </small>
+            <div class="radio-buttons">
+               <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" name="AdyenBasketFieldsEnabled" id="basketFieldsYes" value=true ${AdyenConfigs.getAdyenBasketFieldsEnabled() ? 'checked': ''}>
+                  <label class="form-check-label" for="basketFieldsYes">Enable</label>
+               </div>
+               <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" name="AdyenBasketFieldsEnabled" id="basketFieldsNo" value=false ${!AdyenConfigs.getAdyenBasketFieldsEnabled() ? 'checked': ''}>
+                  <label class="form-check-label" for="basketFieldsNo">Disable</label>
+               </div>
+            </div>
+         </div>
+         <div class="form-group">
+            <label class="form-title mt-4" for="upliftFields">Case Management (Protect Premium)</label>
+            <small id="upliftFieldsHelp" class="form-text mb-1">
+            As a layer of Extra protection, you may want to manually review a transaction before it is captured. 
+            You need to enable and configure Case management in Adyen Customer Area, before enabling it in the cartridge. 
+            Navigate to <a class="text-primary" href="https://docs.adyen.com/risk-management/case-management/">Adyen docs</a> for instructions.
+            </small>
+            <div class="radio-buttons">
+               <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" name="AdyenUpliftEnabled" id="upliftFieldsYes" value=true ${AdyenConfigs.getAdyenUpliftEnabled() ? 'checked': ''}>
+                  <label class="form-check-label" for="upliftFieldsYes">Enable</label>
+               </div>
+               <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" name="AdyenUpliftEnabled" id="upliftFieldsNo" value=false ${!AdyenConfigs.getAdyenUpliftEnabled() ? 'checked': ''}>
+                  <label class="form-check-label" for="upliftFieldsNo">Disable</label>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+</div>

@@ -49,6 +49,7 @@
                   <isinclude template="adyenSettings/settingCards/posSettings"/>
                   <isinclude template="adyenSettings/settingCards/adyenGivingSettings"/>
                   <isinclude template="adyenSettings/settingCards/optionalSettings"/>
+                  <isinclude template="adyenSettings/settingCards/upliftSettings"/>
                </form>
                <form id="troubleshootingForm">
                   <isinclude template="adyenSettings/settingCards/troubleshooting.isml"/>
