@@ -65,7 +65,7 @@ export default class PaymentMethodsPage {
     this.nextButton = popup.locator('#btnNext');
     this.passwordInput = popup.locator('#password');
     this.loginButton = popup.locator('#btnLogin');
-    this.agreeAndPayNowButton = popup.locator('#payment-submit-btn');
+    this.agreeAndPayNowButton = popup.locator('button[data-testid="submit-button-initial"]');
     this.shippingMethodsDropdown = popup.locator('#shippingMethodsDropdown');
 	this.changeAddress = popup.locator('button[data-testid="change-shipping"]');
 	this.selectAddress = popup.locator('#shippingDropdown');
