@@ -23,44 +23,39 @@
 const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
 const AdyenConfigs = require('*/cartridge/adyen/utils/adyenConfigs');
 const constants = require('*/cartridge/adyen/config/constants');
-const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
+const { AdyenError } = require('*/cartridge/adyen/logs/adyenError');
 
 // eslint-disable-next-line complexity
 function deleteRecurringPayment(args) {
-  try {
-    const customer = args.Customer ? args.Customer : null;
-    const profile =
-      customer && customer.registered && customer.getProfile()
-        ? customer.getProfile()
-        : null;
-    let customerID = null;
-    const recurringDetailReference = args.RecurringDetailReference
-      ? args.RecurringDetailReference
+  const customer = args.Customer ? args.Customer : null;
+  const profile =
+    customer && customer.registered && customer.getProfile()
+      ? customer.getProfile()
       : null;
+  let customerID = null;
+  const recurringDetailReference = args.RecurringDetailReference
+    ? args.RecurringDetailReference
+    : null;
 
-    if (profile && profile.getCustomerNo()) {
-      customerID = profile.getCustomerNo();
-    }
-
-    if (!(customerID && recurringDetailReference)) {
-      throw new Error('No Customer ID or RecurringDetailReference provided');
-    }
-
-    const requestObject = {
-      merchantAccount: AdyenConfigs.getAdyenMerchantAccount(),
-      shopperReference: customerID,
-      recurringDetailReference,
-      contract: constants.CONTRACT.ONECLICK,
-    };
-
-    return AdyenHelper.executeCall(
-      constants.SERVICE.RECURRING_DISABLE,
-      requestObject,
-    );
-  } catch (error) {
-    AdyenLogs.fatal_log('/disable call failed', error);
-    return { error: true };
+  if (profile && profile.getCustomerNo()) {
+    customerID = profile.getCustomerNo();
   }
+
+  if (!(customerID && recurringDetailReference)) {
+    throw new AdyenError('No Customer ID or RecurringDetailReference provided');
+  }
+
+  const requestObject = {
+    merchantAccount: AdyenConfigs.getAdyenMerchantAccount(),
+    shopperReference: customerID,
+    recurringDetailReference,
+    contract: constants.CONTRACT.ONECLICK,
+  };
+
+  return AdyenHelper.executeCall(
+    constants.SERVICE.RECURRING_DISABLE,
+    requestObject,
+  );
 }
 
 module.exports = {

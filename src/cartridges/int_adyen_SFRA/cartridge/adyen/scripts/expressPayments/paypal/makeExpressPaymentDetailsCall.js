@@ -6,7 +6,8 @@ const adyenCheckout = require('*/cartridge/adyen/scripts/payments/adyenCheckout'
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
 const hooksHelper = require('*/cartridge/scripts/helpers/hooks');
-
+const setErrorType = require('*/cartridge/adyen/logs/setErrorType');
+const { AdyenError } = require('*/cartridge/adyen/logs/adyenError');
 /*
  * Makes a payment details call to Adyen to confirm the current status of a payment.
    It is currently used only for PayPal Express Flow
@@ -22,7 +23,9 @@ function makeExpressPaymentDetailsCall(req, res, next) {
       productQuantity,
     );
     if (hashedProducts !== currentBasket.custom.adyenProductLineItems) {
-      throw new Error('Basket products changed, cannot complete transaction');
+      throw new AdyenError(
+        'Basket products changed, cannot complete transaction',
+      );
     }
 
     const validationOrderStatus = hooksHelper(
@@ -33,7 +36,7 @@ function makeExpressPaymentDetailsCall(req, res, next) {
       require('*/cartridge/scripts/hooks/validateOrder').validateOrder,
     );
     if (validationOrderStatus.error) {
-      throw new Error(validationOrderStatus.message);
+      throw new AdyenError(validationOrderStatus.message);
     }
 
     // create order
@@ -45,7 +48,7 @@ function makeExpressPaymentDetailsCall(req, res, next) {
       );
     });
     if (!order) {
-      throw new Error('Order could not be created for paypal express');
+      throw new AdyenError('Order could not be created for paypal express');
     }
 
     const response = adyenCheckout.doPaymentsDetailsCall(request.data);
@@ -60,7 +63,9 @@ function makeExpressPaymentDetailsCall(req, res, next) {
     return next();
   } catch (error) {
     AdyenLogs.error_log('Could not verify express /payment/details:', error);
-    res.redirect(URLUtils.url('Error-ErrorCode', 'err', 'general'));
+    setErrorType(error, res, {
+      redirectUrl: URLUtils.url('Error-ErrorCode', 'err', 'general').toString(),
+    });
     return next();
   }
 }

@@ -13,6 +13,7 @@ beforeEach(() => {
   res = {
     redirect: jest.fn(),
     render: jest.fn(),
+    json: jest.fn(),
   };
 
   req = {

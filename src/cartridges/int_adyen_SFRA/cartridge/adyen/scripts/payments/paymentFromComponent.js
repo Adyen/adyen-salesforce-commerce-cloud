@@ -11,6 +11,7 @@ const collections = require('*/cartridge/scripts/util/collections');
 const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 const GiftCardsHelper = require('*/cartridge/adyen/utils/giftCardsHelper');
+const setErrorType = require('*/cartridge/adyen/logs/setErrorType');
 
 const expressMethods = [
   constants.PAYMENTMETHODS.APPLEPAY,
@@ -164,76 +165,84 @@ function canSkipSummaryPage(reqDataObj) {
   return false;
 }
 
+function createOrder(currentBasket) {
+  // Check if gift card was used
+  if (currentBasket.custom?.adyenGiftCards) {
+    const giftCardsOrderNo = currentBasket.custom.adyenGiftCardsOrderNo;
+    return OrderMgr.createOrder(currentBasket, giftCardsOrderNo);
+  }
+  return COHelpers.createOrder(currentBasket);
+}
+
 /**
  * Make a payment from inside a component, skipping the summary page. (paypal, QRcodes, MBWay)
  */
 function paymentFromComponent(req, res, next) {
-  const { isExpressPdp, ...reqDataObj } = JSON.parse(req.form.data);
-  if (reqDataObj.cancelTransaction) {
-    return handleCancellation(res, next, reqDataObj);
-  }
-  const currentBasket = isExpressPdp
-    ? BasketMgr.getTemporaryBasket(session.privacy.temporaryBasketId)
-    : BasketMgr.getCurrentBasket();
-  let paymentInstrument;
-  Transaction.wrap(() => {
-    collections.forEach(currentBasket.getPaymentInstruments(), (item) => {
-      currentBasket.removePaymentInstrument(item);
-    });
-
-    const paymentInstrumentType = constants.METHOD_ADYEN_COMPONENT;
-
-    paymentInstrument = currentBasket.createPaymentInstrument(
-      paymentInstrumentType,
-      currentBasket.totalGrossPrice,
-    );
-    const { paymentProcessor } = PaymentMgr.getPaymentMethod(
-      paymentInstrument.paymentMethod,
-    );
-    paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
-    paymentInstrument.custom.adyenMainPaymentInstrument = paymentInstrumentType;
-    paymentInstrument.custom.adyenPaymentData = req.form.data;
-
-    if (session.privacy.partialPaymentData) {
-      paymentInstrument.custom.adyenPartialPaymentsOrder =
-        session.privacy.partialPaymentData;
+  try {
+    const { isExpressPdp, ...reqDataObj } = JSON.parse(req.form.data);
+    if (reqDataObj.cancelTransaction) {
+      return handleCancellation(res, next, reqDataObj);
     }
-  });
+    const currentBasket = isExpressPdp
+      ? BasketMgr.getTemporaryBasket(session.privacy.temporaryBasketId)
+      : BasketMgr.getCurrentBasket();
+    let paymentInstrument;
+    Transaction.wrap(() => {
+      collections.forEach(currentBasket.getPaymentInstruments(), (item) => {
+        currentBasket.removePaymentInstrument(item);
+      });
 
-  handleExpressPayment(reqDataObj, currentBasket);
+      const paymentInstrumentType = constants.METHOD_ADYEN_COMPONENT;
 
-  let order;
-  // Check if gift card was used
-  if (currentBasket.custom?.adyenGiftCards) {
-    const giftCardsOrderNo = currentBasket.custom.adyenGiftCardsOrderNo;
-    order = OrderMgr.createOrder(currentBasket, giftCardsOrderNo);
-  } else {
-    order = COHelpers.createOrder(currentBasket);
-  }
-  session.privacy.orderNo = order.orderNo;
+      paymentInstrument = currentBasket.createPaymentInstrument(
+        paymentInstrumentType,
+        currentBasket.totalGrossPrice,
+      );
+      const { paymentProcessor } = PaymentMgr.getPaymentMethod(
+        paymentInstrument.paymentMethod,
+      );
+      paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
+      paymentInstrument.custom.adyenMainPaymentInstrument =
+        paymentInstrumentType;
+      paymentInstrument.custom.adyenPaymentData = req.form.data;
 
-  let result;
-  Transaction.wrap(() => {
-    result = adyenCheckout.createPaymentRequest({
-      Order: order,
+      if (session.privacy.partialPaymentData) {
+        paymentInstrument.custom.adyenPartialPaymentsOrder =
+          session.privacy.partialPaymentData;
+      }
     });
-  });
 
-  currentBasket.custom.amazonExpressShopperDetails = null;
-  currentBasket.custom.adyenGiftCardsOrderNo = null;
+    handleExpressPayment(reqDataObj, currentBasket);
 
-  if (result.resultCode === constants.RESULTCODES.REFUSED) {
-    handleRefusedResultCode(result, reqDataObj, order);
+    const order = createOrder(currentBasket);
+    session.privacy.orderNo = order.orderNo;
+
+    let result;
+    Transaction.wrap(() => {
+      result = adyenCheckout.createPaymentRequest({
+        Order: order,
+      });
+    });
+
+    currentBasket.custom.amazonExpressShopperDetails = null;
+    currentBasket.custom.adyenGiftCardsOrderNo = null;
+
+    if (result.resultCode === constants.RESULTCODES.REFUSED) {
+      handleRefusedResultCode(result, reqDataObj, order);
+    }
+
+    handleGiftCardPayment(currentBasket, order);
+
+    // Check if summary page can be skipped in case payment is already authorized
+    result.skipSummaryPage = canSkipSummaryPage(reqDataObj);
+
+    result.orderNo = order.orderNo;
+    result.orderToken = order.orderToken;
+    res.json(result);
+  } catch (error) {
+    AdyenLogs.fatal_log('Failed payment from component', error);
+    setErrorType(error, res);
   }
-
-  handleGiftCardPayment(currentBasket, order);
-
-  // Check if summary page can be skipped in case payment is already authorized
-  result.skipSummaryPage = canSkipSummaryPage(reqDataObj);
-
-  result.orderNo = order.orderNo;
-  result.orderToken = order.orderToken;
-  res.json(result);
   return next();
 }
 

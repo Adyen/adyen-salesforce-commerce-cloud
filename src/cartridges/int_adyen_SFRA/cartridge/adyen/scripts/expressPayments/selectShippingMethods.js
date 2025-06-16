@@ -10,44 +10,45 @@ const adyenCheckout = require('*/cartridge/adyen/scripts/payments/adyenCheckout'
 const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 const paypalHelper = require('*/cartridge/adyen/utils/paypalHelper');
+const setErrorType = require('*/cartridge/adyen/logs/setErrorType');
+const { AdyenError } = require('*/cartridge/adyen/logs/adyenError');
 
 /**
  * Make a request to Adyen to select shipping methods
  */
 // eslint-disable-next-line complexity
 function callSelectShippingMethod(req, res, next) {
-  const {
-    isExpressPdp,
-    shipmentUUID,
-    methodID,
-    currentPaymentData,
-    paymentMethodType,
-  } = JSON.parse(req.form.data);
-  const currentBasket = isExpressPdp
-    ? BasketMgr.getTemporaryBasket(session.privacy.temporaryBasketId)
-    : BasketMgr.getCurrentBasket();
-
-  if (!currentBasket) {
-    res.json({
-      error: true,
-      redirectUrl: URLUtils.url('Cart-Show').toString(),
-    });
-
-    return next();
-  }
   try {
+    const {
+      isExpressPdp,
+      shipmentUUID,
+      methodID,
+      currentPaymentData,
+      paymentMethodType,
+    } = JSON.parse(req.form.data);
+    const currentBasket = isExpressPdp
+      ? BasketMgr.getTemporaryBasket(session.privacy.temporaryBasketId)
+      : BasketMgr.getCurrentBasket();
+
+    if (!currentBasket) {
+      res.json({
+        error: true,
+        redirectUrl: URLUtils.url('Cart-Show').toString(),
+      });
+
+      return next();
+    }
+
     let shipment;
     if (shipmentUUID) {
       shipment = shippingHelper.getShipmentByUUID(currentBasket, shipmentUUID);
     } else {
       shipment = currentBasket.defaultShipment;
     }
-
     Transaction.wrap(() => {
       shippingHelper.selectShippingMethod(shipment, methodID);
-
-      if (currentBasket && !shipment.shippingMethod) {
-        throw new Error(
+      if (currentBasket && !shipment?.shippingMethod) {
+        throw new AdyenError(
           `cannot set shippingMethod: ${methodID} for shipment:${shipment?.UUID}`,
         );
       }
@@ -59,7 +60,7 @@ function callSelectShippingMethod(req, res, next) {
       const currentShippingMethodsModels =
         AdyenHelper.getApplicableShippingMethods(shipment);
       if (!currentShippingMethodsModels?.length) {
-        throw new Error('No applicable shipping methods found');
+        throw new AdyenError('No applicable shipping methods found');
       }
       const paypalUpdateOrderResponse = adyenCheckout.doPaypalUpdateOrderCall(
         paypalHelper.createPaypalUpdateOrderRequest(
@@ -84,7 +85,7 @@ function callSelectShippingMethod(req, res, next) {
   } catch (error) {
     AdyenLogs.error_log('Failed to set shipping method', error);
     res.setStatusCode(500);
-    res.json({
+    setErrorType(error, res, {
       errorMessage: Resource.msg(
         'error.cannot.select.shipping.method',
         'cart',

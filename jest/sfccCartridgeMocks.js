@@ -321,6 +321,18 @@ jest.mock(
     })),
     createRedirectUrl: jest.fn(() => 'mocked_RedirectUrl'),
     getCustomerEmail: jest.fn(() => 'mocked_email'),
+    getService: jest.fn(() => ({
+      getURL: jest.fn(() => 'mocked_service_url'),
+      setURL: jest.fn(),
+      addHeader: jest.fn(),
+      call: jest.fn(() => ({
+        status: 'success',
+        isOk: jest.fn(() => true),
+        object: {
+          getText: jest.fn(() => '{"data":"mocked api response"}'),
+        },
+      })),
+    })),
   }),
   { virtual: true },
 );
@@ -333,6 +345,7 @@ jest.mock(
     getCreditCardInstallments: jest.fn(() => true),
     getAdyenTokenisationEnabled: jest.fn(() => true),
     getAdyenClientKey: jest.fn(() => 'mocked_client_key'),
+    getAdyenApiKey: jest.fn(() => 'mocked_api_key'),
     getGoogleMerchantID: jest.fn(() => 'mocked_google_merchant_id'),
     getAdyenCardholderNameEnabled: jest.fn(() => true),
     getAdyenPayPalIntent: jest.fn(() => 'mocked_intent'),
@@ -360,6 +373,7 @@ jest.mock(
     isGooglePayExpressOnPdpEnabled: jest.fn(() => false),
     getExpressPaymentsOrder: jest.fn(),
     getAdyenRecurringPaymentsEnabled: jest.fn(() => true),
+    isAdyenAnalyticsEnabled: jest.fn(() => true),
     getAdyenLevel23CommodityCode: jest.fn(() => 'mocked_comodity_code'),
   }),
   { virtual: true },
@@ -477,5 +491,26 @@ jest.mock(
 jest.mock(
   '*/cartridge/client/default/js/adyen_checkout/paymentMethodsConfiguration',
   () => jest.fn(),
+  { virtual: true },
+);
+
+jest.mock(
+  '*/cartridge/adyen/analytics/analyticsEvents',
+  () => ({
+    createAnalyticsEvent: jest.fn(),
+    deleteAnalyticsEvent: jest.fn(),
+    updateAnalyticsEvent: jest.fn(),
+  }),
+  { virtual: true },
+);
+
+jest.mock(
+  '*/cartridge/adyen/logs/adyenCustomLogs',
+  () => ({
+    fatal_log: jest.fn(),
+    error_log: jest.fn(),
+    debug_log: jest.fn(),
+    info_log: jest.fn(),
+  }),
   { virtual: true },
 );

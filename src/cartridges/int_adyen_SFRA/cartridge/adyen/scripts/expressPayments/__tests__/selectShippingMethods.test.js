@@ -46,13 +46,16 @@ describe('callSelectShippingMethod', () => {
     };
     BasketMgr.getCurrentBasket.mockReturnValueOnce(currentBasket.defaultShipment);
     shippingHelper.getShipmentByUUID.mockReturnValueOnce(currentBasket.defaultShipment);
+    shippingHelper.selectShippingMethod.mockImplementationOnce(() => {});
 
     callSelectShippingMethod(req, res, next);
 
     expect(res.setStatusCode).toHaveBeenCalledWith(500);
     expect(res.json).toHaveBeenCalledWith({
-      errorMessage: 'mocked_error.cannot.select.shipping.method',
-    });
+        error: true,
+        errorMessage: 'mocked_error.cannot.select.shipping.method',
+        errorType: "AdyenError"
+      });
     expect(next).toHaveBeenCalled();
   });
 

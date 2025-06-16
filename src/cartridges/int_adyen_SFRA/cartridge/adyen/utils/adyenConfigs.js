@@ -218,6 +218,10 @@ const adyenConfigsObj = {
       Resource.msg('global.version.number', 'version', null) || '';
     return SFRAversion.split('.')[0] >= SFRA6;
   },
+
+  isAdyenAnalyticsEnabled() {
+    return getCustomPreference('AdyenAnalytics_Enabled');
+  },
 };
 
 module.exports = adyenConfigsObj;

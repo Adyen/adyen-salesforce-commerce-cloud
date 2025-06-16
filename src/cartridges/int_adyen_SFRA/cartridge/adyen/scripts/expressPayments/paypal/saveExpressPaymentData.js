@@ -4,6 +4,8 @@ const Transaction = require('dw/system/Transaction');
 const validationHelpers = require('*/cartridge/scripts/helpers/basketValidationHelpers');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
+const setErrorType = require('*/cartridge/adyen/logs/setErrorType');
+const { AdyenError } = require('*/cartridge/adyen/logs/adyenError');
 
 /**
  * Sets Shipping and Billing address for the basket,
@@ -35,7 +37,7 @@ function updateCurrentBasket(currentBasket, req) {
 function saveExpressPaymentData(req, res, next) {
   try {
     if (!req.form.data) {
-      throw new Error('State data not present in the request');
+      throw new AdyenError('State data not present in the request');
     }
     const currentBasket = BasketMgr.getCurrentBasket();
     if (!currentBasket) {
@@ -56,6 +58,7 @@ function saveExpressPaymentData(req, res, next) {
     });
   } catch (error) {
     AdyenLogs.error_log('Could not save paypal express payment data', error);
+    setErrorType(error, res);
     res.redirect(URLUtils.url('Error-ErrorCode', 'err', 'general'));
   }
   return next();

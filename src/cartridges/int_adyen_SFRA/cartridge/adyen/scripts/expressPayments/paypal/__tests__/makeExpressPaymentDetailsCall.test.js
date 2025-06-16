@@ -23,7 +23,6 @@ beforeEach(() => {
   };
   AdyenLogs.error_log = jest.fn();
   AdyenLogs.fatal_log = jest.fn();
-  URLUtils.url = jest.fn();
 });
 
 afterEach(() => {
@@ -43,7 +42,6 @@ describe('Express Payment Details controller', () => {
     adyenCheckout.doPaymentsDetailsCall = jest.fn().mockImplementationOnce(() => {throw new Error('unexpected mock error')});
     makeExpressPaymentDetailsCall(req, res, next);
     expect(AdyenLogs.error_log).toHaveBeenCalledTimes(1);
-    expect(res.redirect).toHaveBeenCalledTimes(1);
     expect(URLUtils.url).toHaveBeenCalledWith('Error-ErrorCode', 'err', 'general');
     expect(next).toHaveBeenCalled();
   });
@@ -51,7 +49,6 @@ describe('Express Payment Details controller', () => {
     COHelpers.placeOrder = jest.fn(() => ({error: true}))
     makeExpressPaymentDetailsCall(req, res, next);
     expect(AdyenLogs.error_log).toHaveBeenCalledTimes(1);
-    expect(res.redirect).toHaveBeenCalledTimes(1);
     expect(URLUtils.url).toHaveBeenCalledWith('Error-ErrorCode', 'err', 'general');
     expect(next).toHaveBeenCalled();
   });

@@ -4,6 +4,8 @@ const Resource = require('dw/web/Resource');
 const cartHelper = require('*/cartridge/scripts/cart/cartHelpers');
 const basketCalculationHelpers = require('*/cartridge/scripts/helpers/basketCalculationHelpers');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
+const setErrorType = require('*/cartridge/adyen/logs/setErrorType');
+const { AdyenError } = require('*/cartridge/adyen/logs/adyenError');
 
 function addProductToBasket(
   tempBasket,
@@ -35,7 +37,7 @@ function addProductToBasket(
       cartHelper.ensureAllShipmentsHaveMethods(tempBasket);
       basketCalculationHelpers.calculateTotals(tempBasket);
     } else {
-      throw new Error(result.message);
+      throw new AdyenError(result.message);
     }
   });
 }
@@ -55,7 +57,7 @@ function createTemporaryBasket(req, res, next) {
     // Create a new temporary basket
     const tempBasket = BasketMgr.createTemporaryBasket();
     if (!tempBasket) {
-      throw new Error('Temporary basket not created');
+      throw new AdyenError('Temporary basket not created');
     }
     session.privacy.temporaryBasketId = tempBasket.UUID;
 
@@ -82,7 +84,7 @@ function createTemporaryBasket(req, res, next) {
     AdyenLogs.error_log('Failed to create temporary basket', error);
     session.privacy.temporaryBasketId = null;
     res.setStatusCode(500);
-    res.json({
+    setErrorType(error, res, {
       errorMessage: Resource.msg(
         'error.cannot.create.temporary.basket',
         'product',
