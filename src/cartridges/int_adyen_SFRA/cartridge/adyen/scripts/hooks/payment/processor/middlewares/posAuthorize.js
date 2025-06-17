@@ -3,6 +3,7 @@ const Resource = require('dw/web/Resource');
 const Transaction = require('dw/system/Transaction');
 const adyenTerminalApi = require('*/cartridge/adyen/scripts/pos/adyenTerminalApi');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
+const { AdyenError } = require('*/cartridge/adyen/logs/adyenError');
 
 /**
  * Authorize
@@ -17,7 +18,7 @@ function posAuthorize(order, paymentInstrument, paymentProcessor) {
     const terminalId = adyenPaymentForm?.terminalId.value;
 
     if (!terminalId) {
-      throw new Error('No terminal selected');
+      throw new AdyenError('No terminal selected');
     }
     return adyenTerminalApi.createTerminalPayment(
       order,

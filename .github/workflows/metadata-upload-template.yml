@@ -1,0 +1,44 @@
+name: Metadata upload template
+
+on:
+  workflow_call:
+    inputs:
+      node_version:
+        required: true
+        type: string
+    secrets:
+      SFCC_CLIENT_ID:
+        required: true
+      SFCC_CLIENT_SECRET:
+        required: true
+      SFCC_HOSTNAME:
+        required: true
+
+jobs:
+  upload-metadata:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          path: adyen-salesforce-commerce-cloud
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ inputs.node_version }}
+      - name: Install Salesforce CLI
+        run: npm install -g sfcc-ci
+      - name: Zip site_import
+        working-directory: adyen-salesforce-commerce-cloud/metadata
+        run: zip -r $GITHUB_WORKSPACE/site_import.zip site_import
+      - name: Upload metadata
+        working-directory: adyen-salesforce-commerce-cloud/metadata
+        run: |
+          sfcc-ci client:auth '${{ secrets.SFCC_CLIENT_ID }}' '${{ secrets.SFCC_CLIENT_SECRET }}'
+          sfcc-ci instance:upload "$GITHUB_WORKSPACE/site_import.zip" -i "${{ secrets.SFCC_HOSTNAME }}"
+      - name: Import metadata
+        working-directory: adyen-salesforce-commerce-cloud/metadata
+        run: |
+          sfcc-ci instance:import site_import.zip -i "${{ secrets.SFCC_HOSTNAME }}" -s

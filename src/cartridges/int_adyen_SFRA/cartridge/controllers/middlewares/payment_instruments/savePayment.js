@@ -13,6 +13,8 @@ const {
 const {
   paymentProcessorIDs,
 } = require('*/cartridge/controllers/middlewares/payment_instruments/paymentProcessorIDs');
+const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
+const setErrorType = require('*/cartridge/adyen/logs/setErrorType');
 
 function containsValidResultCode(req) {
   return (
@@ -60,39 +62,49 @@ function isAdyen() {
 }
 
 function savePayment(req, res, next) {
-  if (!isAdyen()) {
-    return next();
-  }
-  const customer = CustomerMgr.getCustomerByCustomerNumber(
-    req.currentCustomer.profile.customerNo,
-  );
+  try {
+    if (!isAdyen()) {
+      return next();
+    }
+    const customer = CustomerMgr.getCustomerByCustomerNumber(
+      req.currentCustomer.profile.customerNo,
+    );
 
-  Transaction.begin();
-  const zeroAuthResult = adyenZeroAuth.zeroAuthPayment(
-    customer,
-    createPaymentInstrument(customer),
-  );
+    Transaction.begin();
+    const zeroAuthResult = adyenZeroAuth.zeroAuthPayment(
+      customer,
+      createPaymentInstrument(customer),
+    );
 
-  if (zeroAuthResult.error || !containsValidResultCode(zeroAuthResult)) {
-    Transaction.rollback();
-    res.json({
-      success: false,
-      error: [Resource.msg('error.card.information.error', 'creditCard', null)],
+    if (zeroAuthResult.error || !containsValidResultCode(zeroAuthResult)) {
+      Transaction.rollback();
+      res.json({
+        success: false,
+        error: [
+          Resource.msg('error.card.information.error', 'creditCard', null),
+        ],
+      });
+      return this.emit('route:Complete', req, res);
+    }
+
+    Transaction.commit();
+
+    updateSavedCards({
+      CurrentCustomer: req.currentCustomer.raw,
+    });
+
+    // Send account edited email
+    accountHelpers.sendAccountEditedEmail(customer.profile);
+
+    res.json(getResponseBody(zeroAuthResult.action));
+    return this.emit('route:Complete', req, res);
+  } catch (error) {
+    AdyenLogs.error_log('Could not save payments:', error);
+    setErrorType(error, res, {
+      redirectUrl: URLUtils.url('Error-ErrorCode', 'err', 'general').toString(),
     });
     return this.emit('route:Complete', req, res);
   }
-
-  Transaction.commit();
-
-  updateSavedCards({
-    CurrentCustomer: req.currentCustomer.raw,
-  });
-
-  // Send account edited email
-  accountHelpers.sendAccountEditedEmail(customer.profile);
-
-  res.json(getResponseBody(zeroAuthResult.action));
-  return this.emit('route:Complete', req, res);
 }
 
 module.exports = savePayment;

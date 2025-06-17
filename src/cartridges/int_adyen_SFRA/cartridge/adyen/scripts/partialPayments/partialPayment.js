@@ -6,6 +6,8 @@ const AdyenConfigs = require('*/cartridge/adyen/utils/adyenConfigs');
 const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 const constants = require('*/cartridge/adyen/config/constants');
+const setErrorType = require('*/cartridge/adyen/logs/setErrorType');
+const { AdyenError } = require('*/cartridge/adyen/logs/adyenError');
 
 function doPartialPaymentsCall(paymentRequest) {
   try {
@@ -36,7 +38,7 @@ function makePartialPayment(req, res, next) {
     const request = JSON.parse(req.form.data);
     const currentBasket = BasketMgr.getCurrentBasket();
 
-    const { encryptedCardNumber, encryptedSecurityCode, brand, giftcardBrand } =
+    const { encryptedCardNumber, encryptedSecurityCode, brand, giftCardBrand } =
       request;
     const paymentMethod = {
       encryptedCardNumber,
@@ -59,7 +61,7 @@ function makePartialPayment(req, res, next) {
 
     if (responseContainsErrors(response)) {
       const errorMsg = `partial payment request did not go through .. resultCode: ${response?.resultCode}`;
-      throw new Error(errorMsg);
+      throw new AdyenError(errorMsg);
     }
 
     Transaction.wrap(() => {
@@ -67,7 +69,7 @@ function makePartialPayment(req, res, next) {
         ...response.order,
         ...response.amount,
         paymentMethod: response.paymentMethod,
-        brand: giftcardBrand,
+        brand: giftCardBrand,
       }); // entire response exceeds string length
     });
 
@@ -114,7 +116,7 @@ function makePartialPayment(req, res, next) {
       giftCard: {
         ...response.paymentMethod,
         amount: response.amount,
-        name: giftcardBrand,
+        name: giftCardBrand,
         pspReference: response.pspReference,
       },
       orderAmount: {
@@ -158,7 +160,7 @@ function makePartialPayment(req, res, next) {
     });
   } catch (error) {
     AdyenLogs.error_log('Failed to create partial payment:', error);
-    res.json({ error: true });
+    setErrorType(error, res);
   }
   return next();
 }

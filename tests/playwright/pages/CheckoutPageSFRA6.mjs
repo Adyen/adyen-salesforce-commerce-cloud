@@ -244,6 +244,7 @@ export default class CheckoutPageSFRA {
   };
 
   expectClickToPay = async () => {
+    await this.page.reload();
     await expect(this.clickToPayLocator).toBeVisible();
   }
 

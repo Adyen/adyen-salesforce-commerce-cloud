@@ -9,6 +9,7 @@ module.exports = {
   PAYMENT_INSTRUMENT_ADYEN_CREDIT: 'ADYEN_CREDIT',
   PAYMENT_INSTRUMENT_ADYEN_POS: 'Adyen_POS',
   PAYMENT_INSTRUMENT_ADYEN_COMPONENT: 'Adyen_Component',
+  SCHEME: 'scheme',
 
   // Possible checkout result codes
   RESULTCODES: {
@@ -37,6 +38,11 @@ module.exports = {
     AMAZONPAY: 'amazonpay',
     PAYPAL: 'paypal',
     GOOGLEPAY: 'googlepay',
+    PAYWITHGOOGLE: 'paywithgoogle',
+    SCHEME: 'scheme',
+    IDEAL: 'ideal',
+    SEPADIRECTDEBIT: 'sepadirectdebit',
+    GIFTCARD: 'giftcard',
   },
 
   CAN_SKIP_SUMMARY_PAGE: ['applepay', 'cashapp', 'upi', 'googlepay'],
@@ -61,11 +67,13 @@ module.exports = {
     CHECKOUTPAYMENTMETHODS: 'AdyenCheckoutPaymentMethods',
     CONNECTEDTERMINALS: 'AdyenConnectedTerminals',
     ADYENGIVING: 'AdyenGiving',
+    ADYENDONATIONCAMPAIGNS: 'AdyenDonationCampaigns',
     CHECKBALANCE: 'AdyenCheckBalance',
     CANCELPARTIALPAYMENTORDER: 'AdyenCancelPartialPaymentOrder',
     PARTIALPAYMENTSORDER: 'AdyenPartialPaymentsOrder',
     PAYPALUPDATEORDER: 'AdyenPaypalUpdateOrder',
     GETSTORES: 'AdyenManagementApiGetStores',
+    ADYEN_ANALYTICS: 'AdyenAnalytics',
   },
   CONTRACT: {
     ONECLICK: 'ONECLICK',
@@ -147,7 +155,7 @@ module.exports = {
   APPLE_DOMAIN_URL:
     '/.well-known/apple-developer-merchantid-domain-association',
 
-  CHECKOUT_COMPONENT_VERSION: '5.68.0',
+  CHECKOUT_COMPONENT_VERSION: '6.12.1',
   CHECKOUT_API_VERSION: 'v71',
-  VERSION: '25.2.3',
+  VERSION: '25.3.0',
 };

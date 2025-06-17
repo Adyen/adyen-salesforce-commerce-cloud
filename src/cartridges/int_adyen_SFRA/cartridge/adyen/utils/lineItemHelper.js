@@ -130,7 +130,7 @@ const __LineItemHelper = {
     const lineItems = [];
     // eslint-disable-next-line no-restricted-syntax
     for (const item in allLineItems) {
-      if (item) {
+      if (item != null) {
         const lineItem = allLineItems[item];
         if (this.isValidLineItem(lineItem)) {
           lineItems.push(lineItem);

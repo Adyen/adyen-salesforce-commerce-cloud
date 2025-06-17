@@ -3,6 +3,7 @@ const adyenTerminalApi = require('*/cartridge/adyen/scripts/pos/adyenTerminalApi
 const constants = require('*/cartridge/adyen/config/constants');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 const AdyenConfigs = require('*/cartridge/adyen/utils/adyenConfigs');
+const setErrorType = require('*/cartridge/adyen/logs/setErrorType');
 
 function getConnectedTerminals(req, res, next) {
   try {
@@ -26,9 +27,7 @@ function getConnectedTerminals(req, res, next) {
     }
   } catch (error) {
     AdyenLogs.fatal_log('/getConnectedTerminals call failed', error);
-    res.json({
-      error: true,
-    });
+    setErrorType(error, res);
   }
   return next();
 }

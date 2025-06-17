@@ -13,6 +13,7 @@
           locale: '${request.locale}',
           clientKey: '${pdict.adyen.clientKey}',
           environment: '${pdict.adyen.environment}',
+          countryCode: '${request.locale}'.slice(-2),
       };
       window.adyenClientKey = '${pdict.adyen.adyenClientKey}';
       window.returnURL = "${URLUtils.https('Checkout-Begin', 'stage', 'payment')}";
@@ -20,7 +21,6 @@
       window.resultCodeAuthorised = '${AdyenConstants.RESULTCODES.AUTHORISED}';
       window.paymentsDetailsURL = "${URLUtils.https('Adyen-PaymentsDetails')}";
       window.ShowConfirmationPaymentFromComponent = "${ShowConfirmationPaymentFromComponent}";
-      window.AdyenSFRA6Enabled = '${pdict.adyen.SFRA6Enabled}';
       window.klarnaWidgetEnabled = ${adyenKlarnaWidgetEnabled};
       window.adyenRecurringPaymentsEnabled = ${adyenRecurringPaymentsEnabled};
       window.getPaymentMethodsURL = "${URLUtils.https('Adyen-GetPaymentMethods')}";
@@ -31,6 +31,7 @@
       window.cancelPartialPaymentOrderUrl = "${URLUtils.https('Adyen-CancelPartialPaymentOrder')}";
       window.fetchGiftCardsUrl = "${URLUtils.https('Adyen-fetchGiftCards')}";
       window.activeTerminalApiStores = '${pdict.AdyenConfigs.getAdyenActiveStoreId()}';
+      window.sfra6Compatibility = ${pdict.AdyenConfigs.getAdyenSFRA6Compatibility()};
       
       window.remainingAmountGiftCardResource = "${Resource.msg('remainingAmount.giftCard', 'adyen', null)}";
       window.discountedAmountGiftCardResource = "${Resource.msg('discountedAmount.giftCard', 'adyen', null)}";
@@ -44,7 +45,8 @@
 <isif condition="${request.getHttpQueryString() && request.getHttpQueryString().indexOf('amazonCheckoutSessionId') > -1} ">
     <isscript>
         var assets = require('*/cartridge/scripts/assets.js');
-        assets.addJs('/js/amazonPayCheckout.js');
+        assets.addJs('/js/adyen/checkout/amazonPayCheckout.js');
+        assets.addCss('/css/adyenGiftcards.css');
         assets.addCss('/css/adyenCss.css');
     </isscript>
 
@@ -78,38 +80,9 @@
      <input id="selectedIssuer" type="hidden" name="${adyenPaymentFields.issuer.htmlName}"/>
 
     <ul id="paymentMethodsList" class="payment-methods-container"></ul>
-    <div class="gift-card-separator adyen-checkout__content-separator adyen-checkout-ctp__separator">
-        ${Resource.msg('separator.giftCard', 'adyen', null)}
+    <div id="adyenGiftCards" style="display: none">
+        <isinclude template="checkout/billing/adyenGiftCards" />
     </div>
-    <div class="gift-card-selection">
-        <img id="headingImg" class="heading-img" />
-        <button id="giftCardAddButton" class="adyen-checkout__button adyen-checkout__button--secondary" type="button">
-            <span class="adyen-checkout__button__content">
-                <span class="adyen-checkout__button__text">
-                    ${Resource.msg('add.giftCard', 'adyen', null)}
-                </span>
-            </span>
-        </button>
-        <div id="giftCardSelectContainer" class="invisible">
-            <label  id="giftCardSelectWrapper" class="gift-card-select-wrapper">
-                <select id="giftCardSelect">
-                    <option value="null" selected="selected">${Resource.msg('select.giftCard', 'adyen', null)}</option>
-                </select>
-            </label>
-            <ul id="giftCardUl" class="list-cards invisible"></ul>
-            <div id="giftCardContainer"></div>
-        </div>
-        <div id="cancelGiftCardButton" class="invisible">
-            <button id="cancelGiftCardButtonStyling">
-                <img src="${URLUtils.staticURL('images/cancel.svg')}" alt="Cancel" />
-            </button>
-        </div>
-    </div>
-    <div id="giftCardsList" class="gift-cards-container"></div>
-    <div id="giftCardsCancelContainer" class="gift-cards-container-cancel invisible">
-        <a id="giftCardCancelButton">${Resource.msg('cancel.giftCard', 'adyen', null)}</a>
-    </div>
-    <div id="giftCardsInfoMessage"></div>
 
      <iscomment>
          Adyen RatePay Device Fingerprint Code

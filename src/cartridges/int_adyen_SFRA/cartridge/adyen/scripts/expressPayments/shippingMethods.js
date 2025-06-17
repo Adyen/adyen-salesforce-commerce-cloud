@@ -10,6 +10,8 @@ const adyenCheckout = require('*/cartridge/adyen/scripts/payments/adyenCheckout'
 const paypalHelper = require('*/cartridge/adyen/utils/paypalHelper');
 const Collections = require('*/cartridge/scripts/util/collections');
 const shippingHelper = require('*/cartridge/scripts/checkout/shippingHelpers');
+const setErrorType = require('*/cartridge/adyen/logs/setErrorType');
+const { AdyenError } = require('*/cartridge/adyen/logs/adyenError');
 
 function updateShippingAddress(currentBasket, address) {
   if (address) {
@@ -69,7 +71,7 @@ function callGetShippingMethods(req, res, next) {
     });
 
     if (!currentShippingMethodsModels?.length) {
-      throw new Error('No applicable shipping methods found');
+      throw new AdyenError('No applicable shipping methods found');
     }
     let response = {};
     if (paymentMethodType === PAYMENTMETHODS.PAYPAL) {
@@ -92,7 +94,7 @@ function callGetShippingMethods(req, res, next) {
   } catch (error) {
     AdyenLogs.error_log('Failed to fetch shipping methods', error);
     res.setStatusCode(500);
-    res.json({
+    setErrorType(error, res, {
       errorMessage: Resource.msg(
         'error.cannot.find.shipping.methods',
         'cart',

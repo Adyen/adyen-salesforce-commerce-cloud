@@ -2,7 +2,7 @@ const URLUtils = require('dw/web/URLUtils');
 const adyenCheckout = require('*/cartridge/adyen/scripts/payments/adyenCheckout');
 const constants = require('*/cartridge/adyen/config/constants');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
-
+const setErrorType = require('*/cartridge/adyen/logs/setErrorType');
 /*
  * Redirects to list of added cards on success. Otherwise redirects to add payment with error
  */
@@ -24,13 +24,13 @@ function redirect(req, res, next) {
         URLUtils.url('PaymentInstruments-AddPayment', 'isAuthorised', 'false'),
       );
     }
-
-    return next();
   } catch (error) {
     AdyenLogs.error_log('Error during 3ds1 response verification:', error);
-    res.redirect(URLUtils.url('Error-ErrorCode', 'err', 'general'));
-    return next();
+    setErrorType(error, res, {
+      redirectUrl: URLUtils.url('Error-ErrorCode', 'err', 'general').toString(),
+    });
   }
+  return next();
 }
 
 module.exports = redirect;
