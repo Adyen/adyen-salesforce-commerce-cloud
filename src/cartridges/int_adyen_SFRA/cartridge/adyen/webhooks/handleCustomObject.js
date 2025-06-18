@@ -172,19 +172,19 @@ function handle(customObj) {
               OrderMgr.undoFailOrder(order);
               order.trackOrderChange('Authorisation webhook received for failed order, moving order status to CREATED');
             }
-			if (fraudResultType === 'AMBER'){
-				order.trackOrderChange('Order sent for manual review in Adyen Customer Area');
-			}
-			else{
-				const placeOrderResult = placeOrder(order);
-				if (!placeOrderResult.error) {
+            if (fraudResultType === constants.FRAUD_STATUS_AMBER) {
+              order.trackOrderChange('Order sent for manual review in Adyen Customer Area');
+            }
+            else {
+              const placeOrderResult = placeOrder(order);
+              if (!placeOrderResult.error) {
 				markOrderAsPaid(order);
 				AdyenLogs.info_log(
 					`Order ${order.orderNo} updated to status PAID.`,
 				);
 				result.SubmitOrder = true;
-				}
-			}
+			  }
+            }
           }
           order.custom.Adyen_eventCode = customObj.custom.eventCode;
           order.custom.Adyen_value = amountPaid.toString();
