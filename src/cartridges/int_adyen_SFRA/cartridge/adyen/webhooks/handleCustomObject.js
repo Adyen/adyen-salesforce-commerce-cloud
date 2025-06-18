@@ -56,6 +56,12 @@ function placeOrder(order) {
   return { error: true };
 }
 
+function markOrderAsPaid(order) {
+  order.setPaymentStatus(Order.PAYMENT_STATUS_PAID);
+  order.setExportStatus(Order.EXPORT_STATUS_READY);
+  order.setConfirmationStatus(Order.CONFIRMATION_STATUS_CONFIRMED);
+}
+
 function execute(args) {
   const result = handle(args.CustomObj);
 
@@ -123,6 +129,8 @@ function handle(customObj) {
         // Check if one of the adyen payment methods was used during payment
         // Or if the payment method belongs to adyen payment processors
         const paymentInstruments = order.getPaymentInstruments();
+        const webhookData = JSON.parse(customObj.custom.Adyen_log);
+        const fraudResultType = webhookData["additionalData.fraudResultType"];
         for (const pi in paymentInstruments) {
           if (
             [
@@ -159,21 +167,24 @@ function handle(customObj) {
               `Partial amount ${customObj.custom.value} received for order number ${order.orderNo} with total amount ${totalAmount}`,
             );
           } else {
-			// This if scenario can be true when shopper authorised a payment and then pressed the back button on browser
+            // This if scenario can be true when shopper authorised a payment and then pressed the back button on browser
             if (order.status.value === Order.ORDER_STATUS_FAILED && amountPaid === totalAmount) {
               OrderMgr.undoFailOrder(order);
               order.trackOrderChange('Authorisation webhook received for failed order, moving order status to CREATED');
             }
-            const placeOrderResult = placeOrder(order);
-            if (!placeOrderResult.error) {
-              order.setPaymentStatus(Order.PAYMENT_STATUS_PAID);
-              order.setExportStatus(Order.EXPORT_STATUS_READY);
-              order.setConfirmationStatus(Order.CONFIRMATION_STATUS_CONFIRMED);
-              AdyenLogs.info_log(
-                `Order ${order.orderNo} updated to status PAID.`,
-              );
-              result.SubmitOrder = true;
-            }
+			if (fraudResultType === 'AMBER'){
+				order.trackOrderChange('Order sent for manual review in Adyen Customer Area');
+			}
+			else{
+				const placeOrderResult = placeOrder(order);
+				if (!placeOrderResult.error) {
+				markOrderAsPaid(order);
+				AdyenLogs.info_log(
+					`Order ${order.orderNo} updated to status PAID.`,
+				);
+				result.SubmitOrder = true;
+				}
+			}
           }
           order.custom.Adyen_eventCode = customObj.custom.eventCode;
           order.custom.Adyen_value = amountPaid.toString();
@@ -243,9 +254,7 @@ function handle(customObj) {
         ) {
           const placeOrderResult = placeOrder(order);
           if (!placeOrderResult.error) {
-            order.setPaymentStatus(Order.PAYMENT_STATUS_PAID);
-            order.setExportStatus(Order.EXPORT_STATUS_READY);
-            order.setConfirmationStatus(Order.CONFIRMATION_STATUS_CONFIRMED);
+			markOrderAsPaid(order);
             AdyenLogs.info_log(`Order ${order.orderNo} placed and closed`);
           }
         }
@@ -269,16 +278,31 @@ function handle(customObj) {
           customObj.custom.success === 'true' &&
           order.status.value === Order.ORDER_STATUS_CANCELLED
         ) {
-          order.setPaymentStatus(Order.PAYMENT_STATUS_PAID);
-          order.setExportStatus(Order.EXPORT_STATUS_READY);
-          order.setConfirmationStatus(Order.CONFIRMATION_STATUS_CONFIRMED);
+          markOrderAsPaid(order);
           OrderMgr.undoCancelOrder(order);
           AdyenLogs.info_log(
             `Undo failed capture, Order ${order.orderNo} updated to status PAID.`,
           );
         }
-
         break;
+      case 'MANUAL_REVIEW_ACCEPT':
+        order.trackOrderChange('Manual review is accepted in Adyen Customer Area, placing the order');
+		const placeOrderResult = placeOrder(order);
+		if (!placeOrderResult.error) {
+			markOrderAsPaid(order);
+			AdyenLogs.info_log(
+				`Order ${order.orderNo} updated to status PAID.`,
+			);
+			result.SubmitOrder = true;
+		}
+		break;
+      case 'MANUAL_REVIEW_REJECT':
+        order.trackOrderChange('Manual review is not accepted in Adyen Customer Area, failing the order');
+        order.setPaymentStatus(Order.PAYMENT_STATUS_NOTPAID);
+        Transaction.wrap(() => {
+          OrderMgr.failOrder(order, false);
+        });
+		break;
       default:
         AdyenLogs.info_log(
           `Order ${order.orderNo} received unhandled status ${customObj.custom.eventCode}`,
