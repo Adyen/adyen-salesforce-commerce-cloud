@@ -248,6 +248,22 @@ function registerFirstPaymentMethod() {
 function init() {
   $(document).ready(async () => {
     paymentMethodsResponse = await getPaymentMethods();
+    const isFastlaneEnabled =
+      paymentMethodsResponse?.AdyenPaymentMethods?.paymentMethods.some(
+        (pm) => pm.type === 'fastlane',
+      );
+    if (isFastlaneEnabled) {
+      const guestEmail = document.querySelector('#email-guest');
+      if (guestEmail) {
+        const watermarkDiv = document.createElement('div');
+        watermarkDiv.id = '#watermark-container';
+        guestEmail.parentElement.appendChild(watermarkDiv);
+        const fastlane = await window.AdyenWeb.initializeFastlane(
+          store.checkoutConfiguration,
+        );
+        await fastlane.mountWatermark('#watermark-container');
+      }
+    }
     const storedCustomerEmail = sessionStorage.getItem('customerEmail');
     $('body').trigger('checkout:renderPaymentMethod', {
       email: storedCustomerEmail,
