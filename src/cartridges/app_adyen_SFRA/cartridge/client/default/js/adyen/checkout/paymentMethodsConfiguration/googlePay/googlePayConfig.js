@@ -8,13 +8,19 @@ class GooglePayConfig {
     this.helpers = helpers;
   }
 
-  onSubmit = (state, component, actions) => {
-    this.helpers.assignPaymentMethodValue();
-    document.querySelector('button[value="submit-payment"]').disabled = false;
-    document.querySelector('button[value="submit-payment"]').click();
-    actions.resolve({
-      resultCode: 'Pending',
-    });
+  onSubmit = async (state, component, actions) => {
+    try {
+      this.helpers.assignPaymentMethodValue();
+      document.querySelector('#adyenStateData').value = JSON.stringify(
+        state.data,
+      );
+      await this.helpers.paymentFromComponent(state.data, component);
+      actions.resolve({
+        resultCode: 'Authorised',
+      });
+    } catch (error) {
+      actions.reject();
+    }
   };
 
   getConfiguration = () => ({

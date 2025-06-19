@@ -192,21 +192,13 @@ describe('Checkout Configuration', () => {
     it('handles onSubmit', () => {
       paywithgoogle = new GooglePayConfig(helpers)
       document.body.innerHTML = `
-        <div id="lb_paywithgoogle">Google Pay</div>
+        <div id="lb_paywithgoogle">GooglePay</div>
         <div id="adyenPaymentMethodName"></div>
         <button value="submit-payment"></button>
       `;
-      const spy = jest.fn();
-      const submitButton = document.querySelector(
-        'button[value="submit-payment"]',
-      );
-      submitButton.addEventListener('click', () => {
-        spy();
-      });
       store.selectedMethod = 'paywithgoogle';
       paywithgoogle.onSubmit({ data: {} }, null, { resolve: jest.fn(), reject: jest.fn() });
-      expect(spy).toBeCalledTimes(1);
-      expect(submitButton.disabled).toBeFalsy();
+      expect(document.getElementById('adyenPaymentMethodName').value).toBe('GooglePay');
     });
   });
 
