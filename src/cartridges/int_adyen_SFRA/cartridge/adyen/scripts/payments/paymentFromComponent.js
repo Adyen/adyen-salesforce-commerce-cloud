@@ -9,6 +9,7 @@ const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 const constants = require('*/cartridge/adyen/config/constants');
 const collections = require('*/cartridge/scripts/util/collections');
 const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
+const AdyenConfigs = require('*/cartridge/adyen/utils/adyenConfigs');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 const GiftCardsHelper = require('*/cartridge/adyen/utils/giftCardsHelper');
 const setErrorType = require('*/cartridge/adyen/logs/setErrorType');
@@ -214,13 +215,29 @@ function paymentFromComponent(req, res, next) {
 
     handleExpressPayment(reqDataObj, currentBasket);
 
-    const order = createOrder(currentBasket);
-    session.privacy.orderNo = order.orderNo;
+    let orderOrBasket;
+    let orderNumber;
+    let orderToken;
+
+    const isKlarnaPayment = reqDataObj.paymentMethod?.type.includes('klarna');
+    const isKlarnaWidgetEnabled = AdyenConfigs.getKlarnaInlineWidgetEnabled();
+    if (isKlarnaPayment && isKlarnaWidgetEnabled) {
+      orderOrBasket = currentBasket;
+      orderNumber = OrderMgr.createOrderNo();
+      orderToken = null;
+    } else {
+      orderOrBasket = createOrder(currentBasket);
+      orderNumber = orderOrBasket.orderNo;
+      orderToken = orderOrBasket.orderToken;
+    }
+    session.privacy.orderNo = orderNumber;
 
     let result;
     Transaction.wrap(() => {
       result = adyenCheckout.createPaymentRequest({
-        Order: order,
+        Order: orderOrBasket,
+        OrderNo: orderNumber,
+        OrderToken: orderToken,
       });
     });
 
@@ -228,16 +245,16 @@ function paymentFromComponent(req, res, next) {
     currentBasket.custom.adyenGiftCardsOrderNo = null;
 
     if (result.resultCode === constants.RESULTCODES.REFUSED) {
-      handleRefusedResultCode(result, reqDataObj, order);
+      handleRefusedResultCode(result, reqDataObj, orderOrBasket);
     }
 
-    handleGiftCardPayment(currentBasket, order);
+    handleGiftCardPayment(currentBasket, orderOrBasket);
 
     // Check if summary page can be skipped in case payment is already authorized
     result.skipSummaryPage = canSkipSummaryPage(reqDataObj);
 
-    result.orderNo = order.orderNo;
-    result.orderToken = order.orderToken;
+    result.orderNo = orderNumber;
+    result.orderToken = orderToken;
     res.json(result);
   } catch (error) {
     AdyenLogs.fatal_log('Failed payment from component', error);

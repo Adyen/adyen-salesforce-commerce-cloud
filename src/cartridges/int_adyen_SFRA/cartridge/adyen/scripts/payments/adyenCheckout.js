@@ -124,12 +124,14 @@ function doPaymentsCall(order, paymentInstrument, paymentRequest) {
 // eslint-disable-next-line complexity
 function createPaymentRequest(args) {
   const order = args.Order;
+  const orderNumber = args.OrderNo;
+  const orderToken = args.OrderToken;
   const { paymentInstrument } = order;
 
   // Create request object with payment details
   let paymentRequest = AdyenHelper.createAdyenRequestObject(
-    order.getOrderNo(),
-    order.getOrderToken(),
+    orderNumber,
+    orderToken,
     paymentInstrument,
     order.getCustomerEmail(),
   );
