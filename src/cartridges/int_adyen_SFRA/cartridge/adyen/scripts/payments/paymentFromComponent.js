@@ -176,24 +176,21 @@ function createOrder(currentBasket) {
 }
 
 function handleKlarnaPayment(reqDataObj, currentBasket) {
-  let orderOrBasket;
-  let orderNumber;
-  let orderToken;
   const isKlarnaPayment = reqDataObj.paymentMethod?.type.includes('klarna');
   const isKlarnaWidgetEnabled = AdyenConfigs.getKlarnaInlineWidgetEnabled();
   if (isKlarnaPayment && isKlarnaWidgetEnabled) {
-    orderOrBasket = currentBasket;
-    orderNumber = OrderMgr.createOrderNo();
-    orderToken = null;
-  } else {
-    orderOrBasket = createOrder(currentBasket);
-    orderNumber = orderOrBasket.orderNo;
-    orderToken = orderOrBasket.orderToken;
+    return {
+      orderOrBasket: currentBasket,
+      orderNumber: OrderMgr.createOrderNo(),
+      orderToken: null,
+    };
   }
+
+  const order = createOrder(currentBasket);
   return {
-    orderOrBasket,
-    orderNumber,
-    orderToken,
+    orderOrBasket: order,
+    orderNumber: order.orderNo,
+    orderToken: order.orderToken,
   };
 }
 
