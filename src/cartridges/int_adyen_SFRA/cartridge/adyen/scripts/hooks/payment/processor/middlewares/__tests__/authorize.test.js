@@ -1,11 +1,16 @@
 /* eslint-disable global-require */
 let authorize;
-let currentBasket;
+let order;
+let paymentInstrument;
 
 beforeEach(() => {
   authorize = require('../authorize');
   jest.clearAllMocks();
-  currentBasket = require('dw/order/BasketMgr').getCurrentBasket();
+  const OrderMgr = require('dw/order/OrderMgr');
+  order = OrderMgr.getOrder('15');
+  order.getOrderNo = jest.fn().mockReturnValue('15');
+  order.getOrderToken = jest.fn().mockReturnValue('12341234');
+  paymentInstrument = order.getPaymentInstruments()[0];
 });
 
 afterEach(() => {
@@ -21,8 +26,8 @@ describe('Authorize', () => {
       error: {},
     }));
     const authorizeResult = authorize(
-      '15',
-      currentBasket.toArray()[0],
+      order,
+      paymentInstrument,
       'mockedPaymentProcessor',
     );
     expect(authorizeResult).toMatchSnapshot();
@@ -41,9 +46,8 @@ describe('Authorize', () => {
         },
       },
     }));
-    const paymentInstrument = currentBasket.toArray()[0];
     const authorizeResult = authorize(
-      '15',
+      order, // Pass the order number string
       paymentInstrument,
       'mockedPaymentProcessor',
     );
@@ -57,11 +61,11 @@ describe('Authorize', () => {
     createPaymentRequest.mockImplementation(() => ({
       threeDS2: 'mockedthreeDS2',
       resultCode: 'mockedresultCode',
-      fullResponse: {action: 'mockedAction'},
+      fullResponse: { action: 'mockedAction' },
     }));
     const authorizeResult = authorize(
-      '15',
-      currentBasket.toArray()[0],
+      order, // Pass the order number string
+      paymentInstrument,
       'mockedPaymentProcessor',
     );
     expect(authorizeResult).toMatchSnapshot();
@@ -78,9 +82,8 @@ describe('Authorize', () => {
       },
       paymentData: 'mockedpaymentData',
     }));
-    const paymentInstrument = currentBasket.toArray()[0];
     const authorizeResult = authorize(
-      '15',
+      order,
       paymentInstrument,
       'mockedPaymentProcessor',
     );
@@ -95,8 +98,8 @@ describe('Authorize', () => {
       decision: 'ACCEPT',
     }));
     const authorizeResult = authorize(
-      '15',
-      currentBasket.toArray()[0],
+      order,
+      paymentInstrument,
       'mockedPaymentProcessor',
     );
     expect(authorizeResult).toMatchSnapshot();
@@ -110,8 +113,8 @@ describe('Authorize', () => {
       decision: "DON'T ACCEPT",
     }));
     const authorizeResult = authorize(
-      '15',
-      currentBasket.toArray()[0],
+      order,
+      paymentInstrument,
       'mockedPaymentProcessor',
     );
     expect(authorizeResult).toMatchSnapshot();

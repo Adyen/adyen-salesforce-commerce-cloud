@@ -24,7 +24,7 @@ function showConfirmationPaymentFromComponent(req, res, next) {
   try {
     session.privacy.giftCardResponse = null;
     const stateData = JSON.parse(req.form.additionalDetailsHidden);
-    const isKlarnaPayment = stateData.paymentMethod?.type.includes('klarna');
+    const isKlarnaPayment = stateData.paymentMethod?.type?.includes('klarna');
     const isKlarnaWidgetEnabled = AdyenConfigs.getKlarnaInlineWidgetEnabled();
 
     let order;

@@ -175,6 +175,28 @@ function createOrder(currentBasket) {
   return COHelpers.createOrder(currentBasket);
 }
 
+function handleKlarnaPayment(reqDataObj, currentBasket) {
+  let orderOrBasket;
+  let orderNumber;
+  let orderToken;
+  const isKlarnaPayment = reqDataObj.paymentMethod?.type.includes('klarna');
+  const isKlarnaWidgetEnabled = AdyenConfigs.getKlarnaInlineWidgetEnabled();
+  if (isKlarnaPayment && isKlarnaWidgetEnabled) {
+    orderOrBasket = currentBasket;
+    orderNumber = OrderMgr.createOrderNo();
+    orderToken = null;
+  } else {
+    orderOrBasket = createOrder(currentBasket);
+    orderNumber = orderOrBasket.orderNo;
+    orderToken = orderOrBasket.orderToken;
+  }
+  return {
+    orderOrBasket,
+    orderNumber,
+    orderToken,
+  };
+}
+
 /**
  * Make a payment from inside a component, skipping the summary page. (paypal, QRcodes, MBWay)
  */
@@ -184,6 +206,7 @@ function paymentFromComponent(req, res, next) {
     if (reqDataObj.cancelTransaction) {
       return handleCancellation(res, next, reqDataObj);
     }
+
     const currentBasket = isExpressPdp
       ? BasketMgr.getTemporaryBasket(session.privacy.temporaryBasketId)
       : BasketMgr.getCurrentBasket();
@@ -214,22 +237,10 @@ function paymentFromComponent(req, res, next) {
     });
 
     handleExpressPayment(reqDataObj, currentBasket);
-
-    let orderOrBasket;
-    let orderNumber;
-    let orderToken;
-
-    const isKlarnaPayment = reqDataObj.paymentMethod?.type.includes('klarna');
-    const isKlarnaWidgetEnabled = AdyenConfigs.getKlarnaInlineWidgetEnabled();
-    if (isKlarnaPayment && isKlarnaWidgetEnabled) {
-      orderOrBasket = currentBasket;
-      orderNumber = OrderMgr.createOrderNo();
-      orderToken = null;
-    } else {
-      orderOrBasket = createOrder(currentBasket);
-      orderNumber = orderOrBasket.orderNo;
-      orderToken = orderOrBasket.orderToken;
-    }
+    const { orderOrBasket, orderNumber, orderToken } = handleKlarnaPayment(
+      reqDataObj,
+      currentBasket,
+    );
     session.privacy.orderNo = orderNumber;
 
     let result;
