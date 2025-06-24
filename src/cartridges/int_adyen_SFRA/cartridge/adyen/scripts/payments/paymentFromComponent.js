@@ -251,7 +251,6 @@ function paymentFromComponent(req, res, next) {
     result.orderToken = orderToken;
     res.json(result);
   } catch (error) {
-    console.log('errrrrrr', error);
     AdyenLogs.fatal_log('Failed payment from component', error);
     setErrorType(error, res);
   }
