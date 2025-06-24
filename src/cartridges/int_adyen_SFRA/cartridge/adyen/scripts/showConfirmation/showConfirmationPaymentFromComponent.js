@@ -1,20 +1,11 @@
 const OrderMgr = require('dw/order/OrderMgr');
 const BasketMgr = require('dw/order/BasketMgr');
 const URLUtils = require('dw/web/URLUtils');
-const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 const handlePayment = require('*/cartridge/adyen/scripts/showConfirmation/handlePaymentFromComponent');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 const setErrorType = require('*/cartridge/adyen/logs/setErrorType');
 const AdyenConfigs = require('*/cartridge/adyen/utils/adyenConfigs');
-
-function createOrder() {
-  const currentBasket = BasketMgr.getCurrentBasket();
-  if (currentBasket.custom?.adyenGiftCards) {
-    const giftCardsOrderNo = currentBasket.custom.adyenGiftCardsOrderNo;
-    return OrderMgr.createOrder(currentBasket, giftCardsOrderNo);
-  }
-  return COHelpers.createOrder(currentBasket);
-}
+const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
 
 /*
  * Show confirmation for payments completed from component directly e.g. paypal, QRcode, ..
@@ -29,7 +20,8 @@ function showConfirmationPaymentFromComponent(req, res, next) {
 
     let order;
     if (isKlarnaPayment && isKlarnaWidgetEnabled) {
-      order = createOrder();
+      const currentBasket = BasketMgr.getCurrentBasket();
+      order = AdyenHelper.createOrder(currentBasket);
     } else {
       order = OrderMgr.getOrder(
         req.form.merchantReference,

@@ -5,7 +5,6 @@ const OrderMgr = require('dw/order/OrderMgr');
 const URLUtils = require('dw/web/URLUtils');
 const Money = require('dw/value/Money');
 const adyenCheckout = require('*/cartridge/adyen/scripts/payments/adyenCheckout');
-const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 const constants = require('*/cartridge/adyen/config/constants');
 const collections = require('*/cartridge/scripts/util/collections');
 const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
@@ -166,15 +165,6 @@ function canSkipSummaryPage(reqDataObj) {
   return false;
 }
 
-function createOrder(currentBasket) {
-  // Check if gift card was used
-  if (currentBasket.custom?.adyenGiftCards) {
-    const giftCardsOrderNo = currentBasket.custom.adyenGiftCardsOrderNo;
-    return OrderMgr.createOrder(currentBasket, giftCardsOrderNo);
-  }
-  return COHelpers.createOrder(currentBasket);
-}
-
 function handleKlarnaPayment(reqDataObj, currentBasket) {
   const isKlarnaPayment = reqDataObj.paymentMethod?.type.includes('klarna');
   const isKlarnaWidgetEnabled = AdyenConfigs.getKlarnaInlineWidgetEnabled();
@@ -186,7 +176,7 @@ function handleKlarnaPayment(reqDataObj, currentBasket) {
     };
   }
 
-  const order = createOrder(currentBasket);
+  const order = AdyenHelper.createOrder(currentBasket);
   return {
     orderOrBasket: order,
     orderNumber: order.orderNo,

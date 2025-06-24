@@ -38,6 +38,7 @@ const constants = require('*/cartridge/adyen/config/constants');
 const AdyenConfigs = require('*/cartridge/adyen/utils/adyenConfigs');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 const { AdyenError } = require('*/cartridge/adyen/logs/adyenError');
+const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 
 /* eslint no-var: off */
 const adyenHelperObj = {
@@ -957,6 +958,14 @@ const adyenHelperObj = {
     }
     return JSON.parse(resultObject.getText());
   },
+
+  createOrder(currentBasket) {
+    if (currentBasket.custom?.adyenGiftCards) {
+      const giftCardsOrderNo = currentBasket.custom.adyenGiftCardsOrderNo;
+      return OrderMgr.createOrder(currentBasket, giftCardsOrderNo);
+    }
+    return COHelpers.createOrder(currentBasket);
+  }
 };
 
 module.exports = adyenHelperObj;
