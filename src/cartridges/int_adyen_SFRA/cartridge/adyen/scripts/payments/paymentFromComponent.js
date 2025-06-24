@@ -156,16 +156,12 @@ function handleExpressPayment(reqDataObj, currentBasket) {
 }
 
 function canSkipSummaryPage(reqDataObj) {
-  if (
+  return (
     constants.CAN_SKIP_SUMMARY_PAGE.indexOf(reqDataObj.paymentMethod?.type) >= 0
-  ) {
-    return true;
-  }
-
-  return false;
+  );
 }
 
-function handleKlarnaPayment(reqDataObj, currentBasket) {
+function handleOrderCreation(reqDataObj, currentBasket) {
   const isKlarnaPayment = reqDataObj.paymentMethod?.type.includes('klarna');
   const isKlarnaWidgetEnabled = AdyenConfigs.getKlarnaInlineWidgetEnabled();
   if (isKlarnaPayment && isKlarnaWidgetEnabled) {
@@ -224,7 +220,7 @@ function paymentFromComponent(req, res, next) {
     });
 
     handleExpressPayment(reqDataObj, currentBasket);
-    const { orderOrBasket, orderNumber, orderToken } = handleKlarnaPayment(
+    const { orderOrBasket, orderNumber, orderToken } = handleOrderCreation(
       reqDataObj,
       currentBasket,
     );
@@ -255,6 +251,7 @@ function paymentFromComponent(req, res, next) {
     result.orderToken = orderToken;
     res.json(result);
   } catch (error) {
+    console.log('errrrrrr', error);
     AdyenLogs.fatal_log('Failed payment from component', error);
     setErrorType(error, res);
   }

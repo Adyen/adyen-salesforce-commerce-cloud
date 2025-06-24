@@ -269,6 +269,10 @@ jest.mock('*/cartridge/adyen/utils/validatePaymentMethod', () => ({
 jest.mock(
   '*/cartridge/adyen/utils/adyenHelper',
   () => ({
+    createOrder: jest.fn().mockReturnValue({
+      orderNo: 'mocked_orderNo',
+      orderToken: 'mocked_orderToken',
+    }),
     savePaymentDetails: jest.fn(),
     setPaymentInstrumentFields: jest.fn(),
     getAdyenHash: jest.fn(() => 'mocked_hash'),
@@ -340,6 +344,7 @@ jest.mock(
 jest.mock(
   '*/cartridge/adyen/utils/adyenConfigs',
   () => ({
+    getKlarnaInlineWidgetEnabled: jest.fn(),
     getAdyenEnvironment: jest.fn(),
     getAdyenInstallmentsEnabled: jest.fn(() => true),
     getCreditCardInstallments: jest.fn(() => true),
