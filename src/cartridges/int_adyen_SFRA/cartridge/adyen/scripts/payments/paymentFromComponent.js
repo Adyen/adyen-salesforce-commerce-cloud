@@ -135,7 +135,7 @@ function handleCancellation(res, next, reqDataObj) {
 }
 
 function handleRefusedResultCode(result, reqDataObj, order) {
-  AdyenLogs.error_log(`Payment refused for order ${order.orderNo}`);
+  AdyenLogs.error_log(`Payment refused for order ${order.orderNo}`, '');
   result.paymentError = true;
 
   // Decline flow for Amazonpay or Applepay is handled different from other Component PMs
