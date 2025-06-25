@@ -12,12 +12,7 @@ class KlarnaConfig {
 
   onAdditionalDetails = (state) => {
     this.document.querySelector('#additionalDetailsHidden').value =
-      JSON.stringify({
-        ...state.data,
-        paymentMethod: {
-          type: 'klarna',
-        },
-      });
+      JSON.stringify(state.data);
     this.document.querySelector('#showConfirmationForm').submit();
   };
 

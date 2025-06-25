@@ -298,6 +298,10 @@ const adyenHelperObj = {
   },
 
   isAdyenGivingAvailable(order) {
+    if (!order) {
+      return false;
+    }
+
     const paymentInstruments = order.getPaymentInstruments(adyenHelperObj.getOrderMainPaymentInstrumentType(order));
 
     if (!paymentInstruments.length) {
