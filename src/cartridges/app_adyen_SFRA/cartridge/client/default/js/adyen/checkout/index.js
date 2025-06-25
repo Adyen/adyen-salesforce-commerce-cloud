@@ -248,10 +248,10 @@ function registerFirstPaymentMethod() {
 function init() {
   $(document).ready(async () => {
     paymentMethodsResponse = await getPaymentMethods();
-    const isFastlaneEnabled =
-      paymentMethodsResponse?.AdyenPaymentMethods?.paymentMethods.some(
-        (pm) => pm.type === 'fastlane',
-      );
+    const paymentMethods = paymentMethodsResponse?.AdyenPaymentMethods?.paymentMethods;
+    const isFastlaneEnabled = paymentMethods?.some(
+      (pm) => pm.type === 'fastlane',
+    );
     if (isFastlaneEnabled) {
       const guestEmail = document.querySelector('#email-guest');
       if (guestEmail) {
