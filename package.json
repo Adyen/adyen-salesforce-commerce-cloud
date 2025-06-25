@@ -24,7 +24,7 @@
     "test:coverageHTML": "jest ./src --coverage --coverageDirectory='coverage'",
     "check-build:sfra": "chmod 755 ./check-build.sh && sh ./check-build.sh SFRA",
     "check-branch-name": "chmod 755 ./branching.sh && sh ./branching.sh",
-	"check-logs": "node check-logs",
+    "check-logs": "node check-logs",
     "prepare": "husky install",
     "preinstall": "npx npm-force-resolutions",
     "init:isml":  "./node_modules/.bin/isml-linter --init",
