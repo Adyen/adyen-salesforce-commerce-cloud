@@ -256,7 +256,7 @@ function init() {
       const guestEmail = document.querySelector('#email-guest');
       if (guestEmail) {
         const watermarkDiv = document.createElement('div');
-        watermarkDiv.id = '#watermark-container';
+        watermarkDiv.id = 'watermark-container';
         guestEmail.parentElement.appendChild(watermarkDiv);
         const fastlane = await window.AdyenWeb.initializeFastlane(
           store.checkoutConfiguration,
