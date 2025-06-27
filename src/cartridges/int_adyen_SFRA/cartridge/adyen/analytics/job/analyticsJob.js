@@ -151,7 +151,7 @@ function processAnalytics() {
     const analyticsRequest = createAnalyticsRequest(customObjectIterator);
     sendAnalyticsEvents(analyticsRequest);
   } catch (e) {
-    AdyenLogs.error_log(`Error querying custom objects: ${e}`);
+    AdyenLogs.error_log('Error querying custom objects:', e);
     throw e;
   } finally {
     if (customObjectIterator) {

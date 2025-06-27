@@ -868,7 +868,7 @@ const adyenHelperObj = {
       };
     }
 
-    AdyenLogs.error_log(`Unknown resultCode: ${checkoutresponse.resultCode}.`);
+    AdyenLogs.error_log('Unknown resultCode:', checkoutresponse.resultCode);
     return {
       isFinal: true,
       isSuccessful: false,
