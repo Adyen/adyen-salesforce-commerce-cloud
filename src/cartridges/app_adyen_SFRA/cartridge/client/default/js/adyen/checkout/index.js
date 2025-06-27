@@ -247,14 +247,37 @@ function registerFirstPaymentMethod() {
 
 function init() {
   $(document).ready(async () => {
-    paymentMethodsResponse = await getPaymentMethods();
-    const storedCustomerEmail = sessionStorage.getItem('customerEmail');
-    $('body').trigger('checkout:renderPaymentMethod', {
-      email: storedCustomerEmail,
-    });
-    helpers.createShowConfirmationForm(
-      window.ShowConfirmationPaymentFromComponent,
-    );
+    let fastlane;
+    let watermarkContainer;
+    try {
+      paymentMethodsResponse = await getPaymentMethods();
+      const paymentMethods =
+        paymentMethodsResponse?.AdyenPaymentMethods?.paymentMethods;
+      const isFastlaneEnabled = paymentMethods?.some(
+        (pm) => pm.type === 'fastlane',
+      );
+      if (isFastlaneEnabled) {
+        const guestEmail = document.querySelector('#email-guest');
+        if (guestEmail) {
+          watermarkContainer = document.createElement('div');
+          watermarkContainer.id = 'watermark-container';
+          guestEmail.parentElement.appendChild(watermarkContainer);
+          fastlane = await window.AdyenWeb.initializeFastlane(
+            store.checkoutConfiguration,
+          );
+          await fastlane.mountWatermark('#watermark-container');
+        }
+      }
+      const storedCustomerEmail = sessionStorage.getItem('customerEmail');
+      $('body').trigger('checkout:renderPaymentMethod', {
+        email: storedCustomerEmail,
+      });
+      helpers.createShowConfirmationForm(
+        window.ShowConfirmationPaymentFromComponent,
+      );
+    } catch (err) {
+      watermarkContainer.remove();
+    }
   });
 }
 
