@@ -966,7 +966,9 @@ const adyenHelperObj = {
   createOrder(currentBasket) {
     if (currentBasket.custom?.adyenGiftCards) {
       const giftCardsOrderNo = currentBasket.custom.adyenGiftCardsOrderNo;
-      return OrderMgr.createOrder(currentBasket, giftCardsOrderNo);
+      return Transaction.wrap(function () {
+        return OrderMgr.createOrder(currentBasket, giftCardsOrderNo);
+      });
     }
     return COHelpers.createOrder(currentBasket);
   }

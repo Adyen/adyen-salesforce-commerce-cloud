@@ -165,9 +165,11 @@ function handleOrderCreation(reqDataObj, currentBasket) {
   const isKlarnaPayment = reqDataObj.paymentMethod?.type.includes('klarna');
   const isKlarnaWidgetEnabled = AdyenConfigs.getKlarnaInlineWidgetEnabled();
   if (isKlarnaPayment && isKlarnaWidgetEnabled) {
+    const orderNumber =
+      currentBasket.custom.adyenGiftCardsOrderNo || OrderMgr.createOrderNo();
     return {
       orderOrBasket: currentBasket,
-      orderNumber: OrderMgr.createOrderNo(),
+      orderNumber,
       orderToken: null,
     };
   }
@@ -236,7 +238,6 @@ function paymentFromComponent(req, res, next) {
     });
 
     currentBasket.custom.amazonExpressShopperDetails = null;
-    currentBasket.custom.adyenGiftCardsOrderNo = null;
 
     if (result.resultCode === constants.RESULTCODES.REFUSED) {
       handleRefusedResultCode(result, reqDataObj, orderOrBasket);
