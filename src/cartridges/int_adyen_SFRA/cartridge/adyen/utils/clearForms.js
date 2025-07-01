@@ -15,7 +15,6 @@ function clearCustomSessionFields() {
   session.privacy.amazonExpressShopperDetail = null;
   session.privacy.giftCardBalance = null;
   session.privacy.temporaryBasketId = null;
-  session.privacy.orderNo = null;
 }
 
 /**
