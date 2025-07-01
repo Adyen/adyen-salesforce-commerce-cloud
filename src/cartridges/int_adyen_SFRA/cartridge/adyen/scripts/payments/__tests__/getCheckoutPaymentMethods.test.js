@@ -65,6 +65,7 @@ describe('getCheckoutPaymentMethods', () => {
         ideal: 'Dutch payment method example description',
         paypal: 'PayPal example description',
       },
+      showFastlane: false,
       adyenTranslations: expect.anything(),
       imagePath: 'mocked_loading_contextimages/logos/medium/',
       countryCode: 'NL',
