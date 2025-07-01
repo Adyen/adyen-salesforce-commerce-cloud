@@ -12,6 +12,7 @@ const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 
 function handlePaymentError(order, adyenPaymentInstrument, { res, next }) {
   clearForms.clearAdyenData(adyenPaymentInstrument);
+  session.privacy.orderNo = null;
   Transaction.wrap(() => {
     OrderMgr.failOrder(order, true);
   });

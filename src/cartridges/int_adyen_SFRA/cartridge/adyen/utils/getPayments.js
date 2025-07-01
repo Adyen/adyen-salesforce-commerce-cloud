@@ -28,6 +28,7 @@ const getPayments = (order) =>
         );
 
         if (authorizationResult.error) {
+          session.privacy.orderNo = null;
           Transaction.wrap(() => {
             OrderMgr.failOrder(order, true);
           });

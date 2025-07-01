@@ -75,6 +75,7 @@ function processNotifications(/* pdict */) {
       // Refused payments which are made with using Adyen payment method are
       // handled when user is redirected back from Adyen HPP.
       // Here we shouldn't fail an order and send a notification
+      session.privacy.orderNo = null;
       Transaction.wrap(() => {
         OrderMgr.failOrder(order, true);
       });

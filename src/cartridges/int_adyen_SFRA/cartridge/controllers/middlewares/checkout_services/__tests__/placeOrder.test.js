@@ -11,7 +11,7 @@ beforeEach(() => {
   jest.clearAllMocks();
   res = { json: jest.fn() };
   req = {
-    session: { privacyCache: { get: jest.fn(), set: jest.fn() } },
+    session: { privacy: { orderNo: null }, privacyCache: { get: jest.fn(), set: jest.fn() } },
     currentCustomer: {addressBook: true},
     locale: { id: 'nl_NL' },
   };
@@ -33,6 +33,7 @@ describe('Checkout Services', () => {
     expect(processPayment).toHaveBeenCalledTimes(1);
   });
   it('should not process payment and return json response at end of file when there is no action', () => {
+    session.privacy.orderNo = null;
     const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
     adyenHelpers.handlePayments.mockImplementationOnce(() => ({error: false}));
     placeOrder.call({ emit: jest.fn() }, req, res, jest.fn());

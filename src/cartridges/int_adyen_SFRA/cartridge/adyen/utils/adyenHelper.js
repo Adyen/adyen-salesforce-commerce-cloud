@@ -969,8 +969,13 @@ const adyenHelperObj = {
       return Transaction.wrap(function () {
         return OrderMgr.createOrder(currentBasket, giftCardsOrderNo);
       });
+    } else if (session.privacy.orderNo) {
+      return Transaction.wrap(function () {
+        return OrderMgr.createOrder(currentBasket, session.privacy.orderNo);
+      });
+    } else {
+      return COHelpers.createOrder(currentBasket);
     }
-    return COHelpers.createOrder(currentBasket);
   }
 };
 

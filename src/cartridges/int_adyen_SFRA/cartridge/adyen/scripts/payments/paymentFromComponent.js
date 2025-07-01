@@ -84,6 +84,7 @@ function setBillingAndShippingAddress(reqDataObj, currentBasket) {
 }
 
 function failOrder(order) {
+  session.privacy.orderNo = null;
   Transaction.wrap(() => {
     OrderMgr.failOrder(order, true);
   });

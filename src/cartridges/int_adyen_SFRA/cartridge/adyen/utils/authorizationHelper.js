@@ -17,6 +17,7 @@ function handlePayments(order) {
     return getPayments(order);
   }
 
+  session.privacy.orderNo = null;
   Transaction.wrap(() => {
     OrderMgr.failOrder(order, true);
   });

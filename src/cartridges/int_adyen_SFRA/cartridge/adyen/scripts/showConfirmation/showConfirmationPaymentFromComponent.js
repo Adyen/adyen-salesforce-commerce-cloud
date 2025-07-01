@@ -6,7 +6,6 @@ const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 const setErrorType = require('*/cartridge/adyen/logs/setErrorType');
 const AdyenConfigs = require('*/cartridge/adyen/utils/adyenConfigs');
 const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
-const collections = require('*/cartridge/scripts/util/collections');
 
 function checkIsKlarnaPayment(currentBasket) {
   if (!currentBasket) {
@@ -18,22 +17,19 @@ function checkIsKlarnaPayment(currentBasket) {
     return false;
   }
 
-  let isKlarnaPayment = false;
-  collections.forEach(paymentInstruments, (pi) => {
+  return paymentInstruments.toArray().some((pi) => {
     try {
-      if (pi.custom && pi.custom.adyenPaymentData) {
+      if (pi.custom?.adyenPaymentData) {
         const adyenPaymentData = JSON.parse(pi.custom.adyenPaymentData);
-        isKlarnaPayment =
-          adyenPaymentData?.paymentMethod?.type?.includes('klarna');
+        return adyenPaymentData?.paymentMethod?.type?.includes('klarna');
       }
     } catch (e) {
       AdyenLogs.error_log(
         `Error parsing adyenPaymentData for payment instrument: ${e.message}`,
       );
     }
+    return false;
   });
-
-  return isKlarnaPayment;
 }
 
 /*
