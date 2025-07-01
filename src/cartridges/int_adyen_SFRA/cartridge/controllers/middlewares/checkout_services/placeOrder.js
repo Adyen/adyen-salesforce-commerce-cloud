@@ -120,8 +120,6 @@ function placeOrder(req, res, next) {
     if (giftCardsAdded){
       const orderNo = currentBasket.custom.adyenGiftCardsOrderNo;
       order = OrderMgr.createOrder(currentBasket, orderNo);
-    } else if (session.privacy.orderNo) {
-      order = OrderMgr.createOrder(currentBasket, session.privacy.orderNo);
     } else {
       order = COHelpers.createOrder(currentBasket);
     }
@@ -195,7 +193,6 @@ function placeOrder(req, res, next) {
 
     var fraudDetectionStatus = hooksHelper('app.fraud.detection', 'fraudDetection', currentBasket, require('*/cartridge/scripts/hooks/fraudDetection').fraudDetection);
     if (fraudDetectionStatus.status === 'fail') {
-        session.privacy.orderNo = null;
         Transaction.wrap(function () { OrderMgr.failOrder(order, true); });
 
         // fraud detection failed

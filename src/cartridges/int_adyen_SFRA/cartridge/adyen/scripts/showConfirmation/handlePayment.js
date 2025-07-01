@@ -16,7 +16,6 @@ function handleRedirect(page, { res }) {
 }
 
 function handlePaymentError(order, page, { res, next }) {
-  session.privacy.orderNo = null;
   Transaction.wrap(() => {
     OrderMgr.failOrder(order, true);
   });
