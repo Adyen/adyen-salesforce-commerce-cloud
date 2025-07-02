@@ -8,7 +8,7 @@
       aria-controls="adyen-pos-content"
       aria-selected="false"
       tabindex="-1"
-      aria-label="Select ${paymentOption.name}"
+      aria-label="${Resource.msgf('aria.select.payment.option', 'aria', null, paymentOption.name)}"
     >
         <img class="adyen-option"
              src="${URLUtils.staticURL('/images/pos.png')}"

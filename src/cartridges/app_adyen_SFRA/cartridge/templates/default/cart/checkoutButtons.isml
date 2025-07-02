@@ -32,12 +32,12 @@
     <div id="amazonPayAddressDetails">
         <div class="addressHeaders">
             <label>${Resource.msg('amazonpay.paymentMethod', 'adyen', null)}</label>
-            <button class="editAddressBtn" aria-label="Edit payment address">${Resource.msg('amazonpay.editButton', 'adyen', null)}</button>
+            <button class="editAddressBtn" aria-label="${Resource.msg('aria.edit.payment.address', 'aria', null)}">${Resource.msg('amazonpay.editButton', 'adyen', null)}</button>
         </div>
         <address id="paymentStr"></address>
         <div class="addressHeaders">
             <label>${Resource.msg('amazonpay.shippingAddress', 'adyen', null)}</label>
-            <button class="editAddressBtn" aria-label="Edit shipping address">${Resource.msg('amazonpay.editButton', 'adyen', null)}</button>
+            <button class="editAddressBtn" aria-label="${Resource.msg('aria.edit.shipping.address', 'aria', null)}">${Resource.msg('amazonpay.editButton', 'adyen', null)}</button>
         </div>
         <address id="address"></address>
     </div>

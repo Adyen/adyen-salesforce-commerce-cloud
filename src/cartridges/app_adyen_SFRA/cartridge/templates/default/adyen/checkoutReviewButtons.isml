@@ -9,7 +9,7 @@
 <div class="row">
   <div class="col-12 next-step-button">
     <div class="mb-sm-3">
-      <button class="btn btn-primary btn-block" type="submit" name="place-order" value="place-order" aria-label="Place order">
+      <button class="btn btn-primary btn-block" type="submit" name="place-order" value="place-order" aria-label="${Resource.msg('aria.place.order', 'aria', null)}">
         ${Resource.msg('button.submit.checkout.review', 'adyen', null)}
       </button>
       <form method="post" id="showConfirmationForm" name="showConfirmationForm" action="${pdict.showConfirmationUrl}">
