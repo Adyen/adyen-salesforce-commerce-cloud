@@ -1,4 +1,4 @@
-<div class="modal fade" id="action-modal" role="dialog" aria-modal="true" aria-labelledby="action-required">
+<div class="modal fade" id="action-modal" role="dialog" aria-modal="true" aria-labelledby="action-modal">
    <div class="modal-dialog" id="adyenModalDialog">
         <div id="action-container">
             <h2 id="action-modal-title" class="sr-only">Action Required</h2>
