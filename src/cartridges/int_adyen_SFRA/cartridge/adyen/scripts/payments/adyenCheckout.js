@@ -26,6 +26,7 @@
 const Resource = require('dw/web/Resource');
 const Order = require('dw/order/Order');
 const StringUtils = require('dw/util/StringUtils');
+const hooksHelper = require('*/cartridge/scripts/helpers/hooks');
 /* Script Modules */
 const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
 const AdyenConfigs = require('*/cartridge/adyen/utils/adyenConfigs');
@@ -36,6 +37,7 @@ const constants = require('*/cartridge/adyen/config/constants');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 const paypalHelper = require('*/cartridge/adyen/utils/paypalHelper');
 const { AdyenError } = require('*/cartridge/adyen/logs/adyenError');
+const preAuthorizationHook = require('*/cartridge/adyen/scripts/hooks/payment/preAuthorizationHandling');
 
 // eslint-disable-next-line complexity
 function doPaymentsCall(order, paymentInstrument, paymentRequest) {
@@ -260,6 +262,16 @@ function createPaymentRequest(args) {
     paymentInstrument,
     paymentRequest.paymentMethod,
   );
+  // Pre-auth hook
+  const preAuthHook = hooksHelper(
+    'app.payment.pre.auth',
+    'preAuthorization',
+    paymentRequest,
+    preAuthorizationHook.preAuthorization,
+  );
+  if (preAuthHook?.error) {
+    return preAuthHook;
+  }
   return doPaymentsCall(order, paymentInstrument, paymentRequest);
 }
 
