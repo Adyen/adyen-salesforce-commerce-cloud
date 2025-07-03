@@ -4,7 +4,7 @@
  * @param {Object} data - Data to be passed for pre-authorization
  */
 // eslint-disable-next-line
-function preAuthorization(data) {
+function preAuthorization(paymentRequest) {
   return { error: false };
 }
 

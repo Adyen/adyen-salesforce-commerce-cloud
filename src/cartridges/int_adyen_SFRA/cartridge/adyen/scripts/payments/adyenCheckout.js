@@ -263,14 +263,14 @@ function createPaymentRequest(args) {
     paymentRequest.paymentMethod,
   );
   // Pre-auth hook
-  const preAuthHook = hooksHelper(
+  const preAuthResult = hooksHelper(
     'app.payment.pre.auth',
     'preAuthorization',
     paymentRequest,
     preAuthorizationHook.preAuthorization,
   );
-  if (preAuthHook?.error) {
-    return preAuthHook;
+  if (preAuthResult?.error) {
+    return preAuthResult;
   }
   return doPaymentsCall(order, paymentInstrument, paymentRequest);
 }
