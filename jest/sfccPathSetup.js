@@ -527,3 +527,10 @@ jest.mock(
     require('../src/cartridges/int_adyen_SFRA/cartridge/adyen/logs/setErrorType'),
   { virtual: true },
 );
+
+jest.mock(
+  '*/cartridge/adyen/scripts/hooks/payment/preAuthorizationHandling',
+  () =>
+    require('../src/cartridges/int_adyen_SFRA/cartridge/adyen/scripts/hooks/payment/preAuthorizationHandling'),
+  { virtual: true },
+);
