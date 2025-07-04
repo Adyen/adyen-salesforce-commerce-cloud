@@ -9,7 +9,7 @@
     "ansi-styles": "^3.2.1",
     "babel-plugin-dynamic-import-node": "^2.3.3",
     "balanced-match": "^1.0.2",
-    "brace-expansion": "^1.1.11",
+    "brace-expansion": "^1.1.12",
     "braces": "^3.0.3",
     "browserslist": "^4.20.3",
     "buffer-crc32": "^0.2.13",
