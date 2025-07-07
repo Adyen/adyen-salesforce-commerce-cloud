@@ -1,13 +1,13 @@
 <li class="nav-item" data-method-id="${paymentOption.ID}">
     <a
-      class="nav-link adyen-tab active"
+      class="nav-link adyen-tab"
+      aria-selected="false"
+      tabindex="-1"
       id="tab-adyen-component"
       data-toggle="tab"
       href="#adyen-component-content"
       role="tab"
       aria-controls="adyen-component-content"
-      aria-selected="true"
-      tabindex="0"
       aria-label="${Resource.msgf('aria.select.payment.option', 'aria', null, paymentOption.name)}"
     >
         <img class="adyen-option"
