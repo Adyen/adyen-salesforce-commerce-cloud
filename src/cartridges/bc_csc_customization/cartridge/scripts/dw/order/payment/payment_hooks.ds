@@ -1,0 +1,156 @@
+var Site = require('dw/system/Site');
+var LocalServiceRegistry = require('dw/svc/LocalServiceRegistry');
+
+importPackage( dw.system );
+importPackage( dw.order );
+importPackage( dw.value );
+importPackage(dw.util);
+
+var adyenCurrentSite = Site.getCurrent();
+
+function getCustomPreference(field) {
+  var customPreference = null;
+  if (adyenCurrentSite && adyenCurrentSite.getCustomPreferenceValue(field)) {
+    customPreference = adyenCurrentSite.getCustomPreferenceValue(field);
+  }
+  return customPreference;
+}
+
+function getService(service, reqMethod) {
+   var adyenService = LocalServiceRegistry.createService(service, {
+    createRequest(svc, args) {
+      svc.setRequestMethod(reqMethod);
+      if (args) {
+        return args;
+      }
+      return null;
+    },
+    parseResponse(svc, client) {
+      return client;
+    },
+    filterLogMessage(msg) {
+      return msg;
+    },
+  });
+  return adyenService;
+}
+
+function executeCall(serviceType, requestObject) {
+    Logger.info(serviceType);
+    var service = getService(serviceType, 'POST');
+    var serviceApiVersion = service
+      .getURL()
+      .replace('[CHECKOUT_API_VERSION]', 'v71');
+    service.setURL(serviceApiVersion);
+
+    var apiKey = getCustomPreference("Adyen_API_Key");
+    service.addHeader('Content-type', 'application/json');
+    service.addHeader('charset', 'UTF-8');
+    service.addHeader('X-API-KEY', apiKey);
+
+    var callResult = service.call(JSON.stringify(requestObject));
+    if (!callResult.isOk()) {
+      throw new Error(
+        `${serviceType} service call error code${callResult
+          .getError()
+          .toString()} Error => ResponseStatus: ${callResult.getStatus()} | ResponseErrorText: ${callResult.getErrorMessage()} | ResponseText: ${callResult.getMsg()}`,
+      );
+    }
+
+    var resultObject = callResult.object;
+    if (!resultObject || !resultObject.getText()) {
+      throw new Error(`No correct response from ${serviceType} service call`);
+    }
+    return JSON.parse(resultObject.getText());
+}
+
+function authorize(order : Order, opi : OrderPaymentInstrument)
+{
+	var pt : PaymentTransaction = opi.getPaymentTransaction();
+	if(pt){
+		if(pt.getPaymentProcessor().getID() === 'Adyen_Component') {
+			return authorizeAdyenPayment(order, opi);
+		} else {
+			Logger.info("No special paymenthandling for payment processor {0}. Payment considered as authorized.", pt.getPaymentProcessor().getID());
+			return new Status( Status.OK );
+		}
+	} else {
+		return new Status( Status.ERROR, "Payment Transaction missing");
+	}
+}
+
+function authorizeCreditCard(order : Order, opi : OrderPaymentInstrument, cvn : String)
+{
+	//link your payment cartridge here...
+	var ccno : String = opi.getCreditCardNumber();
+	Logger.info("CC payment auth for order {0} - {1}", order.orderNo, "************" + ccno.substr(12));
+	
+	if(ccno == '4111111111112222'){
+		
+		Logger.info("=====================================ERROR===========================================");
+		return new Status( Status.ERROR, "ERR_2222", "Creditcard ending with {0} could not be authorized. Error code: {1}.", ccno.substr(12), "ERR_2222" );  
+	}
+	
+	return new Status( Status.OK );  
+}
+    
+function authorizeAdyenPayment(order : Order, opi : OrderPaymentInstrument){
+	Logger.info("Adyen auth for order {0}", order.orderNo);
+	var pt : PaymentTransaction = opi.getPaymentTransaction();
+	Logger.info("Payment Instrument total is {0}", pt.amount.value);
+	Logger.info("Payment Instrument currency is {0}", pt.amount.currencyCode);
+
+	var billingAddress = order.getBillingAddress();
+	var billingStreet = '';
+    var billingHouseNumberOrName = '';
+    var billingCountry = billingAddress.countryCode
+         ? billingAddress.countryCode.value.toUpperCase()
+         : 'ZZ'
+    var locale = order.customerLocaleID === 'default' ? 'en-US' : order.customerLocaleID;
+
+	var paymentLinkRequest = {
+      "reference": order.orderNo,
+      "amount": {
+        "value": pt.amount.value * 100,
+        "currency": pt.amount.currencyCode
+      },
+      "countryCode": billingCountry,
+      "merchantAccount": getCustomPreference("Adyen_merchantCode"),
+      "shopperInteraction": "Ecommerce",
+      "shopperReference": order.getCustomerNo(),
+      "shopperEmail": order.getCustomerEmail(),
+      "shopperLocale": locale,
+    }
+
+    if (billingAddress.address1) {
+      billingStreet = billingAddress.address1;
+      if (billingAddress.address2) {
+        billingHouseNumberOrName = billingAddress.address2;
+      }
+    } else {
+      billingStreet = 'N/A';
+    }
+
+    paymentLinkRequest.billingAddress = {
+      city: billingAddress.city ? billingAddress.city : 'N/A',
+      country: billingCountry,
+      houseNumberOrName: billingHouseNumberOrName,
+      postalCode: billingAddress.postalCode ? billingAddress.postalCode : '',
+      stateOrProvince: billingAddress.stateCode
+        ? billingAddress.stateCode
+        : 'N/A',
+      street: billingStreet,
+    };
+
+    Logger.info(JSON.stringify(paymentLinkRequest));
+    var response = executeCall('AdyenPaymentLinks', paymentLinkRequest);
+    order.addNote('Adyen Payment Link', response.url);
+    Logger.info(JSON.stringify(response));
+
+	return new Status( Status.OK );  
+}
+
+module.exports = {
+    authorize : authorize,
+    authorizeCreditCard : authorizeCreditCard
+};

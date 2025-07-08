@@ -1,0 +1,23 @@
+importPackage(dw.system);
+importPackage(dw.value);
+importPackage(dw.util);
+
+function modifyGETResponse(paymentMethodResultResponse : PaymentMethodResult) {
+	if (request.clientId === "dw.csc") {
+        var applicablePaymentMethods = [];
+        for (var index in paymentMethodResultResponse.applicablePaymentMethods) {
+            var paymentMethod = paymentMethodResultResponse.applicablePaymentMethods[index];
+            if (paymentMethod.id === 'AdyenComponent') {
+                Logger.info("{0} is CSC payment", paymentMethod.id);
+                applicablePaymentMethods.push(paymentMethod);
+            }
+        }
+        paymentMethodResultResponse.applicablePaymentMethods = applicablePaymentMethods;
+    }
+    return new Status(Status.OK);
+}
+
+module.exports = {
+    modifyGETResponse : modifyGETResponse
+};
+    

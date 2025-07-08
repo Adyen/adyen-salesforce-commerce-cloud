@@ -1,0 +1,142 @@
+importPackage( dw.system );
+importPackage( dw.customer );
+importPackage( dw.order );
+importPackage( dw.value );
+importPackage(dw.util);
+
+
+function beforePutBillingAddress(basket : Basket , billTo : OrderAddress )
+{
+	updateCurrency(basket);
+	updateShippingMethod(basket);
+	
+	return new Status( Status.OK );  
+}
+
+function afterPutCustomer(basket : Basket, customerInfo : CustomerInfo) {
+	var customer : Customer = basket.getCustomer();
+	
+	if(customer.getAddressBook()){
+		var cAddress : CustomerAddress = customer.getAddressBook().getPreferredAddress();
+		
+		setBillingAddress(basket, cAddress);
+		setShippingAddress(basket, cAddress);
+	}
+		
+	updateCurrency(basket);
+	
+	updateShippingMethod(basket);
+	
+	return new Status( Status.OK );  
+}
+
+module.exports = {
+		beforePutBillingAddress : beforePutBillingAddress,
+        afterPutCustomer : afterPutCustomer,
+    };
+
+function updateCurrency(basket : Basket) {
+	
+	var billTo : OrderAddress = basket.getBillingAddress();
+	
+	if(billTo){
+		var countryCode:String = billTo.countryCode;
+		
+		if (countryCode == 'DE'){
+	       var newCurrency : Currency = Currency.getCurrency('EUR');
+	       session.setCurrency( newCurrency );
+	    }
+	    else{
+	    	var newCurrency : Currency = Currency.getCurrency('USD');
+	       session.setCurrency( newCurrency );
+	    }
+	    basket.updateCurrency();
+	}
+}
+
+
+function setBillingAddress(basket : Basket, cAddress : CustomerAddress) {
+		
+	if (cAddress){
+		var bAddress : OrderAddress = basket.createBillingAddress();
+
+		bAddress.address1 = cAddress.address1;
+		bAddress.address2 = cAddress.address2;
+		bAddress.city = cAddress.city;
+		bAddress.companyName = cAddress.companyName;
+		bAddress.countryCode = cAddress.countryCode;
+		bAddress.firstName = cAddress.firstName;
+		bAddress.jobTitle = cAddress.jobTitle;
+		bAddress.lastName = cAddress.lastName;
+		bAddress.phone = cAddress.phone;
+		bAddress.postalCode = cAddress.postalCode;
+		bAddress.postBox = cAddress.postBox;
+		bAddress.salutation = cAddress.salutation;
+		bAddress.secondName = cAddress.secondName;
+		bAddress.stateCode = cAddress.stateCode;
+		bAddress.suffix = cAddress.suffix;
+		bAddress.suite = cAddress.suite;
+		bAddress.title = cAddress.title;
+		//map custom properties here
+	}
+
+}
+
+function setShippingAddress(basket : Basket, cAddress : CustomerAddress) {
+	
+	if (cAddress){
+		var shipment : Shipment = basket.getDefaultShipment();
+		var sAddress : OrderAddress = shipment.createShippingAddress();
+		
+		sAddress.address1 = cAddress.address1;
+		sAddress.address2 = cAddress.address2;
+		sAddress.city = cAddress.city;
+		sAddress.companyName = cAddress.companyName;
+		sAddress.countryCode = cAddress.countryCode;
+		sAddress.firstName = cAddress.firstName;
+		sAddress.jobTitle = cAddress.jobTitle;
+		sAddress.lastName = cAddress.lastName;
+		sAddress.phone = cAddress.phone;
+		sAddress.postalCode = cAddress.postalCode;
+		sAddress.postBox = cAddress.postBox;
+		sAddress.salutation = cAddress.salutation;
+		sAddress.secondName = cAddress.secondName;
+		sAddress.stateCode = cAddress.stateCode;
+		sAddress.suffix = cAddress.suffix;
+		sAddress.suite = cAddress.suite;
+		sAddress.title = cAddress.title;
+		//map custom properties here
+		
+	}
+
+}
+
+function updateShippingMethod(basket : Basket) {
+	
+	var shipment : Shipment = basket.getDefaultShipment();
+	
+	if(shipment.getShippingMethod()){
+		return;
+	}
+	
+	var shipmentShippingModel : ShipmentShippingModel = ShippingMgr.getShipmentShippingModel(shipment);
+	var applicableShippingMethods = shipmentShippingModel.getApplicableShippingMethods();
+	
+	Logger.info("=====================================================================================");
+	Logger.info("defaultShippingMethod {0}", applicableShippingMethods.length);
+	
+	for (var sm in applicableShippingMethods) {
+		
+		var shippingMethod = applicableShippingMethods[sm];
+  		Logger.info("am shipping method ID {0}, default? - {1}", shippingMethod.ID, shippingMethod.defaultMethod);
+
+  		if(shippingMethod.defaultMethod){
+  			Logger.info("identified defaultShippingMethod {0}", shippingMethod.ID);
+  			shipment.setShippingMethod(shippingMethod);
+  			Logger.info("set defaultShippingMethod {0} successfully", shippingMethod.ID);
+  			break;
+  		}
+  	}
+}
+
+    
