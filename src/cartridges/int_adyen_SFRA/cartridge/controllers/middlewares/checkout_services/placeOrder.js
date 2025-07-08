@@ -218,10 +218,6 @@ function placeOrder(req, res, next) {
         });
     }
 
-    if (order.getCustomerEmail()) {
-        COHelpers.sendConfirmationEmail(order, req.locale.id);
-    }
-
     clearForms.clearForms();
     if (mainPaymentInstrument) {
         clearForms.clearPaymentTransactionData(mainPaymentInstrument);
