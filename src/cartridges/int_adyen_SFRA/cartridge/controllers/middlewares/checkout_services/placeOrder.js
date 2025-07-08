@@ -118,11 +118,10 @@ function placeOrder(req, res, next) {
     // Creates a new order.
     let order;
     if (giftCardsAdded){
-        const orderNo = currentBasket.custom.adyenGiftCardsOrderNo;
-        order = OrderMgr.createOrder(currentBasket, orderNo);
-    }
-    else{
-        order = COHelpers.createOrder(currentBasket);
+      const orderNo = currentBasket.custom.adyenGiftCardsOrderNo;
+      order = OrderMgr.createOrder(currentBasket, orderNo);
+    } else {
+      order = COHelpers.createOrder(currentBasket);
     }
     
     if (!order) {

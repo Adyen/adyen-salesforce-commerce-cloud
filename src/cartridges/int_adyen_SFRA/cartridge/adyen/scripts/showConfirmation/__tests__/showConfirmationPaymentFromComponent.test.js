@@ -8,12 +8,17 @@ beforeEach(() => {
   showConfirmationPaymentFromComponent =
     adyen.showConfirmationPaymentFromComponent;
   jest.clearAllMocks();
-  res = { redirect: jest.fn() };
+  const adyenConfigs = require('*/cartridge/adyen/utils/adyenConfigs');
+  adyenConfigs.getKlarnaInlineWidgetEnabled = jest.fn().mockReturnValue(false);
+  res = { redirect: jest.fn(), json: jest.fn() };
   req = {
     form: {
       additionalDetailsHidden: JSON.stringify({
         paymentData: 'mocked_paymentData',
         details: 'mocked_details',
+        paymentMethod: {
+          type: 'mocked_type'
+        }
       }),
       result: null
     },
