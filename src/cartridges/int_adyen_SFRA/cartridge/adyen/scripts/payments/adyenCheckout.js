@@ -57,6 +57,16 @@ function doPaymentsCall(order, paymentInstrument, paymentRequest) {
   } else if (transactionAmount !== paymentRequest?.amount?.value) {
     throw new AdyenError('Amounts dont match');
   }
+  // Pre-auth hook
+  const preAuthResult = hooksHelper(
+    'app.payment.pre.auth',
+    'preAuthorization',
+    paymentRequest,
+    preAuthorizationHook.preAuthorization,
+  );
+  if (preAuthResult?.error) {
+    return preAuthResult;
+  }
   const responseObject = AdyenHelper.executeCall(
     constants.SERVICE.PAYMENT,
     paymentRequest,
@@ -262,16 +272,6 @@ function createPaymentRequest(args) {
     paymentInstrument,
     paymentRequest.paymentMethod,
   );
-  // Pre-auth hook
-  const preAuthResult = hooksHelper(
-    'app.payment.pre.auth',
-    'preAuthorization',
-    paymentRequest,
-    preAuthorizationHook.preAuthorization,
-  );
-  if (preAuthResult?.error) {
-    return preAuthResult;
-  }
   return doPaymentsCall(order, paymentInstrument, paymentRequest);
 }
 
