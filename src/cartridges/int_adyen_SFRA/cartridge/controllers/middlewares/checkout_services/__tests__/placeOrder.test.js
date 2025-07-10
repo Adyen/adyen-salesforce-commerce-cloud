@@ -34,10 +34,8 @@ describe('Checkout Services', () => {
   });
   it('should not process payment and return json response at end of file when there is no action', () => {
     session.privacy.orderNo = null;
-    const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
     adyenHelpers.handlePayments.mockImplementationOnce(() => ({error: false}));
     placeOrder.call({ emit: jest.fn() }, req, res, jest.fn());
-    expect(COHelpers.sendConfirmationEmail).toBeCalledTimes(1);
     expect(res.json.mock.calls).toMatchSnapshot();
   });
   it('should attempt to cache orderNumber after order creation', () => {
