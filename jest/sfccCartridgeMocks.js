@@ -111,7 +111,7 @@ jest.mock(
 );
 
 jest.mock(
-  '*/cartridge/adyen/webhooks/checkNotificationAuth',
+  '*/cartridge/checkNotificationAuth',
   () => ({
     check: jest.fn(() => true),
     validateHmacSignature: jest.fn(() => true),
@@ -120,7 +120,7 @@ jest.mock(
 );
 
 jest.mock(
-  '*/cartridge/adyen/webhooks/handleNotify',
+  '*/cartridge/handleNotify',
   () => ({
     notify: jest.fn(() => ({ success: true })),
   }),

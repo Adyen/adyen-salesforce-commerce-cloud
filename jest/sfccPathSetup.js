@@ -37,9 +37,9 @@ jest.mock(
 );
 
 jest.mock(
-  '*/cartridge/adyen/webhooks/notify',
+  '*/cartridge/notify',
   () =>
-    require('../src/cartridges/int_adyen_SFRA/cartridge/adyen/webhooks/notify'),
+    require('../src/cartridges/int_adyen_webhooks/cartridge/notify'),
   { virtual: true },
 );
 
