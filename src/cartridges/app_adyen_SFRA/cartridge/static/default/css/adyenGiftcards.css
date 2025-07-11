@@ -116,8 +116,10 @@
     text-align: center;
 }
 
-.gift-cards-container-cancel a {
-    cursor: pointer;
+.gift-cards-container-cancel button {
+    border: none;
+    background: transparent;
+    color: #00a1e0;
 }
 
 .gift-cards-container {
