@@ -334,7 +334,6 @@ class GooglePay {
     gatewayMerchantId: window.merchantAccount,
     configuration: this.config,
     callbackIntents: ['SHIPPING_ADDRESS', 'SHIPPING_OPTION'],
-    amount: JSON.parse(window.basketAmount),
     onAuthorized: this.onAuthorized,
     onSubmit: () => {},
     paymentDataCallbacks: {

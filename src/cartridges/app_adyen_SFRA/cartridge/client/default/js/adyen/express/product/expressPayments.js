@@ -22,11 +22,6 @@ function getProductForm(product) {
   return $productForm;
 }
 
-function getValueForCurrency(amount, currency) {
-  const value = Math.round(amount * 10 ** window.fractionDigits);
-  return { value, currency };
-}
-
 function getPaymentMethodConfig(adyenPaymentMethods, paymentMethodType) {
   return adyenPaymentMethods?.paymentMethods.find(
     (pm) => paymentMethodType.indexOf(pm.type) > -1,
@@ -113,10 +108,6 @@ function renderExpressPaymentContainer() {
       product.available &&
       paymentMethodsResponse?.pdpExpressMethods?.length
     ) {
-      const { price, selectedQuantity } = product;
-      const { value, currency } = price.sales;
-      const amount = getValueForCurrency(value * selectedQuantity, currency);
-      window.basketAmount = JSON.stringify(amount);
       const expressPaymentButtons = getExpressPaymentButtons(
         paymentMethodsResponse,
         product,
