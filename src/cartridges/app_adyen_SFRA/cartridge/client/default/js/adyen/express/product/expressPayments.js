@@ -35,7 +35,7 @@ function renderApplePayButton() {
         AdyenPaymentMethods,
         applicationInfo,
         adyenTranslations,
-        amount,
+        amount: { currency },
       } = {},
       button,
     } = response;
@@ -46,12 +46,13 @@ function renderApplePayButton() {
     if (!applePayConfig) {
       return;
     }
+    const initialAmount = { value: 0, currency };
     const applePay = new ApplePay(
       applePayConfig,
       applicationInfo,
       adyenTranslations,
       true,
-      amount,
+      initialAmount,
     );
     const applePayComponent = await applePay.getComponent();
     applePayComponent.mount(button);
@@ -65,7 +66,7 @@ function renderGooglePayButton() {
         AdyenPaymentMethods,
         applicationInfo,
         adyenTranslations,
-        amount,
+        amount: { currency },
       } = {},
       button,
     } = response;
@@ -76,12 +77,13 @@ function renderGooglePayButton() {
     if (!googlePayConfig) {
       return;
     }
+    const initialAmount = { value: 0, currency };
     const googlePay = new GooglePay(
       googlePayConfig,
       applicationInfo,
       adyenTranslations,
       true,
-      amount,
+      initialAmount,
     );
     const googlePayComponent = await googlePay.getComponent();
     googlePayComponent.mount(button);
