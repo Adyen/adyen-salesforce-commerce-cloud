@@ -46,20 +46,6 @@ const constants = require('*/cartridge/adyen/config/constants');
 const adyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 
-const eventHandlers = {
-  AUTHORISATION: require('./eventHandlers/AUTHORISATION'),
-  CANCELLATION: require('./eventHandlers/CANCELLATION'),
-  CANCEL_OR_REFUND: require('./eventHandlers/CANCEL_OR_REFUND'),
-  DONATION: require('./eventHandlers/DONATION'),
-  REFUND: require('./eventHandlers/REFUND'),
-  CAPTURE_FAILED: require('./eventHandlers/CAPTURE_FAILED'),
-  ORDER_OPENED: require('./eventHandlers/ORDER_OPENED'),
-  ORDER_CLOSED: require('./eventHandlers/ORDER_CLOSED'),
-  OFFER_CLOSED: require('./eventHandlers/OFFER_CLOSED'),
-  PENDING: require('./eventHandlers/PENDING'),
-  CAPTURE: require('./eventHandlers/CAPTURE'),
-};
-
 function placeOrder(order) {
   const fraudDetectionStatus = { status: 'success' };
   // Only created orders can be placed
@@ -134,7 +120,7 @@ function handle(customObj) {
     ).value;
     // TODO: This block would be used later to handle all the events which we have a handler
     // If no handler exists we will fallback into default and print the info log
-    const handlerModule = eventHandlers[customObj.custom.eventCode];
+    const handlerModule = require(`./eventHandlers/${customObj.custom.eventCode}`);
     if (handlerModule && typeof handlerModule.handle === 'function') {
       handlerModule.handle({ order, customObj, result });
     }
