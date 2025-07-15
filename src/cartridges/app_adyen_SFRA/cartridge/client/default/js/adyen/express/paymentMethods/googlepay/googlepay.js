@@ -316,30 +316,37 @@ class GooglePay {
     });
   };
 
-  getConfig = () => ({
-    showPayButton: this.showPayButton,
-    isExpress: this.isExpress,
-    buttonType: 'buy',
-    emailRequired: true,
-    shippingAddressRequired: true,
-    shippingOptionRequired: true,
-    shippingAddressParameters: {
-      phoneNumberRequired: true,
-    },
-    billingAddressRequired: true,
-    billingAddressParameters: {
-      format: 'FULL',
-      phoneNumberRequired: true,
-    },
-    gatewayMerchantId: window.merchantAccount,
-    configuration: this.config,
-    callbackIntents: ['SHIPPING_ADDRESS', 'SHIPPING_OPTION'],
-    onAuthorized: this.onAuthorized,
-    onSubmit: () => {},
-    paymentDataCallbacks: {
-      onPaymentDataChanged: this.onPaymentDataChanged,
-    },
-  });
+  getConfig = () => {
+    const config = {
+      showPayButton: this.showPayButton,
+      isExpress: this.isExpress,
+      buttonType: 'buy',
+      emailRequired: true,
+      shippingAddressRequired: true,
+      shippingOptionRequired: true,
+      shippingAddressParameters: {
+        phoneNumberRequired: true,
+      },
+      billingAddressRequired: true,
+      billingAddressParameters: {
+        format: 'FULL',
+        phoneNumberRequired: true,
+      },
+      gatewayMerchantId: window.merchantAccount,
+      configuration: this.config,
+      callbackIntents: ['SHIPPING_ADDRESS', 'SHIPPING_OPTION'],
+      onAuthorized: this.onAuthorized,
+      onSubmit: () => {},
+      paymentDataCallbacks: {
+        onPaymentDataChanged: this.onPaymentDataChanged,
+      },
+    };
+    const amount = window.basketAmount ? JSON.parse(window.basketAmount) : null;
+    if (amount) {
+      config.amount = amount;
+    }
+    return config;
+  };
 
   getComponent = async () => {
     const checkout = await initializeCheckout(

@@ -272,10 +272,9 @@ class ApplePay {
   };
 
   getConfig() {
-    return {
+    const config = {
       configuration: this.config,
       showPayButton: this.showPayButton,
-      amount: this.amount,
       isExpress: this.isExpress,
       requiredShippingContactFields: ['postalAddress', 'email', 'phone'],
       requiredBillingContactFields: ['postalAddress', 'phone'],
@@ -285,6 +284,10 @@ class ApplePay {
       onShippingMethodSelected: this.onShippingMethodSelected,
       onShippingContactSelected: this.onShippingContactSelected,
     };
+    if (this.amount) {
+      config.amount = this.amount;
+    }
+    return config;
   }
 
   async getComponent() {
