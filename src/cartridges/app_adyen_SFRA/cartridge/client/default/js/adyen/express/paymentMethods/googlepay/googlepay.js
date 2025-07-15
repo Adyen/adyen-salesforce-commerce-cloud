@@ -9,7 +9,13 @@ const { initializeCheckout } = require('../../initializeCheckout');
 const { createTemporaryBasket } = require('../../../commons');
 
 class GooglePay {
-  constructor(config, applicationInfo, adyenTranslations, isExpressPdp) {
+  constructor(
+    config,
+    applicationInfo,
+    adyenTranslations,
+    isExpressPdp,
+    initialAmount,
+  ) {
     const {
       basketAmount,
       showConfirmationAction,
@@ -19,7 +25,7 @@ class GooglePay {
     } = window;
     this.store = store;
     this.helpers = helpers;
-    this.amount = JSON.parse(basketAmount);
+    this.amount = initialAmount || JSON.parse(basketAmount);
     this.showPayButton = true;
     this.isExpress = true;
     this.isExpressPdp = isExpressPdp;
@@ -316,37 +322,31 @@ class GooglePay {
     });
   };
 
-  getConfig = () => {
-    const config = {
-      showPayButton: this.showPayButton,
-      isExpress: this.isExpress,
-      buttonType: 'buy',
-      emailRequired: true,
-      shippingAddressRequired: true,
-      shippingOptionRequired: true,
-      shippingAddressParameters: {
-        phoneNumberRequired: true,
-      },
-      billingAddressRequired: true,
-      billingAddressParameters: {
-        format: 'FULL',
-        phoneNumberRequired: true,
-      },
-      gatewayMerchantId: window.merchantAccount,
-      configuration: this.config,
-      callbackIntents: ['SHIPPING_ADDRESS', 'SHIPPING_OPTION'],
-      onAuthorized: this.onAuthorized,
-      onSubmit: () => {},
-      paymentDataCallbacks: {
-        onPaymentDataChanged: this.onPaymentDataChanged,
-      },
-    };
-    const amount = window.basketAmount ? JSON.parse(window.basketAmount) : null;
-    if (amount) {
-      config.amount = amount;
-    }
-    return config;
-  };
+  getConfig = () => ({
+    showPayButton: this.showPayButton,
+    isExpress: this.isExpress,
+    buttonType: 'buy',
+    emailRequired: true,
+    shippingAddressRequired: true,
+    shippingOptionRequired: true,
+    shippingAddressParameters: {
+      phoneNumberRequired: true,
+    },
+    billingAddressRequired: true,
+    billingAddressParameters: {
+      format: 'FULL',
+      phoneNumberRequired: true,
+    },
+    gatewayMerchantId: window.merchantAccount,
+    configuration: this.config,
+    callbackIntents: ['SHIPPING_ADDRESS', 'SHIPPING_OPTION'],
+    amount: this.amount,
+    onAuthorized: this.onAuthorized,
+    onSubmit: () => {},
+    paymentDataCallbacks: {
+      onPaymentDataChanged: this.onPaymentDataChanged,
+    },
+  });
 
   getComponent = async () => {
     const checkout = await initializeCheckout(

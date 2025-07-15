@@ -6,7 +6,13 @@ const { initializeCheckout } = require('../../initializeCheckout');
 const { createTemporaryBasket } = require('../../../commons');
 
 class ApplePay {
-  constructor(config, applicationInfo, adyenTranslations, isExpressPdp) {
+  constructor(
+    config,
+    applicationInfo,
+    adyenTranslations,
+    isExpressPdp,
+    initialAmount,
+  ) {
     const {
       basketAmount,
       showConfirmationAction,
@@ -16,7 +22,7 @@ class ApplePay {
     } = window;
     this.store = store;
     this.helpers = helpers;
-    this.amount = JSON.parse(basketAmount);
+    this.amount = initialAmount || JSON.parse(basketAmount);
     this.showPayButton = true;
     this.isExpress = true;
     this.isExpressPdp = isExpressPdp;
@@ -272,9 +278,10 @@ class ApplePay {
   };
 
   getConfig() {
-    const config = {
+    return {
       configuration: this.config,
       showPayButton: this.showPayButton,
+      amount: this.amount,
       isExpress: this.isExpress,
       requiredShippingContactFields: ['postalAddress', 'email', 'phone'],
       requiredBillingContactFields: ['postalAddress', 'phone'],
@@ -284,10 +291,6 @@ class ApplePay {
       onShippingMethodSelected: this.onShippingMethodSelected,
       onShippingContactSelected: this.onShippingContactSelected,
     };
-    if (this.amount) {
-      config.amount = this.amount;
-    }
-    return config;
   }
 
   async getComponent() {
