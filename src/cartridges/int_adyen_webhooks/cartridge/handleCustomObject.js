@@ -46,20 +46,6 @@ const constants = require('*/cartridge/adyen/config/constants');
 const adyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 
-const eventHandlers = {
-  AUTHORISATION: require('./eventHandlers/AUTHORISATION'),
-  CANCELLATION: require('./eventHandlers/CANCELLATION'),
-  CANCEL_OR_REFUND: require('./eventHandlers/CANCEL_OR_REFUND'),
-  DONATION: require('./eventHandlers/DONATION'),
-  REFUND: require('./eventHandlers/REFUND'),
-  CAPTURE_FAILED: require('./eventHandlers/CAPTURE_FAILED'),
-  ORDER_OPENED: require('./eventHandlers/ORDER_OPENED'),
-  ORDER_CLOSED: require('./eventHandlers/ORDER_CLOSED'),
-  OFFER_CLOSED: require('./eventHandlers/OFFER_CLOSED'),
-  PENDING: require('./eventHandlers/PENDING'),
-  CAPTURE: require('./eventHandlers/CAPTURE'),
-};
-
 function placeOrder(order) {
   const fraudDetectionStatus = { status: 'success' };
   // Only created orders can be placed
