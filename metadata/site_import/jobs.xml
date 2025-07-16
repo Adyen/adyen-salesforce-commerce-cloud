@@ -90,4 +90,33 @@
 	    </run-recurring>
 	</triggers>
     </job>
+
+    <job job-id="ProcessSiteImport" priority="0">
+        <description/>
+        <parameters/>
+        <split sequential="true">
+            <flow>
+                <context site-id="RefArch"/>
+                <template-ref template-id="template_48"/>
+            </flow>
+            <flow-template template-id="template_48">
+                <step step-id="Process" type="ExecuteScriptModule" enforce-restart="false">
+                    <description/>
+                    <parameters>
+                        <parameter name="ExecuteScriptModule.Module">int_adyen_SFRA/cartridge/adyen/analytics/job/configurationTimeJob.js</parameter>
+                        <parameter name="ExecuteScriptModule.FunctionName">execute</parameter>
+                        <parameter name="ExecuteScriptModule.Transactional">false</parameter>
+                        <parameter name="ExecuteScriptModule.TimeoutInSeconds">3600</parameter>
+                    </parameters>
+                    <rules />
+                </step>
+            </flow-template>
+        </split>
+        <triggers>
+            <run-once enabled="true">
+                <date>2018-03-01Z</date>
+                <time>18:55:46.000Z</time>
+            </run-once>
+        </triggers>
+    </job>
 </jobs>
