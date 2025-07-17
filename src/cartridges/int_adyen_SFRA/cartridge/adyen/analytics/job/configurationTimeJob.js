@@ -18,13 +18,12 @@ function hasServiceCredential(servicesXmlFile, serviceIdToFind) {
 
   let fileReader = null;
   let xmlStreamReader = null;
-  let isFound = false;
 
   try {
     fileReader = new FileReader(servicesXmlFile, 'UTF-8');
     xmlStreamReader = new XMLStreamReader(fileReader);
 
-    while (xmlStreamReader.hasNext() && !isFound) {
+    while (xmlStreamReader.hasNext()) {
       if (xmlStreamReader.next() === XMLStreamConstants.START_ELEMENT) {
         const elementName = xmlStreamReader.getLocalName();
 
@@ -35,10 +34,7 @@ function hasServiceCredential(servicesXmlFile, serviceIdToFind) {
           );
 
           if (currentServiceId === serviceIdToFind) {
-            log.info(
-              `SUCCESS: Found service credential with ID: '${serviceIdToFind}'`,
-            );
-            isFound = true;
+            return true;
           }
         }
       }
@@ -57,21 +53,10 @@ function hasServiceCredential(servicesXmlFile, serviceIdToFind) {
     }
   }
 
-  if (!isFound) {
-    log.warn(
-      `INFO: Service credential '${serviceIdToFind}' was not found in the file.`,
-    );
-  }
-
-  return isFound;
+  return false;
 }
 
-// eslint-disable-next-line complexity
 function deleteDirectoryRecursive(directory) {
-  if (!directory || !directory.isDirectory()) {
-    return;
-  }
-
   const files = directory.listFiles();
   if (files.empty) {
     directory.remove();
@@ -92,7 +77,6 @@ function deleteDirectoryRecursive(directory) {
 
 // eslint-disable-next-line complexity
 function execute() {
-  const processLimit = -1;
   const targetDir = new File('IMPEX/src/instance');
 
   if (!targetDir.exists() || !targetDir.isDirectory()) {
@@ -105,20 +89,14 @@ function execute() {
 
   const files = targetDir.listFiles();
   const fileIterator = files.iterator();
-  let processedCount = 0;
 
   if (files.empty) {
     return new Status(Status.OK, 'NO_FILES', 'No files found to process.');
   }
 
-  while (
-    fileIterator.hasNext() &&
-    (processLimit === -1 || processedCount < processLimit)
-  ) {
+  while (fileIterator.hasNext()) {
     const currentFile = fileIterator.next();
     if (currentFile.isFile()) {
-      const reader = null;
-      const lineStream = null;
       try {
         if (currentFile.getName().toLowerCase().endsWith('.zip')) {
           const tempUnzipDir = new File(
@@ -132,53 +110,36 @@ function execute() {
 
           const extractedFiles = tempUnzipDir.listFiles();
           const extractedFileIterator = extractedFiles.iterator();
+          let isAdyenDefined = false;
           while (extractedFileIterator.hasNext()) {
             const extractedFile = extractedFileIterator.next();
             if (!extractedFile.isFile()) {
               const servicesFile = new File(
                 `${tempUnzipDir.getFullPath()}/${extractedFile.getName()}/services.xml`,
               );
-              if (servicesFile.exists()) {
-                const isAdyenDefined = hasServiceCredential(
-                  servicesFile,
-                  'AdyenPayment',
-                );
-                log.info(`AdyenPayment is defined: ${isAdyenDefined}`);
-              }
+              isAdyenDefined = hasServiceCredential(
+                servicesFile,
+                'AdyenPayment',
+              );
+              log.info(`AdyenPayment is defined: ${isAdyenDefined}`);
             }
           }
           deleteDirectoryRecursive(tempUnzipDir);
+          if (isAdyenDefined) {
+            break;
+          }
         }
-        processedCount++;
       } catch (e) {
         log.error(
           `Error processing file "${currentFile.getName()}": ${e.message}\n${
             e.stack
           }`,
         );
-        // Decide here if you want to stop the job or continue with the next file
-        // For robust processing, you might want to move the failed file to an "error" subdirectory.
-        // For now, we'll just log and continue.
-        // return new Status(Status.ERROR, 'FILE_PROCESS_ERROR', 'Error processing ' + currentFile.getName());
       } finally {
         // Ensure streams/readers are closed if opened directly within the loop
-        if (lineStream) {
-          lineStream.close();
-        }
-        if (reader) {
-          reader.close();
-        }
       }
     }
-
-    // Optional: Move processed file to an archive directory
-    // var archiveDir = new File(targetDir.getParent(), targetDir.getName() + '/archive');
-    // if (!archiveDir.exists()) archiveDir.mkdirs();
-    // currentFile.renameTo(new File(archiveDir, currentFile.getName()));
-    // log.info('  Moved to archive: ' + new File(archiveDir, currentFile.getName()).getFullPath());
   }
-
-  log.info(`Successfully processed ${processedCount} files.`);
   return new Status(
     Status.OK,
     'SUCCESS',
