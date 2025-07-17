@@ -118,6 +118,12 @@ function handle(customObj) {
     const totalAmount = adyenHelper.getCurrencyValueForApi(
       order.getTotalGrossPrice(),
     ).value;
+    // TODO: This block would be used later to handle all the events which we have a handler
+    // If no handler exists we will fallback into default and print the info log
+    const handlerModule = require(`./eventHandlers/${customObj.custom.eventCode}`);
+    if (handlerModule && typeof handlerModule.handle === 'function') {
+      handlerModule.handle({ order, customObj, result });
+    }
     switch (customObj.custom.eventCode) {
       case 'AUTHORISATION':
         // Check if one of the adyen payment methods was used during payment
