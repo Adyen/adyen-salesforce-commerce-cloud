@@ -2,10 +2,8 @@ const File = require('dw/io/File');
 const FileReader = require('dw/io/FileReader');
 const XMLStreamReader = require('dw/io/XMLStreamReader');
 const XMLStreamConstants = require('dw/io/XMLStreamConstants');
-const Logger = require('dw/system/Logger');
 const Status = require('dw/system/Status');
-
-const log = Logger.getLogger('ImpexFileProcessor', 'FileIterator');
+const AdyenLogs = require('../../logs/adyenCustomLogs');
 
 function searchForServiceCredential(
   xmlStreamReader,
@@ -31,7 +29,7 @@ function searchForServiceCredential(
 
 function hasServiceCredential(servicesXmlFile, serviceIdToFind) {
   if (!servicesXmlFile || !servicesXmlFile.exists() || !serviceIdToFind) {
-    log.error(
+    AdyenLogs.info_log(
       'Invalid input: Please provide a valid file object and a service ID to find.',
     );
     return false;
@@ -49,10 +47,8 @@ function hasServiceCredential(servicesXmlFile, serviceIdToFind) {
       servicesXmlFile,
       serviceIdToFind,
     );
-  } catch (e) {
-    log.error(
-      `Error parsing services.xml file at ${servicesXmlFile.getFullPath()}: ${e.toString()}`,
-    );
+  } catch (error) {
+    AdyenLogs.error_log('Error parsing services.xml', error);
     isFound = false;
   } finally {
     xmlStreamReader?.close();
@@ -127,7 +123,7 @@ function execute() {
                 servicesFile,
                 'AdyenPayment',
               );
-              log.info(`AdyenPayment is defined: ${isAdyenDefined}`);
+              AdyenLogs.info_log(`AdyenPayment is defined: ${isAdyenDefined}`);
             }
           }
           deleteDirectoryRecursive(tempUnzipDir);
@@ -135,12 +131,8 @@ function execute() {
             break;
           }
         }
-      } catch (e) {
-        log.error(
-          `Error processing file "${currentFile.getName()}": ${e.message}\n${
-            e.stack
-          }`,
-        );
+      } catch (error) {
+        AdyenLogs.error_log('Error processing zip file', error);
       } finally {
         // Ensure streams/readers are closed if opened directly within the loop
       }
