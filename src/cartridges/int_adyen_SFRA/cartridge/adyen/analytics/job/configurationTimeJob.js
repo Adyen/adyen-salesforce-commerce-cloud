@@ -132,7 +132,7 @@ function execute() {
           }
         }
       } catch (error) {
-        AdyenLogs.error_log('Error processing zip file', error);
+        AdyenLogs.error_log(`Error processing zip file`, error);
       } finally {
         // Ensure streams/readers are closed if opened directly within the loop
       }
