@@ -131,8 +131,9 @@ function execute() {
             break;
           }
         }
-      } catch (error) {
-        AdyenLogs.error_log(`Error processing zip file`, error);
+      } catch (e) {
+        const name = currentFile.getName();
+        AdyenLogs.error_log(`Error processing zip file ${name}`, e);
       } finally {
         // Ensure streams/readers are closed if opened directly within the loop
       }
