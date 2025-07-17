@@ -7,7 +7,28 @@ const Status = require('dw/system/Status');
 
 const log = Logger.getLogger('ImpexFileProcessor', 'FileIterator');
 
-// eslint-disable-next-line complexity
+function searchForServiceCredential(
+  xmlStreamReader,
+  servicesXmlFile,
+  serviceIdToFind,
+) {
+  while (xmlStreamReader.hasNext()) {
+    if (xmlStreamReader.next() === XMLStreamConstants.START_ELEMENT) {
+      const elementName = xmlStreamReader.getLocalName();
+      if (elementName === 'service-credential') {
+        const currentServiceId = xmlStreamReader.getAttributeValue(
+          null,
+          'service-credential-id',
+        );
+        if (currentServiceId === serviceIdToFind) {
+          return true;
+        }
+      }
+    }
+  }
+  return false;
+}
+
 function hasServiceCredential(servicesXmlFile, serviceIdToFind) {
   if (!servicesXmlFile || !servicesXmlFile.exists() || !serviceIdToFind) {
     log.error(
@@ -18,42 +39,27 @@ function hasServiceCredential(servicesXmlFile, serviceIdToFind) {
 
   let fileReader = null;
   let xmlStreamReader = null;
+  let isFound = false;
 
   try {
     fileReader = new FileReader(servicesXmlFile, 'UTF-8');
     xmlStreamReader = new XMLStreamReader(fileReader);
-
-    while (xmlStreamReader.hasNext()) {
-      if (xmlStreamReader.next() === XMLStreamConstants.START_ELEMENT) {
-        const elementName = xmlStreamReader.getLocalName();
-
-        if (elementName === 'service-credential') {
-          const currentServiceId = xmlStreamReader.getAttributeValue(
-            null,
-            'service-credential-id',
-          );
-
-          if (currentServiceId === serviceIdToFind) {
-            return true;
-          }
-        }
-      }
-    }
+    isFound = searchForServiceCredential(
+      xmlStreamReader,
+      servicesXmlFile,
+      serviceIdToFind,
+    );
   } catch (e) {
     log.error(
       `Error parsing services.xml file at ${servicesXmlFile.getFullPath()}: ${e.toString()}`,
     );
-    return false;
+    isFound = false;
   } finally {
-    if (xmlStreamReader) {
-      xmlStreamReader.close();
-    }
-    if (fileReader) {
-      fileReader.close();
-    }
+    xmlStreamReader?.close();
+    fileReader?.close();
   }
 
-  return false;
+  return isFound;
 }
 
 function deleteDirectoryRecursive(directory) {
