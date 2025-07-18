@@ -131,9 +131,6 @@ function execute() {
           }
           deleteDirectoryRecursive(tempUnzipDir);
           if (isAdyenDefined) {
-            AdyenLogs.info_log(
-              `create analytics event ${session.sessionID.slice(0, 200)} ${analyticsConstants.eventSource.CONFIGURATION_TIME}`,
-            );
             analyticsEvent.createAnalyticsEvent(
               session.sessionID.slice(0, 200),
               analyticsConstants.eventSource.CONFIGURATION_TIME,

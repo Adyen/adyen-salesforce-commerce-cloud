@@ -73,22 +73,22 @@
             </flow-template>
         </split>
         <triggers>
-	    <run-recurring enabled="true">
-		<recurrence>
-			<date-from>2024-11-04</date-from>
-			<start-time>00:00:00</start-time>
-			<interval>1m</interval>
-		</recurrence>
-		<rules>
-			<on-exit status="ERROR">
-				<retry>
-					<interval>10m</interval>
-					<max-retries>3</max-retries>
-				</retry>
-			</on-exit>
-		</rules>
-	    </run-recurring>
-	</triggers>
+            <run-recurring enabled="true">
+            <recurrence>
+                <date-from>2024-11-04</date-from>
+                <start-time>00:00:00</start-time>
+                <interval>1m</interval>
+            </recurrence>
+            <rules>
+                <on-exit status="ERROR">
+                    <retry>
+                        <interval>10m</interval>
+                        <max-retries>3</max-retries>
+                    </retry>
+                </on-exit>
+            </rules>
+            </run-recurring>
+        </triggers>
     </job>
 
     <job job-id="ProcessSiteImport" priority="0">
@@ -113,10 +113,21 @@
             </flow-template>
         </split>
         <triggers>
-            <run-once enabled="true">
-                <date>2018-03-01Z</date>
-                <time>18:55:46.000Z</time>
-            </run-once>
+            <run-recurring enabled="true">
+                <recurrence>
+                    <date-from>2025-07-18</date-from>
+                    <start-time>00:00:00</start-time>
+                    <interval>1h</interval>
+                </recurrence>
+                <rules>
+                    <on-exit status="ERROR">
+                        <retry>
+                            <interval>10m</interval>
+                            <max-retries>3</max-retries>
+                        </retry>
+                    </on-exit>
+                </rules>
+            </run-recurring>
         </triggers>
     </job>
 </jobs>
