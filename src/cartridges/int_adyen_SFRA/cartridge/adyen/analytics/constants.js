@@ -18,5 +18,8 @@ module.exports = {
     PROCESSED: 'PROCESSED',
     SKIPPED: 'SKIPPED',
   },
+  eventSource: {
+    CONFIGURATION_TIME: 'Adyen-ConfigurationTime',
+  },
   EVENT_LIMIT: 1000,
 };

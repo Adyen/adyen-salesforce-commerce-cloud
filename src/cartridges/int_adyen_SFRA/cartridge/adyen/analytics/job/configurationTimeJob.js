@@ -3,7 +3,10 @@ const FileReader = require('dw/io/FileReader');
 const XMLStreamReader = require('dw/io/XMLStreamReader');
 const XMLStreamConstants = require('dw/io/XMLStreamConstants');
 const Status = require('dw/system/Status');
-const AdyenLogs = require('../../logs/adyenCustomLogs');
+const analyticsEvent = require('*/cartridge/adyen/analytics/analyticsEvents');
+const analyticsConstants = require('*/cartridge/adyen/analytics/constants');
+const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
+const { AdyenError } = require('*/cartridge/adyen/logs/adyenError');
 
 function searchForServiceCredential(
   xmlStreamReader,
@@ -82,25 +85,23 @@ function execute() {
   const targetDir = new File('IMPEX/src/instance');
 
   if (!targetDir.exists() || !targetDir.isDirectory()) {
-    return new Status(
-      Status.ERROR,
-      'DIR_NOT_FOUND',
+    throw new AdyenError(
       `Target directory ${targetDir.getFullPath()} not found.`,
     );
   }
 
   const files = targetDir.listFiles();
-  const fileIterator = files.iterator();
-
   if (files.empty) {
-    return new Status(Status.OK, 'NO_FILES', 'No files found to process.');
+    throw new AdyenError('No files found to process.');
   }
 
+  const fileIterator = files.iterator();
   while (fileIterator.hasNext()) {
     const currentFile = fileIterator.next();
     if (currentFile.isFile()) {
       try {
-        if (currentFile.getName().toLowerCase().endsWith('.zip')) {
+        const isZipFile = currentFile.getName().toLowerCase().endsWith('.zip');
+        if (isZipFile) {
           const tempUnzipDir = new File(
             `IMPEX/src/instance/${currentFile.getName()}_unzipped_temp`,
           );
@@ -123,19 +124,29 @@ function execute() {
                 servicesFile,
                 'AdyenPayment',
               );
-              AdyenLogs.info_log(`AdyenPayment is defined: ${isAdyenDefined}`);
+              if (isAdyenDefined) {
+                break;
+              }
             }
           }
           deleteDirectoryRecursive(tempUnzipDir);
           if (isAdyenDefined) {
+            AdyenLogs.info_log(
+              `create analytics event ${session.sessionID.slice(0, 200)} ${analyticsConstants.eventSource.CONFIGURATION_TIME}`,
+            );
+            analyticsEvent.createAnalyticsEvent(
+              session.sessionID.slice(0, 200),
+              analyticsConstants.eventSource.CONFIGURATION_TIME,
+              analyticsConstants.eventType.EXPECTED_START,
+              analyticsConstants.eventCode.INFO,
+            );
             break;
           }
         }
       } catch (e) {
         const name = currentFile.getName();
         AdyenLogs.error_log(`Error processing zip file ${name}`, e);
-      } finally {
-        // Ensure streams/readers are closed if opened directly within the loop
+        return new Status(Status.ERROR, 'ERROR', e.message);
       }
     }
   }
