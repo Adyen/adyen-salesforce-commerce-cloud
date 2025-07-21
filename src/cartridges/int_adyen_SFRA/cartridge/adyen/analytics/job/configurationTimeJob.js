@@ -80,21 +80,8 @@ function deleteDirectoryRecursive(directory) {
   directory.remove();
 }
 
-// eslint-disable-next-line complexity
-function execute() {
-  const targetDir = new File('IMPEX/src/instance');
-
-  if (!targetDir.exists() || !targetDir.isDirectory()) {
-    throw new AdyenError(
-      `Target directory ${targetDir.getFullPath()} not found.`,
-    );
-  }
-
-  const files = targetDir.listFiles();
-  if (files.empty) {
-    throw new AdyenError('No files found to process.');
-  }
-
+// eslint-disable-next-line complexity,consistent-return
+function iterateZipFiles(files) {
   const fileIterator = files.iterator();
   while (fileIterator.hasNext()) {
     const currentFile = fileIterator.next();
@@ -147,6 +134,24 @@ function execute() {
       }
     }
   }
+}
+
+function execute() {
+  const targetDir = new File('IMPEX/src/instance');
+
+  if (!targetDir.exists() || !targetDir.isDirectory()) {
+    throw new AdyenError(
+      `Target directory ${targetDir.getFullPath()} not found.`,
+    );
+  }
+
+  const files = targetDir.listFiles();
+  if (files.empty) {
+    throw new AdyenError('No files found to process.');
+  }
+
+  iterateZipFiles(files);
+
   return new Status(
     Status.OK,
     'SUCCESS',
