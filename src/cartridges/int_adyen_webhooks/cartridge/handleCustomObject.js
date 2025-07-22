@@ -162,13 +162,7 @@ function handle(customObj) {
             `Authorization for order ${order.orderNo} was not successful - no update.`,
           );
           // Determine if payment was refused and was used Adyen payment method
-          if (
-            !empty(reasonCode) &&
-            (reasonCode === 'REFUSED' || reasonCode.indexOf('FAILED') > -1) &&
-            isAdyenPayment
-          ) {
-            refusedHpp = true;
-          } else if (order.status.value === Order.ORDER_STATUS_FAILED) {
+          if (order.status.value === Order.ORDER_STATUS_FAILED) {
             order.setConfirmationStatus(Order.CONFIRMATION_STATUS_NOTCONFIRMED);
             order.setPaymentStatus(Order.PAYMENT_STATUS_NOTPAID);
             order.setExportStatus(Order.EXPORT_STATUS_NOTEXPORTED);
