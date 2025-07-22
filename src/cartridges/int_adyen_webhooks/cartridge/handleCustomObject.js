@@ -29,8 +29,6 @@
  * @output Order: dw.order.Order The updated order
  * @output EventCode: String The event code
  * @output SubmitOrder: Boolean Submit order
- * @output RefusedHpp: Boolean Indicates that payment was made with using
- * Adyen method and was refused
  * @output Pending  : Boolean Indicates that payment is in pending status
  * @output SkipOrder  : Boolean Indicates that we should skip order,
  * order creation date > current date
@@ -60,7 +58,7 @@ function execute(args) {
 
   args.EventCode = result.EventCode;
   args.SubmitOrder = result.SubmitOrder;
-  args.RefusedHpp = result.RefusedHpp;
+
   args.Pending = result.Pending;
   args.SkipOrder = result.SkipOrder;
   args.Order = result.Order;
@@ -70,7 +68,7 @@ function execute(args) {
 function handle(customObj) {
   const OrderMgr = require('dw/order/OrderMgr');
   const Transaction = require('dw/system/Transaction');
-  let refusedHpp = false;
+
   let pending = false;
   const result = {};
   result.status = PIPELET_ERROR;
@@ -164,13 +162,7 @@ function handle(customObj) {
             `Authorization for order ${order.orderNo} was not successful - no update.`,
           );
           // Determine if payment was refused and was used Adyen payment method
-          if (
-            !empty(reasonCode) &&
-            (reasonCode === 'REFUSED' || reasonCode.indexOf('FAILED') > -1) &&
-            isAdyenPayment
-          ) {
-            refusedHpp = true;
-          } else if (order.status.value === Order.ORDER_STATUS_FAILED) {
+          if (order.status.value === Order.ORDER_STATUS_FAILED) {
             order.setConfirmationStatus(Order.CONFIRMATION_STATUS_NOTCONFIRMED);
             order.setPaymentStatus(Order.PAYMENT_STATUS_NOTPAID);
             order.setExportStatus(Order.EXPORT_STATUS_NOTEXPORTED);
@@ -266,28 +258,20 @@ function handle(customObj) {
           `Order ${order.orderNo} received unhandled status ${customObj.custom.eventCode}`,
         );
     }
-
-    // If payment was refused and was used Adyen payment method, the fields
-    // are changed when user is redirected back from Adyen HPP
-    if (!refusedHpp) {
       // Add received information to order
-
       /*
         PSP Reference must be persistent.
         Some modification requests (Capture, Cancel) send identificators of the operations,
         we mustn't overwrite the original value by the new ones
       */
-      if (
-        empty(order.custom.Adyen_pspReference) &&
-        !empty(customObj.custom.pspReference)
-      ) {
-        order.custom.Adyen_pspReference = customObj.custom.pspReference;
-      }
-
-      // Add a note with all details
-      order.addNote('Adyen Payment Notification', createLogMessage(customObj));
+    if (
+      empty(order.custom.Adyen_pspReference) &&
+      !empty(customObj.custom.pspReference)
+    ) {
+      order.custom.Adyen_pspReference = customObj.custom.pspReference;
     }
-
+    // Add a note with all details
+    order.addNote('Adyen Payment Notification', createLogMessage(customObj));
     setProcessedCOInfo(customObj);
   } else {
     AdyenLogs.debug_log('Order date > current Date.');
@@ -297,7 +281,6 @@ function handle(customObj) {
   }
 
   result.status = PIPELET_NEXT;
-  result.RefusedHpp = refusedHpp;
   result.Pending = pending;
 
   return result;

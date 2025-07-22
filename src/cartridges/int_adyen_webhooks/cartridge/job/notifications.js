@@ -61,14 +61,11 @@ function processNotifications(/* pdict */) {
       Sometimes order cannot be found in DWRE DB even if it exists there,
       in that case we shouldn't reply to Adyen that all was ok in order to get a new notification
     */
-
     order = handlerResult.Order;
     if (!handlerResult.status || handlerResult.status === PIPELET_ERROR) {
       // Only CREATED orders can be failed
       if (
-        order === null ||
-        order.status.value !== dw.order.Order.ORDER_STATUS_CREATED ||
-        handlerResult.RefusedHpp
+        order.status.value !== dw.order.Order.ORDER_STATUS_CREATED
       ) {
         continue;
       }
