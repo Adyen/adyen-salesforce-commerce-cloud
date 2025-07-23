@@ -138,7 +138,7 @@ function execute() {
   return new Status(
     Status.OK,
     'SUCCESS',
-    `Files in IMPES/src/instance processed.`,
+    `Files in IMPEX/src/instance processed.`,
   );
 }
 
