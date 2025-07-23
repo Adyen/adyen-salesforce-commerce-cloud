@@ -65,10 +65,10 @@ function notify(notificationData) {
     const keyValue = `${
       notificationData.merchantReference
     }-${StringUtils.formatCalendar(calObj, 'yyyyMMddhhmmssSSS')}`;
-    const customObj = CustomObjectMgr.createCustomObject(
-      'adyenNotification',
-      keyValue,
-    );
+    let customObj = CustomObjectMgr.getCustomObject('adyenNotification', keyValue);
+    if (!customObj) {
+      customObj = CustomObjectMgr.createCustomObject('adyenNotification', keyValue);
+    }
     for (const field in notificationData) {
       try {
         customObj.custom[field] = notificationData[field];
