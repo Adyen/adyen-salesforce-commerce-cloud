@@ -127,7 +127,7 @@ function iterateZipFiles(files) {
   }
 }
 
-function execute() {
+function run() {
   try {
     const targetDir = new File('IMPEX/src/instance');
     const files = targetDir.listFiles();
@@ -143,5 +143,5 @@ function execute() {
 }
 
 module.exports = {
-  execute,
+  run,
 };

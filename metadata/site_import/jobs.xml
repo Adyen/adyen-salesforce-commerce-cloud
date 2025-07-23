@@ -30,8 +30,8 @@
                 <step step-id="ProcessSiteImport" type="ExecuteScriptModule" enforce-restart="false">
                     <description/>
                     <parameters>
-                        <parameter name="ExecuteScriptModule.Module">int_adyen_SFRA/cartridge/adyen/analytics/configurationTime.js</parameter>
-                        <parameter name="ExecuteScriptModule.FunctionName">execute</parameter>
+                        <parameter name="ExecuteScriptModule.Module">int_adyen_SFRA/cartridge/adyen/analytics/configuration-time/start.js</parameter>
+                        <parameter name="ExecuteScriptModule.FunctionName">run</parameter>
                         <parameter name="ExecuteScriptModule.Transactional">false</parameter>
                         <parameter name="ExecuteScriptModule.TimeoutInSeconds">3600</parameter>
                     </parameters>
@@ -39,7 +39,7 @@
                 <step step-id="ProcessConfigurationTime" type="ExecuteScriptModule" enforce-restart="false">
                     <description/>
                     <parameters>
-                        <parameter name="ExecuteScriptModule.Module">int_adyen_SFRA/cartridge/adyen/analytics/job/analyticsJob.js</parameter>
+                        <parameter name="ExecuteScriptModule.Module">int_adyen_SFRA/cartridge/adyen/analytics/configuration-time/processEvents.js</parameter>
                         <parameter name="ExecuteScriptModule.FunctionName">processConfigurationTime</parameter>
                         <parameter name="ExecuteScriptModule.Transactional">false</parameter>
                         <parameter name="ExecuteScriptModule.TimeoutInSeconds">3600</parameter>
@@ -53,7 +53,7 @@
                 <step step-id="CleanConfigurationTime" type="ExecuteScriptModule" enforce-restart="false">
                     <description/>
                     <parameters>
-                        <parameter name="ExecuteScriptModule.Module">int_adyen_SFRA/cartridge/adyen/analytics/job/analyticsJob.js</parameter>
+                        <parameter name="ExecuteScriptModule.Module">int_adyen_SFRA/cartridge/adyen/analytics/configuration-time/processEvents.js</parameter>
                         <parameter name="ExecuteScriptModule.FunctionName">clearConfigurationTime</parameter>
                         <parameter name="ExecuteScriptModule.Transactional">false</parameter>
                         <parameter name="ExecuteScriptModule.TimeoutInSeconds">3600</parameter>
