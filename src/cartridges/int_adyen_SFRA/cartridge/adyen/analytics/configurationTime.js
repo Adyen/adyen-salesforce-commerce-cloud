@@ -6,7 +6,6 @@ const Status = require('dw/system/Status');
 const analyticsEvent = require('*/cartridge/adyen/analytics/analyticsEvents');
 const analyticsConstants = require('*/cartridge/adyen/analytics/constants');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
-const { AdyenError } = require('*/cartridge/adyen/logs/adyenError');
 
 function searchForServiceCredential(
   xmlStreamReader,
@@ -80,82 +79,66 @@ function deleteDirectoryRecursive(directory) {
   directory.remove();
 }
 
-// eslint-disable-next-line complexity,consistent-return
+function createConfigEventIfAdyenServiceExist(tempUnzipDir) {
+  const extractedFiles = tempUnzipDir.listFiles();
+  const extractedFileIterator = extractedFiles.iterator();
+  let isAdyenDefined = false;
+  while (extractedFileIterator.hasNext()) {
+    const extractedFile = extractedFileIterator.next();
+    if (!extractedFile.isFile()) {
+      const servicesFile = new File(
+        `${tempUnzipDir.getFullPath()}/${extractedFile.getName()}/services.xml`,
+      );
+      if (hasServiceCredential(servicesFile, 'AdyenPayment')) {
+        isAdyenDefined = true;
+        break;
+      }
+    }
+  }
+  if (isAdyenDefined) {
+    analyticsEvent.createConfigurationTimeEvent(
+      session.sessionID.slice(0, 200),
+      analyticsConstants.eventSource.CONFIGURATION_TIME,
+      analyticsConstants.eventType.EXPECTED_START,
+      analyticsConstants.eventCode.INFO,
+    );
+  }
+}
+
 function iterateZipFiles(files) {
   const fileIterator = files.iterator();
   while (fileIterator.hasNext()) {
     const currentFile = fileIterator.next();
     if (currentFile.isFile()) {
-      try {
-        const isZipFile = currentFile.getName().toLowerCase().endsWith('.zip');
-        if (isZipFile) {
-          const tempUnzipDir = new File(
-            `IMPEX/src/instance/${currentFile.getName()}_unzipped_temp`,
-          );
-          if (tempUnzipDir.exists()) {
-            deleteDirectoryRecursive(tempUnzipDir);
-          }
-          tempUnzipDir.mkdirs();
-          currentFile.unzip(tempUnzipDir);
-
-          const extractedFiles = tempUnzipDir.listFiles();
-          const extractedFileIterator = extractedFiles.iterator();
-          let isAdyenDefined = false;
-          while (extractedFileIterator.hasNext()) {
-            const extractedFile = extractedFileIterator.next();
-            if (!extractedFile.isFile()) {
-              const servicesFile = new File(
-                `${tempUnzipDir.getFullPath()}/${extractedFile.getName()}/services.xml`,
-              );
-              isAdyenDefined = hasServiceCredential(
-                servicesFile,
-                'AdyenPayment',
-              );
-              if (isAdyenDefined) {
-                break;
-              }
-            }
-          }
+      const isZipFile = currentFile.getName().toLowerCase().endsWith('.zip');
+      if (isZipFile) {
+        const tempUnzipDir = new File(
+          `IMPEX/src/instance/${currentFile.getName()}_unzipped_temp`,
+        );
+        if (tempUnzipDir.exists()) {
           deleteDirectoryRecursive(tempUnzipDir);
-          if (isAdyenDefined) {
-            analyticsEvent.createAnalyticsEvent(
-              session.sessionID.slice(0, 200),
-              analyticsConstants.eventSource.CONFIGURATION_TIME,
-              analyticsConstants.eventType.EXPECTED_START,
-              analyticsConstants.eventCode.INFO,
-            );
-            break;
-          }
         }
-      } catch (e) {
-        const name = currentFile.getName();
-        AdyenLogs.error_log(`Error processing zip file ${name}`, e);
-        return new Status(Status.ERROR, 'ERROR', e.message);
+        tempUnzipDir.mkdirs();
+        currentFile.unzip(tempUnzipDir);
+        createConfigEventIfAdyenServiceExist(tempUnzipDir);
+        deleteDirectoryRecursive(tempUnzipDir);
       }
     }
   }
 }
 
 function execute() {
-  const targetDir = new File('IMPEX/src/instance');
-
-  if (!targetDir.exists() || !targetDir.isDirectory()) {
-    throw new AdyenError(
-      `Target directory ${targetDir.getFullPath()} not found.`,
-    );
+  try {
+    const targetDir = new File('IMPEX/src/instance');
+    const files = targetDir.listFiles();
+    iterateZipFiles(files);
+  } catch (err) {
+    AdyenLogs.error_log(`Error processing targetDir`, err);
   }
-
-  const files = targetDir.listFiles();
-  if (files.empty) {
-    throw new AdyenError('No files found to process.');
-  }
-
-  iterateZipFiles(files);
-
   return new Status(
     Status.OK,
     'SUCCESS',
-    `Files in ${targetDir.getFullPath()} processed.`,
+    `Files in IMPES/src/instance processed.`,
   );
 }
 

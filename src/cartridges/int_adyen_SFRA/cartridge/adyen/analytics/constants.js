@@ -1,5 +1,6 @@
 module.exports = {
   analyticsEventObjectId: 'AdyenAnalyticsEvents',
+  configurationTimeEventObjectId: 'AdyenConfigurationTimeEvents',
   pluginType: 'salesforceCommerceCloud',
   errorType: 'Plugin',
   eventType: {

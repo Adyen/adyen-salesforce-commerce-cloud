@@ -27,6 +27,15 @@
                         <parameter name="ExecuteScriptModule.TimeoutInSeconds">3600</parameter>
                     </parameters>
                 </step>
+                <step step-id="ProcessSiteImport" type="ExecuteScriptModule" enforce-restart="false">
+                    <description/>
+                    <parameters>
+                        <parameter name="ExecuteScriptModule.Module">int_adyen_SFRA/cartridge/adyen/analytics/configurationTime.js</parameter>
+                        <parameter name="ExecuteScriptModule.FunctionName">execute</parameter>
+                        <parameter name="ExecuteScriptModule.Transactional">false</parameter>
+                        <parameter name="ExecuteScriptModule.TimeoutInSeconds">3600</parameter>
+                    </parameters>
+                </step>
             </flow-template>
         </split>
         <rules/>
@@ -87,46 +96,6 @@
                     </retry>
                 </on-exit>
             </rules>
-            </run-recurring>
-        </triggers>
-    </job>
-
-    <job job-id="ProcessSiteImport" priority="0">
-        <description/>
-        <parameters/>
-        <split sequential="true">
-            <flow>
-                <context site-id="RefArch"/>
-                <template-ref template-id="template_48"/>
-            </flow>
-            <flow-template template-id="template_48">
-                <step step-id="Process" type="ExecuteScriptModule" enforce-restart="false">
-                    <description/>
-                    <parameters>
-                        <parameter name="ExecuteScriptModule.Module">int_adyen_SFRA/cartridge/adyen/analytics/job/configurationTimeJob.js</parameter>
-                        <parameter name="ExecuteScriptModule.FunctionName">execute</parameter>
-                        <parameter name="ExecuteScriptModule.Transactional">false</parameter>
-                        <parameter name="ExecuteScriptModule.TimeoutInSeconds">3600</parameter>
-                    </parameters>
-                    <rules />
-                </step>
-            </flow-template>
-        </split>
-        <triggers>
-            <run-recurring enabled="true">
-                <recurrence>
-                    <date-from>2025-07-18</date-from>
-                    <start-time>00:00:00</start-time>
-                    <interval>1h</interval>
-                </recurrence>
-                <rules>
-                    <on-exit status="ERROR">
-                        <retry>
-                            <interval>10m</interval>
-                            <max-retries>3</max-retries>
-                        </retry>
-                    </on-exit>
-                </rules>
             </run-recurring>
         </triggers>
     </job>
