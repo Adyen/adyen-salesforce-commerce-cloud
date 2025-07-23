@@ -102,7 +102,7 @@ function handle(customObj) {
     return result;
   }
 
-  let isAdyen = false;
+  let isAdyenPayment = false;
   const orderCreateDate = order.creationDate;
   const orderCreateDateDelay = createDelayOrderDate(orderCreateDate);
   const currentDate = new Date();
@@ -128,7 +128,7 @@ function handle(customObj) {
         // Check if one of the adyen payment methods was used during payment
         // Or if the payment method belongs to adyen payment processors
         const paymentInstruments = order.getPaymentInstruments();
-        isAdyen = handleAdyenPaymentInstruments(paymentInstruments, customObj);
+        isAdyenPayment = handleAdyenPaymentInstruments(paymentInstruments, customObj);
         if (customObj.custom.success === 'true') {
           const amountPaid = parseFloat(customObj.custom.value);
           if (order.paymentStatus.value === Order.PAYMENT_STATUS_PAID) {
@@ -167,7 +167,7 @@ function handle(customObj) {
           if (
             !empty(reasonCode) &&
             (reasonCode === 'REFUSED' || reasonCode.indexOf('FAILED') > -1) &&
-            isAdyen
+            isAdyenPayment
           ) {
             refusedHpp = true;
           } else if (order.status.value === Order.ORDER_STATUS_FAILED) {
