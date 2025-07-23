@@ -59,7 +59,7 @@ function addEventObject(customObject, requestObjectList) {
   const { creationDate, custom: event } = customObject;
   const requestObject = requestObjectList.slice(-1)[0];
   const eventObject = {
-    timestamp: new Date(event.eventDate || creationDate).getTime().toString(),
+    timestamp: event.eventDate || new Date(creationDate).getTime().toString(),
     type: event.eventType?.value,
     target: event.referenceId,
     id: event.eventId,

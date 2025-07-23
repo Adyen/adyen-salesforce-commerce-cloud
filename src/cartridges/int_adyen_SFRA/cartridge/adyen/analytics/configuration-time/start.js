@@ -31,9 +31,6 @@ function searchForServiceCredential(
 
 function hasServiceCredential(servicesXmlFile, serviceIdToFind) {
   if (!servicesXmlFile || !servicesXmlFile.exists() || !serviceIdToFind) {
-    AdyenLogs.info_log(
-      'Invalid input: Please provide a valid file object and a service ID to find.',
-    );
     return false;
   }
 
