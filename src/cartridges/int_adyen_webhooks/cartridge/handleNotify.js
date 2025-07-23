@@ -27,8 +27,8 @@
  */
 const Calendar = require('dw/util/Calendar');
 const StringUtils = require('dw/util/StringUtils');
-const CustomObjectMgr = require('dw/object/CustomObjectMgr');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
+const { createOrUpdateCustomObject, setCustomObjectStatus } = require('./utils/customObjectHelper');
 
 function execute(args) {
   return notifyHttpParameterMap(args.CurrentHttpParameterMap);
@@ -65,44 +65,9 @@ function notify(notificationData) {
     const keyValue = `${
       notificationData.merchantReference
     }-${StringUtils.formatCalendar(calObj, 'yyyyMMddhhmmssSSS')}`;
-    let customObj = CustomObjectMgr.getCustomObject('adyenNotification', keyValue);
-    if (!customObj) {
-      customObj = CustomObjectMgr.createCustomObject('adyenNotification', keyValue);
-    }
-    for (const field in notificationData) {
-      try {
-        customObj.custom[field] = notificationData[field];
-      } catch (e) {
-        /* unknown field */
-      }
-    }
+    let customObj = createOrUpdateCustomObject('adyenNotification', keyValue, notificationData);
 
-    switch (notificationData.eventCode) {
-      case 'AUTHORISATION':
-        // Save all request to custom attribute for Authorization event
-        customObj.custom.Adyen_log = JSON.stringify(notificationData);
-      // eslint-disable-next-line no-fallthrough
-      case 'CANCELLATION':
-      case 'CANCEL_OR_REFUND':
-      case 'REFUND':
-      case 'CAPTURE_FAILED':
-      case 'ORDER_OPENED':
-      case 'ORDER_CLOSED':
-      case 'OFFER_CLOSED':
-      case 'PENDING':
-      case 'CAPTURE':
-      case 'DONATION':
-        customObj.custom.updateStatus = 'PROCESS';
-        AdyenLogs.info_log(
-          `Received notification for merchantReference ${notificationData.merchantReference} with status ${notificationData.eventCode}. Custom Object set up to 'PROCESS' status.`,
-        );
-        break;
-      default:
-        customObj.custom.updateStatus = 'PENDING';
-        AdyenLogs.info_log(
-          `Received notification for merchantReference ${notificationData.merchantReference} with status ${notificationData.eventCode}. Custom Object set up to 'PENDING' status.`,
-        );
-    }
+    setCustomObjectStatus(customObj, notificationData.eventCode, notificationData.merchantReference, notificationData);
     return {
       success: true,
     };
