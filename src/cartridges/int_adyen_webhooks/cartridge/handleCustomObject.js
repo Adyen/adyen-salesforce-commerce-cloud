@@ -37,14 +37,13 @@
  *
  */
 
-const PaymentMgr = require('dw/order/PaymentMgr');
 const Order = require('dw/order/Order');
 const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 
 // script includes
-const constants = require('*/cartridge/adyen/config/constants');
 const adyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
+const { handleAdyenPaymentInstruments } = require('./utils/paymentUtils');
 
 function placeOrder(order) {
   const fraudDetectionStatus = { status: 'success' };
@@ -103,7 +102,7 @@ function handle(customObj) {
     return result;
   }
 
-  let isAdyen = false;
+  let isAdyenPayment = false;
   const orderCreateDate = order.creationDate;
   const orderCreateDateDelay = createDelayOrderDate(orderCreateDate);
   const currentDate = new Date();
@@ -129,30 +128,7 @@ function handle(customObj) {
         // Check if one of the adyen payment methods was used during payment
         // Or if the payment method belongs to adyen payment processors
         const paymentInstruments = order.getPaymentInstruments();
-        for (const pi in paymentInstruments) {
-          if (
-            [
-              constants.METHOD_ADYEN,
-              constants.METHOD_ADYEN_POS,
-              constants.METHOD_ADYEN_COMPONENT,
-              constants.METHOD_CREDIT_CARD,
-            ].indexOf(paymentInstruments[pi].paymentMethod) !== -1 ||
-            [
-              constants.PAYMENT_INSTRUMENT_ADYEN_CREDIT,
-              constants.PAYMENT_INSTRUMENT_ADYEN_POS,
-              constants.PAYMENT_INSTRUMENT_ADYEN_COMPONENT,
-            ].indexOf(
-              PaymentMgr.getPaymentMethod(
-                paymentInstruments[pi].getPaymentMethod(),
-              ).getPaymentProcessor().ID,
-            ) !== -1
-          ) {
-            isAdyen = true;
-            // Move adyen log request to order payment transaction
-            paymentInstruments[pi].paymentTransaction.custom.Adyen_log =
-              customObj.custom.Adyen_log;
-          }
-        }
+        isAdyenPayment = handleAdyenPaymentInstruments(paymentInstruments, customObj);
         if (customObj.custom.success === 'true') {
           const amountPaid = parseFloat(customObj.custom.value);
           if (order.paymentStatus.value === Order.PAYMENT_STATUS_PAID) {
@@ -191,7 +167,7 @@ function handle(customObj) {
           if (
             !empty(reasonCode) &&
             (reasonCode === 'REFUSED' || reasonCode.indexOf('FAILED') > -1) &&
-            isAdyen
+            isAdyenPayment
           ) {
             refusedHpp = true;
           } else if (order.status.value === Order.ORDER_STATUS_FAILED) {
