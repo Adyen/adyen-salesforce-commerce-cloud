@@ -65,6 +65,7 @@ function processNotifications(/* pdict */) {
     if (!handlerResult.status || handlerResult.status === PIPELET_ERROR) {
       // Only CREATED orders can be failed
       if (
+        !order ||
         order.status.value !== dw.order.Order.ORDER_STATUS_CREATED
       ) {
         continue;

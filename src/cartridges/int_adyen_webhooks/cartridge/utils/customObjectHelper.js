@@ -1,6 +1,7 @@
 const Transaction = require('dw/system/Transaction');
 const CustomObjectMgr = require('dw/object/CustomObjectMgr');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
+const constants = require('./constants');
 
 /**
  * Create or update a custom object with notification data in a transaction.
@@ -31,7 +32,7 @@ function createOrUpdateCustomObject(type, key, data) {
 
 /**
  * Sets the updateStatus and logs for a custom object based on event code.
- * Handles AUTHORISATION special case.
+ * Handles AUTHORISATION log field setting.
  * @param {dw.object.CustomObject} customObj
  * @param {string} eventCode
  * @param {string} merchantReference
@@ -43,28 +44,15 @@ function setCustomObjectStatus(
   merchantReference,
   notificationData,
 ) {
-  const processEvents = [
-    'AUTHORISATION',
-    'CANCELLATION',
-    'CANCEL_OR_REFUND',
-    'REFUND',
-    'CAPTURE_FAILED',
-    'ORDER_OPENED',
-    'ORDER_CLOSED',
-    'OFFER_CLOSED',
-    'PENDING',
-    'CAPTURE',
-    'DONATION',
-  ];
-  if (processEvents.includes(eventCode)) {
-    customObj.custom.updateStatus = 'PROCESS';
+  if (constants.PROCESS_EVENTS.includes(eventCode)) {
+    customObj.custom.updateStatus = constants.UPDATE_STATUS.PROCESS;
     AdyenLogs.info_log(
-      `Received notification for merchantReference ${merchantReference} with status ${eventCode}. Custom Object set up to 'PROCESS' status.`,
+      `Received notification for merchantReference ${merchantReference} with status ${eventCode}. Custom Object set up to '${constants.UPDATE_STATUS.PROCESS}' status.`,
     );
   } else {
-    customObj.custom.updateStatus = 'PENDING';
+    customObj.custom.updateStatus = constants.UPDATE_STATUS.PENDING;
     AdyenLogs.info_log(
-      `Received notification for merchantReference ${merchantReference} with status ${eventCode}. Custom Object set up to 'PENDING' status.`,
+      `Received notification for merchantReference ${merchantReference} with status ${eventCode}. Custom Object set up to '${constants.UPDATE_STATUS.PENDING}' status.`,
     );
   }
   if (eventCode === 'AUTHORISATION') {
