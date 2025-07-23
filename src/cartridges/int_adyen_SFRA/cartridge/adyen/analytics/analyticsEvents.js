@@ -9,6 +9,7 @@ function createCustomObject(
   eventSource,
   eventType,
   eventCode,
+  eventDate,
 ) {
   Transaction.wrap(() => {
     const uuid = UUIDUtils.createUUID();
@@ -17,6 +18,7 @@ function createCustomObject(
     customObj.custom.eventSource = eventSource;
     customObj.custom.eventType = eventType;
     customObj.custom.eventCode = eventCode;
+    customObj.custom.eventDate = eventDate || null;
     customObj.custom.processingStatus =
       constants.processingStatus.NOT_PROCESSED;
     customObj.custom.retryCount = 0;
@@ -28,6 +30,7 @@ function createConfigurationTimeEvent(
   eventSource,
   eventType,
   eventCode,
+  eventDate,
 ) {
   createCustomObject(
     constants.configurationTimeEventObjectId,
@@ -35,6 +38,7 @@ function createConfigurationTimeEvent(
     eventSource,
     eventType,
     eventCode,
+    eventDate,
   );
 }
 

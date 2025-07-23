@@ -79,7 +79,7 @@ function deleteDirectoryRecursive(directory) {
   directory.remove();
 }
 
-function createConfigEventIfAdyenServiceExist(tempUnzipDir) {
+function createConfigEventIfAdyenServiceExist(currentZipFile, tempUnzipDir) {
   const extractedFiles = tempUnzipDir.listFiles();
   const extractedFileIterator = extractedFiles.iterator();
   let isAdyenDefined = false;
@@ -101,6 +101,7 @@ function createConfigEventIfAdyenServiceExist(tempUnzipDir) {
       analyticsConstants.eventSource.CONFIGURATION_TIME,
       analyticsConstants.eventType.EXPECTED_START,
       analyticsConstants.eventCode.INFO,
+      currentZipFile.lastModified(),
     );
   }
 }
@@ -108,19 +109,19 @@ function createConfigEventIfAdyenServiceExist(tempUnzipDir) {
 function iterateZipFiles(files) {
   const fileIterator = files.iterator();
   while (fileIterator.hasNext()) {
-    const currentFile = fileIterator.next();
-    if (currentFile.isFile()) {
-      const isZipFile = currentFile.getName().toLowerCase().endsWith('.zip');
+    const currentZipFile = fileIterator.next();
+    if (currentZipFile.isFile()) {
+      const isZipFile = currentZipFile.getName().toLowerCase().endsWith('.zip');
       if (isZipFile) {
         const tempUnzipDir = new File(
-          `IMPEX/src/instance/${currentFile.getName()}_unzipped_temp`,
+          `IMPEX/src/instance/${currentZipFile.getName()}_unzipped_temp`,
         );
         if (tempUnzipDir.exists()) {
           deleteDirectoryRecursive(tempUnzipDir);
         }
         tempUnzipDir.mkdirs();
-        currentFile.unzip(tempUnzipDir);
-        createConfigEventIfAdyenServiceExist(tempUnzipDir);
+        currentZipFile.unzip(tempUnzipDir);
+        createConfigEventIfAdyenServiceExist(currentZipFile, tempUnzipDir);
         deleteDirectoryRecursive(tempUnzipDir);
       }
     }
