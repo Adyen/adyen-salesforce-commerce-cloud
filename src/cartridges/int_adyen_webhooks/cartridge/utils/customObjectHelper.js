@@ -60,7 +60,33 @@ function setCustomObjectStatus(
   }
 }
 
+/**
+ * Creates a log message string for Adyen notification data
+ * @param {Object} notificationData
+ * @returns {string}
+ */
+function createLogMessage(notificationData) {
+  const VERSION = '4d';
+  let msg = '';
+  msg = `AdyenNotification v ${VERSION}`;
+  msg += '\n================================================================\n';
+  msg = `${msg}reason : ${notificationData.reason}`;
+  msg = `${msg}\neventDate : ${notificationData.eventDate}`;
+  msg = `${msg}\nmerchantReference : ${notificationData.merchantReference}`;
+  msg = `${msg}\ncurrency : ${notificationData.currency}`;
+  msg = `${msg}\npspReference : ${notificationData.pspReference}`;
+  msg = `${msg}\nmerchantAccountCode : ${notificationData.merchantAccountCode}`;
+  msg = `${msg}\neventCode : ${notificationData.eventCode}`;
+  msg = `${msg}\nvalue : ${notificationData.value}`;
+  msg = `${msg}\noperations : ${notificationData.operations}`;
+  msg = `${msg}\nsuccess : ${notificationData.success}`;
+  msg = `${msg}\npaymentMethod : ${notificationData.paymentMethod}`;
+  msg = `${msg}\nlive : ${notificationData.live}`;
+  return msg;
+}
+
 module.exports = {
   createOrUpdateCustomObject,
   setCustomObjectStatus,
+  createLogMessage,
 };
