@@ -7,11 +7,7 @@ const analyticsEvent = require('*/cartridge/adyen/analytics/analyticsEvents');
 const analyticsConstants = require('*/cartridge/adyen/analytics/constants');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 
-function searchForServiceCredential(
-  xmlStreamReader,
-  servicesXmlFile,
-  serviceIdToFind,
-) {
+function searchForServiceCredential(xmlStreamReader, serviceIdToFind) {
   while (xmlStreamReader.hasNext()) {
     if (xmlStreamReader.next() === XMLStreamConstants.START_ELEMENT) {
       const elementName = xmlStreamReader.getLocalName();
@@ -41,11 +37,7 @@ function hasServiceCredential(servicesXmlFile, serviceIdToFind) {
   try {
     fileReader = new FileReader(servicesXmlFile, 'UTF-8');
     xmlStreamReader = new XMLStreamReader(fileReader);
-    isFound = searchForServiceCredential(
-      xmlStreamReader,
-      servicesXmlFile,
-      serviceIdToFind,
-    );
+    isFound = searchForServiceCredential(xmlStreamReader, serviceIdToFind);
   } catch (error) {
     AdyenLogs.error_log('Error parsing services.xml', error);
     isFound = false;
