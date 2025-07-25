@@ -19,8 +19,6 @@ src/cartridges/int_adyen_SFRA/cartridge/adyen/scripts/pos/adyenTerminalApi.js
 src/cartridges/int_adyen_webhooks/cartridge/handleCustomObject.js
 src/cartridges/int_adyen_webhooks/cartridge/deleteCustomObjects.js
 src/cartridges/int_adyen_webhooks/cartridge/eventHandlers/
-src/cartridges/int_adyen_webhooks/cartridge/handleNotify.js
-src/cartridges/int_adyen_webhooks/cartridge/notify.js
 src/cartridges/int_adyen_webhooks/cartridge/job/
 
 # Test files

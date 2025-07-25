@@ -18,25 +18,25 @@ function handleHmacVerification(hmacKey, req) {
 
 function notify(req, res, next) {
   try {
-  const status = checkAuth.check(req);
-  const hmacKey = AdyenConfigs.getAdyenHmacKey();
-  const isHmacValid = handleHmacVerification(hmacKey, req);
-  if (!status || !isHmacValid) {
-    res.status(403).render('/adyen/error');
-    return {};
-  }
-  Transaction.begin();
-  const notificationResult = handleNotify.notify(req.form);
-  if (notificationResult.success) {
-    Transaction.commit();
-    res.render('/notify');
-  } else {
-    res.status(403).render('/notifyError', {
-      errorMessage: notificationResult.errorMessage,
-    });
-    Transaction.rollback();
-  }
-  return next();
+    const status = checkAuth.check(req);
+    const hmacKey = AdyenConfigs.getAdyenHmacKey();
+    const isHmacValid = handleHmacVerification(hmacKey, req);
+    if (!status || !isHmacValid) {
+      res.status(403).render('/adyen/error');
+      return {};
+    }
+    Transaction.begin();
+    const notificationResult = handleNotify.notify(req.form);
+    if (notificationResult.success) {
+      Transaction.commit();
+      res.render('/notify');
+    } else {
+      res.status(403).render('/notifyError', {
+        errorMessage: notificationResult.errorMessage,
+      });
+      Transaction.rollback();
+    }
+    return next();
   } catch (error) {
     AdyenLogs.error_log('Could not process notification:', error);
     setErrorType(error, res, {
