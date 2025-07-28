@@ -147,6 +147,7 @@ module.exports = {
   POS_ABORT_REASON: {
     MERCHANT_ABORT: 'MerchantAbort',
   },
+  FRAUD_STATUS_AMBER: 'AMBER',
 
   MERCHANT_APPLICATION_NAME: 'adyen-salesforce-commerce-cloud',
   EXTERNAL_PLATFORM_NAME: 'SalesforceCommerceCloud',
