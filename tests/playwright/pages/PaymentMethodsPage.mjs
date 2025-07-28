@@ -116,9 +116,12 @@ export default class PaymentMethodsPage {
     this.changePaymentButton = this.page.locator("#change-payment-button");
     this.confirmPaymentChangeButton = this.page.locator("#a-autoid-8");
     this.amazonCaptcha = this.page.locator('#captcha-container');
+    this.continueButton = this.page.locator('.a-button-input');
+
 
     await this.emailInput.click();
     await this.emailInput.type(paymentData.AmazonPay.username);
+    await this.continueButton.click();
     await this.passwordInput.click();
     await this.passwordInput.type(paymentData.AmazonPay.password);
     await this.loginButton.click();
