@@ -27,6 +27,38 @@
                         <parameter name="ExecuteScriptModule.TimeoutInSeconds">3600</parameter>
                     </parameters>
                 </step>
+                <step step-id="ProcessSiteImport" type="ExecuteScriptModule" enforce-restart="false">
+                    <description/>
+                    <parameters>
+                        <parameter name="ExecuteScriptModule.Module">int_adyen_SFRA/cartridge/adyen/analytics/configuration-time/start.js</parameter>
+                        <parameter name="ExecuteScriptModule.FunctionName">run</parameter>
+                        <parameter name="ExecuteScriptModule.Transactional">false</parameter>
+                        <parameter name="ExecuteScriptModule.TimeoutInSeconds">3600</parameter>
+                    </parameters>
+                </step>
+                <step step-id="ProcessConfigurationTime" type="ExecuteScriptModule" enforce-restart="false">
+                    <description/>
+                    <parameters>
+                        <parameter name="ExecuteScriptModule.Module">int_adyen_SFRA/cartridge/adyen/analytics/configuration-time/processEvents.js</parameter>
+                        <parameter name="ExecuteScriptModule.FunctionName">processConfigurationTime</parameter>
+                        <parameter name="ExecuteScriptModule.Transactional">false</parameter>
+                        <parameter name="ExecuteScriptModule.TimeoutInSeconds">3600</parameter>
+                    </parameters>
+                    <rules>
+                        <on-exit status="*">
+                            <continue next-step="CleanConfigurationTime"/>
+                        </on-exit>
+                    </rules>
+                </step>
+                <step step-id="CleanConfigurationTime" type="ExecuteScriptModule" enforce-restart="false">
+                    <description/>
+                    <parameters>
+                        <parameter name="ExecuteScriptModule.Module">int_adyen_SFRA/cartridge/adyen/analytics/configuration-time/processEvents.js</parameter>
+                        <parameter name="ExecuteScriptModule.FunctionName">clearConfigurationTime</parameter>
+                        <parameter name="ExecuteScriptModule.Transactional">false</parameter>
+                        <parameter name="ExecuteScriptModule.TimeoutInSeconds">3600</parameter>
+                    </parameters>
+                </step>
             </flow-template>
         </split>
         <rules/>
@@ -73,21 +105,21 @@
             </flow-template>
         </split>
         <triggers>
-	    <run-recurring enabled="true">
-		<recurrence>
-			<date-from>2024-11-04</date-from>
-			<start-time>00:00:00</start-time>
-			<interval>1m</interval>
-		</recurrence>
-		<rules>
-			<on-exit status="ERROR">
-				<retry>
-					<interval>10m</interval>
-					<max-retries>3</max-retries>
-				</retry>
-			</on-exit>
-		</rules>
-	    </run-recurring>
-	</triggers>
+            <run-recurring enabled="true">
+            <recurrence>
+                <date-from>2024-11-04</date-from>
+                <start-time>00:00:00</start-time>
+                <interval>1m</interval>
+            </recurrence>
+            <rules>
+                <on-exit status="ERROR">
+                    <retry>
+                        <interval>10m</interval>
+                        <max-retries>3</max-retries>
+                    </retry>
+                </on-exit>
+            </rules>
+            </run-recurring>
+        </triggers>
     </job>
 </jobs>

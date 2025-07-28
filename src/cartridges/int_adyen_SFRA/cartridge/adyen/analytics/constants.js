@@ -1,5 +1,6 @@
 module.exports = {
   analyticsEventObjectId: 'AdyenAnalyticsEvents',
+  configurationTimeEventObjectId: 'AdyenConfigurationTimeEvents',
   pluginType: 'salesforceCommerceCloud',
   errorType: 'Plugin',
   eventType: {
@@ -17,6 +18,9 @@ module.exports = {
     NOT_PROCESSED: 'NOT_PROCESSED',
     PROCESSED: 'PROCESSED',
     SKIPPED: 'SKIPPED',
+  },
+  eventSource: {
+    CONFIGURATION_TIME: 'Adyen-ConfigurationTime',
   },
   EVENT_LIMIT: 1000,
 };

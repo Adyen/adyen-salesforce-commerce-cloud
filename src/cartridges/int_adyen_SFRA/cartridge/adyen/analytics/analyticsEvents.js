@@ -3,13 +3,17 @@ const UUIDUtils = require('dw/util/UUIDUtils');
 const Transaction = require('dw/system/Transaction');
 const constants = require('./constants');
 
-function createAnalyticsEvent(referenceId, eventSource, eventType, eventCode) {
+function createCustomObject(
+  objectId,
+  referenceId,
+  eventSource,
+  eventType,
+  eventCode,
+  eventDate,
+) {
   Transaction.wrap(() => {
     const uuid = UUIDUtils.createUUID();
-    const customObj = CustomObjectMgr.createCustomObject(
-      constants.analyticsEventObjectId,
-      uuid,
-    );
+    const customObj = CustomObjectMgr.createCustomObject(objectId, uuid);
     customObj.custom.referenceId = referenceId;
     customObj.custom.eventSource = eventSource;
     customObj.custom.eventType = eventType;
@@ -17,7 +21,37 @@ function createAnalyticsEvent(referenceId, eventSource, eventType, eventCode) {
     customObj.custom.processingStatus =
       constants.processingStatus.NOT_PROCESSED;
     customObj.custom.retryCount = 0;
+    if (eventDate) {
+      customObj.custom.eventDate = eventDate;
+    }
   });
+}
+
+function createConfigurationTimeEvent(
+  referenceId,
+  eventSource,
+  eventType,
+  eventCode,
+  eventDate,
+) {
+  createCustomObject(
+    constants.configurationTimeEventObjectId,
+    referenceId,
+    eventSource,
+    eventType,
+    eventCode,
+    eventDate,
+  );
+}
+
+function createAnalyticsEvent(referenceId, eventSource, eventType, eventCode) {
+  createCustomObject(
+    constants.analyticsEventObjectId,
+    referenceId,
+    eventSource,
+    eventType,
+    eventCode,
+  );
 }
 
 function deleteAnalyticsEvent(keyValue) {
@@ -48,6 +82,7 @@ function updateAnalyticsEvent(keyValue, attributes) {
 
 module.exports = {
   createAnalyticsEvent,
+  createConfigurationTimeEvent,
   deleteAnalyticsEvent,
   updateAnalyticsEvent,
 };
