@@ -91,6 +91,8 @@ function notify(notificationData) {
       case 'OFFER_CLOSED':
       case 'PENDING':
       case 'CAPTURE':
+      case 'MANUAL_REVIEW_ACCEPT':
+      case 'MANUAL_REVIEW_REJECT':
       case 'DONATION':
         customObj.custom.updateStatus = 'PROCESS';
         AdyenLogs.info_log(
