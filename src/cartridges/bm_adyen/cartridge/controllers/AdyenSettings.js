@@ -1,37 +1,16 @@
 const server = require('server');
 const Transaction = require('dw/system/Transaction');
 const csrfProtection = require('dw/web/CSRFProtection');
-const CustomObjectMgr = require('dw/object/CustomObjectMgr');
-const UUIDUtils = require('dw/util/UUIDUtils');
 const URLUtils = require('dw/web/URLUtils');
 const PaymentMgr = require('dw/order/PaymentMgr');
 const AdyenConfigs = require('*/cartridge/adyen/utils/adyenConfigs');
 const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
 const constants = require('*/cartridge/adyen/config/constants');
-const analyticsConstants = require('*/cartridge/adyen/analytics/constants');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 const bmHelper = require('*/cartridge/utils/helper');
 const managementApi = require('*/cartridge/scripts/managementApi');
-
-function createConfigurationTimeEvent(
-  objectId,
-  referenceId,
-  eventSource,
-  eventType,
-  eventCode,
-) {
-  Transaction.wrap(() => {
-    const uuid = UUIDUtils.createUUID();
-    const customObj = CustomObjectMgr.createCustomObject(objectId, uuid);
-    customObj.custom.referenceId = referenceId;
-    customObj.custom.eventSource = eventSource;
-    customObj.custom.eventType = eventType;
-    customObj.custom.eventCode = eventCode;
-    customObj.custom.processingStatus =
-      analyticsConstants.processingStatus.NOT_PROCESSED;
-    customObj.custom.retryCount = 0;
-  });
-}
+const analyticsConstants = require('*/cartridge/adyen/analytics/constants');
+const analyticsEvents = require('*/cartridge/adyen/analytics/analyticsEvents');
 
 server.get('Start', (_req, res, next) => {
   if (!csrfProtection.validateRequest()) {
@@ -49,8 +28,7 @@ server.post('Save', server.middleware.https, (req, res, next) => {
       Transaction.wrap(() => {
         AdyenConfigs.setCustomPreference(setting.key, setting.value);
       });
-      createConfigurationTimeEvent(
-        analyticsConstants.configurationTimeEventObjectId,
+      analyticsEvents.createConfigurationTimeEvent(
         setting.key,
         analyticsConstants.eventSource.CONFIGURATION_TIME,
         analyticsConstants.eventType.EXPECTED_END,
@@ -74,8 +52,7 @@ server.post('Save', server.middleware.https, (req, res, next) => {
 });
 
 server.post('TestConnection', server.middleware.https, (req, res, next) => {
-  createConfigurationTimeEvent(
-    analyticsConstants.configurationTimeEventObjectId,
+  analyticsEvents.createConfigurationTimeEvent(
     analyticsConstants.eventReference.TEST_CONNECTION,
     analyticsConstants.eventSource.CONFIGURATION_TIME,
     analyticsConstants.eventType.EXPECTED_END,
