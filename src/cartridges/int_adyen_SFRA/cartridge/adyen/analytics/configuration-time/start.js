@@ -86,7 +86,7 @@ function createConfigEventIfAdyenServiceExist(currentZipFile, tempUnzipDir) {
   }
   if (isAdyenDefined) {
     analyticsEvent.createConfigurationTimeEvent(
-      session.sessionID.slice(0, 200),
+      analyticsConstants.eventReference.METADATA_UPLOAD,
       analyticsConstants.eventSource.CONFIGURATION_TIME,
       analyticsConstants.eventType.EXPECTED_START,
       analyticsConstants.eventCode.INFO,
