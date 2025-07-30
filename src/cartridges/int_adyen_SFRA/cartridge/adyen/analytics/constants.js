@@ -22,5 +22,9 @@ module.exports = {
   eventSource: {
     CONFIGURATION_TIME: 'Adyen-ConfigurationTime',
   },
+  eventReference: {
+    METADATA_UPLOAD: 'METADATA_UPLOAD',
+    TEST_CONNECTION: 'TEST_CONNECTION',
+  },
   EVENT_LIMIT: 1000,
 };
