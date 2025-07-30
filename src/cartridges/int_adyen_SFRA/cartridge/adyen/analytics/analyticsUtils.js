@@ -179,7 +179,7 @@ function clearEvents(customObjectId) {
       });
     }
   } catch (e) {
-    AdyenLogs.error_log('Error deleting custom object:', e);
+    AdyenLogs.error_log(`Error clearing events for ${customObjectId}:`, e);
   } finally {
     if (customObjectIterator) {
       customObjectIterator.close();
