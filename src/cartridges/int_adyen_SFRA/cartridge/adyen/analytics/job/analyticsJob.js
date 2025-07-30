@@ -1,8 +1,8 @@
-const CustomObjectMgr = require('dw/object/CustomObjectMgr');
 const Transaction = require('dw/system/Transaction');
 const analyticsConstants = require('*/cartridge/adyen/analytics/constants');
+const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 const AnalyticsService = require('../analyticsService');
-const AdyenLogs = require('../../logs/adyenCustomLogs');
+const { processEvents, clearEvents } = require('../analyticsUtils');
 
 const defaultProperties = {
   channel: 'Web',
@@ -137,57 +137,11 @@ function sendAnalyticsEvents(requestObjectList) {
 }
 
 function processAnalytics() {
-  const query = 'custom.processingStatus = {0}';
-  const queryArgs = [analyticsConstants.processingStatus.NOT_PROCESSED];
-  let customObjectIterator = null;
-  try {
-    // Query the custom objects by processing status
-    customObjectIterator = CustomObjectMgr.queryCustomObjects(
-      analyticsConstants.analyticsEventObjectId,
-      query,
-      null,
-      queryArgs,
-    );
-    const analyticsRequest = createAnalyticsRequest(customObjectIterator);
-    sendAnalyticsEvents(analyticsRequest);
-  } catch (e) {
-    AdyenLogs.error_log('Error querying custom objects:', e);
-    throw e;
-  } finally {
-    if (customObjectIterator) {
-      customObjectIterator.close();
-    }
-  }
+  processEvents(analyticsConstants.analyticsEventObjectId);
 }
 
 function clearAnalytics() {
-  let customObjectIterator = null;
-  try {
-    const query =
-      'custom.processingStatus = {0} OR custom.processingStatus = {1}';
-    const queryArgs = [
-      analyticsConstants.processingStatus.SKIPPED,
-      analyticsConstants.processingStatus.PROCESSED,
-    ];
-    customObjectIterator = CustomObjectMgr.queryCustomObjects(
-      analyticsConstants.analyticsEventObjectId,
-      query,
-      null,
-      queryArgs,
-    );
-    while (customObjectIterator.hasNext()) {
-      const customObject = customObjectIterator.next();
-      Transaction.wrap(() => {
-        CustomObjectMgr.remove(customObject);
-      });
-    }
-  } catch (e) {
-    AdyenLogs.error_log('Error deleting custom object:', e);
-  } finally {
-    if (customObjectIterator) {
-      customObjectIterator.close();
-    }
-  }
+  clearEvents(analyticsConstants.analyticsEventObjectId);
 }
 
 module.exports = {
