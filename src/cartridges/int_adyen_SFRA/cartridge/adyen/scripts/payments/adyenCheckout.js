@@ -26,6 +26,7 @@
 const Resource = require('dw/web/Resource');
 const Order = require('dw/order/Order');
 const StringUtils = require('dw/util/StringUtils');
+const Transaction = require('dw/system/Transaction');
 const hooksHelper = require('*/cartridge/scripts/helpers/hooks');
 /* Script Modules */
 const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
@@ -274,7 +275,13 @@ function createPaymentRequest(args) {
     paymentInstrument,
     paymentRequest.paymentMethod,
   );
-  return doPaymentsCall(order, paymentInstrument, paymentRequest);
+
+  let result;
+  Transaction.wrap(() => {
+    result = doPaymentsCall(order, paymentInstrument, paymentRequest);
+  });
+
+  return result;
 }
 
 function doPaymentsDetailsCall(paymentDetailsRequest) {
