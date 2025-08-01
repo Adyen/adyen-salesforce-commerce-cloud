@@ -37,23 +37,15 @@ function isRequestObjectFull(requestObject) {
 }
 
 function updateCounter(customObject) {
-  try {
-    Transaction.wrap(() => {
-      customObject.custom.retryCount += 1;
-    });
-  } catch (e) {
-    AdyenLogs.error_log('Error updating counter:', e);
-  }
+  Transaction.wrap(() => {
+    customObject.custom.retryCount += 1;
+  });
 }
 
 function updateProcessingStatus(customObject, status) {
-  try {
-    Transaction.wrap(() => {
-      customObject.custom.processingStatus = status;
-    });
-  } catch (e) {
-    AdyenLogs.error_log('Error updating processingStatus:', e);
-  }
+  Transaction.wrap(() => {
+    customObject.custom.processingStatus = status;
+  });
 }
 
 function addEventObject(customObject, requestObjectList) {
@@ -61,12 +53,12 @@ function addEventObject(customObject, requestObjectList) {
   const requestObject = requestObjectList.slice(-1)[0];
   const eventObject = {
     timestamp: event.eventDate || new Date(creationDate).getTime().toString(),
-    type: event.eventType?.value,
+    type: event.eventType,
     target: event.referenceId,
     id: event.eventId,
     component: event.eventSource,
   };
-  if (event.eventCode?.value === analyticsConstants.eventCode.ERROR) {
+  if (event.eventCode === analyticsConstants.eventCode.ERROR) {
     delete eventObject.type;
     delete eventObject.target;
     eventObject.errorType = analyticsConstants.errorType;
@@ -123,7 +115,9 @@ function sendAnalyticsEvents(requestObjectList) {
       });
     } else {
       customObjects.forEach((customObject) => {
-        if (customObject.custom.retryCount > 2) {
+        if (
+          customObject.custom.retryCount > analyticsConstants.MAX_RETRY_COUNT
+        ) {
           updateProcessingStatus(
             customObject,
             analyticsConstants.processingStatus.SKIPPED,
