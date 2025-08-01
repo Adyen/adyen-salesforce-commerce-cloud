@@ -26,7 +26,6 @@
 const Resource = require('dw/web/Resource');
 const Order = require('dw/order/Order');
 const StringUtils = require('dw/util/StringUtils');
-const Transaction = require('dw/system/Transaction');
 const hooksHelper = require('*/cartridge/scripts/helpers/hooks');
 /* Script Modules */
 const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
@@ -275,13 +274,17 @@ function createPaymentRequest(args) {
     paymentInstrument,
     paymentRequest.paymentMethod,
   );
-
-  let result;
-  Transaction.wrap(() => {
-    result = doPaymentsCall(order, paymentInstrument, paymentRequest);
-  });
-
-  return result;
+  try {
+    return doPaymentsCall(order, paymentInstrument, paymentRequest);
+  } catch (error) {
+    AdyenLogs.error_log('Payment call failed:', error);
+    return {
+      error: true,
+      adyenErrorMessage:
+        error.message ||
+        Resource.msg('confirm.error.declined', 'checkout', null),
+    };
+  }
 }
 
 function doPaymentsDetailsCall(paymentDetailsRequest) {
