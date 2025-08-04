@@ -32,7 +32,6 @@ describe('Payment from Component', () => {
     req.form.data.merchantReference = 'mocked_merchantReference';
     req.form.data = JSON.stringify(req.form.data);
     paymentFromComponent(req, res, jest.fn());
-
     expect(URLUtils.url.mock.calls).toMatchSnapshot();
   });
   it('should return json response', () => {

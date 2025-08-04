@@ -22,11 +22,6 @@ function getProductForm(product) {
   return $productForm;
 }
 
-function getValueForCurrency(amount, currency) {
-  const value = Math.round(amount * 10 ** window.fractionDigits);
-  return { value, currency };
-}
-
 function getPaymentMethodConfig(adyenPaymentMethods, paymentMethodType) {
   return adyenPaymentMethods?.paymentMethods.find(
     (pm) => paymentMethodType.indexOf(pm.type) > -1,
@@ -40,6 +35,7 @@ function renderApplePayButton() {
         AdyenPaymentMethods,
         applicationInfo,
         adyenTranslations,
+        amount: { currency },
       } = {},
       button,
     } = response;
@@ -50,11 +46,13 @@ function renderApplePayButton() {
     if (!applePayConfig) {
       return;
     }
+    const initialAmount = { value: 0, currency };
     const applePay = new ApplePay(
       applePayConfig,
       applicationInfo,
       adyenTranslations,
       true,
+      initialAmount,
     );
     const applePayComponent = await applePay.getComponent();
     applePayComponent.mount(button);
@@ -68,6 +66,7 @@ function renderGooglePayButton() {
         AdyenPaymentMethods,
         applicationInfo,
         adyenTranslations,
+        amount: { currency },
       } = {},
       button,
     } = response;
@@ -78,11 +77,13 @@ function renderGooglePayButton() {
     if (!googlePayConfig) {
       return;
     }
+    const initialAmount = { value: 0, currency };
     const googlePay = new GooglePay(
       googlePayConfig,
       applicationInfo,
       adyenTranslations,
       true,
+      initialAmount,
     );
     const googlePayComponent = await googlePay.getComponent();
     googlePayComponent.mount(button);
@@ -113,10 +114,6 @@ function renderExpressPaymentContainer() {
       product.available &&
       paymentMethodsResponse?.pdpExpressMethods?.length
     ) {
-      const { price, selectedQuantity } = product;
-      const { value, currency } = price.sales;
-      const amount = getValueForCurrency(value * selectedQuantity, currency);
-      window.basketAmount = JSON.stringify(amount);
       const expressPaymentButtons = getExpressPaymentButtons(
         paymentMethodsResponse,
         product,

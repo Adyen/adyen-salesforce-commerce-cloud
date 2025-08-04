@@ -9,7 +9,13 @@ const { initializeCheckout } = require('../../initializeCheckout');
 const { createTemporaryBasket } = require('../../../commons');
 
 class GooglePay {
-  constructor(config, applicationInfo, adyenTranslations, isExpressPdp) {
+  constructor(
+    config,
+    applicationInfo,
+    adyenTranslations,
+    isExpressPdp,
+    initialAmount,
+  ) {
     const {
       basketAmount,
       showConfirmationAction,
@@ -19,7 +25,7 @@ class GooglePay {
     } = window;
     this.store = store;
     this.helpers = helpers;
-    this.amount = JSON.parse(basketAmount);
+    this.amount = initialAmount || JSON.parse(basketAmount);
     this.showPayButton = true;
     this.isExpress = true;
     this.isExpressPdp = isExpressPdp;
@@ -334,7 +340,7 @@ class GooglePay {
     gatewayMerchantId: window.merchantAccount,
     configuration: this.config,
     callbackIntents: ['SHIPPING_ADDRESS', 'SHIPPING_OPTION'],
-    amount: JSON.parse(window.basketAmount),
+    amount: this.amount,
     onAuthorized: this.onAuthorized,
     onSubmit: () => {},
     paymentDataCallbacks: {

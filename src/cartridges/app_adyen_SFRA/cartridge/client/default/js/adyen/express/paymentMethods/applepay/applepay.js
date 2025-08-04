@@ -6,7 +6,13 @@ const { initializeCheckout } = require('../../initializeCheckout');
 const { createTemporaryBasket } = require('../../../commons');
 
 class ApplePay {
-  constructor(config, applicationInfo, adyenTranslations, isExpressPdp) {
+  constructor(
+    config,
+    applicationInfo,
+    adyenTranslations,
+    isExpressPdp,
+    initialAmount,
+  ) {
     const {
       basketAmount,
       showConfirmationAction,
@@ -16,7 +22,7 @@ class ApplePay {
     } = window;
     this.store = store;
     this.helpers = helpers;
-    this.amount = JSON.parse(basketAmount);
+    this.amount = initialAmount || JSON.parse(basketAmount);
     this.showPayButton = true;
     this.isExpress = true;
     this.isExpressPdp = isExpressPdp;

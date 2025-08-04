@@ -19,6 +19,10 @@
 		{
 			"name": "app.server.registerRoute",
 			"script": "../analytics/analyticsHook"
+		},
+		{
+			"name": "app.payment.pre.auth",
+			"script": "./hooks/payment/preAuthorizationHandling"
 		}
 	]
 }
