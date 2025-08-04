@@ -43,15 +43,6 @@ const adyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 const { handleAdyenPaymentInstruments } = require('./utils/paymentUtils');
 
-function placeOrder(order) {
-  const fraudDetectionStatus = { status: 'success' };
-  // Only created orders can be placed
-  if (order.status.value === Order.ORDER_STATUS_CREATED) {
-    const placeOrder = COHelpers.placeOrder(order, fraudDetectionStatus);
-    return placeOrder;
-  }
-  return { error: true };
-}
 
 function execute(args) {
   const result = handle(args.CustomObj);
@@ -65,6 +56,18 @@ function execute(args) {
 
   return result.status;
 }
+
+// TODO: This function should be moved to checkoutHelpers or specific eventCode handler
+function placeOrder(order) {
+  const fraudDetectionStatus = { status: 'success' };
+  // Only created orders can be placed
+  if (order.status.value === Order.ORDER_STATUS_CREATED) {
+    const placeOrder = COHelpers.placeOrder(order, fraudDetectionStatus);
+    return placeOrder;
+  }
+  return { error: true };
+}
+
 function handle(customObj) {
   const OrderMgr = require('dw/order/OrderMgr');
   const Transaction = require('dw/system/Transaction');
@@ -100,7 +103,6 @@ function handle(customObj) {
     return result;
   }
 
-  let isAdyenPayment = false;
   const orderCreateDate = order.creationDate;
   const orderCreateDateDelay = createDelayOrderDate(orderCreateDate);
   const currentDate = new Date();
@@ -115,148 +117,25 @@ function handle(customObj) {
     const totalAmount = adyenHelper.getCurrencyValueForApi(
       order.getTotalGrossPrice(),
     ).value;
-    // TODO: This block would be used later to handle all the events which we have a handler
-    // If no handler exists we will fallback into default and print the info log
+    
+    // Check if one of the adyen payment methods was used during payment
+    // Or if the payment method belongs to adyen payment processors
+    const paymentInstruments = order.getPaymentInstruments();
+    const isAdyenPayment = handleAdyenPaymentInstruments(paymentInstruments, customObj);
+    
+    // Handle all events using dedicated event handlers
     const handlerModule = require(`./eventHandlers/${customObj.custom.eventCode}`);
     if (handlerModule && typeof handlerModule.handle === 'function') {
-      handlerModule.handle({ order, customObj, result });
-    }
-    switch (customObj.custom.eventCode) {
-      case 'AUTHORISATION':
-        // Check if one of the adyen payment methods was used during payment
-        // Or if the payment method belongs to adyen payment processors
-        const paymentInstruments = order.getPaymentInstruments();
-        isAdyenPayment = handleAdyenPaymentInstruments(paymentInstruments, customObj);
-        if (customObj.custom.success === 'true') {
-          const amountPaid = parseFloat(customObj.custom.value);
-          if (order.paymentStatus.value === Order.PAYMENT_STATUS_PAID) {
-            AdyenLogs.info_log(
-              `Duplicate callback received for order ${order.orderNo}.`,
-            );
-          } else if (amountPaid < totalAmount) {
-            order.setPaymentStatus(Order.PAYMENT_STATUS_PARTPAID);
-            AdyenLogs.info_log(
-              `Partial amount ${customObj.custom.value} received for order number ${order.orderNo} with total amount ${totalAmount}`,
-            );
-          } else {
-			// This if scenario can be true when shopper authorised a payment and then pressed the back button on browser
-            if (order.status.value === Order.ORDER_STATUS_FAILED && amountPaid === totalAmount) {
-              OrderMgr.undoFailOrder(order);
-              order.trackOrderChange('Authorisation webhook received for failed order, moving order status to CREATED');
-            }
-            const placeOrderResult = placeOrder(order);
-            if (!placeOrderResult.error) {
-              order.setPaymentStatus(Order.PAYMENT_STATUS_PAID);
-              order.setExportStatus(Order.EXPORT_STATUS_READY);
-              order.setConfirmationStatus(Order.CONFIRMATION_STATUS_CONFIRMED);
-              AdyenLogs.info_log(
-                `Order ${order.orderNo} updated to status PAID.`,
-              );
-              result.SubmitOrder = true;
-            }
-          }
-          order.custom.Adyen_eventCode = customObj.custom.eventCode;
-          order.custom.Adyen_value = amountPaid.toString();
-        } else {
-          AdyenLogs.info_log(
-            `Authorization for order ${order.orderNo} was not successful - no update.`,
-          );
-          // Determine if payment was refused and was used Adyen payment method
-          if (order.status.value === Order.ORDER_STATUS_FAILED) {
-            order.setConfirmationStatus(Order.CONFIRMATION_STATUS_NOTCONFIRMED);
-            order.setPaymentStatus(Order.PAYMENT_STATUS_NOTPAID);
-            order.setExportStatus(Order.EXPORT_STATUS_NOTEXPORTED);
-          }
-        }
-        break;
-      case 'CANCELLATION':
-        order.setPaymentStatus(Order.PAYMENT_STATUS_NOTPAID);
-        order.trackOrderChange('CANCELLATION notification received');
-        AdyenLogs.info_log(`Order ${order.orderNo} was cancelled.`);
-        break;
-      case 'CANCEL_OR_REFUND':
-        order.setPaymentStatus(Order.PAYMENT_STATUS_NOTPAID);
-        order.trackOrderChange('CANCEL_OR_REFUND notification received');
-        AdyenLogs.info_log(`Order ${order.orderNo} was cancelled or refunded.`);
-        break;
-      case 'DONATION':
-        if (customObj.custom.success === 'true') {
-          order.custom.Adyen_donationAmount = parseFloat(
-            customObj.custom.value,
-          );
-        } else {
-          AdyenLogs.info_log(`Donation failed for order ${order.orderNo}`);
-        }
-        break;
-      case 'REFUND':
-        order.setPaymentStatus(Order.PAYMENT_STATUS_NOTPAID);
-        order.trackOrderChange('REFUND notification received');
-        AdyenLogs.info_log(`Order ${order.orderNo} was refunded.`);
-        break;
-      // CustomAdyen
-      case 'CAPTURE_FAILED':
-        if (customObj.custom.success === 'true') {
-          order.setPaymentStatus(Order.PAYMENT_STATUS_NOTPAID);
-          order.trackOrderChange('Capture failed, cancelling order');
-          OrderMgr.cancelOrder(order);
-        }
-        AdyenLogs.info_log(`Capture Failed for order ${order.orderNo}`);
-        break;
-      case 'ORDER_OPENED':
-        if (customObj.custom.success === 'true') {
-          AdyenLogs.info_log(
-            `Order ${order.orderNo} opened for partial payments`,
-          );
-        }
-        break;
-      case 'ORDER_CLOSED':
-        // Placing the order for partial paymetns once OFFER_CLOSED webhook came, and the total amount matches order amount
-        if (
-          customObj.custom.success === 'true' &&
-          parseFloat(customObj.custom.value) === parseFloat(totalAmount)
-        ) {
-          const placeOrderResult = placeOrder(order);
-          if (!placeOrderResult.error) {
-            order.setPaymentStatus(Order.PAYMENT_STATUS_PAID);
-            order.setExportStatus(Order.EXPORT_STATUS_READY);
-            order.setConfirmationStatus(Order.CONFIRMATION_STATUS_CONFIRMED);
-            AdyenLogs.info_log(`Order ${order.orderNo} placed and closed`);
-          }
-        }
-        break;
-      case 'OFFER_CLOSED':
-        order.setPaymentStatus(Order.PAYMENT_STATUS_NOTPAID);
-        order.trackOrderChange('Offer closed, failing order');
-        Transaction.wrap(() => {
-          OrderMgr.failOrder(order, false);
-        });
-        AdyenLogs.info_log(
-          `Offer closed for order ${order.orderNo} and updated to status NOT PAID.`,
-        );
-        break;
-      case 'PENDING':
-        pending = true;
-        AdyenLogs.info_log(`Order ${order.orderNo} was in pending status.`);
-        break;
-      case 'CAPTURE':
-        if (
-          customObj.custom.success === 'true' &&
-          order.status.value === Order.ORDER_STATUS_CANCELLED
-        ) {
-          order.setPaymentStatus(Order.PAYMENT_STATUS_PAID);
-          order.setExportStatus(Order.EXPORT_STATUS_READY);
-          order.setConfirmationStatus(Order.CONFIRMATION_STATUS_CONFIRMED);
-          OrderMgr.undoCancelOrder(order);
-          AdyenLogs.info_log(
-            `Undo failed capture, Order ${order.orderNo} updated to status PAID.`,
-          );
-        }
-
-        break;
-      default:
-        AdyenLogs.info_log(
-          `Order ${order.orderNo} received unhandled status ${customObj.custom.eventCode}`,
-        );
+      const handlerResult = handlerModule.handle({ order, customObj, result, totalAmount });
+      // For PENDING events, capture the pending status
+      if (customObj.custom.eventCode === 'PENDING' && handlerResult && handlerResult.pending) {
+        pending = handlerResult.pending;
+      }
+    } else {
+      // Handle unhandled event types
+      AdyenLogs.info_log(
+        `Order ${order.orderNo} received unhandled status ${customObj.custom.eventCode}`,
+      );
     }
       // Add received information to order
       /*
