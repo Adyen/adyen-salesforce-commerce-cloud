@@ -274,7 +274,17 @@ function createPaymentRequest(args) {
     paymentInstrument,
     paymentRequest.paymentMethod,
   );
-  return doPaymentsCall(order, paymentInstrument, paymentRequest);
+  try {
+    return doPaymentsCall(order, paymentInstrument, paymentRequest);
+  } catch (error) {
+    AdyenLogs.error_log('Payment call failed:', error);
+    return {
+      error: true,
+      adyenErrorMessage:
+        error.message ||
+        Resource.msg('confirm.error.declined', 'checkout', null),
+    };
+  }
 }
 
 function doPaymentsDetailsCall(paymentDetailsRequest) {
