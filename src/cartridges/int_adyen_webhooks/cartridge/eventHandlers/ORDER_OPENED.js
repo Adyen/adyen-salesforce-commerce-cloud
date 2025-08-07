@@ -1,7 +1,11 @@
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 
-function handle() {
-    AdyenLogs.info_log('New webhook setup triggering, ORDER_OPENED');
+function handle({ order, customObj }) {
+  if (customObj.custom.success === 'true') {
+    AdyenLogs.info_log(
+      `Order ${order.orderNo} opened for partial payments`,
+    );
+  }
 }
 
 module.exports = { handle };
