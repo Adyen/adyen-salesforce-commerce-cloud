@@ -292,6 +292,14 @@
                     </value-definition>
                 </value-definitions>
             </attribute-definition>
+            <attribute-definition attribute-id="eventDate">
+                <display-name xml:lang="x-default">Event Date</display-name>
+                <type>string</type>
+                <localizable-flag>false</localizable-flag>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
             <attribute-definition attribute-id="message">
                 <display-name xml:lang="x-default">Message</display-name>
                 <type>string</type>
@@ -315,6 +323,7 @@
                 <attribute attribute-id="eventCode"/>
                 <attribute attribute-id="creationDate" system="true"/>
                 <attribute attribute-id="eventType"/>
+                <attribute attribute-id="eventDate"/>
                 <attribute attribute-id="referenceId"/>
                 <attribute attribute-id="message"/>
                 <attribute attribute-id="eventSource"/>

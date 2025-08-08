@@ -27,4 +27,5 @@ module.exports = {
     TEST_CONNECTION: 'TEST_CONNECTION',
   },
   EVENT_LIMIT: 1000,
+  MAX_RETRY_COUNT: 2,
 };

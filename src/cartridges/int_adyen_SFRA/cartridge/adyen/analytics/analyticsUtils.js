@@ -1,0 +1,187 @@
+const CustomObjectMgr = require('dw/object/CustomObjectMgr');
+const Transaction = require('dw/system/Transaction');
+const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
+const analyticsConstants = require('*/cartridge/adyen/analytics/constants');
+const { processingStatus } = require('./constants');
+const AnalyticsService = require('./analyticsService');
+
+const defaultProperties = {
+  channel: 'Web',
+  platform: 'Web',
+  [analyticsConstants.eventCode.INFO]: [],
+  [analyticsConstants.eventCode.LOG]: [],
+  [analyticsConstants.eventCode.ERROR]: [],
+  customObjects: [],
+};
+
+const eventCodeList = {
+  [analyticsConstants.eventCode.INFO]: {
+    name: analyticsConstants.eventCode.INFO,
+    limit: 50,
+  },
+  [analyticsConstants.eventCode.ERROR]: {
+    name: analyticsConstants.eventCode.ERROR,
+    limit: 5,
+  },
+  [analyticsConstants.eventCode.LOG]: {
+    name: analyticsConstants.eventCode.LOG,
+    limit: 10,
+  },
+};
+
+function isRequestObjectFull(requestObject) {
+  return Object.keys(eventCodeList).some((key) => {
+    const eventCode = eventCodeList[key];
+    return requestObject[eventCode.name].length >= eventCode.limit;
+  });
+}
+
+function updateCounter(customObject) {
+  Transaction.wrap(() => {
+    customObject.custom.retryCount += 1;
+  });
+}
+
+function updateProcessingStatus(customObject, status) {
+  Transaction.wrap(() => {
+    customObject.custom.processingStatus = status;
+  });
+}
+
+function addEventObject(customObject, requestObjectList) {
+  const { creationDate, custom: event } = customObject;
+  const requestObject = requestObjectList.slice(-1)[0];
+  const eventObject = {
+    timestamp: event.eventDate || new Date(creationDate).getTime().toString(),
+    type: event.eventType,
+    target: event.referenceId,
+    id: event.eventId,
+    component: event.eventSource,
+  };
+  if (event.eventCode === analyticsConstants.eventCode.ERROR) {
+    delete eventObject.type;
+    delete eventObject.target;
+    eventObject.errorType = analyticsConstants.errorType;
+  }
+
+  if (!isRequestObjectFull(requestObject)) {
+    return [
+      ...requestObjectList.slice(0, -1),
+      {
+        ...defaultProperties,
+        ...requestObject,
+        [event.eventCode]: requestObject[event.eventCode].concat([
+          { ...eventObject },
+        ]),
+        customObjects: requestObject.customObjects.concat([customObject]),
+      },
+    ];
+  }
+  return [
+    ...requestObjectList,
+    {
+      ...defaultProperties,
+      [event.eventCode]: [].concat([{ ...eventObject }]),
+      customObjects: [].concat([customObject]),
+    },
+  ];
+}
+
+function createAnalyticsRequest(customObjectIterator) {
+  let counter = 0;
+  let requestObjectList = [];
+  requestObjectList.push({ ...defaultProperties });
+  while (customObjectIterator.hasNext()) {
+    if (counter >= analyticsConstants.EVENT_LIMIT) {
+      break;
+    }
+    const customObject = customObjectIterator.next();
+    requestObjectList = addEventObject(customObject, requestObjectList);
+    counter++;
+  }
+  return requestObjectList;
+}
+
+function sendAnalyticsEvents(requestObjectList) {
+  requestObjectList.forEach((requestObject) => {
+    const { customObjects, ...request } = requestObject;
+    const submission = AnalyticsService.submitData(request);
+    if (submission.data) {
+      customObjects.forEach((customObject) => {
+        updateProcessingStatus(
+          customObject,
+          analyticsConstants.processingStatus.PROCESSED,
+        );
+      });
+    } else {
+      customObjects.forEach((customObject) => {
+        if (
+          customObject.custom.retryCount > analyticsConstants.MAX_RETRY_COUNT
+        ) {
+          updateProcessingStatus(
+            customObject,
+            analyticsConstants.processingStatus.SKIPPED,
+          );
+        } else {
+          updateCounter(customObject);
+        }
+      });
+      throw new Error('Failed to submit full payload for grouped objects.');
+    }
+  });
+}
+
+function processEvents(customObjectId) {
+  const query = 'custom.processingStatus = {0}';
+  const queryArgs = [processingStatus.NOT_PROCESSED];
+  let customObjectIterator = null;
+  try {
+    customObjectIterator = CustomObjectMgr.queryCustomObjects(
+      customObjectId,
+      query,
+      null,
+      queryArgs,
+    );
+    const analyticsRequest = createAnalyticsRequest(customObjectIterator);
+    sendAnalyticsEvents(analyticsRequest);
+  } catch (e) {
+    AdyenLogs.error_log('Error querying custom objects:', e);
+    throw e;
+  } finally {
+    if (customObjectIterator) {
+      customObjectIterator.close();
+    }
+  }
+}
+
+function clearEvents(customObjectId) {
+  let customObjectIterator = null;
+  try {
+    const query =
+      'custom.processingStatus = {0} OR custom.processingStatus = {1}';
+    const queryArgs = [processingStatus.SKIPPED, processingStatus.PROCESSED];
+    customObjectIterator = CustomObjectMgr.queryCustomObjects(
+      customObjectId,
+      query,
+      null,
+      queryArgs,
+    );
+    while (customObjectIterator.hasNext()) {
+      const customObject = customObjectIterator.next();
+      Transaction.wrap(() => {
+        CustomObjectMgr.remove(customObject);
+      });
+    }
+  } catch (e) {
+    AdyenLogs.error_log(`Error clearing events for ${customObjectId}:`, e);
+  } finally {
+    if (customObjectIterator) {
+      customObjectIterator.close();
+    }
+  }
+}
+
+module.exports = {
+  processEvents,
+  clearEvents,
+};
