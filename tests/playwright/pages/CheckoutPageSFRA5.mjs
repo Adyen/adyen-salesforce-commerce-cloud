@@ -1,4 +1,5 @@
 import { chromium, expect } from '@playwright/test';
+
 export default class CheckoutPageSFRA5 {
   constructor(page) {
     this.page = page;
@@ -59,7 +60,7 @@ export default class CheckoutPageSFRA5 {
     this.placeOrderButton = page.locator('.place-order');
 
     this.errorMessage = page.locator('.error-message-text');
-    this.giftCardWarning = page.locator('#giftCardWarningMessage')
+    this.giftCardWarning = page.locator('#giftCardWarningMessage');
     this.thankYouMessage = page.locator('.order-thank-you-msg');
 
     this.voucherCode = page.locator('#voucherResult');
@@ -78,7 +79,7 @@ export default class CheckoutPageSFRA5 {
     this.passwordField = page.locator('#login-form-password');
     this.loginButton = page.locator('.login button[type="submit"]');
 
-    this.paymentModal = page.locator(".additionalFields");
+    this.paymentModal = page.locator('.additionalFields');
 
     this.donationAmountButton = page.locator('.adyen-checkout__button').nth(0);
     this.donationButton = page.locator('.adyen-checkout__button--donate');
@@ -87,9 +88,10 @@ export default class CheckoutPageSFRA5 {
   }
 
   isPaymentModalShown = async (imgAltValue) => {
-    await expect(this.paymentModal.locator(`img[alt='${imgAltValue}']`))
-      .toBeVisible();
-  }
+    await expect(
+      this.paymentModal.locator(`img[alt='${imgAltValue}']`),
+    ).toBeVisible();
+  };
 
   navigateToCheckout = async (locale) => {
     await this.page.goto(this.getCheckoutUrl(locale));
@@ -97,7 +99,7 @@ export default class CheckoutPageSFRA5 {
 
   navigateToCart = async (locale) => {
     await this.page.goto(this.getCartUrl(locale));
-  }
+  };
 
   goToCheckoutPageWithFullCart = async (locale, itemCount = 1) => {
     await this.addProductToCart(locale, itemCount);
@@ -109,11 +111,11 @@ export default class CheckoutPageSFRA5 {
 
   getCheckoutUrl(locale) {
     return `/on/demandware.store/Sites-RefArch-Site/${locale}/Checkout-Login`;
-  };
+  }
 
   getCartUrl(locale) {
     return `/s/RefArch/cart?lang=${locale}`;
-  };
+  }
 
   addProductToCart = async (locale, itemCount = 1) => {
     await this.consentButton.click();
@@ -147,7 +149,7 @@ export default class CheckoutPageSFRA5 {
     await this.checkoutPageUserTelephoneInput.type(shopperDetails.telephone);
 
     if (await this.checkoutPageUserStateSelect.isVisible()) {
-      await this.checkoutPageUserStateSelect.selectOption({ index: 1 })
+      await this.checkoutPageUserStateSelect.selectOption({ index: 1 });
       if (shopperDetails.address.stateOrProvince !== '') {
         await this.checkoutPageUserStateSelect.selectOption(
           shopperDetails.address.stateOrProvince,
@@ -162,22 +164,23 @@ export default class CheckoutPageSFRA5 {
     await this.checkoutPageUserEmailInput.fill(email);
     // Pressing Tab to simulate component re-rendering and waiting the components to re-mount
     await this.page.keyboard.press('Tab');
-    await new Promise(r => setTimeout(r, 2000)); 
+    await new Promise((r) => setTimeout(r, 2000));
   };
 
   submitShipping = async () => {
     await this.page.waitForLoadState('networkidle');
     await this.shippingSubmit.click();
-    await this.page.waitForNavigation({ waitUntil: "networkidle" });
+    await this.page.waitForNavigation({ waitUntil: 'networkidle' });
 
     // Ugly wait since the submit button takes time to mount.
-    await new Promise(r => setTimeout(r, 2000));
+    await new Promise((r) => setTimeout(r, 2000));
   };
 
   submitPayment = async () => {
     await this.page.waitForLoadState('load');
     await this.submitPaymentButton.click();
   };
+
   placeOrder = async () => {
     await this.page.waitForLoadState('load');
     await this.placeOrderButton.click();
@@ -219,7 +222,7 @@ export default class CheckoutPageSFRA5 {
   };
 
   expectQRcode = async () => {
-    await this.qrLoader.waitFor({ state: 'attached'});
+    await this.qrLoader.waitFor({ state: 'attached' });
     await expect(this.qrLoaderAmount).toBeVisible();
     await expect(this.qrImg).toBeVisible();
   };
@@ -241,7 +244,7 @@ export default class CheckoutPageSFRA5 {
 
   loginUser = async (credentials) => {
     await this.signInSectionButton.click();
-	await new Promise(r => setTimeout(r, 2000));
+    await new Promise((r) => setTimeout(r, 2000));
     await this.emailField.type(credentials.shopperEmail);
     await this.passwordField.type(credentials.password);
     await this.loginButton.click();

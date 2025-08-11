@@ -38,6 +38,7 @@ const constants = require('*/cartridge/adyen/config/constants');
 const AdyenConfigs = require('*/cartridge/adyen/utils/adyenConfigs');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 const { AdyenError } = require('*/cartridge/adyen/logs/adyenError');
+const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 
 /* eslint no-var: off */
 const adyenHelperObj = {
@@ -297,6 +298,10 @@ const adyenHelperObj = {
   },
 
   isAdyenGivingAvailable(order) {
+    if (!order) {
+      return false;
+    }
+
     const paymentInstruments = order.getPaymentInstruments(adyenHelperObj.getOrderMainPaymentInstrumentType(order));
 
     if (!paymentInstruments.length) {
@@ -868,7 +873,7 @@ const adyenHelperObj = {
       };
     }
 
-    AdyenLogs.error_log(`Unknown resultCode: ${checkoutresponse.resultCode}.`);
+    AdyenLogs.error_log('Unknown resultCode:', checkoutresponse.resultCode);
     return {
       isFinal: true,
       isSuccessful: false,
@@ -957,6 +962,21 @@ const adyenHelperObj = {
     }
     return JSON.parse(resultObject.getText());
   },
+
+  createOrder(currentBasket) {
+    if (currentBasket.custom?.adyenGiftCards) {
+      const giftCardsOrderNo = currentBasket.custom.adyenGiftCardsOrderNo;
+      return Transaction.wrap(function () {
+        return OrderMgr.createOrder(currentBasket, giftCardsOrderNo);
+      });
+    } else if (session.privacy.orderNo) {
+      return Transaction.wrap(function () {
+        return OrderMgr.createOrder(currentBasket, session.privacy.orderNo);
+      });
+    } else {
+      return COHelpers.createOrder(currentBasket);
+    }
+  }
 };
 
 module.exports = adyenHelperObj;

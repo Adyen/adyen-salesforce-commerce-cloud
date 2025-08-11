@@ -35,7 +35,7 @@ export default class PaymentMethodsPage {
   initiateGooglePayExpressPayment = async () => {
     await this.page.waitForTimeout(5000);
     const googlePayButton = this.page.locator('#gpay-button-online-api-id');
-    expect(googlePayButton).toBeVisible();
+    await expect(googlePayButton).toBeVisible();
   }
 
   initiatePayPalPayment = async (expressFlow, shippingChange, success, taxation) => {
@@ -65,7 +65,7 @@ export default class PaymentMethodsPage {
     this.nextButton = popup.locator('#btnNext');
     this.passwordInput = popup.locator('#password');
     this.loginButton = popup.locator('#btnLogin');
-    this.agreeAndPayNowButton = popup.locator('#payment-submit-btn');
+    this.agreeAndPayNowButton = popup.locator('button[data-testid="submit-button-initial"]');
     this.shippingMethodsDropdown = popup.locator('#shippingMethodsDropdown');
 	this.changeAddress = popup.locator('button[data-testid="change-shipping"]');
 	this.selectAddress = popup.locator('#shippingDropdown');
@@ -115,10 +115,13 @@ export default class PaymentMethodsPage {
     this.loginButton = this.page.locator("#signInSubmit");
     this.changePaymentButton = this.page.locator("#change-payment-button");
     this.confirmPaymentChangeButton = this.page.locator("#a-autoid-8");
-    this.amazonCaptcha = this.page.locator('//img[contains(@alt,"captcha")]');
+    this.amazonCaptcha = this.page.locator('#captcha-container');
+    this.continueButton = this.page.locator('.a-button-input');
+
 
     await this.emailInput.click();
     await this.emailInput.type(paymentData.AmazonPay.username);
+    await this.continueButton.click();
     await this.passwordInput.click();
     await this.passwordInput.type(paymentData.AmazonPay.password);
     await this.loginButton.click();

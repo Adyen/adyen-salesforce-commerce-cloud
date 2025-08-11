@@ -21,7 +21,7 @@ function validatePaymentDataFromRequest(req, res, next) {
     validateBasketAmount(currentBasket);
     return next();
   } catch (e) {
-    AdyenLogs.fatal_log(`Error occurred: ${e.message}`);
+    AdyenLogs.fatal_log('Error occurred:', e.message);
     setErrorType(e, res);
     return res.redirect(URLUtils.url('Error-ErrorCode', 'err', 'general'));
   }
