@@ -7,9 +7,9 @@ function submitCustomer(req, res, next) {
   let stage = 'shipping';
   if (req.form.shopperDetails) {
     try {
+      const currentBasket = BasketMgr.getCurrentBasket();
       const shopperDetails = JSON.parse(req.form.shopperDetails);
-      if (shopperDetails) {
-        const currentBasket = BasketMgr.getCurrentBasket();
+      if (shopperDetails && currentBasket) {
         paypalHelper.setBillingAndShippingAddress(
           currentBasket,
           shopperDetails,

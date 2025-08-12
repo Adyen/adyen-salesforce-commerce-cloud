@@ -2,6 +2,9 @@ const { httpClient } = require('../../commons/httpClient');
 const store = require('../../../../../../config/store');
 
 function formatFastlaneAddress(shippingAddress) {
+  if (!shippingAddress) {
+    return null;
+  }
   const { name, address, phoneNumber } = shippingAddress;
   return {
     firstName: name?.firstName,

@@ -189,7 +189,7 @@ function handlePaymentAction() {
   let shouldResend = true;
   $(document).ajaxSend(async (event, xhr, settings) => {
     const isCustomerEmailUrl =
-      settings.url === $('#guest-customer')?.attr('action');
+      settings.url === $('#guest-customer').attr('action');
     if (isCustomerEmailUrl && store.fastlane.component) {
       xhr.abort();
       document.querySelector('#guest-customer button').disabled = true;
