@@ -1,30 +1,12 @@
 const server = require('server');
-const BasketMgr = require('dw/order/BasketMgr');
-const URLUtils = require('dw/web/URLUtils');
-const paypalHelper = require('*/cartridge/adyen/utils/paypalHelper');
 
 server.extend(module.superModule);
 
 const placeOrder = require('*/cartridge/controllers/middlewares/checkout_services/placeOrder');
+const submitCustomer = require('*/cartridge/controllers/middlewares/checkout_services/submitCustomer');
 
 server.prepend('PlaceOrder', server.middleware.https, placeOrder);
 
-server.prepend('SubmitCustomer', server.middleware.https, (req, res, next) => {
-  let stage = 'shipping';
-  const shopperDetails = JSON.parse(req.form.shopperDetails);
-  if (shopperDetails) {
-    const currentBasket = BasketMgr.getCurrentBasket();
-    paypalHelper.setBillingAndShippingAddress(currentBasket, shopperDetails);
-    stage = 'payment';
-  }
-  res.setViewData({
-    fastlaneReturnUrl: URLUtils.url(
-      'Checkout-Begin',
-      'stage',
-      stage,
-    ).toString(),
-  });
-  return next();
-});
+server.prepend('SubmitCustomer', server.middleware.https, submitCustomer);
 
 module.exports = server.exports();
