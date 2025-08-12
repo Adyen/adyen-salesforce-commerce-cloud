@@ -1,4 +1,6 @@
 const PaymentMgr = require('dw/order/PaymentMgr');
+const Order = require('dw/order/Order');
+const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 const constants = require('./constants');
 
 /**
@@ -23,6 +25,22 @@ function handleAdyenPaymentInstruments(paymentInstruments, customObj) {
   return foundAdyen;
 }
 
+/**
+ * Places an order which gets exported to OMS
+ * @param {dw.order.Order} order - The order to place
+ * @returns {Object} Result of placing the order
+ */
+function placeOrder(order) {
+  const fraudDetectionStatus = { status: 'success' };
+  // Only created orders can be placed
+  if (order.status.value === Order.ORDER_STATUS_CREATED) {
+    const placeOrderResult = COHelpers.placeOrder(order, fraudDetectionStatus);
+    return placeOrderResult;
+  }
+  return { error: true };
+}
+
 module.exports = {
   handleAdyenPaymentInstruments,
+  placeOrder,
 };
