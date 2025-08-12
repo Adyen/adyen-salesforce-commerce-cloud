@@ -16,7 +16,11 @@ const { GIFTCARD } = require('../../../../../config/constants');
 const { renderGiftCards } = require('./giftcards');
 const { addStores } = require('./pos');
 const helpers = require('./helpers');
-const { mountFastlaneWatermark, fastlaneAuthenticate } = require('./fastlane');
+const {
+  mountFastlaneWatermark,
+  fastlaneAuthenticate,
+  initFastlane,
+} = require('./fastlane');
 
 let paymentMethodsResponse = null;
 
@@ -261,9 +265,12 @@ function init() {
       paymentMethodsResponse = await getPaymentMethods();
       const { showFastlane } = paymentMethodsResponse;
       if (showFastlane) {
-        const guestEmailInput = document.querySelector('#email-guest');
-        if (guestEmailInput) {
-          await mountFastlaneWatermark(guestEmailInput);
+        store.fastlane.component = await initFastlane();
+        if (store.fastlane.component) {
+          const guestEmailInput = document.querySelector('#email-guest');
+          if (guestEmailInput) {
+            await mountFastlaneWatermark(guestEmailInput);
+          }
         }
       }
       const storedCustomerEmail = sessionStorage.getItem('customerEmail');

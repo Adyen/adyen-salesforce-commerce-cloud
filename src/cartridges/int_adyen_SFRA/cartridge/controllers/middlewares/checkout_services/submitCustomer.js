@@ -5,14 +5,19 @@ const paypalHelper = require('*/cartridge/adyen/utils/paypalHelper');
 
 function submitCustomer(req, res, next) {
   let stage = 'shipping';
-  if (req.form.shopperDetails) {
+  if (
+    req.form.fastlaneShopperDetails &&
+    !req.currentCustomer.raw.authenticated
+  ) {
     try {
       const currentBasket = BasketMgr.getCurrentBasket();
-      const shopperDetails = JSON.parse(req.form.shopperDetails);
-      if (shopperDetails && currentBasket) {
+      const fastlaneShopperDetails = JSON.parse(
+        req.form.fastlaneShopperDetails,
+      );
+      if (currentBasket) {
         paypalHelper.setBillingAndShippingAddress(
           currentBasket,
-          shopperDetails,
+          fastlaneShopperDetails,
         );
         stage = 'payment';
       }
@@ -24,11 +29,7 @@ function submitCustomer(req, res, next) {
     }
   }
   res.setViewData({
-    fastlaneReturnUrl: URLUtils.url(
-      'Checkout-Begin',
-      'stage',
-      stage,
-    ).toString(),
+    returnUrl: URLUtils.url('Checkout-Begin', 'stage', stage).toString(),
   });
   return next();
 }

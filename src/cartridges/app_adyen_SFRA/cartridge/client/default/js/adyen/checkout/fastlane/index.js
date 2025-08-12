@@ -51,8 +51,8 @@ function getFastlaneShopperDetails(
 }
 
 function handleSubmitCustomer(response) {
-  if (response.redirectUrl || response.fastlaneReturnUrl) {
-    window.location.href = response.redirectUrl || response.fastlaneReturnUrl;
+  if (response.redirectUrl || response.returnUrl) {
+    window.location.href = response.redirectUrl || response.returnUrl;
   } else {
     $('body').trigger('checkout:updateCheckoutView', {
       order: response.order,
@@ -62,7 +62,7 @@ function handleSubmitCustomer(response) {
   }
 }
 
-async function fastlaneInit() {
+async function initFastlane() {
   return window.AdyenWeb.initializeFastlane(store.checkoutConfiguration);
 }
 
@@ -70,7 +70,6 @@ async function mountFastlaneWatermark(htmlEl) {
   const watermarkContainer = document.createElement('div');
   watermarkContainer.id = 'watermark-container';
   htmlEl.parentElement.appendChild(watermarkContainer);
-  store.fastlane.component = await fastlaneInit();
   await store.fastlane.component.mountWatermark('#watermark-container');
 }
 
@@ -87,7 +86,7 @@ async function fastlaneAuthenticate(url, shopperEmail) {
 
     const requestData = {
       dwfrm_coCustomer_email: shopperEmail,
-      shopperDetails: JSON.stringify(shopperDetails),
+      fastlaneShopperDetails: JSON.stringify(shopperDetails),
     };
 
     const response = await httpClient({
@@ -106,6 +105,7 @@ async function fastlaneAuthenticate(url, shopperEmail) {
 }
 
 module.exports = {
+  initFastlane,
   fastlaneAuthenticate,
   mountFastlaneWatermark,
 };
