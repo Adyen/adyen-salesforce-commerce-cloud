@@ -1,14 +1,27 @@
 const BasketMgr = require('dw/order/BasketMgr');
 const URLUtils = require('dw/web/URLUtils');
+const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 const paypalHelper = require('*/cartridge/adyen/utils/paypalHelper');
 
 function submitCustomer(req, res, next) {
   let stage = 'shipping';
-  const shopperDetails = JSON.parse(req.form.shopperDetails);
-  if (shopperDetails) {
-    const currentBasket = BasketMgr.getCurrentBasket();
-    paypalHelper.setBillingAndShippingAddress(currentBasket, shopperDetails);
-    stage = 'payment';
+  if (req.form.shopperDetails) {
+    try {
+      const shopperDetails = JSON.parse(req.form.shopperDetails);
+      if (shopperDetails) {
+        const currentBasket = BasketMgr.getCurrentBasket();
+        paypalHelper.setBillingAndShippingAddress(
+          currentBasket,
+          shopperDetails,
+        );
+        stage = 'payment';
+      }
+    } catch (error) {
+      AdyenLogs.error_log(
+        'Failed to set billing and shipping address for fastlane',
+        error,
+      );
+    }
   }
   res.setViewData({
     fastlaneReturnUrl: URLUtils.url(

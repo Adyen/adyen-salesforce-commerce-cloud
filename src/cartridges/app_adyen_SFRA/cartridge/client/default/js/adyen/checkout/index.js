@@ -190,6 +190,7 @@ async function overrideCustomerEmailRequest(
     if (err.responseJSON?.redirectUrl) {
       window.location.href = err.responseJSON.redirectUrl;
     }
+    document.querySelector('#guest-customer button').disabled = false;
   }
 }
 
