@@ -16,6 +16,7 @@ const { GIFTCARD } = require('../../../../../config/constants');
 const { renderGiftCards } = require('./giftcards');
 const { addStores } = require('./pos');
 const helpers = require('./helpers');
+const { mountFastlaneWatermark, fastlaneAuthenticate } = require('./fastlane');
 
 let paymentMethodsResponse = null;
 
@@ -110,90 +111,6 @@ function handleSfraRedirect(data) {
   }
 }
 
-function getFastlaneShopperDetails(
-  shopperEmail,
-  authenticationState,
-  profileData,
-) {
-  let shopperDetails = null;
-
-  if (authenticationState === 'succeeded' && profileData) {
-    const { shippingAddress } = profileData;
-    const { name, address, phoneNumber } = shippingAddress;
-
-    const addressData = {
-      firstName: name?.firstName,
-      lastName: name?.lastName,
-      street: address?.addressLine1,
-      city: address?.adminArea2,
-      telephoneNumber: `${phoneNumber?.countryCode}${phoneNumber?.nationalNumber}`,
-      postalCode: address?.postalCode,
-      stateOrProvince: address?.adminArea1,
-      country: address?.countryCode,
-    };
-
-    shopperDetails = {
-      shopperEmail,
-      telephoneNumber: profileData.phones?.length
-        ? `${profileData.phones[0].countryCode}${profileData.phones[0].nationalNumber}`
-        : null,
-      shopperName: {
-        firstName: profileData.name?.firstName,
-        lastName: profileData.name?.lastName,
-      },
-      shippingAddress: addressData,
-      billingAddress: addressData,
-    };
-  }
-
-  return shopperDetails;
-}
-
-function handleSubmitCustomer(response) {
-  if (response.redirectUrl || response.fastlaneReturnUrl) {
-    window.location.href = response.redirectUrl || response.fastlaneReturnUrl;
-  } else {
-    $('body').trigger('checkout:updateCheckoutView', {
-      order: response.order,
-      customer: response.customer,
-      csrfToken: response.csrfToken,
-    });
-  }
-}
-
-async function overrideCustomerEmailRequest(
-  url,
-  shopperEmail,
-  fastlaneAuthResult,
-) {
-  try {
-    const { authenticationState, profileData } = fastlaneAuthResult;
-    const shopperDetails = getFastlaneShopperDetails(
-      shopperEmail,
-      authenticationState,
-      profileData,
-    );
-
-    const requestData = {
-      dwfrm_coCustomer_email: shopperEmail,
-      shopperDetails: JSON.stringify(shopperDetails),
-    };
-
-    const response = await httpClient({
-      url,
-      data: requestData,
-      method: 'POST',
-    });
-
-    handleSubmitCustomer(response);
-  } catch (err) {
-    if (err.responseJSON?.redirectUrl) {
-      window.location.href = err.responseJSON.redirectUrl;
-    }
-    document.querySelector('#guest-customer button').disabled = false;
-  }
-}
-
 async function overridePlaceOrderRequest(url) {
   try {
     $('body').trigger('checkout:disableButton', '.next-step-button button');
@@ -279,7 +196,7 @@ function handlePaymentAction() {
       const guestEmail = document.querySelector('#email-guest').value;
       store.fastlane.authResult =
         await store.fastlane.component.authenticate(guestEmail);
-      await overrideCustomerEmailRequest(
+      await fastlaneAuthenticate(
         settings.url,
         guestEmail,
         store.fastlane.authResult,
@@ -350,15 +267,9 @@ function init() {
       paymentMethodsResponse = await getPaymentMethods();
       const { showFastlane } = paymentMethodsResponse;
       if (showFastlane) {
-        const guestEmail = document.querySelector('#email-guest');
-        if (guestEmail) {
-          const watermarkContainer = document.createElement('div');
-          watermarkContainer.id = 'watermark-container';
-          guestEmail.parentElement.appendChild(watermarkContainer);
-          store.fastlane.component = await window.AdyenWeb.initializeFastlane(
-            store.checkoutConfiguration,
-          );
-          await store.fastlane.component.mountWatermark('#watermark-container');
+        const guestEmailInput = document.querySelector('#email-guest');
+        if (guestEmailInput) {
+          await mountFastlaneWatermark(guestEmailInput);
         }
       }
       const storedCustomerEmail = sessionStorage.getItem('customerEmail');
