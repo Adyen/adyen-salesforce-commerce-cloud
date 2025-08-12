@@ -194,13 +194,7 @@ function handlePaymentAction() {
       xhr.abort();
       document.querySelector('#guest-customer button').disabled = true;
       const guestEmail = document.querySelector('#email-guest').value;
-      store.fastlane.authResult =
-        await store.fastlane.component.authenticate(guestEmail);
-      await fastlaneAuthenticate(
-        settings.url,
-        guestEmail,
-        store.fastlane.authResult,
-      );
+      await fastlaneAuthenticate(settings.url, guestEmail);
     }
 
     const isPlaceOrderUrl = settings.url === $('.place-order').data('action');

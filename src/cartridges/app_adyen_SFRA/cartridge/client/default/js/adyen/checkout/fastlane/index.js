@@ -74,9 +74,11 @@ async function mountFastlaneWatermark(htmlEl) {
   await store.fastlane.component.mountWatermark('#watermark-container');
 }
 
-async function fastlaneAuthenticate(url, shopperEmail, fastlaneAuthResult) {
+async function fastlaneAuthenticate(url, shopperEmail) {
   try {
-    const { authenticationState, profileData } = fastlaneAuthResult;
+    store.fastlane.authResult =
+      await store.fastlane.component.authenticate(shopperEmail);
+    const { authenticationState, profileData } = store.fastlane.authResult;
     const shopperDetails = getFastlaneShopperDetails(
       shopperEmail,
       authenticationState,
