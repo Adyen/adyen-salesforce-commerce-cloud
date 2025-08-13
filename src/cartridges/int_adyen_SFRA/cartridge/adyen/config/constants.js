@@ -43,6 +43,7 @@ module.exports = {
     IDEAL: 'ideal',
     SEPADIRECTDEBIT: 'sepadirectdebit',
     GIFTCARD: 'giftcard',
+    FASTLANE: 'fastlane',
   },
 
   CAN_SKIP_SUMMARY_PAGE: ['applepay', 'cashapp', 'upi', 'googlepay'],

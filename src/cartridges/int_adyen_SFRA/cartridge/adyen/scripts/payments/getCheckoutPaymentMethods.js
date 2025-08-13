@@ -71,8 +71,9 @@ function getCheckoutPaymentMethods(req, res, next) {
         ),
       },
       showFastlane:
-        paymentMethods.paymentMethods.some((pm) => pm.type === 'fastlane') &&
-        !req.currentCustomer.raw.authenticated,
+        paymentMethods.paymentMethods.some(
+          (pm) => pm.type === constants.PAYMENTMETHODS.FASTLANE,
+        ) && !req.currentCustomer.raw.authenticated,
       imagePath: adyenURL,
       adyenDescriptions: paymentMethodDescriptions,
       adyenTranslations: translations,

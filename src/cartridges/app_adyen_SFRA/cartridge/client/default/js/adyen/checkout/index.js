@@ -16,6 +16,11 @@ const { GIFTCARD } = require('../../../../../config/constants');
 const { renderGiftCards } = require('./giftcards');
 const { addStores } = require('./pos');
 const helpers = require('./helpers');
+const {
+  mountFastlaneWatermark,
+  fastlaneAuthenticate,
+  initFastlane,
+} = require('./fastlane');
 
 let paymentMethodsResponse = null;
 
@@ -187,6 +192,15 @@ function submitPayment() {
 function handlePaymentAction() {
   let shouldResend = true;
   $(document).ajaxSend(async (event, xhr, settings) => {
+    const isCustomerEmailUrl =
+      settings.url === $('#guest-customer').attr('action');
+    if (isCustomerEmailUrl && store.fastlane.component) {
+      xhr.abort();
+      document.querySelector('#guest-customer button').disabled = true;
+      const guestEmail = document.querySelector('#email-guest').value;
+      await fastlaneAuthenticate(settings.url, guestEmail);
+    }
+
     const isPlaceOrderUrl = settings.url === $('.place-order').data('action');
     if (isPlaceOrderUrl && shouldResend) {
       xhr.abort();
@@ -251,15 +265,12 @@ function init() {
       paymentMethodsResponse = await getPaymentMethods();
       const { showFastlane } = paymentMethodsResponse;
       if (showFastlane) {
-        const guestEmail = document.querySelector('#email-guest');
-        if (guestEmail) {
-          const watermarkContainer = document.createElement('div');
-          watermarkContainer.id = 'watermark-container';
-          guestEmail.parentElement.appendChild(watermarkContainer);
-          const fastlane = await window.AdyenWeb.initializeFastlane(
-            store.checkoutConfiguration,
-          );
-          await fastlane.mountWatermark('#watermark-container');
+        store.fastlane.component = await initFastlane();
+        if (store.fastlane.component) {
+          const guestEmailInput = document.querySelector('#email-guest');
+          if (guestEmailInput) {
+            await mountFastlaneWatermark(guestEmailInput);
+          }
         }
       }
       const storedCustomerEmail = sessionStorage.getItem('customerEmail');
