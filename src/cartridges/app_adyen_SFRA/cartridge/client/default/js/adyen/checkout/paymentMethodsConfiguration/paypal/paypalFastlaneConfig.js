@@ -14,8 +14,9 @@ class PayPalFastlaneConfig {
 
   getConfig() {
     return {
-      showPayButton: true,
       ...this.store?.fastlane?.configuration,
+      showPayButton: true,
+      onSubmit: this.onSubmit,
     };
   }
 }

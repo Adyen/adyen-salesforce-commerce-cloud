@@ -46,7 +46,13 @@ module.exports = {
     FASTLANE: 'fastlane',
   },
 
-  CAN_SKIP_SUMMARY_PAGE: ['applepay', 'cashapp', 'upi', 'googlepay'],
+  CAN_SKIP_SUMMARY_PAGE: [
+    'applepay',
+    'cashapp',
+    'upi',
+    'googlepay',
+    'fastlane',
+  ],
 
   OPEN_INVOICE_METHODS: [
     'afterpay',
