@@ -68,6 +68,7 @@ describe('getCheckoutPaymentMethods', () => {
       showFastlane: false,
       adyenTranslations: expect.anything(),
       imagePath: 'mocked_loading_contextimages/logos/medium/',
+      fastlaneShopperEmail: null,
       countryCode: 'NL',
       applicationInfo: {
         externalPlatform: {
