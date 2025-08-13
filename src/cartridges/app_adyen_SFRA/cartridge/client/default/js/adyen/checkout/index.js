@@ -20,9 +20,11 @@ const {
   mountFastlaneWatermark,
   fastlaneAuthenticate,
   initFastlane,
+  getFastlaneShopperDetails,
 } = require('./fastlane');
 
 let paymentMethodsResponse = null;
+let isFastlaneRendering = false;
 
 function checkForError() {
   const name = 'paymentError';
@@ -39,22 +41,47 @@ $(document).ready(() => {
   checkForError();
 });
 
+async function renderFastlane(shopperEmail) {
+  if (isFastlaneRendering) {
+    return;
+  }
+  isFastlaneRendering = true;
+  try {
+    await fastlaneAuthenticate(shopperEmail);
+  } catch (error) {
+    console.error('Fastlane authentication failed:', error);
+  } finally {
+    isFastlaneRendering = false;
+  }
+}
+
+async function renderGiftCardsIfEnabled() {
+  const areGiftCardsEnabled =
+    paymentMethodsResponse?.AdyenPaymentMethods?.paymentMethods?.some(
+      (pm) => pm.type === GIFTCARD,
+    );
+  if (areGiftCardsEnabled) {
+    document.querySelector('#adyenGiftCards').style.display = 'block';
+    await renderGiftCards(paymentMethodsResponse);
+  }
+}
+
 async function registerRenderPaymentMethodListener() {
   $('body').on('checkout:renderPaymentMethod', async (e, response) => {
     const { email } = response;
+    const { showFastlane, fastlaneShopperEmail } = paymentMethodsResponse;
+    const { fastlane } = store;
+
+    if (fastlane.component && showFastlane && fastlaneShopperEmail) {
+      await renderFastlane(fastlaneShopperEmail);
+    }
+
     await setCheckoutConfiguration({
       email,
       paymentMethodsResponse,
     });
     await renderCheckout(paymentMethodsResponse);
-    const areGiftCardsEnabled =
-      paymentMethodsResponse?.AdyenPaymentMethods?.paymentMethods?.some(
-        (pm) => pm.type === GIFTCARD,
-      );
-    if (areGiftCardsEnabled) {
-      document.querySelector('#adyenGiftCards').style.display = 'block';
-      await renderGiftCards(paymentMethodsResponse);
-    }
+    await renderGiftCardsIfEnabled();
     if (window.activeTerminalApiStores) {
       addStores(window.activeTerminalApiStores);
     }
@@ -189,6 +216,54 @@ function submitPayment() {
   });
 }
 
+function handleSubmitCustomerResponse(response) {
+  if (response.redirectUrl || response.returnUrl) {
+    window.location.href = response.redirectUrl || response.returnUrl;
+  } else {
+    $('body').trigger('checkout:updateCheckoutView', {
+      order: response.order,
+      customer: response.customer,
+      csrfToken: response.csrfToken,
+    });
+  }
+}
+
+async function submitCustomer(url, shopperEmail) {
+  const { authenticationState, profileData } = store.fastlane.authResult;
+  const shopperDetails = getFastlaneShopperDetails(
+    shopperEmail,
+    authenticationState,
+    profileData,
+  );
+
+  const requestData = {
+    dwfrm_coCustomer_email: shopperEmail,
+    fastlaneShopperDetails: JSON.stringify(shopperDetails),
+  };
+
+  const response = await httpClient({
+    url,
+    data: requestData,
+    method: 'POST',
+  });
+
+  handleSubmitCustomerResponse(response);
+}
+
+async function handleFastlaneFlow(url) {
+  try {
+    document.querySelector('#guest-customer button').disabled = true;
+    const shopperEmail = document.querySelector('#email-guest').value;
+    await fastlaneAuthenticate(shopperEmail);
+    await submitCustomer(url, shopperEmail);
+  } catch (err) {
+    if (err.responseJSON?.redirectUrl) {
+      window.location.href = err.responseJSON.redirectUrl;
+    }
+    document.querySelector('#guest-customer button').disabled = false;
+  }
+}
+
 function handlePaymentAction() {
   let shouldResend = true;
   $(document).ajaxSend(async (event, xhr, settings) => {
@@ -196,9 +271,7 @@ function handlePaymentAction() {
       settings.url === $('#guest-customer').attr('action');
     if (isCustomerEmailUrl && store.fastlane.component) {
       xhr.abort();
-      document.querySelector('#guest-customer button').disabled = true;
-      const guestEmail = document.querySelector('#email-guest').value;
-      await fastlaneAuthenticate(settings.url, guestEmail);
+      await handleFastlaneFlow(settings.url);
     }
 
     const isPlaceOrderUrl = settings.url === $('.place-order').data('action');
@@ -265,12 +338,10 @@ function init() {
       paymentMethodsResponse = await getPaymentMethods();
       const { showFastlane } = paymentMethodsResponse;
       if (showFastlane) {
-        store.fastlane.component = await initFastlane();
-        if (store.fastlane.component) {
-          const guestEmailInput = document.querySelector('#email-guest');
-          if (guestEmailInput) {
-            await mountFastlaneWatermark(guestEmailInput);
-          }
+        await initFastlane();
+        const guestEmailInput = document.querySelector('#email-guest');
+        if (guestEmailInput) {
+          await mountFastlaneWatermark(guestEmailInput);
         }
       }
       const storedCustomerEmail = sessionStorage.getItem('customerEmail');

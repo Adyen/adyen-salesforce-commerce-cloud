@@ -63,6 +63,11 @@ function getCheckoutPaymentMethods(req, res, next) {
       shopperEmail,
     );
 
+    const showFastlane =
+      paymentMethods.paymentMethods.some(
+        (pm) => pm.type === constants.PAYMENTMETHODS.FASTLANE,
+      ) && !req.currentCustomer.raw.authenticated;
+
     res.json({
       AdyenPaymentMethods: {
         paymentMethods: paymentMethods.paymentMethods,
@@ -70,10 +75,8 @@ function getCheckoutPaymentMethods(req, res, next) {
           paymentMethods.storedPaymentMethods,
         ),
       },
-      showFastlane:
-        paymentMethods.paymentMethods.some(
-          (pm) => pm.type === constants.PAYMENTMETHODS.FASTLANE,
-        ) && !req.currentCustomer.raw.authenticated,
+      showFastlane,
+      fastlaneShopperEmail: showFastlane ? shopperEmail : null,
       imagePath: adyenURL,
       adyenDescriptions: paymentMethodDescriptions,
       adyenTranslations: translations,

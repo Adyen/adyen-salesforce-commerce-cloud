@@ -1,4 +1,3 @@
-const { httpClient } = require('../../commons/httpClient');
 const store = require('../../../../../../config/store');
 
 function formatFastlaneAddress(shippingAddress) {
@@ -50,62 +49,34 @@ function getFastlaneShopperDetails(
   return shopperDetails;
 }
 
-function handleSubmitCustomer(response) {
-  if (response.redirectUrl || response.returnUrl) {
-    window.location.href = response.redirectUrl || response.returnUrl;
-  } else {
-    $('body').trigger('checkout:updateCheckoutView', {
-      order: response.order,
-      customer: response.customer,
-      csrfToken: response.csrfToken,
-    });
-  }
-}
-
 async function initFastlane() {
-  return window.AdyenWeb.initializeFastlane(store.checkoutConfiguration);
+  store.fastlane.component = await window.AdyenWeb.initializeFastlane(
+    store.checkoutConfiguration,
+  );
 }
 
 async function mountFastlaneWatermark(htmlEl) {
-  const watermarkContainer = document.createElement('div');
-  watermarkContainer.id = 'watermark-container';
-  htmlEl.parentElement.appendChild(watermarkContainer);
-  await store.fastlane.component.mountWatermark('#watermark-container');
+  if (store.fastlane.component) {
+    const watermarkContainer = document.createElement('div');
+    watermarkContainer.id = 'watermark-container';
+    htmlEl.parentElement.appendChild(watermarkContainer);
+    await store.fastlane.component.mountWatermark('#watermark-container');
+  }
 }
 
-async function fastlaneAuthenticate(url, shopperEmail) {
-  try {
-    store.fastlane.authResult =
-      await store.fastlane.component.authenticate(shopperEmail);
-    const { authenticationState, profileData } = store.fastlane.authResult;
-    const shopperDetails = getFastlaneShopperDetails(
-      shopperEmail,
-      authenticationState,
-      profileData,
+async function fastlaneAuthenticate(shopperEmail) {
+  store.fastlane.authResult =
+    await store.fastlane.component.authenticate(shopperEmail);
+  const { configuration } =
+    await store.fastlane.component.getComponentConfiguration(
+      store.fastlane.authResult,
     );
-
-    const requestData = {
-      dwfrm_coCustomer_email: shopperEmail,
-      fastlaneShopperDetails: JSON.stringify(shopperDetails),
-    };
-
-    const response = await httpClient({
-      url,
-      data: requestData,
-      method: 'POST',
-    });
-
-    handleSubmitCustomer(response);
-  } catch (err) {
-    if (err.responseJSON?.redirectUrl) {
-      window.location.href = err.responseJSON.redirectUrl;
-    }
-    document.querySelector('#guest-customer button').disabled = false;
-  }
+  store.fastlane.configuration = configuration;
 }
 
 module.exports = {
   initFastlane,
   fastlaneAuthenticate,
   mountFastlaneWatermark,
+  getFastlaneShopperDetails,
 };

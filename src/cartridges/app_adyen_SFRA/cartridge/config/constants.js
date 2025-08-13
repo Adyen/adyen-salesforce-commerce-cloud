@@ -25,6 +25,7 @@ module.exports = {
   },
   DISABLED_SUBMIT_BUTTON_METHODS: [
     'paypal',
+    'fastlane',
     'paywithgoogle',
     'googlepay',
     'amazonpay',
