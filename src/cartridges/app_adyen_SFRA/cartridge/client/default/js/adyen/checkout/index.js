@@ -48,9 +48,8 @@ async function renderFastlane(shopperEmail) {
   isFastlaneRendering = true;
   try {
     await fastlaneAuthenticate(shopperEmail);
+    isFastlaneRendering = false;
   } catch (error) {
-    console.error('Fastlane authentication failed:', error);
-  } finally {
     isFastlaneRendering = false;
   }
 }
