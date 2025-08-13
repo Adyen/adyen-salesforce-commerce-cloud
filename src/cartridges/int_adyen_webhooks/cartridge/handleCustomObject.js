@@ -57,17 +57,6 @@ function execute(args) {
   return result.status;
 }
 
-// TODO: This function should be moved to checkoutHelpers or specific eventCode handler
-function placeOrder(order) {
-  const fraudDetectionStatus = { status: 'success' };
-  // Only created orders can be placed
-  if (order.status.value === Order.ORDER_STATUS_CREATED) {
-    const placeOrder = COHelpers.placeOrder(order, fraudDetectionStatus);
-    return placeOrder;
-  }
-  return { error: true };
-}
-
 function handle(customObj) {
   const OrderMgr = require('dw/order/OrderMgr');
   const Transaction = require('dw/system/Transaction');

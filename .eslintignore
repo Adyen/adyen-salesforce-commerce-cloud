@@ -18,7 +18,6 @@ src/cartridges/int_adyen_SFRA/cartridge/adyen/scripts/pos/adyenTerminalApi.js
 # Webhooks ( by end of refactoring, it needs to be empty )
 src/cartridges/int_adyen_webhooks/cartridge/handleCustomObject.js
 src/cartridges/int_adyen_webhooks/cartridge/deleteCustomObjects.js
-src/cartridges/int_adyen_webhooks/cartridge/eventHandlers/
 src/cartridges/int_adyen_webhooks/cartridge/job/
 
 # Test files

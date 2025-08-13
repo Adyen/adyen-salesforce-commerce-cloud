@@ -1,17 +1,6 @@
 const Order = require('dw/order/Order');
-const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
-
-// TODO: This function should be moved to checkoutHelpers or specific eventCode handler
-function placeOrder(order) {
-  const fraudDetectionStatus = { status: 'success' };
-  // Only created orders can be placed
-  if (order.status.value === Order.ORDER_STATUS_CREATED) {
-    const placeOrder = COHelpers.placeOrder(order, fraudDetectionStatus);
-    return placeOrder;
-  }
-  return { error: true };
-}
+const { placeOrder } = require('../utils/paymentUtils');
 
 function handle({ order, customObj, totalAmount }) {
   // Placing the order for partial payments once ORDER_CLOSED webhook came, and the total amount matches order amount
