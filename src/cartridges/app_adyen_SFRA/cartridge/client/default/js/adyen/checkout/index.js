@@ -69,7 +69,6 @@ async function registerRenderPaymentMethodListener() {
   $('body').on('checkout:renderPaymentMethod', async (e, response) => {
     const { email } = response;
     const { showFastlane, fastlaneShopperEmail } = paymentMethodsResponse;
-    console.log(store.fastlane);
     const { fastlane } = store;
 
     if (fastlane.component && showFastlane && fastlaneShopperEmail) {
