@@ -48,8 +48,9 @@ async function renderFastlane(shopperEmail) {
   isFastlaneRendering = true;
   try {
     await fastlaneAuthenticate(shopperEmail);
-    isFastlaneRendering = false;
   } catch (error) {
+    // Error is currently swallowed. Consider logging for easier debugging.
+  } finally {
     isFastlaneRendering = false;
   }
 }
@@ -253,8 +254,9 @@ async function submitCustomer(url, shopperEmail) {
 }
 
 async function handleFastlaneFlow(url) {
+  const guestButton = document.querySelector('#guest-customer button');
+  guestButton.disabled = true;
   try {
-    document.querySelector('#guest-customer button').disabled = true;
     const shopperEmail = document.querySelector('#email-guest').value;
     await fastlaneAuthenticate(shopperEmail);
     await submitCustomer(url, shopperEmail);
@@ -262,7 +264,8 @@ async function handleFastlaneFlow(url) {
     if (err.responseJSON?.redirectUrl) {
       window.location.href = err.responseJSON.redirectUrl;
     }
-    document.querySelector('#guest-customer button').disabled = false;
+  } finally {
+    guestButton.disabled = false;
   }
 }
 
