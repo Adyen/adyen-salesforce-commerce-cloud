@@ -63,8 +63,8 @@ function processNotifications(/* pdict */) {
       in that case we shouldn't reply to Adyen that all was ok in order to get a new notification
     */
     order = handlerResult.Order;
-    const custumerLocaleId = order.getCustomerLocaleID();
-    const custumerLocale = Locale.getLocale(custumerLocaleId);
+    const customerLocaleId = order.getCustomerLocaleID();
+    const customerLocale = Locale.getLocale(customerLocaleId);
     if (!handlerResult.status || handlerResult.status === PIPELET_ERROR) {
       // Only CREATED orders can be failed
       if (
@@ -88,7 +88,7 @@ function processNotifications(/* pdict */) {
 
     // Send confirmation email
     if (handlerResult.SubmitOrder) {
-      COHelpers.sendConfirmationEmail(order, custumerLocale);
+      COHelpers.sendConfirmationEmail(order, customerLocale);
     }
   }
   AdyenLogs.info_log(
