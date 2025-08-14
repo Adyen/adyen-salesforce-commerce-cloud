@@ -69,6 +69,7 @@ async function registerRenderPaymentMethodListener() {
   $('body').on('checkout:renderPaymentMethod', async (e, response) => {
     const { email } = response;
     const { showFastlane, fastlaneShopperEmail } = paymentMethodsResponse;
+    console.log(store.fastlane);
     const { fastlane } = store;
 
     if (fastlane.component && showFastlane && fastlaneShopperEmail) {
@@ -216,8 +217,8 @@ function submitPayment() {
 }
 
 function handleSubmitCustomerResponse(response) {
-  if (response.redirectUrl || response.returnUrl) {
-    window.location.href = response.redirectUrl || response.returnUrl;
+  if (response.redirectUrl || response.fastlaneReturnUrl) {
+    window.location.href = response.redirectUrl || response.fastlaneReturnUrl;
   } else {
     $('body').trigger('checkout:updateCheckoutView', {
       order: response.order,
@@ -237,8 +238,11 @@ async function submitCustomer(url, shopperEmail) {
 
   const requestData = {
     dwfrm_coCustomer_email: shopperEmail,
-    fastlaneShopperDetails: JSON.stringify(shopperDetails),
   };
+
+  if (shopperDetails) {
+    requestData.fastlaneShopperDetails = JSON.stringify(shopperDetails);
+  }
 
   const response = await httpClient({
     url,
