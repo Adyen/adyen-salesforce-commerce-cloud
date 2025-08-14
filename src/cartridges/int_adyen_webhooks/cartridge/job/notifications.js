@@ -88,9 +88,6 @@ function processNotifications(/* pdict */) {
 
     // Send confirmation email
     if (handlerResult.SubmitOrder) {
-      AdyenLogs.fatal_log(
-        `Sending confirmation email for order ${order.orderNo} , custumerLocale: ${custumerLocale}`,
-      );
       COHelpers.sendConfirmationEmail(order, custumerLocale);
     }
   }
