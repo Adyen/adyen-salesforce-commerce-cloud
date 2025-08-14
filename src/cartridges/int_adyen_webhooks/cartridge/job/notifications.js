@@ -23,7 +23,8 @@
 const OrderMgr = require('dw/order/OrderMgr');
 const Transaction = require('dw/system/Transaction');
 const CustomObjectMgr = require('dw/object/CustomObjectMgr');
-
+const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
+const Locale = require('dw/util/Locale');
 //script includes
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 
@@ -62,6 +63,8 @@ function processNotifications(/* pdict */) {
       in that case we shouldn't reply to Adyen that all was ok in order to get a new notification
     */
     order = handlerResult.Order;
+    const custumerLocaleId = order.getCustomerLocaleID();
+    const custumerLocale = Locale.getLocale(custumerLocaleId);
     if (!handlerResult.status || handlerResult.status === PIPELET_ERROR) {
       // Only CREATED orders can be failed
       if (
@@ -83,14 +86,12 @@ function processNotifications(/* pdict */) {
       continue;
     }
 
-    // Submitting an order -> update status and send all required email
+    // Send confirmation email
     if (handlerResult.SubmitOrder) {
-      const placeOrderResult = submitOrder(order);
-      if (!placeOrderResult.order_created || placeOrderResult.error) {
-        AdyenLogs.error_log(
-          `Failed to place an order: ${order.orderNo}, during notification process.`,
-        );
-      }
+      AdyenLogs.fatal_log(
+        `Sending confirmation email for order ${order.orderNo} , custumerLocale: ${custumerLocale}`,
+      );
+      COHelpers.sendConfirmationEmail(order, custumerLocale);
     }
   }
   AdyenLogs.info_log(
@@ -128,19 +129,6 @@ function clearNotifications(/* pdict */) {
   searchQuery.close();
 
   return PIPELET_NEXT;
-}
-
-/**
- * Submits an order, original function located in OrderModel, but we need to
- *  manage triggering of email
- * @param order {dw.order.Order} The order object to be submitted.
- * @transactional
- * @return {Object} object If order cannot be placed, object.error is set to true.
- * Ortherwise, object.order_created is true, and object.Order is set to the order.
- */
-function submitOrder(order) {
-  const adyenService = require('*/cartridge/adyen/utils/adyenService');
-  return adyenService.submit(order);
 }
 
 module.exports = {
