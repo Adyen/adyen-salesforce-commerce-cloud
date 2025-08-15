@@ -217,7 +217,6 @@ function registerEmailChangeHandler() {
   const emailSFRA5 = document.getElementsByName(
     'dwfrm_billing_contactInfoFields_email',
   );
-  console.log(emailSFRA5.length);
   if (emailSFRA5.length) {
     emailSFRA5[0].addEventListener('change', (e) => {
       const emailPattern = /^[\w.%+-]+@[\w.-]+\.[\w]{2,6}$/;
