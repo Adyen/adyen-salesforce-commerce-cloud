@@ -149,7 +149,7 @@ function createListItem(rerender, paymentMethodID, liContents) {
  */
 function clearPaymentMethodsContainer() {
   const paymentMethodContainer = document.querySelector('#paymentMethodsList');
-  paymentMethodContainer.innerHTML = null;
+  paymentMethodContainer.innerHTML = '';
   store.clearPaymentMethod();
 }
 
