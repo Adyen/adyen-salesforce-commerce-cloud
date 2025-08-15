@@ -205,32 +205,29 @@ function registerUpdateCheckoutView() {
         paymentMethodsResponse?.countryCode
     ) {
       paymentMethodsResponse = await getPaymentMethods();
+      $('body').trigger('checkout:renderPaymentMethod', {
+        email: data?.order?.orderEmail,
+      });
     }
-    const storedCustomerEmail = sessionStorage.getItem('customerEmail');
-    if (storedCustomerEmail !== data?.order?.orderEmail) {
-      sessionStorage.setItem('customerEmail', data?.order?.orderEmail);
-    }
-    $('body').trigger('checkout:renderPaymentMethod', {
-      email: data?.order?.orderEmail,
-    });
     billing.methods.updatePaymentInformation(data.order, data.options);
   });
 }
 
 function registerEmailChangeHandler() {
-  $('input[id="email"]').on('change', (e) => {
-    const emailPattern = /^[\w.%+-]+@[\w.-]+\.[\w]{2,6}$/;
-    if (emailPattern.test(e.target.value)) {
-      const emailValue = e.target.value?.trim();
-      const storedCustomerEmail = sessionStorage.getItem('customerEmail');
-      if (storedCustomerEmail !== emailValue) {
-        sessionStorage.setItem('customerEmail', emailValue);
+  const emailSFRA5 = document.getElementsByName(
+    'dwfrm_billing_contactInfoFields_email',
+  );
+  console.log(emailSFRA5.length);
+  if (emailSFRA5.length) {
+    emailSFRA5[0].addEventListener('change', (e) => {
+      const emailPattern = /^[\w.%+-]+@[\w.-]+\.[\w]{2,6}$/;
+      if (emailPattern.test(e.target.value)) {
         $('body').trigger('checkout:renderPaymentMethod', {
-          email: emailValue,
+          email: e.target.value?.trim(),
         });
       }
-    }
-  });
+    });
+  }
 }
 
 function registerFirstPaymentMethod() {
@@ -248,9 +245,8 @@ function registerFirstPaymentMethod() {
 function init() {
   $(document).ready(async () => {
     paymentMethodsResponse = await getPaymentMethods();
-    const storedCustomerEmail = sessionStorage.getItem('customerEmail');
     $('body').trigger('checkout:renderPaymentMethod', {
-      email: storedCustomerEmail,
+      email: paymentMethodsResponse.shopperEmail,
     });
     helpers.createShowConfirmationForm(
       window.ShowConfirmationPaymentFromComponent,
