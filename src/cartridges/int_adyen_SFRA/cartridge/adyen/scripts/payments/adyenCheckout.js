@@ -264,6 +264,11 @@ function createPaymentRequest(args) {
     paymentRequest.lineItems = paypalHelper.getLineItems(args);
   }
 
+  // riverty requires subtype redirect
+  if (paymentRequest.paymentMethod.type.indexOf('riverty') > -1) {
+    paymentRequest.paymentMethod.subtype = 'redirect';
+  }
+
   // Set tokenisation
   if (AdyenConfigs.getAdyenTokenisationEnabled()) {
     paymentRequest.storePaymentMethod = true;
