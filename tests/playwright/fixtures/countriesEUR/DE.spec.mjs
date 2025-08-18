@@ -107,7 +107,7 @@ for (const environment of environments) {
       redirectShopper = new RedirectShopper(page);
       await redirectShopper.doRivertyPayment(email);
       await checkoutPage.completeCheckout();
-
+      await redirectShopper.completeRivertyRedirect(expectSuccess);
       if (expectSuccess) {
         await checkoutPage.expectSuccess();
       } else {

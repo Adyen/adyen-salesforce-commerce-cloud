@@ -14,6 +14,10 @@ export class RedirectShopper {
     await this.paymentMethodsPage.submitSimulator(testSuccess);
   };
 
+  completeRivertyRedirect = async (testSuccess) => {
+    await this.paymentMethodsPage.fillInRivertyData(testSuccess);
+  };
+
   doBillDeskPayment = async (paymentMethod) => {
     await this.paymentMethodsPage.initiateBillDeskPayment(paymentMethod);
   };

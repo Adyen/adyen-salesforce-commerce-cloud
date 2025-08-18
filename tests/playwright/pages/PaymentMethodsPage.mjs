@@ -212,6 +212,15 @@ export default class PaymentMethodsPage {
     await actionButton.click();
   };
 
+  fillInRivertyData = async (testSuccess) => {
+    if (testSuccess) {
+      await this.page.locator('input[id="birthDateInput"]').fill('01/01/1990');
+      await this.page.locator('r-button[id="payButton"]').click();
+    } else {
+      await this.page.locator('button[id="cancelPaymentButton"]').click();
+    }
+  };
+
   submitBankSimulator = async () => {
     await this.page.locator('#mainSubmit').click();
   };
