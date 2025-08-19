@@ -6,31 +6,9 @@ const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 const setErrorType = require('*/cartridge/adyen/logs/setErrorType');
 const AdyenConfigs = require('*/cartridge/adyen/utils/adyenConfigs');
 const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
-
-function checkIsKlarnaPayment(currentBasket) {
-  if (!currentBasket) {
-    return false;
-  }
-
-  const paymentInstruments = currentBasket.getPaymentInstruments();
-  if (!paymentInstruments || paymentInstruments.empty) {
-    return false;
-  }
-
-  return paymentInstruments.toArray().some((pi) => {
-    try {
-      if (pi.custom?.adyenPaymentData) {
-        const adyenPaymentData = JSON.parse(pi.custom.adyenPaymentData);
-        return adyenPaymentData?.paymentMethod?.type?.includes('klarna');
-      }
-    } catch (e) {
-      AdyenLogs.error_log(
-        `Error parsing adyenPaymentData for payment instrument: ${e.message}`,
-      );
-    }
-    return false;
-  });
-}
+const {
+  checkIsKlarnaPayment,
+} = require('*/cartridge/adyen/utils/klarnaHelper');
 
 /*
  * Show confirmation for payments completed from component directly e.g. paypal, QRcode, ..
