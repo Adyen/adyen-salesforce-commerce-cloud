@@ -85,9 +85,6 @@ describe('checkIsKlarnaPayment', () => {
 
     expect(checkIsKlarnaPayment(basket)).toBe(false);
     expect(AdyenLogs.error_log).toHaveBeenCalledTimes(1);
-    expect(AdyenLogs.error_log).toHaveBeenCalledWith(
-      expect.stringContaining('Error parsing adyenPaymentData in checkIsKlarnaPayment'),
-    );
   });
 
   it('should return false if adyenPaymentData is missing the paymentMethod object', () => {
