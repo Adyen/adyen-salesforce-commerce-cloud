@@ -165,5 +165,5 @@ module.exports = {
 
   CHECKOUT_COMPONENT_VERSION: '6.20.0',
   CHECKOUT_API_VERSION: 'v71',
-  VERSION: '25.3.0',
+  VERSION: '25.4.0',
 };
