@@ -70,6 +70,7 @@ function getCheckoutPaymentMethods(req, res, next) {
           paymentMethods.storedPaymentMethods,
         ),
       },
+      shopperEmail,
       imagePath: adyenURL,
       adyenDescriptions: paymentMethodDescriptions,
       adyenTranslations: translations,

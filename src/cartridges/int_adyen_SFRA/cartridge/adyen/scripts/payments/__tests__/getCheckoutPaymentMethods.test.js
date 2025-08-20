@@ -68,6 +68,7 @@ describe('getCheckoutPaymentMethods', () => {
       adyenTranslations: expect.anything(),
       imagePath: 'mocked_loading_contextimages/logos/medium/',
       countryCode: 'NL',
+      shopperEmail: "mocked_email",
       applicationInfo: {
         externalPlatform: {
           version: 'SFRA',
