@@ -2,6 +2,7 @@ const Order = require('dw/order/Order');
 const OrderMgr = require('dw/order/OrderMgr');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 const { placeOrder } = require('../utils/paymentUtils');
+const { isWebhookSuccessful } = require('../utils/webhookUtils');
 
 /**
  * Handles duplicate callback when order is already paid
@@ -98,7 +99,7 @@ function updateOrderWithAdyenData(order, customObj, amountPaid) {
  * @returns {Object} Handler result with success status
  */
 function handle({ order, customObj, result, totalAmount }) {
-  if (customObj.custom.success === 'true') {
+  if (isWebhookSuccessful(customObj)) {
     const amountPaid = parseFloat(customObj.custom.value);
 
     if (order.paymentStatus.value === Order.PAYMENT_STATUS_PAID) {

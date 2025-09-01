@@ -1,13 +1,22 @@
+/* eslint-disable global-require */
 const PENDING = require('../PENDING');
-
-jest.mock('*/cartridge/adyen/logs/adyenCustomLogs', () => ({
-  info_log: jest.fn(),
-}));
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 
 describe('PENDING eventHandler', () => {
-  it('should log the webhook setup info', () => {
-    // PENDING.handle();
-    // expect(AdyenLogs.info_log).toHaveBeenCalledWith('New webhook setup triggering, PENDING');
+  let mockOrder;
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockOrder = {
+      orderNo: 'TEST-ORDER-123',
+    };
+  });
+
+  describe('handle function', () => {
+    it('should log pending status and return pending object', () => {
+      const result = PENDING.handle({ order: mockOrder });
+      expect(AdyenLogs.info_log).toHaveBeenCalledWith('Order TEST-ORDER-123 was in pending status.');
+      expect(result).toEqual({ pending: true });
+    });
   });
 });

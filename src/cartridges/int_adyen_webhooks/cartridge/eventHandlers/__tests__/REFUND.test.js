@@ -1,13 +1,27 @@
+/* eslint-disable global-require */
 const REFUND = require('../REFUND');
-
-jest.mock('*/cartridge/adyen/logs/adyenCustomLogs', () => ({
-  info_log: jest.fn(),
-}));
+const Order = require('dw/order/Order');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 
 describe('REFUND eventHandler', () => {
-  it('should log refund info', () => {
-    // REFUND.handle({});
-    // expect(AdyenLogs.info_log).toHaveBeenCalledWith('Order TEST-ORDER-123 was refunded.');
+  let mockOrder;
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+
+    mockOrder = {
+      orderNo: 'TEST-ORDER-123',
+      setPaymentStatus: jest.fn(),
+      trackOrderChange: jest.fn(),
+    };
+  });
+
+  describe('handle function', () => {
+    it('should set payment status to NOTPAID, track order change, and log refund', () => {
+      REFUND.handle({ order: mockOrder });
+      expect(mockOrder.setPaymentStatus).toHaveBeenCalledWith(Order.PAYMENT_STATUS_NOTPAID);
+      expect(mockOrder.trackOrderChange).toHaveBeenCalledWith('REFUND notification received');
+      expect(AdyenLogs.info_log).toHaveBeenCalledWith('Order TEST-ORDER-123 was refunded.');
+    });
   });
 });
