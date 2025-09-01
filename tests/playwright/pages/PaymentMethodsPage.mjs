@@ -192,7 +192,7 @@ export default class PaymentMethodsPage {
         : await this.page.locator("#component_upi input").fill("notCorrectWillFail");
     }
     if (paymentMethod == "upi_qr") {
-      await this.page.locator("#upi-button-qrCode").click();
+      await this.page.locator("#upi-area-qrCode button").click();
     }
     await continueButton.click();
   };
