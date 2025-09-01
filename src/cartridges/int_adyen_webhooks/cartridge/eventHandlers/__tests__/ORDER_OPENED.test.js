@@ -1,4 +1,3 @@
-/* eslint-disable global-require */
 const ORDER_OPENED = require('../ORDER_OPENED');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 

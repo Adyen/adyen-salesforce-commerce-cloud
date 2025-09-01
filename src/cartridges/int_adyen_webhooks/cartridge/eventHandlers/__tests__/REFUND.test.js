@@ -1,4 +1,3 @@
-/* eslint-disable global-require */
 const REFUND = require('../REFUND');
 const Order = require('dw/order/Order');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');

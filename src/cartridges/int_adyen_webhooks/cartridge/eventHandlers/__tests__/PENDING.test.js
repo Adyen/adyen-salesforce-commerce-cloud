@@ -1,4 +1,3 @@
-/* eslint-disable global-require */
 const PENDING = require('../PENDING');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 

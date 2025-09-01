@@ -1,5 +1,3 @@
-/* eslint-disable global-require */
-
 // Mock dependencies
 jest.mock('../../utils/paymentUtils', () => ({
   placeOrder: jest.fn(),

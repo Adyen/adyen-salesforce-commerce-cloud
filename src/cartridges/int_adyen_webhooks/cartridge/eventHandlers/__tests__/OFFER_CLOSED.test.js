@@ -1,4 +1,3 @@
-/* eslint-disable global-require */
 const OFFER_CLOSED = require('../OFFER_CLOSED');
 const Order = require('dw/order/Order');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');

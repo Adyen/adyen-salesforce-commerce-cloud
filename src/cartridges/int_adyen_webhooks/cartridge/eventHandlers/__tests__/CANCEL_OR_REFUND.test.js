@@ -1,4 +1,3 @@
-/* eslint-disable global-require */
 const CANCEL_OR_REFUND = require('../CANCEL_OR_REFUND');
 const Order = require('dw/order/Order');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');

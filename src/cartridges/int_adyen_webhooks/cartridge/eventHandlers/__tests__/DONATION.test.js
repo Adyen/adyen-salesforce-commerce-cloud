@@ -1,4 +1,3 @@
-/* eslint-disable global-require */
 const DONATION = require('../DONATION');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 

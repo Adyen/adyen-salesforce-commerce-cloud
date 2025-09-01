@@ -1,5 +1,3 @@
-/* eslint-disable global-require */
-
 // Mock dependencies
 jest.mock('dw/order/OrderMgr', () => ({
   cancelOrder: jest.fn(),
