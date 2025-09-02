@@ -1,10 +1,11 @@
 const Order = require('dw/order/Order');
 const OrderMgr = require('dw/order/OrderMgr');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
+const { isWebhookSuccessful } = require('../utils/webhookUtils');
 
 function handle({ order, customObj }) {
   if (
-    customObj.custom.success === 'true' &&
+    isWebhookSuccessful(customObj) &&
     order.status.value === Order.ORDER_STATUS_CANCELLED
   ) {
     order.setPaymentStatus(Order.PAYMENT_STATUS_PAID);
