@@ -70,6 +70,7 @@ describe('getCheckoutPaymentMethods', () => {
       imagePath: 'mocked_loading_contextimages/logos/medium/',
       fastlaneShopperEmail: null,
       countryCode: 'NL',
+      shopperEmail: "mocked_email",
       applicationInfo: {
         externalPlatform: {
           version: 'SFRA',

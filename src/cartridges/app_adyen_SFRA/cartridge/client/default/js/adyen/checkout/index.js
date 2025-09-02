@@ -69,11 +69,11 @@ async function renderGiftCardsIfEnabled() {
 async function registerRenderPaymentMethodListener() {
   $('body').on('checkout:renderPaymentMethod', async (e, response) => {
     const { email } = response;
-    const { showFastlane, fastlaneShopperEmail } = paymentMethodsResponse;
+    const { showFastlane, shopperEmail } = paymentMethodsResponse;
     const { fastlane } = store;
 
-    if (fastlane.component && showFastlane && fastlaneShopperEmail) {
-      await renderFastlane(fastlaneShopperEmail);
+    if (fastlane.component && showFastlane && shopperEmail) {
+      await renderFastlane(shopperEmail);
     }
 
     await setCheckoutConfiguration({
@@ -297,32 +297,28 @@ function registerUpdateCheckoutView() {
         paymentMethodsResponse?.countryCode
     ) {
       paymentMethodsResponse = await getPaymentMethods();
+      $('body').trigger('checkout:renderPaymentMethod', {
+        email: data?.order?.orderEmail,
+      });
     }
-    const storedCustomerEmail = sessionStorage.getItem('customerEmail');
-    if (storedCustomerEmail !== data?.order?.orderEmail) {
-      sessionStorage.setItem('customerEmail', data?.order?.orderEmail);
-    }
-    $('body').trigger('checkout:renderPaymentMethod', {
-      email: data?.order?.orderEmail,
-    });
     billing.methods.updatePaymentInformation(data.order, data.options);
   });
 }
 
 function registerEmailChangeHandler() {
-  $('input[id="email"]').on('change', (e) => {
-    const emailPattern = /^[\w.%+-]+@[\w.-]+\.[\w]{2,6}$/;
-    if (emailPattern.test(e.target.value)) {
-      const emailValue = e.target.value?.trim();
-      const storedCustomerEmail = sessionStorage.getItem('customerEmail');
-      if (storedCustomerEmail !== emailValue) {
-        sessionStorage.setItem('customerEmail', emailValue);
+  const emailSFRA5 = document.getElementsByName(
+    'dwfrm_billing_contactInfoFields_email',
+  );
+  if (emailSFRA5.length) {
+    emailSFRA5[0].addEventListener('change', (e) => {
+      const emailPattern = /^[\w.%+-]+@[\w.-]+\.[\w]{2,6}$/;
+      if (emailPattern.test(e.target.value)) {
         $('body').trigger('checkout:renderPaymentMethod', {
-          email: emailValue,
+          email: e.target.value?.trim(),
         });
       }
-    }
-  });
+    });
+  }
 }
 
 function registerFirstPaymentMethod() {
@@ -339,26 +335,21 @@ function registerFirstPaymentMethod() {
 
 function init() {
   $(document).ready(async () => {
-    try {
-      paymentMethodsResponse = await getPaymentMethods();
-      const { showFastlane } = paymentMethodsResponse;
-      if (showFastlane) {
-        await initFastlane();
-        const guestEmailInput = document.querySelector('#email-guest');
-        if (guestEmailInput) {
-          await mountFastlaneWatermark(guestEmailInput);
-        }
+    paymentMethodsResponse = await getPaymentMethods();
+    const { showFastlane } = paymentMethodsResponse;
+    if (showFastlane) {
+      await initFastlane();
+      const guestEmailInput = document.querySelector('#email-guest');
+      if (guestEmailInput) {
+        await mountFastlaneWatermark(guestEmailInput);
       }
-      const storedCustomerEmail = sessionStorage.getItem('customerEmail');
-      $('body').trigger('checkout:renderPaymentMethod', {
-        email: storedCustomerEmail,
-      });
-      helpers.createShowConfirmationForm(
-        window.ShowConfirmationPaymentFromComponent,
-      );
-    } catch (err) {
-      document.getElementById('watermark-container')?.remove();
     }
+    $('body').trigger('checkout:renderPaymentMethod', {
+      email: paymentMethodsResponse.shopperEmail,
+    });
+    helpers.createShowConfirmationForm(
+      window.ShowConfirmationPaymentFromComponent,
+    );
   });
 }
 
