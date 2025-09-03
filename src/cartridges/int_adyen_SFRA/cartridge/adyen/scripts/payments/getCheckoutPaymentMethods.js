@@ -68,9 +68,15 @@ function getCheckoutPaymentMethods(req, res, next) {
         (pm) => pm.type === constants.PAYMENTMETHODS.FASTLANE,
       ) && !req.currentCustomer.raw.authenticated;
 
+    const sortedPaymentMethods = paymentMethods.paymentMethods.sort((a, b) => {
+      if (a.type === constants.PAYMENTMETHODS.FASTLANE) return -1;
+      if (b.type === constants.PAYMENTMETHODS.FASTLANE) return 1;
+      return 0;
+    });
+
     res.json({
       AdyenPaymentMethods: {
-        paymentMethods: paymentMethods.paymentMethods,
+        paymentMethods: sortedPaymentMethods,
         storedPaymentMethods: supportedStoredPaymentMethods(
           paymentMethods.storedPaymentMethods,
         ),

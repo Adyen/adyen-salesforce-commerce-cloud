@@ -27,14 +27,14 @@ function submitCustomer(req, res, next) {
         error,
       );
     }
-    res.setViewData({
-      fastlaneReturnUrl: URLUtils.url(
-        'Checkout-Begin',
-        'stage',
-        stage,
-      ).toString(),
-    });
   }
+  res.setViewData({
+    fastlaneReturnUrl: URLUtils.url(
+      'Checkout-Begin',
+      'stage',
+      stage,
+    ).toString(),
+  });
   return next();
 }
 

@@ -15,6 +15,7 @@ module.exports = {
   AMAZON_PAY: 'amazonpay',
   GOOGLE_PAY: 'googlepay',
   PAY_WITH_GOOGLE: 'paywithgoogle',
+  FASTLANE: 'fastlane',
   GOOGLE_PAY_CALLBACK_TRIGGERS: {
     INITIALIZE: 'INITIALIZE',
     SHIPPING_ADDRESS: 'SHIPPING_ADDRESS',

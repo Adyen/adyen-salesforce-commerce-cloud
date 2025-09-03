@@ -167,6 +167,13 @@ function renderPaymentMethod(
     if (paymentMethodID === constants.GIFTCARD) {
       return false;
     }
+    //
+    // if (
+    //   paymentMethodID === constants.FASTLANE &&
+    //   store.fastlane.authResult?.authenticationState !== 'succeeded'
+    // ) {
+    //   return false;
+    // }
 
     const isSchemeNotStored = paymentMethod.type === 'scheme' && !isStored;
     const container = document.createElement('div');
@@ -218,9 +225,15 @@ async function renderCheckout(paymentMethodsResponse) {
   } = paymentMethodsResponse;
   clearPaymentMethodsContainer();
 
-  const paymentMethodsWithoutGiftCards = paymentMethods.filter(
-    (pm) => pm.type !== constants.GIFTCARD,
-  );
+  const filteredPaymentMethods = paymentMethods.filter((pm) => {
+    if (pm.type === constants.GIFTCARD) {
+      return false;
+    }
+    return !(
+      pm.type === constants.FASTLANE &&
+      store.fastlane.authResult?.authenticationState !== 'succeeded'
+    );
+  });
 
   const renderStoredPaymentMethods = storedPaymentMethods.map((pm) =>
     renderPaymentMethod(
@@ -230,20 +243,16 @@ async function renderCheckout(paymentMethodsResponse) {
       adyenDescriptions ? adyenDescriptions[pm.type] : null,
     ),
   );
-  const renderPaymentMethodsWithoutGiftCards =
-    paymentMethodsWithoutGiftCards.map((pm) =>
-      renderPaymentMethod(
-        pm,
-        false,
-        imagePath,
-        adyenDescriptions ? adyenDescriptions[pm.type] : null,
-      ),
-    );
+  const renderPaymentMethods = filteredPaymentMethods.map((pm) =>
+    renderPaymentMethod(
+      pm,
+      false,
+      imagePath,
+      adyenDescriptions ? adyenDescriptions[pm.type] : null,
+    ),
+  );
 
-  await Promise.all([
-    ...renderStoredPaymentMethods,
-    ...renderPaymentMethodsWithoutGiftCards,
-  ]);
+  await Promise.all([...renderStoredPaymentMethods, ...renderPaymentMethods]);
 }
 
 module.exports = {
