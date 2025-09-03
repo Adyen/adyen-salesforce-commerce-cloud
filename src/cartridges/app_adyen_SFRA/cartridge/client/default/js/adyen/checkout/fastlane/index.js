@@ -1,4 +1,5 @@
 const store = require('../../../../../../config/store');
+const constants = require('../../../../../../config/constants');
 
 function formatFastlaneAddress(shippingAddress) {
   if (!shippingAddress) {
@@ -50,9 +51,11 @@ function getFastlaneShopperDetails(
 }
 
 async function initFastlane() {
-  store.fastlane.component = await window.AdyenWeb.initializeFastlane(
-    store.checkoutConfiguration,
-  );
+  store.fastlane.component = await window.AdyenWeb.initializeFastlane({
+    ...store.checkoutConfiguration,
+    forceConsentDetails:
+      store.checkoutConfiguration.environment === constants.ENVIROMENTS.TEST,
+  });
 }
 
 async function mountFastlaneWatermark(htmlEl) {

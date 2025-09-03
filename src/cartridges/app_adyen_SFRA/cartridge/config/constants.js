@@ -24,6 +24,9 @@ module.exports = {
   ACTIONTYPE: {
     QRCODE: 'qrCode',
   },
+  ENVIROMENTS: {
+    TEST: 'test',
+  },
   DISABLED_SUBMIT_BUTTON_METHODS: [
     'paypal',
     'fastlane',
