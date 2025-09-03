@@ -24,6 +24,20 @@
             </div>
          </div>
          <div class="form-group">
+            <label class="form-title mb-0" for="rivertyShopId">Riverty Shop ID <small class="text-secondary">(optional)</small></label>
+            <small id="rivertyShopIdHelp" class="form-text mb-1">Enter the unique ID provided by your Riverty integration.</small>
+            <div class="input-fields">
+               <input type="text" class="form-control" name="Adyen_RivertyShopId" id="ratePayId" aria-describedby="rivertyShopIdHelp" value="${AdyenConfigs.getRivertyShopId() || ''}">    
+            </div>
+         </div>
+         <div class="form-group">
+            <label class="form-title mb-0" for="rivertySubdomain">Riverty Subdomain <small class="text-secondary">(optional)</small></label>
+            <small id="rivertySubdomainHelp" class="form-text mb-1">Enter the subdomain for routing profile tracking request. Refer to <a class="text-primary" href="https://docs.riverty.com/bnpl/documentation/subdomain_setup/" target="_blank">Riverty documentation</a> for more details.</small>
+            <div class="input-fields">
+               <input type="text" class="form-control" name="Adyen_RivertySubdomain" id="rivertySubdomain" aria-describedby="rivertySubdomainHelp" value="${AdyenConfigs.getRivertySubdomain() || ''}">    
+            </div>
+         </div>
+         <div class="form-group">
             <label class="form-title mb-0" for="googlePayMerchantID">Google Merchant ID</label>
             <small id="googlePayMerchantHelp" class="form-text mb-1">Google Pay is enabled by default in the Test environment. If you also want to activate it in the Live environment, enter your <a class="text-primary" href="https://developers.google.com/pay/api/web/guides/test-and-deploy/deploy-production-environment#obtain-your-merchantID" target="_blank">Google Merchant ID</a></small>
             <div class="input-fields">

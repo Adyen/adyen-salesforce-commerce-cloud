@@ -83,6 +83,14 @@ const adyenConfigsObj = {
     return getCustomPreference('AdyenRatePayID');
   },
 
+  getRivertyShopId() {
+    return getCustomPreference('Adyen_RivertyShopId');
+  },
+
+  getRivertySubdomain() {
+    return getCustomPreference('Adyen_RivertySubdomain');
+  },
+
   getApplePayDomainAssociation() {
     return getCustomPreference('Adyen_ApplePay_DomainAssociation');
   },

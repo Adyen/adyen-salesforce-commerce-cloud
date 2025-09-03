@@ -328,6 +328,20 @@
                 <min-length>0</min-length>
                 <default-value>oj9GsQ</default-value>
             </attribute-definition>
+            <attribute-definition attribute-id="Adyen_RivertyShopId">
+                <display-name xml:lang="x-default">Riverty Shop ID</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="Adyen_RivertySubdomain">
+                <display-name xml:lang="x-default">Riverty Subdomain</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
             <attribute-definition attribute-id="AdyenOneClickEnabled">
                 <display-name xml:lang="x-default">Store shopper details: one-click</display-name>
                 <description xml:lang="x-default">Tokenize shopper details for one-click payments</description>
@@ -645,6 +659,8 @@
                 <attribute attribute-id="Adyen_notification_password"/>
                 <attribute attribute-id="Adyen_GooglePayMerchantID"/>
                 <attribute attribute-id="AdyenRatePayID"/>
+                <attribute attribute-id="Adyen_RivertySubdomain"/>
+                <attribute attribute-id="Adyen_RivertyShopId"/>
                 <attribute attribute-id="Adyen_IntegratorName"/>
                 <attribute attribute-id="Adyen_StoreId"/>
                 <attribute attribute-id="Adyen_SelectedStoreID"/>

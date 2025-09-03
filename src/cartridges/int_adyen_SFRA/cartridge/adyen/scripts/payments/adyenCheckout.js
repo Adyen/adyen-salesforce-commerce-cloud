@@ -264,9 +264,11 @@ function createPaymentRequest(args) {
     paymentRequest.lineItems = paypalHelper.getLineItems(args);
   }
 
-  // riverty requires subtype redirect
+  // riverty requires some additional parameters
   if (paymentRequest.paymentMethod.type.indexOf('riverty') > -1) {
     paymentRequest.paymentMethod.subtype = 'redirect';
+    paymentRequest.shopperIP = request.getHttpRemoteAddress();
+    paymentRequest.deviceFingerprint = session.sessionID;
   }
 
   // Set tokenisation

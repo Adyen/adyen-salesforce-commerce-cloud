@@ -68,7 +68,10 @@
     </script>
 
      <isset name="AdyenHelper" value="${require('*/cartridge/adyen/utils/adyenHelper')}" scope="pdict"/>
+     <isset name="AdyenConfigs" value="${require('*/cartridge/adyen/utils/adyenConfigs')}" scope="pdict"/>
      <isset name="ratePayValues" value="${pdict.AdyenHelper.getRatePayID()}" scope="page"/>
+     <isset name="rivertyShopId" value="${pdict.AdyenConfigs.getRivertyShopId()}" scope="page"/>
+     <isset name="rivertySubdomain" value="${pdict.AdyenConfigs.getRivertySubdomain()}" scope="page"/>
 
      <input id="adyenStateData" type="hidden" name="${adyenPaymentFields.adyenStateData.htmlName}"/>
      <input id="adyenPartialPaymentsOrder" type="hidden" name="${adyenPaymentFields.adyenPartialPaymentsOrder.htmlName}"/>
@@ -101,6 +104,26 @@
      <script type="text/javascript">
          dfDo('adyenFingerprint');
      </script>
+     <iscomment>
+         Adyen Riverty profile tracking tag
+     </iscomment>
+     <isif condition="${!empty(rivertyShopId) && !empty(rivertySubdomain)}">
+         <script type="text/javascript">
+             const config = {
+                 c: "${rivertyShopId}",
+                 s: "${session.sessionID}",
+                 u: window.location.pathname,
+                 h: "${rivertySubdomain}"
+             };
+             window._itt = config;
+
+             const script = document.createElement("script");
+             script.src = `https://${config.h}/container/${config.c}?page=${config.u}`;
+             script.async = true;
+             script.onload = function () { this.remove(); };
+             (document.head || document.documentElement).appendChild(script);
+         </script>
+    </isif>
 
 </iselse>
 </isif>
