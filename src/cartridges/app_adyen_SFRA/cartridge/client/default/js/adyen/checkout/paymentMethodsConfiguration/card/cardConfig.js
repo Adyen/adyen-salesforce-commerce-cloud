@@ -52,7 +52,7 @@ class CardConfig {
   setFastlaneConfiguration(config) {
     const { authResult, configuration } = this.store.fastlane;
     if (authResult?.authenticationState !== 'succeeded' && configuration) {
-      config.fastlaneConfiguration = configuration;
+      config.fastlaneConfiguration = configuration.fastlaneConfiguration;
     }
   }
 
