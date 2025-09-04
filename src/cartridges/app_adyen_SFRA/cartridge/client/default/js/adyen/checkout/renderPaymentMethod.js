@@ -167,13 +167,6 @@ function renderPaymentMethod(
     if (paymentMethodID === constants.GIFTCARD) {
       return false;
     }
-    //
-    // if (
-    //   paymentMethodID === constants.FASTLANE &&
-    //   store.fastlane.authResult?.authenticationState !== 'succeeded'
-    // ) {
-    //   return false;
-    // }
 
     const isSchemeNotStored = paymentMethod.type === 'scheme' && !isStored;
     const container = document.createElement('div');
