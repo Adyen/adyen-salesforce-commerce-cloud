@@ -1,9 +1,4 @@
 /* eslint-disable global-require */
-
-jest.mock('dw/catalog/ProductMgr');
-jest.mock('*/cartridge/scripts/helpers/pricing');
-jest.mock('*/cartridge/adyen/logs/adyenCustomLogs');
-
 const ProductMgr = require('dw/catalog/ProductMgr');
 const priceHelper = require('*/cartridge/scripts/helpers/pricing');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
