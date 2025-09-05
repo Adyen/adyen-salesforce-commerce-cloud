@@ -190,11 +190,11 @@ export default class PaymentMethodsPage {
 
       success == true ? await this.page.locator("#component_upi input").fill("testvpa@icici")
         : await this.page.locator("#component_upi input").fill("notCorrectWillFail");
+      await continueButton.click();
     }
     if (paymentMethod == "upi_qr") {
-      await this.page.locator("#upi-button-qrCode").click();
+      await this.page.locator("#upi-area-qrCode button").click();
     }
-    await continueButton.click();
   };
 
 

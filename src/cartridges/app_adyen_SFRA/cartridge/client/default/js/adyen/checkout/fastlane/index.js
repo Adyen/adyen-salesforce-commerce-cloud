@@ -54,7 +54,7 @@ async function initFastlane() {
   store.fastlane.component = await window.AdyenWeb.initializeFastlane({
     ...store.checkoutConfiguration,
     forceConsentDetails:
-      store.checkoutConfiguration.environment === constants.ENVIROMENTS.TEST,
+      store.checkoutConfiguration.environment === constants.ENVIRONMENTS.TEST,
   });
 }
 

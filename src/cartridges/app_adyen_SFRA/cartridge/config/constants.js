@@ -24,7 +24,7 @@ module.exports = {
   ACTIONTYPE: {
     QRCODE: 'qrCode',
   },
-  ENVIROMENTS: {
+  ENVIRONMENTS: {
     TEST: 'test',
   },
   DISABLED_SUBMIT_BUTTON_METHODS: [
