@@ -25,6 +25,14 @@ jest.mock(
 );
 
 jest.mock(
+  '*/cartridge/scripts/helpers/pricing',
+  () => ({
+    getPromotionPrice: jest.fn(),
+  }),
+  { virtual: true },
+);
+
+jest.mock(
   '*/cartridge/adyen/scripts/expressPayments/createTemporaryBasket',
   () => jest.fn(),
   { virtual: true },
