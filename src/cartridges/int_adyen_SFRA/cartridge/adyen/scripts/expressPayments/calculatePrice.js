@@ -1,6 +1,9 @@
 const ProductMgr = require('dw/catalog/ProductMgr');
+const Resource = require('dw/web/Resource');
 const priceHelper = require('*/cartridge/scripts/helpers/pricing');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
+const setErrorType = require('*/cartridge/adyen/logs/setErrorType');
+const { AdyenError } = require('*/cartridge/adyen/logs/adyenError');
 
 /**
  * Validate product exists and is available
@@ -165,11 +168,7 @@ function calculatePrice(req, res, next) {
 
     const validation = validateProduct(pid);
     if (validation.error) {
-      AdyenLogs.error_log(
-        'Product validation failed',
-        pid ? 'Product not found' : 'Product ID is required',
-      );
-      return sendErrorResponse(res, next);
+      throw new AdyenError('Validation failed for product');
     }
 
     const product = getProductForPricing(validation.product);
@@ -181,6 +180,13 @@ function calculatePrice(req, res, next) {
       'An error occurred while calculating the product price',
       error,
     );
+    setErrorType(error, res, {
+      errorMessage: Resource.msg(
+        'error.cannot.get.product.price',
+        'product',
+        null,
+      ),
+    });
     return sendErrorResponse(res, next);
   }
 }
