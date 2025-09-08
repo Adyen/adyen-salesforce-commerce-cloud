@@ -230,6 +230,13 @@ server.post(
   adyen.createTemporaryBasket,
 );
 
+server.post(
+  'CalculatePrice',
+  server.middleware.https,
+  csrf.validateRequest,
+  adyen.calculatePrice,
+);
+
 function getExternalPlatformVersion() {
   return EXTERNAL_PLATFORM_VERSION;
 }
