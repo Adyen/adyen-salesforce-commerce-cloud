@@ -67,6 +67,7 @@ describe('getCheckoutPaymentMethods', () => {
       },
       showFastlane: false,
       adyenTranslations: expect.anything(),
+      adyenPaymentMethodTitles: expect.anything(),
       imagePath: 'mocked_loading_contextimages/logos/medium/',
       countryCode: 'NL',
       shopperEmail: "mocked_email",
