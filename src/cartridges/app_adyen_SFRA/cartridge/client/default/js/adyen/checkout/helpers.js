@@ -51,6 +51,7 @@ async function paymentFromComponent(data, component = {}) {
   });
   setOrderFormData(response);
   handleComponentChanges(response, component);
+  return response;
 }
 
 function resetPaymentMethod() {
