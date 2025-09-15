@@ -26,6 +26,7 @@ function getPaymentsDetailsResult(
   redirectResult,
   payload,
   req,
+  clearTransactionData = true,
 ) {
   const hasQuerystringDetails = !!(redirectResult || payload);
   // Saved response from Adyen-PaymentsDetails
@@ -36,7 +37,9 @@ function getPaymentsDetailsResult(
     const requestObject = getPaymentDetailsPayload(req.querystring);
     result = adyenCheckout.doPaymentsDetailsCall(requestObject);
   }
-  clearForms.clearPaymentTransactionData(adyenPaymentInstrument);
+  if (clearTransactionData) {
+    clearForms.clearPaymentTransactionData(adyenPaymentInstrument);
+  }
   return result;
 }
 
@@ -137,32 +140,39 @@ function showConfirmation(req, res, next) {
     }
 
     if (
-      adyenPaymentInstrument.paymentTransaction.custom.Adyen_merchantSig ===
+      adyenPaymentInstrument.paymentTransaction.custom.Adyen_merchantSig !==
       signature
     ) {
-      if (order.status.value === Order.ORDER_STATUS_FAILED) {
-        AdyenLogs.error_log(
-          `Could not call payment/details for failed order ${order.orderNo}`,
-        );
-        return payment.handlePaymentError(order, 'placeOrder', options);
-      }
-
-      clearForms.clearAdyenData(adyenPaymentInstrument);
-
-      const detailsResult = getPaymentsDetailsResult(
-        adyenPaymentInstrument,
-        redirectResult,
-        payload,
-        req,
-      );
-      return handlePaymentsDetailsResult(
-        adyenPaymentInstrument,
-        detailsResult,
-        order,
-        options,
+      throw new AdyenError(
+        `Incorrect signature for order ${merchantReference}`,
       );
     }
-    throw new AdyenError(`Incorrect signature for order ${merchantReference}`);
+
+    if (order.status.value === Order.ORDER_STATUS_FAILED) {
+      AdyenLogs.error_log(
+        `Could not call payment/details for failed order ${order.orderNo}`,
+      );
+      return payment.handlePaymentError(order, 'placeOrder', options);
+    }
+
+    clearForms.clearAdyenData(adyenPaymentInstrument);
+
+    const detailsResult = getPaymentsDetailsResult(
+      adyenPaymentInstrument,
+      redirectResult,
+      payload,
+      req,
+      false,
+    );
+
+    clearForms.clearPaymentTransactionData(adyenPaymentInstrument);
+
+    return handlePaymentsDetailsResult(
+      adyenPaymentInstrument,
+      detailsResult,
+      order,
+      options,
+    );
   } catch (error) {
     AdyenLogs.error_log('Could not verify /payment/details', error);
     setErrorType(error, res, {
