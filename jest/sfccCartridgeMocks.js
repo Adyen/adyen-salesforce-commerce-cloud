@@ -11,6 +11,10 @@ jest.mock('*/cartridge/config/adyenTranslations', () => jest.fn(), {
   virtual: true,
 });
 
+jest.mock('*/cartridge/config/adyenPaymentMethodTitles', () => jest.fn(), {
+  virtual: true,
+});
+
 jest.mock('*/cartridge/models/shipping/shippingMethod', () => jest.fn(), {
   virtual: true,
 });

@@ -10,6 +10,8 @@ const ApplePayConfig = require('./applePay/applePayConfig');
 const AmazonPayConfig = require('./amazonPay/amazonPayConfig');
 const PayPalConfig = require('./paypal/paypalConfig');
 const GiftCardsConfig = require('./giftcards/giftcardsConfig');
+const PayPalFastlaneConfig = require('./paypal/paypalFastlaneConfig');
+
 const store = require('../../../../../../config/store');
 const helpers = require('../helpers');
 const { httpClient } = require('../../commons/httpClient');
@@ -40,6 +42,10 @@ function getPaymentMethodsConfiguration(email, paymentMethodsResponse) {
     httpClient,
     helpers,
   ).getConfig();
+  const payPalFastlaneConfig = new PayPalFastlaneConfig(
+    store,
+    helpers,
+  ).getConfig();
 
   return {
     scheme: cardConfig,
@@ -57,6 +63,7 @@ function getPaymentMethodsConfiguration(email, paymentMethodsResponse) {
     klarna_paynow: klarnaConfig,
     cashapp: cashAppConfig,
     upi: upiConfig,
+    fastlane: payPalFastlaneConfig,
   };
 }
 

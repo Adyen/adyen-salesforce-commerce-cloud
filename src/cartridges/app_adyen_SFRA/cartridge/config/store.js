@@ -32,6 +32,8 @@ class Store {
 
   @observable addedGiftCards;
 
+  @observable fastlane = {};
+
   @computed get maskedCardNumber() {
     return `${this.MASKED_CC_PREFIX}${this.endDigits}`;
   }
