@@ -164,7 +164,7 @@ for (const environment of environments) {
       await checkoutPage.expectRefusal();
     });
 
-    test('CashApp Renders', async ({page}) => {
+    test('CashApp Renders @quick', async ({page}) => {
       if (environment.name.indexOf('v5') !== -1) {
         await checkoutPage.setEmail();
       }
