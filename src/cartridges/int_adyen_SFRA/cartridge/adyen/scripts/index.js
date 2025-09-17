@@ -22,6 +22,7 @@ const handleCheckoutReview = require('*/cartridge/adyen/scripts/expressPayments/
 const validatePaymentDataFromRequest = require('*/cartridge/adyen/utils/validatePaymentData');
 const createTemporaryBasket = require('*/cartridge/adyen/scripts/expressPayments/createTemporaryBasket');
 const saveExpressPaymentData = require('*/cartridge/adyen/scripts/expressPayments/paypal/saveExpressPaymentData');
+const calculatePrice = require('*/cartridge/adyen/scripts/expressPayments/calculatePrice');
 
 module.exports = {
   getCheckoutPaymentMethods,
@@ -48,4 +49,5 @@ module.exports = {
   createTemporaryBasket,
   getConnectedTerminals,
   saveExpressPaymentData,
+  calculatePrice,
 };

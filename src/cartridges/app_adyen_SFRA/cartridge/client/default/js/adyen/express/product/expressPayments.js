@@ -3,7 +3,10 @@ const {
   GOOGLE_PAY,
   PAY_WITH_GOOGLE,
 } = require('../../../../../../config/constants');
-const { getExpressPaymentMethods } = require('../../commons/index');
+const {
+  getExpressPaymentMethods,
+  calculateProductPrice,
+} = require('../../commons/index');
 const { httpClient } = require('../../commons/httpClient');
 const { ApplePay, GooglePay } = require('../paymentMethods');
 
@@ -28,6 +31,50 @@ function getPaymentMethodConfig(adyenPaymentMethods, paymentMethodType) {
   )?.configuration;
 }
 
+async function getProductPrice(productId, quantity = 1) {
+  const response = await calculateProductPrice(productId, quantity);
+
+  if (response.success) {
+    return {
+      value: Math.round(response.totalAmount.value * 100), // Convert to minor units (cents)
+      currency: response.totalAmount.currencyCode,
+    };
+  }
+  return null;
+}
+
+function getProductId() {
+  return (
+    document.querySelector('[data-pid]')?.getAttribute('data-pid') ||
+    document
+      .querySelector('#selected-express-product')
+      ?.getAttribute('data-pid')
+  );
+}
+
+function getProductQuantity() {
+  return (
+    document.querySelector('[name="Quantity"]')?.value ||
+    document.querySelector('.quantity-select')?.value ||
+    1
+  );
+}
+
+async function calculateInitialAmount(currency) {
+  const productId = getProductId();
+  const quantity = getProductQuantity();
+  const initialAmount = { value: 0, currency };
+
+  if (productId) {
+    const productPrice = await getProductPrice(productId, quantity);
+    if (productPrice) {
+      initialAmount.value = productPrice.value;
+    }
+  }
+
+  return initialAmount;
+}
+
 function renderApplePayButton() {
   $('body').on(`product:render${APPLE_PAY}Button`, async (e, response) => {
     const {
@@ -46,7 +93,7 @@ function renderApplePayButton() {
     if (!applePayConfig) {
       return;
     }
-    const initialAmount = { value: 0, currency };
+    const initialAmount = await calculateInitialAmount(currency);
     const applePay = new ApplePay(
       applePayConfig,
       applicationInfo,

@@ -367,10 +367,9 @@ describe('handleAuthorised', () => {
     };
     const resolve = jest.fn();
 
-    GooglePay.handleAuthorised(response, resolve);
+    GooglePay.submitSuccessForm(response);
 
     const resultInput = document.querySelector('#result');
-    expect(resolve).toHaveBeenCalled();
     expect(resultInput.value).toBe(JSON.stringify({
       pspReference: 'PSP123',
       resultCode: 'SUCCESS',
@@ -394,10 +393,9 @@ describe('handleAuthorised', () => {
     };
     const resolve = jest.fn();
 
-    GooglePay.handleAuthorised(response, resolve);
+    GooglePay.submitSuccessForm(response);
 
     const resultInput = document.querySelector('#result');
-    expect(resolve).toHaveBeenCalled();
     expect(resultInput.value).toBe(JSON.stringify({
       pspReference: 'PSP456',
       resultCode: 'SUCCESS',
@@ -480,22 +478,9 @@ describe('paymentFromComponent', () => {
       start: start,
       stop: stop
     }})
-    global.$.ajax = jest.fn().mockImplementation(({ success }) => {
-      success({ action : {}})
-    });
-    await googlePay.paymentFromComponent({});
-    expect(start).toHaveBeenCalledTimes(1);
+    await googlePay.callPaymentFromComponent({});
+    expect($.ajax).toHaveBeenCalledTimes(1);
   })
 });
 
 });
-
-
-//
-
-//
-
-//
-
-//
-

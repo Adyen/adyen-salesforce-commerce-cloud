@@ -6,7 +6,17 @@ class GooglePayConfig {
     this.showPayButton = true;
     this.buttonColor = 'white';
     this.helpers = helpers;
+    this.document = document;
   }
+
+  onAdditionalDetails = (state) => {
+    this.document.querySelector('#additionalDetailsHidden').value =
+      JSON.stringify({
+        ...state.data,
+        paymentData: {},
+      });
+    this.document.querySelector('#showConfirmationForm').submit();
+  };
 
   onSubmit = async (state, component, actions) => {
     try {
@@ -14,9 +24,12 @@ class GooglePayConfig {
       document.querySelector('#adyenStateData').value = JSON.stringify(
         state.data,
       );
-      await this.helpers.paymentFromComponent(state.data, component);
+      const response = await this.helpers.paymentFromComponent(
+        state.data,
+        component,
+      );
       actions.resolve({
-        resultCode: 'Authorised',
+        resultCode: response.resultCode,
       });
     } catch (error) {
       actions.reject();
@@ -32,6 +45,7 @@ class GooglePayConfig {
     return {
       environment: this.environment,
       onSubmit: this.onSubmit,
+      onAdditionalDetails: this.onAdditionalDetails,
       configuration: this.getConfiguration(),
       showPayButton: this.showPayButton,
       buttonColor: this.buttonColor,

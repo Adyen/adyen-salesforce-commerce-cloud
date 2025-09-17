@@ -1,4 +1,5 @@
 import PaymentMethodsPage from '../pages/PaymentMethodsPage.mjs';
+
 export class RedirectShopper {
   constructor(page) {
     this.page = page;
@@ -13,13 +14,17 @@ export class RedirectShopper {
     await this.paymentMethodsPage.submitSimulator(testSuccess);
   };
 
+  completeRivertyRedirect = async (testSuccess) => {
+    await this.paymentMethodsPage.fillInRivertyData(testSuccess);
+  };
+
   doBillDeskPayment = async (paymentMethod) => {
     await this.paymentMethodsPage.initiateBillDeskPayment(paymentMethod);
   };
 
   doUPIPayment = async (paymentMethod, success) => {
     await this.paymentMethodsPage.initiateUPIPayment(paymentMethod, success);
-  }
+  };
 
   completeBillDeskRedirect = async (success) => {
     await this.paymentMethodsPage.billdeskSimulator(success);
@@ -30,7 +35,12 @@ export class RedirectShopper {
   };
 
   doPayPalPayment = async (expressFlow, shippingChange, success, taxation) => {
-    await this.paymentMethodsPage.initiatePayPalPayment(expressFlow, shippingChange, success, taxation);
+    await this.paymentMethodsPage.initiatePayPalPayment(
+      expressFlow,
+      shippingChange,
+      success,
+      taxation,
+    );
   };
 
   doGooglePayExpressPayment = async () => {
@@ -38,8 +48,12 @@ export class RedirectShopper {
   };
 
   doAmazonPayment = async (normalFlow, selectedCard, success) => {
-    await this.paymentMethodsPage.initiateAmazonPayment(normalFlow, selectedCard, success);
-  }
+    await this.paymentMethodsPage.initiateAmazonPayment(
+      normalFlow,
+      selectedCard,
+      success,
+    );
+  };
 
   doAmazonExpressPayment = async () => {
     await this.paymentMethodsPage.continueAmazonExpressFlow();
@@ -97,13 +111,9 @@ export class RedirectShopper {
     await this.page.click('#rb_giropay');
   };
 
-  doRivertyPayment = async (email) => {
+  doRivertyPayment = async () => {
     await this.page.click('#rb_riverty');
-    await this.page.fill('input[name="dateOfBirth"]', '1980-01-11');
-    await this.page.fill('input[name="shopperEmail"]', email);
-    // There is no static locator to click the checkbox
-    await this.page.locator('label:has-text("Ich bin mit")').click();
-};
+  };
 
   completeGiropayRedirect = async (success) => {
     if (success) {

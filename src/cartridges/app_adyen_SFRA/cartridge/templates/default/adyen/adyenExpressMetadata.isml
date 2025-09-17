@@ -19,6 +19,7 @@
    window.showConfirmationAction = "${URLUtils.https('Adyen-ShowConfirmationPaymentFromComponent')}";
    window.returnUrl = "${URLUtils.https('Cart-Show')}";
    window.createTemporaryBasketUrl = "${URLUtils.https('Adyen-CreateTemporaryBasket')}";
+   window.productPriceCalculateUrl = "${URLUtils.https('Adyen-CalculatePrice')}";
    window.fractionDigits = "${AdyenHelper.getFractionDigits()}"
 
    window.expressMethodsOrder = "${AdyenConfigs.getExpressPaymentsOrder()}";

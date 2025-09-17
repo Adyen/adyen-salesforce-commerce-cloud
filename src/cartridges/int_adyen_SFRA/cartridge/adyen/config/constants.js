@@ -43,9 +43,16 @@ module.exports = {
     IDEAL: 'ideal',
     SEPADIRECTDEBIT: 'sepadirectdebit',
     GIFTCARD: 'giftcard',
+    FASTLANE: 'fastlane',
   },
 
-  CAN_SKIP_SUMMARY_PAGE: ['applepay', 'cashapp', 'upi', 'googlepay'],
+  CAN_SKIP_SUMMARY_PAGE: [
+    'applepay',
+    'cashapp',
+    'upi',
+    'googlepay',
+    'fastlane',
+  ],
 
   OPEN_INVOICE_METHODS: [
     'afterpay',
@@ -156,7 +163,7 @@ module.exports = {
   APPLE_DOMAIN_URL:
     '/.well-known/apple-developer-merchantid-domain-association',
 
-  CHECKOUT_COMPONENT_VERSION: '6.12.1',
+  CHECKOUT_COMPONENT_VERSION: '6.21.0',
   CHECKOUT_API_VERSION: 'v71',
-  VERSION: '25.4.0',
+  VERSION: '25.5.0',
 };

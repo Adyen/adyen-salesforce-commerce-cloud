@@ -501,6 +501,13 @@ jest.mock(
 );
 
 jest.mock(
+  '*/cartridge/adyen/scripts/expressPayments/calculatePrice',
+  () =>
+    require('../src/cartridges/int_adyen_SFRA/cartridge/adyen/scripts/expressPayments/calculatePrice'),
+  { virtual: true },
+);
+
+jest.mock(
   '*/cartridge/adyen/analytics/analyticsService',
   () =>
     require('../src/cartridges/int_adyen_SFRA/cartridge/adyen/analytics/analyticsService'),
@@ -532,5 +539,12 @@ jest.mock(
   '*/cartridge/adyen/scripts/hooks/payment/preAuthorizationHandling',
   () =>
     require('../src/cartridges/int_adyen_SFRA/cartridge/adyen/scripts/hooks/payment/preAuthorizationHandling'),
+  { virtual: true },
+);
+
+jest.mock(
+  '*/cartridge/adyen/utils/klarnaHelper',
+  () =>
+    require('../src/cartridges/int_adyen_SFRA/cartridge/adyen/utils/klarnaHelper'),
   { virtual: true },
 );

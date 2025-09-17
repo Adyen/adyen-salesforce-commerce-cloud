@@ -65,3 +65,20 @@ module.exports.createTemporaryBasket = async function createTemporaryBasket() {
     },
   });
 };
+
+/**
+ * Makes an ajax call to the controller function calculatePrice
+ */
+module.exports.calculateProductPrice = async function calculateProductPrice(
+  productId,
+  quantity,
+) {
+  return httpClient({
+    method: 'POST',
+    url: window.productPriceCalculateUrl,
+    data: {
+      pid: productId,
+      quantity,
+    },
+  });
+};
