@@ -2,17 +2,6 @@ const store = require('../../../../../config/store');
 const constants = require('../../../../../config/constants');
 const { httpClient } = require('../commons/httpClient');
 
-function assignPaymentMethodValue() {
-  const adyenPaymentMethod = document.querySelector('#adyenPaymentMethodName');
-  // if currently selected paymentMethod contains a brand it will be part of the label ID
-  const paymentMethodlabelId = `#lb_${store.selectedMethod}`;
-  if (adyenPaymentMethod) {
-    adyenPaymentMethod.value = store.brand
-      ? store.brand
-      : document.querySelector(paymentMethodlabelId)?.innerHTML;
-  }
-}
-
 function setOrderFormData(response) {
   if (response?.orderNo && document.querySelector('#merchantReference')) {
     document.querySelector('#merchantReference').value = response.orderNo;
@@ -46,7 +35,6 @@ async function paymentFromComponent(data, component = {}) {
     method: 'POST',
     data: {
       data: JSON.stringify(requestData),
-      paymentMethod: document.querySelector('#adyenPaymentMethodName').value,
     },
   });
   setOrderFormData(response);
@@ -138,7 +126,6 @@ function createShowConfirmationForm(action) {
 
 module.exports = {
   setOrderFormData,
-  assignPaymentMethodValue,
   paymentFromComponent,
   resetPaymentMethod,
   displaySelectedMethod,

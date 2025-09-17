@@ -75,7 +75,6 @@
      <input type="text" class="form-control cardNumber" style="display:none" id="cardNumber" name="${creditFields.cardNumber.htmlName}">
      <input type="hidden" class="form-control" id="cardType" name="${creditFields.cardType.htmlName}">
 
-     <input id="adyenPaymentMethodName" type="hidden" name="adyenPaymentMethod"/>
      <input id="adyenIssuerName" type="hidden" name="adyenIssuerName"/>
      <input id="selectedIssuer" type="hidden" name="${adyenPaymentFields.issuer.htmlName}"/>
 

@@ -5,7 +5,6 @@ class PayPalFastlaneConfig {
   }
 
   onSubmit = (state, component) => {
-    this.helpers.assignPaymentMethodValue();
     document.querySelector('#adyenStateData').value = JSON.stringify(
       state.data,
     );
