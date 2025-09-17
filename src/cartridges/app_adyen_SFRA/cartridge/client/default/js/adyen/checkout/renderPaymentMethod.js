@@ -151,6 +151,17 @@ function createListItem(paymentMethodID, liContents) {
  */
 function clearPaymentMethodsContainer() {
   const paymentMethodContainer = document.querySelector('#paymentMethodsList');
+  // unmount all components before clearing
+  Object.keys(store.componentsObj).forEach((paymentMethodID) => {
+    const component = store.componentsObj[paymentMethodID];
+    if (component?.node) {
+      try {
+        component.node.unmount();
+      } catch (unmountError) {
+        //
+      }
+    }
+  });
   paymentMethodContainer.innerHTML = '';
   store.clearPaymentMethod();
 }
