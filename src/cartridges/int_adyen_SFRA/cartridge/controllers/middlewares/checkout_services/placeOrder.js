@@ -162,16 +162,6 @@ function placeOrder(req, res, next) {
     }
     /* ### Custom Adyen cartridge end ### */
 
-    // Handle custom processing post authorization
-    var options = {
-        req: req,
-        res: res
-    };
-    var postAuthCustomizations = hooksHelper('app.post.auth', 'postAuthorization', handlePaymentResult, order, options, require('*/cartridge/scripts/hooks/postAuthorizationHandling').postAuthorization);
-    if (postAuthCustomizations && Object.prototype.hasOwnProperty.call(postAuthCustomizations, 'error')) {
-        res.json(postAuthCustomizations);
-        return next();
-    }
     if (handlePaymentResult.error) {
         res.json({
             error: true,

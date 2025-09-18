@@ -23,6 +23,10 @@
 		{
 			"name": "app.payment.pre.auth",
 			"script": "./hooks/payment/preAuthorizationHandling"
+		},
+		{
+			"name": "app.payment.post.auth",
+			"script": "./hooks/payment/postAuthorizationHandling"
 		}
 	]
 }

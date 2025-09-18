@@ -9,6 +9,8 @@ const AdyenConfigs = require('*/cartridge/adyen/utils/adyenConfigs');
 const constants = require('*/cartridge/adyen/config/constants');
 const clearForms = require('*/cartridge/adyen/utils/clearForms');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
+const postAuthorizationHook = require('*/cartridge/adyen/scripts/hooks/payment/postAuthorizationHandling');
+const hooksHelper = require('*/cartridge/scripts/helpers/hooks');
 
 function handlePaymentError(order, adyenPaymentInstrument, { res, next }) {
   clearForms.clearAdyenData(adyenPaymentInstrument);
@@ -144,6 +146,17 @@ function handlePayment(stateData, order, options) {
     finalResult = JSON.parse(order.custom.Adyen_paypalExpressResponse);
   } else {
     finalResult = finalResult || detailsCall?.result;
+  }
+
+  // Post-auth hook
+  const postAuthResult = hooksHelper(
+    'app.payment.post.auth',
+    'postAuthorization',
+    { order, stateData, finalResult },
+    postAuthorizationHook.postAuthorization,
+  );
+  if (postAuthResult?.error) {
+    return postAuthResult;
   }
 
   return handlePaymentResult(
