@@ -20,7 +20,6 @@ class GooglePayConfig {
 
   onSubmit = async (state, component, actions) => {
     try {
-      this.helpers.assignPaymentMethodValue();
       document.querySelector('#adyenStateData').value = JSON.stringify(
         state.data,
       );

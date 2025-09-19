@@ -6,7 +6,6 @@ class KlarnaConfig {
   }
 
   onSubmit = (state, component) => {
-    this.helpers.assignPaymentMethodValue();
     this.helpers.paymentFromComponent(state.data, component);
   };
 

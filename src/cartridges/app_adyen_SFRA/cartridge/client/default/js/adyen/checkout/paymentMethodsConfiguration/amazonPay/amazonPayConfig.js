@@ -38,7 +38,6 @@ class AmazonPayConfig {
     if (this.store.formErrorsExist) {
       reject();
     } else {
-      this.helpers.assignPaymentMethodValue();
       resolve();
     }
   };

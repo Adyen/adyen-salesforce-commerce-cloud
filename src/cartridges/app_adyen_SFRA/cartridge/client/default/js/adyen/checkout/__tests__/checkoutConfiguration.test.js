@@ -193,12 +193,16 @@ describe('Checkout Configuration', () => {
       paywithgoogle = new GooglePayConfig(helpers)
       document.body.innerHTML = `
         <div id="lb_paywithgoogle">GooglePay</div>
+        <input type="text" id="adyenStateData" />
         <div id="adyenPaymentMethodName"></div>
         <button value="submit-payment"></button>
       `;
       store.selectedMethod = 'paywithgoogle';
+      $.ajax = jest.fn().mockReturnValue({
+        resultCode: 'Authorised',
+      });
       paywithgoogle.onSubmit({ data: {} }, null, { resolve: jest.fn(), reject: jest.fn() });
-      expect(document.getElementById('adyenPaymentMethodName').value).toBe('GooglePay');
+      expect($.ajax).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -245,8 +249,11 @@ describe('Checkout Configuration', () => {
       `;
       store.selectedMethod = 'applepay';
       store.componentsObj = { applepay: { stateData: { foo: 'bar' }  } };
+      $.ajax = jest.fn().mockReturnValue({
+        resultCode: 'Authorised',
+      });
       applepay.onSubmit({ data: {} });
-      expect(document.getElementById('adyenPaymentMethodName').value).toBe('ApplePay');
+      expect($.ajax).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -259,8 +266,11 @@ describe('Checkout Configuration', () => {
       `;
       store.selectedMethod = 'cashapp';
       store.componentsObj = { cashapp: { stateData: { foo: 'bar' } } };
+      $.ajax = jest.fn().mockReturnValue({
+        resultCode: 'Authorised',
+      });
       cashapp.onSubmit({ data: {} });
-      expect(document.getElementById('adyenPaymentMethodName').value).toBe('CashApp');
+      expect($.ajax).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -360,7 +370,7 @@ describe('Klarna', () => {
     store.selectedMethod = 'klarna';
     store.componentsObj = { klarna: { stateData: { foo: 'bar' }  } };
     klarna.onSubmit({ data: {} });
-    expect(document.getElementById('adyenPaymentMethodName').value).toBe('Klarna');
+    expect($.ajax).toHaveBeenCalledTimes(1);
   });
 
   it('handles onAdditionalDetails', () => {

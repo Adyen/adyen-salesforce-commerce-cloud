@@ -6,7 +6,6 @@ class CashAppConfig {
 
   onSubmit = (state, component) => {
     $('#dwfrm_billing').trigger('submit');
-    this.helpers.assignPaymentMethodValue();
     this.helpers.paymentFromComponent(state.data, component);
   };
 

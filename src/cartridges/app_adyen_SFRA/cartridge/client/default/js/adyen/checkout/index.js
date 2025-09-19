@@ -4,11 +4,7 @@ const {
   actionHandler,
 } = require('./checkoutConfiguration');
 const { renderCheckout } = require('./renderPaymentMethod');
-const {
-  assignPaymentMethodValue,
-  showValidation,
-  paymentFromComponent,
-} = require('./helpers');
+const { showValidation, paymentFromComponent } = require('./helpers');
 const billing = require('../../checkout/billing');
 const { httpClient } = require('../commons/httpClient');
 const { getPaymentMethods } = require('../commons');
@@ -208,7 +204,6 @@ function submitPayment() {
       selectedPaymentOption === 'AdyenComponent' ||
       selectedPaymentOption === 'CREDIT_CARD'
     ) {
-      assignPaymentMethodValue();
       setAdyenInputValues();
       return showValidation();
     }
