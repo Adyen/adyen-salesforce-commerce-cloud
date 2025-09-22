@@ -1,8 +1,8 @@
 const CustomObjectMgr = require('dw/object/CustomObjectMgr');
 const Transaction = require('dw/system/Transaction');
 const analyticsConstants = require('*/cartridge/adyen/analytics/constants');
-const AnalyticsService = require('../analyticsService');
-const AdyenLogs = require('../../logs/adyenCustomLogs');
+const AnalyticsService = require('*/cartridge/adyen/analytics/analyticsService');
+const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 
 const defaultProperties = {
   channel: 'Web',

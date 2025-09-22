@@ -1,7 +1,7 @@
 const CustomObjectMgr = require('dw/object/CustomObjectMgr');
 const UUIDUtils = require('dw/util/UUIDUtils');
 const Transaction = require('dw/system/Transaction');
-const constants = require('./constants');
+const constants = require('*/cartridge/adyen/analytics/constants');
 
 function createAnalyticsEvent(referenceId, eventSource, eventType, eventCode) {
   Transaction.wrap(() => {
