@@ -103,6 +103,24 @@ function handlePaymentResult(result, order, adyenPaymentInstrument, options) {
 
 // eslint-disable-next-line complexity
 function handlePayment(stateData, order, options) {
+  // Check if order exists
+  if (!order) {
+    AdyenLogs.error_log(
+      'Order is null in handlePayment - cannot process payment',
+    );
+    const { res, next } = options;
+    res.redirect(
+      URLUtils.url(
+        'Checkout-Begin',
+        'stage',
+        'payment',
+        'paymentError',
+        Resource.msg('error.payment.not.valid', 'checkout', null),
+      ),
+    );
+    return next();
+  }
+
   const paymentInstruments = order.getPaymentInstruments(
     AdyenHelper.getOrderMainPaymentInstrumentType(order),
   );

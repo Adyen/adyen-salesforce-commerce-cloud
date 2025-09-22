@@ -27,6 +27,7 @@
    window.isApplePayExpressOnPdpEnabled = "${AdyenConfigs.isApplePayExpressOnPdpEnabled()}";
    window.isAmazonPayExpressEnabled = "${AdyenConfigs.isAmazonPayExpressEnabled()}";
    window.isPayPalExpressEnabled = "${AdyenConfigs.isPayPalExpressEnabled()}";
+   window.isPayPalExpressOnPdpEnabled = "${AdyenConfigs.isPayPalExpressOnPdpEnabled()}";
    window.isPayPalExpressReviewPageEnabled = "${AdyenConfigs.isPayPalExpressReviewPageEnabled()}";
    window.isGooglePayExpressEnabled = "${AdyenConfigs.isGooglePayExpressEnabled()}";
    window.isGooglePayExpressOnPdpEnabled = "${AdyenConfigs.isGooglePayExpressOnPdpEnabled()}";

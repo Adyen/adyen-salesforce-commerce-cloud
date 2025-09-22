@@ -62,6 +62,8 @@ function getCheckoutExpressPaymentMethods(req, res, next) {
         !!AdyenConfigs.isApplePayExpressOnPdpEnabled(),
       [constants.PAYMENTMETHODS.GOOGLEPAY]:
         !!AdyenConfigs.isGooglePayExpressOnPdpEnabled(),
+      [constants.PAYMENTMETHODS.PAYPAL]:
+        !!AdyenConfigs.isPayPalExpressOnPdpEnabled(),
     };
 
     const expressPaymentMethodsCart = {
