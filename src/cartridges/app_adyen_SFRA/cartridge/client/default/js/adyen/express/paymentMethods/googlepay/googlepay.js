@@ -280,7 +280,12 @@ class GooglePay {
         GooglePay.handleError(actions.reject);
       }
 
-      helpers.createShowConfirmationForm(this.showConfirmationAction);
+      const redirectUrl = this.isExpressPdp ? window.location.href : null;
+      console.log(redirectUrl);
+      helpers.createShowConfirmationForm(
+        this.showConfirmationAction,
+        redirectUrl,
+      );
       helpers.setOrderFormData(response);
       document.querySelector('#additionalDetailsHidden').value = JSON.stringify(
         {

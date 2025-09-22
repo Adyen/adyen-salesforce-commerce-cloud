@@ -108,7 +108,7 @@ function getInstallmentValues(maxValue) {
   return values;
 }
 
-function createShowConfirmationForm(action) {
+function createShowConfirmationForm(action, redirectUrl) {
   if (document.querySelector('#showConfirmationForm')) {
     return;
   }
@@ -118,6 +118,7 @@ function createShowConfirmationForm(action) {
     <input type="hidden" id="merchantReference" name="merchantReference"/>
     <input type="hidden" id="orderToken" name="orderToken"/>
     <input type="hidden" id="result" name="result" value="null"/>
+    <input type="hidden" id="redirectUrl" name="redirectUrl" value="${redirectUrl}"/>
   </form>`;
 
   template.innerHTML = form;
