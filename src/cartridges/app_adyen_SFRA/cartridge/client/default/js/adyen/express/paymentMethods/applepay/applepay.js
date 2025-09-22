@@ -191,7 +191,11 @@ class ApplePay {
       customer: this.customer,
       isExpressPdp: this.isExpressPdp,
     });
-    helpers.createShowConfirmationForm(this.showConfirmationAction);
+    const redirectUrl = this.isExpressPdp ? window.location.href : null;
+    helpers.createShowConfirmationForm(
+      this.showConfirmationAction,
+      redirectUrl,
+    );
     helpers.setOrderFormData(response);
     if (document.querySelector('#additionalDetailsHidden')) {
       document.querySelector('#additionalDetailsHidden').value =
