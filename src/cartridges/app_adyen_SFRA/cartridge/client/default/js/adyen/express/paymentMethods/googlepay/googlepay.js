@@ -281,7 +281,6 @@ class GooglePay {
       }
 
       const redirectUrl = this.isExpressPdp ? window.location.href : null;
-      console.log(redirectUrl);
       helpers.createShowConfirmationForm(
         this.showConfirmationAction,
         redirectUrl,
