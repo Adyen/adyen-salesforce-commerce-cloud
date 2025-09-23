@@ -25,7 +25,7 @@ const Transaction = require('dw/system/Transaction');
 const CustomObjectMgr = require('dw/object/CustomObjectMgr');
 
 //script includes
-const AdyenLogs = require('../../logs/adyenCustomLogs');
+const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 
 function execute() {
   processNotifications();
