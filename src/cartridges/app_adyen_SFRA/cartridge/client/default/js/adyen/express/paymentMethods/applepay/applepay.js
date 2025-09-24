@@ -193,8 +193,7 @@ class ApplePay {
     });
     helpers.createShowConfirmationForm(this.showConfirmationAction);
     if (this.isExpressPdp) {
-      document.querySelector('#redirectUrl').value =
-        `${window.location.pathname}${window.location.search}`;
+      this.helpers.setExpressRedirectUrl();
     }
     helpers.setOrderFormData(response);
     if (document.querySelector('#additionalDetailsHidden')) {

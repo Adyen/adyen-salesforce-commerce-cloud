@@ -123,6 +123,13 @@ function createShowConfirmationForm(action) {
   document.querySelector('body').appendChild(template.content);
 }
 
+function setExpressRedirectUrl() {
+  const redirectUrlInput = document.querySelector('#redirectUrl');
+  if (redirectUrlInput) {
+    redirectUrlInput.value = `${window.location.pathname}${window.location.search}`;
+  }
+}
+
 module.exports = {
   setOrderFormData,
   paymentFromComponent,
@@ -131,4 +138,5 @@ module.exports = {
   showValidation,
   createShowConfirmationForm,
   getInstallmentValues,
+  setExpressRedirectUrl,
 };
