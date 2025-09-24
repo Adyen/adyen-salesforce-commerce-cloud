@@ -40,7 +40,6 @@ const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 const { AdyenError } = require('*/cartridge/adyen/logs/adyenError');
 const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 
-/* eslint no-var: off */
 const adyenHelperObj = {
   // Create the service config used to make calls to the Adyen Checkout API (used for all services)
   getService(service, reqMethod = 'POST') {

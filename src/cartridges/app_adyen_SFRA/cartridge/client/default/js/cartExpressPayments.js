@@ -1,7 +1,7 @@
-/* eslint-disable global-require */
 const processInclude = require('base/util');
 const $ = require('jquery');
+const adyenExpressCheckout = require('./adyen/express/cart/expressPayments');
 
 $(document).ready(() => {
-  processInclude(require('./adyen/express/cart/expressPayments'));
+  processInclude(adyenExpressCheckout);
 });

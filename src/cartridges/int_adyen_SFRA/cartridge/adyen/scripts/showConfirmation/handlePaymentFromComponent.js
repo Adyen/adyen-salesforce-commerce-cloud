@@ -12,6 +12,14 @@ const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 const postAuthorizationHook = require('*/cartridge/adyen/scripts/hooks/payment/postAuthorizationHandling');
 const hooksHelper = require('*/cartridge/scripts/helpers/hooks');
 
+const WALLET_PAYMENTS = ['amazonpay', 'applepay', 'googlepay', 'cashapp'];
+
+function isWallet(result) {
+  if (!result) return false;
+  const resultString = JSON.stringify(result);
+  return WALLET_PAYMENTS.some((wallet) => resultString.includes(wallet));
+}
+
 function handlePaymentError(order, adyenPaymentInstrument, { res, next }) {
   clearForms.clearAdyenData(adyenPaymentInstrument);
   Transaction.wrap(() => {
@@ -101,60 +109,81 @@ function handlePaymentResult(result, order, adyenPaymentInstrument, options) {
   return handlePaymentError(order, adyenPaymentInstrument, options);
 }
 
-// eslint-disable-next-line complexity
-function handlePayment(stateData, order, options) {
+function getFinalResult(order, stateData, result, adyenPaymentInstrument) {
+  const hasStateData = stateData?.paymentData && stateData?.details;
+  const paymentData = JSON.parse(
+    adyenPaymentInstrument.custom.adyenPaymentData,
+  );
+
+  if (AdyenHelper.isPayPalExpress(paymentData.paymentMethod)) {
+    return JSON.parse(order.custom.Adyen_paypalExpressResponse);
+  }
+
+  if (hasStateData) {
+    const detailsCall = handlePaymentsDetailsCall(
+      stateData,
+      adyenPaymentInstrument,
+    );
+    return detailsCall?.result;
+  }
+
+  if (isWallet(result)) {
+    return result;
+  }
+
+  return null;
+}
+
+function preparePayment(order, options) {
   const paymentInstruments = order.getPaymentInstruments(
     AdyenHelper.getOrderMainPaymentInstrumentType(order),
   );
-  const result = JSON.parse(options.req.form?.result);
-
   const adyenPaymentInstrument = paymentInstruments[0];
-  const hasStateData = stateData?.paymentData && stateData?.details;
+  const result = options.req.form?.result
+    ? JSON.parse(options.req.form.result)
+    : null;
 
   if (result?.error || order.status.value === Order.ORDER_STATUS_FAILED) {
     AdyenLogs.error_log(
       `Could not call payment/details for order ${order.orderNo}`,
     );
-    return handlePaymentError(order, adyenPaymentInstrument, options);
+    return { error: true, adyenPaymentInstrument };
   }
 
-  let finalResult;
-  if (!hasStateData) {
-    if (
-      result &&
-      (JSON.stringify(result).indexOf('amazonpay') > -1 ||
-        JSON.stringify(result).indexOf('applepay') > -1 ||
-        JSON.stringify(result).indexOf('googlepay') > -1 ||
-        JSON.stringify(result).indexOf('cashapp') > -1)
-    ) {
-      finalResult = result;
-    } else {
-      return handlePaymentError(order, adyenPaymentInstrument, options);
-    }
-  }
-  const paymentData = JSON.parse(
-    adyenPaymentInstrument.custom.adyenPaymentData,
-  );
-  const isPayPalExpress = AdyenHelper.isPayPalExpress(
-    paymentData.paymentMethod,
-  );
-  const detailsCall =
-    hasStateData && !isPayPalExpress
-      ? handlePaymentsDetailsCall(stateData, adyenPaymentInstrument)
-      : null;
-  if (isPayPalExpress) {
-    finalResult = JSON.parse(order.custom.Adyen_paypalExpressResponse);
-  } else {
-    finalResult = finalResult || detailsCall?.result;
-  }
+  return { error: false, adyenPaymentInstrument, result };
+}
 
-  // Post-auth hook
-  const postAuthResult = hooksHelper(
+function executePostAuthHook(order, stateData, finalResult) {
+  return hooksHelper(
     'app.payment.post.auth',
     'postAuthorization',
     { order, stateData, finalResult },
     postAuthorizationHook.postAuthorization,
   );
+}
+
+function handlePayment(stateData, order, options) {
+  const { error, adyenPaymentInstrument, result } = preparePayment(
+    order,
+    options,
+  );
+
+  if (error) {
+    return handlePaymentError(order, adyenPaymentInstrument, options);
+  }
+
+  const finalResult = getFinalResult(
+    order,
+    stateData,
+    result,
+    adyenPaymentInstrument,
+  );
+
+  if (!finalResult) {
+    return handlePaymentError(order, adyenPaymentInstrument, options);
+  }
+
+  const postAuthResult = executePostAuthHook(order, stateData, finalResult);
   if (postAuthResult?.error) {
     return postAuthResult;
   }

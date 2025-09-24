@@ -37,89 +37,100 @@ function getOneClickPaymentMethods(customer) {
     customer,
     '',
   );
-  const oneClickPaymentMethods = [];
-  if (storedPaymentMethods) {
-    storedPaymentMethods?.forEach((storedPaymentMethod) => {
-      if (
-        storedPaymentMethod?.supportedShopperInteractions &&
-        storedPaymentMethod?.supportedShopperInteractions.indexOf('Ecommerce') >
-          -1
-      ) {
-        oneClickPaymentMethods.push(storedPaymentMethod);
-      }
-    });
-  }
-  return oneClickPaymentMethods;
+  return (
+    storedPaymentMethods?.filter(
+      (pm) =>
+        pm.supportedShopperInteractions &&
+        pm.supportedShopperInteractions.indexOf('Ecommerce') > -1,
+    ) || []
+  );
 }
 
-/* eslint-disable */
+function removeSavedCards(customer) {
+  const wallet = customer.getProfile().getWallet();
+  // To make it compatible with upgrade from older versions (<= 19.2.2),
+  // first delete payment instruments with METHOD_CREDIT_CARD
+  const savedCreditCards = wallet.getPaymentInstruments(
+    PaymentInstrument.METHOD_CREDIT_CARD,
+  );
+  const savedCreditCardsComponent = wallet.getPaymentInstruments(
+    constants.METHOD_ADYEN_COMPONENT,
+  );
+
+  collections.forEach(savedCreditCards, (card) => {
+    wallet.removePaymentInstrument(card);
+  });
+  collections.forEach(savedCreditCardsComponent, (card) => {
+    wallet.removePaymentInstrument(card);
+  });
+}
+
+function isValidCardDetails(cardDetails) {
+  return !Object.values(cardDetails).some((value) => !value);
+}
+
+function createPaymentInstrumentFromDetails(wallet, cardDetails) {
+  const newCreditCard = wallet.createPaymentInstrument(
+    constants.METHOD_ADYEN_COMPONENT,
+  );
+  newCreditCard.setCreditCardExpirationMonth(Number(cardDetails.expiryMonth));
+  newCreditCard.setCreditCardExpirationYear(Number(cardDetails.expiryYear));
+  newCreditCard.setCreditCardType(cardDetails.cardType);
+  newCreditCard.setCreditCardHolder(cardDetails.holderName);
+  newCreditCard.setCreditCardNumber(cardDetails.number);
+  newCreditCard.setCreditCardToken(cardDetails.token);
+}
+
+function createCardDetailsFromPayment(payment) {
+  const {
+    expiryMonth = '',
+    expiryYear = '',
+    holderName = '',
+    lastFour = '',
+    id: token,
+    brand,
+  } = payment;
+
+  return {
+    expiryMonth,
+    expiryYear,
+    holderName,
+    number: lastFour ? `************${lastFour}` : '',
+    token,
+    cardType: brand ? AdyenHelper.getSfccCardType(brand) : '',
+  };
+}
+
+function createSavedCard(wallet, payment) {
+  const cardDetails = createCardDetailsFromPayment(payment);
+  if (isValidCardDetails(cardDetails)) {
+    createPaymentInstrumentFromDetails(wallet, cardDetails);
+  }
+}
+
+function createSavedCards(customer, oneClickPaymentMethods) {
+  const wallet = customer.getProfile().getWallet();
+  oneClickPaymentMethods?.forEach((payment) => {
+    createSavedCard(wallet, payment);
+  });
+}
+
 function updateSavedCards(args) {
-    const customer = args.CurrentCustomer;
-    if (
-      !(customer?.getProfile()?.getWallet())
-    ) {
-	  throw new Error('Error while updating saved cards, could not get customer data');
-    }
+  const customer = args.CurrentCustomer;
+  if (!customer?.getProfile()?.getWallet()) {
+    throw new Error(
+      'Error while updating saved cards, could not get customer data',
+    );
+  }
 
-    if (AdyenConfigs.getAdyenRecurringPaymentsEnabled()) {
-      const oneClickPaymentMethods = getOneClickPaymentMethods(customer);
-      // To make it compatible with upgrade from older versions (<= 19.2.2),
-      // first delete payment instruments with METHOD_CREDIT_CARD
-      const savedCreditCards = customer
-        .getProfile()
-        .getWallet()
-        .getPaymentInstruments(PaymentInstrument.METHOD_CREDIT_CARD);
-      const savedCreditCardsComponent = customer
-        .getProfile()
-        .getWallet()
-        .getPaymentInstruments(constants.METHOD_ADYEN_COMPONENT);
-
-      Transaction.wrap(() => {
-        // remove all current METHOD_CREDIT_CARD PaymentInstruments
-        collections.forEach(savedCreditCards, (savedCreditCard) => {
-          customer.getProfile().getWallet().removePaymentInstrument(savedCreditCard);
-        })
-        // remove all current METHOD_ADYEN_COMPONENT PaymentInstruments
-        collections.forEach(savedCreditCardsComponent, (savedCreditCard) => {
-          customer.getProfile().getWallet().removePaymentInstrument(savedCreditCard);
-        })
-
-        // Create from existing cards a paymentInstrument
-        oneClickPaymentMethods?.forEach((payment) => {
-          const expiryMonth = payment.expiryMonth ? payment.expiryMonth : '';
-          const expiryYear = payment.expiryYear ? payment.expiryYear : '';
-          const holderName = payment.holderName ? payment.holderName : '';
-          const lastFour = payment.lastFour ? payment.lastFour : '';
-          const number = lastFour ? new Array(12 + 1).join('*') + lastFour : '';
-          const token = payment.id;
-          const cardType = payment.brand
-            ? AdyenHelper.getSfccCardType(payment.brand)
-            : '';
-
-          // if we have everything we need, create a new payment instrument
-          if (
-            expiryMonth &&
-            expiryYear &&
-            number &&
-            token &&
-            cardType &&
-            holderName
-          ) {
-            const newCreditCard = customer
-              .getProfile()
-              .getWallet()
-              .createPaymentInstrument(constants.METHOD_ADYEN_COMPONENT);
-            newCreditCard.setCreditCardExpirationMonth(Number(expiryMonth));
-            newCreditCard.setCreditCardExpirationYear(Number(expiryYear));
-            newCreditCard.setCreditCardType(cardType);
-            newCreditCard.setCreditCardHolder(holderName);
-            newCreditCard.setCreditCardNumber(number);
-            newCreditCard.setCreditCardToken(token);
-          }
-        })
-      });
-    }
-    return { error: false };
+  if (AdyenConfigs.getAdyenRecurringPaymentsEnabled()) {
+    const oneClickPaymentMethods = getOneClickPaymentMethods(customer);
+    Transaction.wrap(() => {
+      removeSavedCards(customer);
+      createSavedCards(customer, oneClickPaymentMethods);
+    });
+  }
+  return { error: false };
 }
 
 module.exports = {
