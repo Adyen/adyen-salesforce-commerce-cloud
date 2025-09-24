@@ -104,19 +104,27 @@ function extractPendingStatus(handlerResult, eventCode) {
  */
 function processEventHandler(order, customObj, result, totalAmount) {
   // Handle all events using dedicated event handlers
-  // eslint-disable-next-line
-  const handlerModule = require(
-    `./eventHandlers/${customObj.custom.eventCode}`,
-  );
-  if (handlerModule && typeof handlerModule.handle === 'function') {
-    const handlerResult = handlerModule.handle({
-      order,
-      customObj,
-      result,
-      totalAmount,
-    });
-    return extractPendingStatus(handlerResult, customObj.custom.eventCode);
+  try {
+    // eslint-disable-next-line
+    const handlerModule = require(
+      `./eventHandlers/${customObj.custom.eventCode}`,
+    );
+    if (handlerModule && typeof handlerModule.handle === 'function') {
+      const handlerResult = handlerModule.handle({
+        order,
+        customObj,
+        result,
+        totalAmount,
+      });
+      return extractPendingStatus(handlerResult, customObj.custom.eventCode);
+    }
+  } catch (error) {
+    // Handler module doesn't exist for this event type
+    AdyenLogs.info_log(
+      `No handler module found for event code: ${customObj.custom.eventCode}`,
+    );
   }
+
   // Handle unhandled event types
   AdyenLogs.info_log(
     `Order ${order.orderNo} received unhandled status ${customObj.custom.eventCode}`,
