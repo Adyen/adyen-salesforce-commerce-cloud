@@ -18,8 +18,11 @@ function handlePaymentError(order, adyenPaymentInstrument, { req, res, next }) {
     OrderMgr.failOrder(order, true);
   });
   const redirectUrl = req.form?.redirectUrl;
-  AdyenLogs.info_log(`redirect url: ${redirectUrl}`);
-  if (redirectUrl) {
+  if (
+    redirectUrl &&
+    redirectUrl.startsWith('/') &&
+    !redirectUrl.startsWith('//')
+  ) {
     res.redirect(redirectUrl);
     return next();
   }
