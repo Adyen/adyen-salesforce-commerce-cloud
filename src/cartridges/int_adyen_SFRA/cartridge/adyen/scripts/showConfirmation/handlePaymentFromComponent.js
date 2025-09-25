@@ -12,11 +12,20 @@ const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 const postAuthorizationHook = require('*/cartridge/adyen/scripts/hooks/payment/postAuthorizationHandling');
 const hooksHelper = require('*/cartridge/scripts/helpers/hooks');
 
-function handlePaymentError(order, adyenPaymentInstrument, { res, next }) {
+function handlePaymentError(order, adyenPaymentInstrument, { req, res, next }) {
   clearForms.clearAdyenData(adyenPaymentInstrument);
   Transaction.wrap(() => {
     OrderMgr.failOrder(order, true);
   });
+  const redirectUrl = req.form?.redirectUrl;
+  if (
+    redirectUrl &&
+    redirectUrl.startsWith('/') &&
+    !redirectUrl.startsWith('//')
+  ) {
+    res.redirect(redirectUrl);
+    return next();
+  }
   res.redirect(
     URLUtils.url(
       'Checkout-Begin',
