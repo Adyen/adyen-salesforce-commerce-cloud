@@ -163,11 +163,7 @@ function processIncompatibleEventsByVersion(incompatibleEvents) {
       });
 
       // Send events for this version
-      sendAnalyticsEvents(
-        versionRequestObjectList,
-        checkoutAttemptResult.data,
-        version,
-      );
+      sendAnalyticsEvents(versionRequestObjectList, checkoutAttemptResult.data);
     } catch (error) {
       AdyenLogs.error_log(
         `Error processing incompatible events for version ${version}:`,
