@@ -37,14 +37,14 @@ function execute(serviceType, requestObject, checkoutAttemptID = '') {
   return parsedResponse || callResult.status;
 }
 
-function createCheckoutAttemptId() {
+function createCheckoutAttemptId(pluginVersion = constants.VERSION) {
   try {
     const requestObject = {
       applicationInfo: AdyenHelper.getApplicationInfo(),
       channel: 'Web',
       platform: 'Web',
       plugin: analyticsConstants.pluginType,
-      pluginVersion: constants.VERSION,
+      pluginVersion,
     };
 
     const response = execute(constants.SERVICE.ADYEN_ANALYTICS, requestObject);
