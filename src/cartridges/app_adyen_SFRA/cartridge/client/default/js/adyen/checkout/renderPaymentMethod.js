@@ -71,11 +71,12 @@ function getImage(isStored, paymentMethod) {
   return isStored ? paymentMethod.brand : paymentMethod.type;
 }
 
-function getLabel(isStored, paymentMethod) {
+function getLabel(isStored, paymentMethod, paymentMethodTitle) {
+  const title = paymentMethodTitle || paymentMethod.name;
   const label = isStored
     ? ` ${store.MASKED_CC_PREFIX}${paymentMethod.lastFour}`
     : '';
-  return `${paymentMethod.name}${label}`;
+  return `${title}${label}`;
 }
 
 function handleFallbackPayment({ paymentMethod, container, paymentMethodID }) {
@@ -94,9 +95,15 @@ function handlePayment(options) {
     : handleFallbackPayment(options);
 }
 
-function getListContents({ imagePath, isStored, paymentMethod, description }) {
+function getListContents({
+  imagePath,
+  isStored,
+  paymentMethod,
+  paymentMethodTitle,
+  description,
+}) {
   const paymentMethodID = getPaymentMethodID(isStored, paymentMethod);
-  const label = getLabel(isStored, paymentMethod);
+  const label = getLabel(isStored, paymentMethod, paymentMethodTitle);
   const liContents = `
     <input name="brandCode" type="radio" value="${paymentMethodID}" id="rb_${paymentMethodID}">
     <img class="paymentMethod_img" src="${imagePath}" ></img>
@@ -132,15 +139,10 @@ function handleInput({ paymentMethodID }) {
   }
 }
 
-function createListItem(rerender, paymentMethodID, liContents) {
-  let li;
-  if (rerender) {
-    li = document.querySelector(`#rb_${paymentMethodID}`).closest('li');
-  } else {
-    li = document.createElement('li');
-    li.innerHTML = liContents;
-    li.classList.add('paymentMethod');
-  }
+function createListItem(paymentMethodID, liContents) {
+  const li = document.createElement('li');
+  li.innerHTML = liContents;
+  li.classList.add('paymentMethod');
   return li;
 }
 
@@ -149,7 +151,18 @@ function createListItem(rerender, paymentMethodID, liContents) {
  */
 function clearPaymentMethodsContainer() {
   const paymentMethodContainer = document.querySelector('#paymentMethodsList');
-  paymentMethodContainer.replaceChildren();
+  // unmount all components before clearing
+  Object.keys(store.componentsObj).forEach((paymentMethodID) => {
+    const component = store.componentsObj[paymentMethodID];
+    if (component?.node) {
+      try {
+        component.node.unmount();
+      } catch (unmountError) {
+        //
+      }
+    }
+  });
+  paymentMethodContainer.innerHTML = '';
   store.clearPaymentMethod();
 }
 
@@ -158,7 +171,7 @@ function renderPaymentMethod(
   isStored,
   path,
   description = null,
-  rerender = false,
+  paymentMethodTitle = null,
 ) {
   let canRender;
   try {
@@ -178,12 +191,13 @@ function renderPaymentMethod(
       path,
       description,
       paymentMethodID,
+      paymentMethodTitle,
       isSchemeNotStored,
     };
 
     const imagePath = getImagePath(options);
-    const liContents = getListContents({ ...options, imagePath, description });
-    const li = createListItem(rerender, paymentMethodID, liContents);
+    const liContents = getListContents({ ...options, imagePath });
+    const li = createListItem(paymentMethodID, liContents);
 
     handlePayment(options);
     configureContainer(options);
@@ -215,35 +229,41 @@ async function renderCheckout(paymentMethodsResponse) {
     AdyenPaymentMethods: { paymentMethods, storedPaymentMethods },
     imagePath,
     adyenDescriptions,
+    adyenPaymentMethodTitles,
+    locale,
   } = paymentMethodsResponse;
   clearPaymentMethodsContainer();
 
-  const paymentMethodsWithoutGiftCards = paymentMethods.filter(
-    (pm) => pm.type !== constants.GIFTCARD,
-  );
+  const filteredPaymentMethods = paymentMethods.filter((pm) => {
+    if (pm.type === constants.GIFTCARD) {
+      return false;
+    }
+    return !(
+      pm.type === constants.FASTLANE &&
+      store.fastlane.authResult?.authenticationState !== 'succeeded'
+    );
+  });
 
   const renderStoredPaymentMethods = storedPaymentMethods.map((pm) =>
     renderPaymentMethod(
       pm,
       true,
       imagePath,
-      adyenDescriptions ? adyenDescriptions[pm.type] : null,
+      adyenDescriptions?.[pm.type],
+      adyenPaymentMethodTitles?.[locale]?.[pm.type],
     ),
   );
-  const renderPaymentMethodsWithoutGiftCards =
-    paymentMethodsWithoutGiftCards.map((pm) =>
-      renderPaymentMethod(
-        pm,
-        false,
-        imagePath,
-        adyenDescriptions ? adyenDescriptions[pm.type] : null,
-      ),
-    );
+  const renderPaymentMethods = filteredPaymentMethods.map((pm) =>
+    renderPaymentMethod(
+      pm,
+      false,
+      imagePath,
+      adyenDescriptions?.[pm.type],
+      adyenPaymentMethodTitles?.[locale]?.[pm.type],
+    ),
+  );
 
-  await Promise.all([
-    ...renderStoredPaymentMethods,
-    ...renderPaymentMethodsWithoutGiftCards,
-  ]);
+  await Promise.all([...renderStoredPaymentMethods, ...renderPaymentMethods]);
 }
 
 module.exports = {

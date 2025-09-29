@@ -2,8 +2,7 @@ const CustomObjectMgr = require('dw/object/CustomObjectMgr');
 const Transaction = require('dw/system/Transaction');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 const analyticsConstants = require('*/cartridge/adyen/analytics/constants');
-const { processingStatus } = require('./constants');
-const AnalyticsService = require('./analyticsService');
+const AnalyticsService = require('*/cartridge/adyen/analytics/analyticsService');
 
 const defaultProperties = {
   channel: 'Web',
@@ -133,7 +132,7 @@ function sendAnalyticsEvents(requestObjectList) {
 
 function processEvents(customObjectId) {
   const query = 'custom.processingStatus = {0}';
-  const queryArgs = [processingStatus.NOT_PROCESSED];
+  const queryArgs = [analyticsConstants.processingStatus.NOT_PROCESSED];
   let customObjectIterator = null;
   try {
     customObjectIterator = CustomObjectMgr.queryCustomObjects(
@@ -159,7 +158,10 @@ function clearEvents(customObjectId) {
   try {
     const query =
       'custom.processingStatus = {0} OR custom.processingStatus = {1}';
-    const queryArgs = [processingStatus.SKIPPED, processingStatus.PROCESSED];
+    const queryArgs = [
+      analyticsConstants.processingStatus.SKIPPED,
+      analyticsConstants.processingStatus.PROCESSED,
+    ];
     customObjectIterator = CustomObjectMgr.queryCustomObjects(
       customObjectId,
       query,

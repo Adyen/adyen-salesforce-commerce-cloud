@@ -2,6 +2,7 @@ const BasketMgr = require('dw/order/BasketMgr');
 const Locale = require('dw/util/Locale');
 const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
 const translations = require('*/cartridge/config/adyenTranslations');
+const paymentMethodTitles = require('*/cartridge/config/adyenPaymentMethodTitles');
 const paymentMethodDescriptions = require('*/cartridge/adyen/config/paymentMethodDescriptions');
 const getPaymentMethods = require('*/cartridge/adyen/scripts/payments/adyenGetPaymentMethods');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
@@ -63,16 +64,30 @@ function getCheckoutPaymentMethods(req, res, next) {
       shopperEmail,
     );
 
+    const showFastlane =
+      paymentMethods.paymentMethods.some(
+        (pm) => pm.type === constants.PAYMENTMETHODS.FASTLANE,
+      ) && !req.currentCustomer.raw.authenticated;
+
+    const sortedPaymentMethods = paymentMethods.paymentMethods.sort((a, b) => {
+      if (a.type === constants.PAYMENTMETHODS.FASTLANE) return -1;
+      if (b.type === constants.PAYMENTMETHODS.FASTLANE) return 1;
+      return 0;
+    });
+
     res.json({
       AdyenPaymentMethods: {
-        paymentMethods: paymentMethods.paymentMethods,
+        paymentMethods: sortedPaymentMethods,
         storedPaymentMethods: supportedStoredPaymentMethods(
           paymentMethods.storedPaymentMethods,
         ),
       },
+      shopperEmail,
+      showFastlane,
       imagePath: adyenURL,
       adyenDescriptions: paymentMethodDescriptions,
       adyenTranslations: translations,
+      adyenPaymentMethodTitles: paymentMethodTitles,
       amount: { value: paymentAmount.value, currency },
       countryCode,
       applicationInfo: AdyenHelper.getApplicationInfo(),

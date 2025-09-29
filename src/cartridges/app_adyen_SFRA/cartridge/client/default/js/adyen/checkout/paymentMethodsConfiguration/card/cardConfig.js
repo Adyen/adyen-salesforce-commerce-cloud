@@ -49,13 +49,19 @@ class CardConfig {
     }
   }
 
+  setFastlaneConfiguration(config) {
+    const { authResult, configuration } = this.store.fastlane;
+    if (authResult?.authenticationState !== 'succeeded' && configuration) {
+      config.fastlaneConfiguration = configuration.fastlaneConfiguration;
+    }
+  }
+
   onChange = (state) => {
     this.store.updateSelectedPayment('scheme', 'isValid', state.isValid);
     this.store.updateSelectedPayment('scheme', 'stateData', state.data);
   };
 
   onSubmit = () => {
-    this.helpers.assignPaymentMethodValue();
     const submitPaymentButton = document.querySelector(
       this.submitPaymentButtonSelector,
     );
@@ -88,6 +94,7 @@ class CardConfig {
       onBrand: this.onBrand,
     };
     this.setInstallments(defaultConfig);
+    this.setFastlaneConfiguration(defaultConfig);
     return defaultConfig;
   }
 }

@@ -1,5 +1,8 @@
 const analyticsConstants = require('*/cartridge/adyen/analytics/constants');
-const { processEvents, clearEvents } = require('../analyticsUtils');
+const {
+  processEvents,
+  clearEvents,
+} = require('*/cartridge/adyen/analytics/analyticsUtils');
 
 function processAnalytics() {
   processEvents(analyticsConstants.analyticsEventObjectId);

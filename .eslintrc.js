@@ -83,6 +83,15 @@ module.exports = {
         ],
       },
     ],
+    "import/no-restricted-paths": ["error", {
+      "zones": [
+        {
+          "target": "./src/cartridges/int_adyen_SFRA/cartridge/**/*.js",
+          "from": "../",
+          "message": "Do not use a relative path to import files. Use an alias instead (e.g. */cartridge/..)."
+        }
+      ]
+    }],
     "import/no-extraneous-dependencies": "off",
     "operator-linebreak": "off",
     "object-curly-newline": ["error", {

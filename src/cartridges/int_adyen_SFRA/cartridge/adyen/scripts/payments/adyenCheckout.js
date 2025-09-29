@@ -264,6 +264,11 @@ function createPaymentRequest(args) {
     paymentRequest.lineItems = paypalHelper.getLineItems(args);
   }
 
+  // riverty requires subtype redirect
+  if (paymentRequest.paymentMethod.type.indexOf('riverty') > -1) {
+    paymentRequest.paymentMethod.subtype = 'redirect';
+  }
+
   // Set tokenisation
   if (AdyenConfigs.getAdyenTokenisationEnabled()) {
     paymentRequest.storePaymentMethod = true;
@@ -274,7 +279,17 @@ function createPaymentRequest(args) {
     paymentInstrument,
     paymentRequest.paymentMethod,
   );
-  return doPaymentsCall(order, paymentInstrument, paymentRequest);
+  try {
+    return doPaymentsCall(order, paymentInstrument, paymentRequest);
+  } catch (error) {
+    AdyenLogs.error_log('Payment call failed:', error);
+    return {
+      error: true,
+      adyenErrorMessage:
+        error.message ||
+        Resource.msg('confirm.error.declined', 'checkout', null),
+    };
+  }
 }
 
 function doPaymentsDetailsCall(paymentDetailsRequest) {

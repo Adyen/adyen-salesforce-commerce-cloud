@@ -3,6 +3,8 @@ const Transaction = require('dw/system/Transaction');
 const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
 const adyenCheckout = require('*/cartridge/adyen/scripts/payments/adyenCheckout');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
+const hooksHelper = require('*/cartridge/scripts/helpers/hooks');
+const postAuthorizationHook = require('*/cartridge/adyen/scripts/hooks/payment/postAuthorizationHandling');
 
 function errorHandler() {
   const serverErrors = [
@@ -54,6 +56,15 @@ function authorize(order, paymentInstrument, paymentProcessor) {
 
   if (!checkoutResponse.isSuccessful) {
     return paymentErrorHandler(result);
+  }
+  const postAuthResult = hooksHelper(
+    'app.payment.post.auth',
+    'postAuthorization',
+    result.fullResponse,
+    postAuthorizationHook.postAuthorization,
+  );
+  if (postAuthResult?.error) {
+    return postAuthResult;
   }
 
   AdyenHelper.savePaymentDetails(paymentInstrument, order, result.fullResponse);

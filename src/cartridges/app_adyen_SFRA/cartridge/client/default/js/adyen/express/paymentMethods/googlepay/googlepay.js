@@ -36,6 +36,7 @@ class GooglePay {
     this.applicationInfo = applicationInfo;
     this.translations = adyenTranslations;
     this.config = config;
+    this.document = document;
   }
 
   static formatCustomerObject = (customerData) => {
@@ -144,8 +145,7 @@ class GooglePay {
     })),
   });
 
-  static handleAuthorised = (response, resolve) => {
-    resolve();
+  static submitSuccessForm = (response) => {
     if (document.querySelector('#result')) {
       document.querySelector('#result').value = JSON.stringify({
         pspReference: response.fullResponse?.pspReference,
@@ -158,9 +158,6 @@ class GooglePay {
       });
     }
     document.querySelector('#showConfirmationForm')?.submit();
-    if ($?.spinner) {
-      $.spinner()?.stop();
-    }
   };
 
   static handleError = (reject) => {
@@ -171,44 +168,14 @@ class GooglePay {
       });
     }
     document.querySelector('#showConfirmationForm')?.submit();
+  };
+
+  static stopSpinner = () => {
     if ($?.spinner) {
       const spinnerFn = $.spinner();
       if (spinnerFn.stop) {
         $.spinner()?.stop();
       }
-    }
-  };
-
-  static handleGooglePayResponse = (response, resolve, reject) => {
-    if (response.resultCode === 'Authorised') {
-      GooglePay.handleAuthorised(response, resolve);
-    } else {
-      GooglePay.handleError(reject);
-    }
-  };
-
-  paymentFromComponent = async (data, resolve, reject) => {
-    try {
-      $.spinner().start();
-      const response = await httpClient({
-        method: 'POST',
-        url: this.paymentFromComponentURL,
-        data: {
-          data: JSON.stringify(data),
-          paymentMethod: GOOGLE_PAY,
-        },
-      });
-      helpers.createShowConfirmationForm(this.showConfirmationAction);
-      helpers.setOrderFormData(response);
-      document.querySelector('#additionalDetailsHidden').value = JSON.stringify(
-        {
-          ...data,
-          ...response,
-        },
-      );
-      GooglePay.handleGooglePayResponse(response, resolve, reject);
-    } catch (error) {
-      $.spinner().stop();
     }
   };
 
@@ -267,27 +234,75 @@ class GooglePay {
     };
   };
 
+  onAdditionalDetails = (state) => {
+    this.document.querySelector('#additionalDetailsHidden').value =
+      JSON.stringify({
+        ...state.data,
+        paymentData: {},
+      });
+    this.document.querySelector('#showConfirmationForm').submit();
+  };
+
   onAuthorized = async (data, actions) => {
     const { authorizedEvent } = data;
-    const { resolve, reject } = actions;
     try {
-      const customer = GooglePay.formatCustomerObject(authorizedEvent);
+      this.customer = GooglePay.formatCustomerObject(authorizedEvent);
+      actions.resolve();
+    } catch (error) {
+      actions.reject();
+    }
+  };
+
+  callPaymentFromComponent = (data) =>
+    httpClient({
+      url: this.paymentFromComponentURL,
+      method: 'POST',
+      data: {
+        data: JSON.stringify(data),
+        paymentMethod: GOOGLE_PAY,
+      },
+    });
+
+  onSubmit = async (state, component, actions) => {
+    try {
+      $.spinner().start();
       const stateData = {
-        paymentMethod: {
-          type: GOOGLE_PAY,
-          googlePayToken:
-            authorizedEvent?.paymentMethodData?.tokenizationData?.token,
-        },
+        ...state.data,
         paymentType: 'express',
       };
+      const response = await this.callPaymentFromComponent({
+        ...stateData,
+        customer: this.customer,
+        isExpressPdp: this.isExpressPdp,
+      });
 
-      await this.paymentFromComponent(
-        { ...stateData, customer, isExpressPdp: this.isExpressPdp },
-        resolve,
-        reject,
+      if (!response?.resultCode) {
+        GooglePay.handleError(actions.reject);
+      }
+
+      helpers.createShowConfirmationForm(this.showConfirmationAction);
+      if (this.isExpressPdp) {
+        this.helpers.setExpressRedirectUrl();
+      }
+      helpers.setOrderFormData(response);
+      document.querySelector('#additionalDetailsHidden').value = JSON.stringify(
+        {
+          ...stateData,
+          ...response,
+        },
       );
+
+      actions.resolve({
+        resultCode: response?.resultCode,
+        action: response?.fullResponse?.action,
+      });
+      if (response?.resultCode === 'Authorised') {
+        GooglePay.submitSuccessForm(response);
+      }
+      GooglePay.stopSpinner();
     } catch (error) {
-      reject(error);
+      GooglePay.stopSpinner();
+      GooglePay.handleError(actions.reject);
     }
   };
 
@@ -341,8 +356,9 @@ class GooglePay {
     configuration: this.config,
     callbackIntents: ['SHIPPING_ADDRESS', 'SHIPPING_OPTION'],
     amount: this.amount,
+    onAdditionalDetails: this.onAdditionalDetails,
     onAuthorized: this.onAuthorized,
-    onSubmit: () => {},
+    onSubmit: this.onSubmit,
     paymentDataCallbacks: {
       onPaymentDataChanged: this.onPaymentDataChanged,
     },
