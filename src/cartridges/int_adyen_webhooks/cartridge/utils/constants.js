@@ -13,9 +13,12 @@ module.exports = {
     'PENDING',
     'CAPTURE',
     'DONATION',
+    'MANUAL_REVIEW_ACCEPT',
+    'MANUAL_REVIEW_REJECT',
   ],
   UPDATE_STATUS: {
     PROCESS: 'PROCESS',
     PENDING: 'PENDING',
   },
+  FRAUD_STATUS_AMBER: 'AMBER',
 };

@@ -9,12 +9,19 @@ jest.mock('*/cartridge/adyen/logs/adyenCustomLogs', () => ({
 jest.mock('../../utils/paymentUtils', () => ({
   placeOrder: jest.fn()
 }));
+jest.mock('../../utils/webhookUtils', () => ({
+  isWebhookSuccessful: jest.fn()
+}));
+jest.mock('../../utils/constants', () => ({
+  FRAUD_STATUS_AMBER: 'AMBER'
+}));
 
 const AUTHORISATION = require('../AUTHORISATION');
 const Order = require('dw/order/Order');
 const OrderMgr = require('dw/order/OrderMgr');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 const { placeOrder } = require('../../utils/paymentUtils');
+const { isWebhookSuccessful } = require('../../utils/webhookUtils');
 
 // Mock constants
 Order.PAYMENT_STATUS_PAID = 'PAID';
@@ -52,7 +59,10 @@ describe('AUTHORISATION eventHandler', () => {
       custom: {
         success: 'true',
         value: '100.00',
-        eventCode: 'AUTHORISATION'
+        eventCode: 'AUTHORISATION',
+        Adyen_log: JSON.stringify({
+          'additionalData.fraudResultType': undefined
+        })
       }
     };
 
@@ -65,6 +75,9 @@ describe('AUTHORISATION eventHandler', () => {
 
     // Mock placeOrder function
     placeOrder.mockReturnValue({ error: false });
+    
+    // Mock webhook utils
+    isWebhookSuccessful.mockReturnValue(true);
   });
 
   describe('handle function - successful authorization scenarios', () => {
@@ -179,9 +192,31 @@ describe('AUTHORISATION eventHandler', () => {
     });
   });
 
+  describe('handle function - fraud detection scenarios', () => {
+    it('should handle AMBER fraud result type for manual review', () => {
+      mockCustomObj.custom.Adyen_log = JSON.stringify({
+        'additionalData.fraudResultType': 'AMBER'
+      });
+      
+      const result = AUTHORISATION.handle({
+        order: mockOrder,
+        customObj: mockCustomObj,
+        result: mockResult,
+        totalAmount
+      });
+
+      expect(mockOrder.trackOrderChange).toHaveBeenCalledWith(
+        'Order sent for manual review in Adyen Customer Area'
+      );
+      expect(mockOrder.custom.Adyen_eventCode).toBe('AUTHORISATION');
+      expect(mockOrder.custom.Adyen_value).toBe('100');
+      expect(result).toEqual({ success: true, isAdyenPayment: true });
+    });
+  });
+
   describe('handle function - failed authorization scenarios', () => {
     beforeEach(() => {
-      mockCustomObj.custom.success = 'false';
+      isWebhookSuccessful.mockReturnValue(false);
     });
 
     it('should handle failed authorization', () => {
