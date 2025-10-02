@@ -559,6 +559,13 @@
                 <externally-managed-flag>false</externally-managed-flag>
                 <default-value>true</default-value>
             </attribute-definition>
+            <attribute-definition attribute-id="PayPalExpress_Pdp_Enabled">
+                <display-name xml:lang="x-default">Enable PayPal express on product detail page</display-name>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <default-value>true</default-value>
+            </attribute-definition>
             <attribute-definition attribute-id="PayPalExpress_ReviewPage_Enabled">
                 <display-name xml:lang="x-default">Enable PayPal express review page</display-name>
                 <type>boolean</type>

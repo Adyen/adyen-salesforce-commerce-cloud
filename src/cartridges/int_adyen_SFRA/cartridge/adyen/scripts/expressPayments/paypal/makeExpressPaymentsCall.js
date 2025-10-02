@@ -12,7 +12,11 @@ const setErrorType = require('*/cartridge/adyen/logs/setErrorType');
 
 function makeExpressPaymentsCall(req, res, next) {
   try {
-    const currentBasket = BasketMgr.getCurrentBasket();
+    const { isExpressPdp } = JSON.parse(req.form.data || '{}');
+    const currentBasket = isExpressPdp
+      ? BasketMgr.getTemporaryBasket(session.privacy.temporaryBasketId)
+      : BasketMgr.getCurrentBasket();
+
     const productLines = currentBasket.getAllProductLineItems().toArray();
     const productQuantity = currentBasket.getProductQuantityTotal();
     const hashedProducts = AdyenHelper.getAdyenHash(
@@ -30,7 +34,10 @@ function makeExpressPaymentsCall(req, res, next) {
         paymentInstrument.paymentMethod,
       );
       paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
-      paymentInstrument.custom.adyenPaymentData = req.form.data;
+      paymentInstrument.custom.adyenPaymentData = JSON.stringify({
+        ...JSON.parse(req.form.data || '{}'),
+        isExpressPdp,
+      });
       currentBasket.custom.adyenProductLineItems = hashedProducts;
     });
     // Creates order number to be utilized for PayPal express
