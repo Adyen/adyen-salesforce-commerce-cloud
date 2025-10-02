@@ -534,3 +534,32 @@ jest.mock(
     require('../src/cartridges/int_adyen_SFRA/cartridge/adyen/scripts/hooks/payment/preAuthorizationHandling'),
   { virtual: true },
 );
+
+// int_adyen_webhooks mocks
+jest.mock(
+  '*/cartridge/utils/paymentUtils',
+  () =>
+    require('../src/cartridges/int_adyen_webhooks/cartridge/utils/paymentUtils'),
+  { virtual: true },
+);
+
+jest.mock(
+  '*/cartridge/utils/webhookUtils',
+  () =>
+    require('../src/cartridges/int_adyen_webhooks/cartridge/utils/webhookUtils'),
+  { virtual: true },
+);
+
+jest.mock(
+  '*/cartridge/utils/constants',
+  () =>
+    require('../src/cartridges/int_adyen_webhooks/cartridge/utils/constants'),
+  { virtual: true },
+);
+
+jest.mock(
+  '*/cartridge/eventHandlers/AUTHORISATION',
+  () =>
+    require('../src/cartridges/int_adyen_webhooks/cartridge/eventHandlers/AUTHORISATION'),
+  { virtual: true },
+);

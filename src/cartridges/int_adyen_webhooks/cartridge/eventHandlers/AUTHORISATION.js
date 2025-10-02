@@ -1,8 +1,9 @@
 const Order = require('dw/order/Order');
 const OrderMgr = require('dw/order/OrderMgr');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
-const { placeOrder } = require('../utils/paymentUtils');
-const { isWebhookSuccessful } = require('../utils/webhookUtils');
+const { placeOrder } = require('*/cartridge/utils/paymentUtils');
+const { isWebhookSuccessful } = require('*/cartridge/utils/webhookUtils');
+const constants = require('*/cartridge/utils/constants');
 
 /**
  * Handles duplicate callback when order is already paid
@@ -101,11 +102,17 @@ function updateOrderWithAdyenData(order, customObj, amountPaid) {
 function handle({ order, customObj, result, totalAmount }) {
   if (isWebhookSuccessful(customObj)) {
     const amountPaid = parseFloat(customObj.custom.value);
+    const webhookData = JSON.parse(customObj.custom.Adyen_log);
+    const fraudResultType = webhookData['additionalData.fraudResultType'];
 
     if (order.paymentStatus.value === Order.PAYMENT_STATUS_PAID) {
       handleDuplicateCallback(order);
     } else if (amountPaid < totalAmount) {
       handlePartialPayment(order, customObj, totalAmount);
+    } else if (fraudResultType === constants.FRAUD_STATUS_AMBER) {
+      order.trackOrderChange(
+        'Order sent for manual review in Adyen Customer Area',
+      );
     } else {
       handleFailedOrderRecovery(order, amountPaid, totalAmount);
       handleSuccessfulAuthorisation(order, result);
@@ -118,4 +125,4 @@ function handle({ order, customObj, result, totalAmount }) {
   return { success: false, isAdyenPayment: true };
 }
 
-module.exports = { handle };
+module.exports = { handle, handleSuccessfulAuthorisation };
