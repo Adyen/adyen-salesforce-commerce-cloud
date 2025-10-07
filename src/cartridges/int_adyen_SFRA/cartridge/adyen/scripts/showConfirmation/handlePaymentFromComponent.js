@@ -12,11 +12,20 @@ const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 const postAuthorizationHook = require('*/cartridge/adyen/scripts/hooks/payment/postAuthorizationHandling');
 const hooksHelper = require('*/cartridge/scripts/helpers/hooks');
 
-function handlePaymentError(order, adyenPaymentInstrument, { res, next }) {
+function handlePaymentError(order, adyenPaymentInstrument, { req, res, next }) {
   clearForms.clearAdyenData(adyenPaymentInstrument);
   Transaction.wrap(() => {
     OrderMgr.failOrder(order, true);
   });
+  const redirectUrl = req.form?.redirectUrl;
+  if (
+    redirectUrl &&
+    redirectUrl.startsWith('/') &&
+    !redirectUrl.startsWith('//')
+  ) {
+    res.redirect(redirectUrl);
+    return next();
+  }
   res.redirect(
     URLUtils.url(
       'Checkout-Begin',
@@ -103,6 +112,24 @@ function handlePaymentResult(result, order, adyenPaymentInstrument, options) {
 
 // eslint-disable-next-line complexity
 function handlePayment(stateData, order, options) {
+  // Check if order exists
+  if (!order) {
+    AdyenLogs.error_log(
+      'Order is null in handlePayment - cannot process payment',
+    );
+    const { res, next } = options;
+    res.redirect(
+      URLUtils.url(
+        'Checkout-Begin',
+        'stage',
+        'payment',
+        'paymentError',
+        Resource.msg('error.payment.not.valid', 'checkout', null),
+      ),
+    );
+    return next();
+  }
+
   const paymentInstruments = order.getPaymentInstruments(
     AdyenHelper.getOrderMainPaymentInstrumentType(order),
   );

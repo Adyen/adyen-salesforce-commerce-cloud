@@ -7,7 +7,10 @@ const setErrorType = require('*/cartridge/adyen/logs/setErrorType');
 function saveShopperData(req, res, next) {
   try {
     const shopperDetails = JSON.parse(req.form.data);
-    const currentBasket = BasketMgr.getCurrentBasket();
+    const { isExpressPdp } = shopperDetails;
+    const currentBasket = isExpressPdp
+      ? BasketMgr.getTemporaryBasket(session.privacy.temporaryBasketId)
+      : BasketMgr.getCurrentBasket();
     paypalHelper.setBillingAndShippingAddress(currentBasket, shopperDetails);
     res.json({ success: true });
     return next();

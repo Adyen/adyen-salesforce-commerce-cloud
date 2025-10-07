@@ -281,6 +281,9 @@ class GooglePay {
       }
 
       helpers.createShowConfirmationForm(this.showConfirmationAction);
+      if (this.isExpressPdp) {
+        this.helpers.setExpressRedirectUrl();
+      }
       helpers.setOrderFormData(response);
       document.querySelector('#additionalDetailsHidden').value = JSON.stringify(
         {

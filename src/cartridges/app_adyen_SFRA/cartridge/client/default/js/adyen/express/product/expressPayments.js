@@ -2,13 +2,14 @@ const {
   APPLE_PAY,
   GOOGLE_PAY,
   PAY_WITH_GOOGLE,
+  PAYPAL,
 } = require('../../../../../../config/constants');
 const {
   getExpressPaymentMethods,
   calculateProductPrice,
 } = require('../../commons/index');
 const { httpClient } = require('../../commons/httpClient');
-const { ApplePay, GooglePay } = require('../paymentMethods');
+const { ApplePay, GooglePay, Paypal } = require('../paymentMethods');
 
 function getProductForm(product) {
   const $productInputEl = document.createElement('input');
@@ -137,6 +138,34 @@ function renderGooglePayButton() {
   });
 }
 
+function renderPaypalButton() {
+  $('body').on(`product:render${PAYPAL}Button`, async (e, response) => {
+    const {
+      paymentMethodsResponse: {
+        AdyenPaymentMethods,
+        applicationInfo,
+        adyenTranslations,
+        amount: { currency },
+      } = {},
+      button,
+    } = response;
+    const paypalConfig = getPaymentMethodConfig(AdyenPaymentMethods, PAYPAL);
+    if (!paypalConfig) {
+      return;
+    }
+    const initialAmount = await calculateInitialAmount(currency);
+    const paypal = new Paypal(
+      paypalConfig,
+      applicationInfo,
+      adyenTranslations,
+      true,
+      initialAmount,
+    );
+    const paypalComponent = await paypal.getComponent();
+    paypalComponent.mount(button);
+  });
+}
+
 function getExpressPaymentButtons(paymentMethodsResponse, product) {
   const { pdpExpressMethods } = paymentMethodsResponse;
   return pdpExpressMethods.map((pm) => {
@@ -215,4 +244,5 @@ module.exports = {
   renderExpressPaymentContainer,
   renderApplePayButton,
   renderGooglePayButton,
+  renderPaypalButton,
 };

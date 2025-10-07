@@ -3,9 +3,16 @@ const store = require('../../../../../../../config/store');
 const helpers = require('../../../checkout/helpers');
 const { PAYPAL } = require('../../../../../../../config/constants');
 const { initializeCheckout } = require('../../initializeCheckout');
+const { createTemporaryBasket } = require('../../../commons');
 
 class Paypal {
-  constructor(config, applicationInfo, adyenTranslations) {
+  constructor(
+    config,
+    applicationInfo,
+    adyenTranslations,
+    isExpressPdp,
+    initialAmount,
+  ) {
     const {
       paypalReviewPageEnabled,
       returnURL,
@@ -21,9 +28,10 @@ class Paypal {
     this.store = store;
     this.helpers = helpers;
     this.returnUrl = returnURL;
-    this.amount = JSON.parse(basketAmount);
+    this.amount = initialAmount || JSON.parse(basketAmount);
     this.showPayButton = true;
     this.isExpress = true;
+    this.isExpressPdp = isExpressPdp;
     this.userAction = paypalReviewPageEnabled ? 'continue' : null;
     this.makeExpressPaymentsCallUrl = makeExpressPaymentsCall;
     this.saveShopperDataUrl = saveShopperData;
@@ -59,11 +67,24 @@ class Paypal {
   async callPaymentFromComponent(state, component) {
     try {
       $.spinner().start();
+
+      // Create temporary basket for PDP express checkout
+      if (this.isExpressPdp) {
+        const tempBasketResponse = await createTemporaryBasket();
+        if (!tempBasketResponse?.temporaryBasketCreated) {
+          component.handleError(new Error('Failed to create temporary basket'));
+          return;
+        }
+      }
+
       const response = await httpClient({
         method: 'POST',
         url: this.makeExpressPaymentsCallUrl,
         data: {
-          data: JSON.stringify(state.data),
+          data: JSON.stringify({
+            ...state.data,
+            isExpressPdp: this.isExpressPdp,
+          }),
         },
       });
       const { action } = response.fullResponse;
@@ -93,6 +114,7 @@ class Paypal {
         },
         shippingAddress: deliveryAddress,
         billingAddress,
+        isExpressPdp: this.isExpressPdp,
       };
       await httpClient({
         method: 'POST',
@@ -113,7 +135,7 @@ class Paypal {
         method: 'POST',
         url: this.makeExpressPaymentDetailsCallUrl,
         data: {
-          data: JSON.stringify({ data }),
+          data: JSON.stringify({ data, isExpressPdp: this.isExpressPdp }),
         },
       });
       this.helpers.createShowConfirmationForm(this.showConfirmationAction);
@@ -133,6 +155,7 @@ class Paypal {
       const requestBody = {
         paymentMethodType: PAYPAL,
         currentPaymentData,
+        isExpressPdp: this.isExpressPdp,
         address: {
           city: shippingAddress.city,
           country: shippingAddress.country,
@@ -169,6 +192,7 @@ class Paypal {
             paymentMethodType: PAYPAL,
             currentPaymentData: component.paymentData,
             methodID: selectedShippingOption?.id,
+            isExpressPdp: this.isExpressPdp,
           }),
         },
       });
