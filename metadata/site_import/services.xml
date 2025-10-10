@@ -11,6 +11,11 @@
         <user-id></user-id>
         <password/>
     </service-credential>
+    <service-credential service-credential-id="AdyenPaymentLinks">
+        <url>https://checkout-test.adyen.com/checkout/[CHECKOUT_API_VERSION]/paymentLinks</url>
+        <user-id></user-id>
+        <password/>
+    </service-credential>
     <service-credential service-credential-id="AdyenPaymentDetails">
         <url>https://checkout-test.adyen.com/checkout/[CHECKOUT_API_VERSION]/payments/details</url>
         <user-id></user-id>

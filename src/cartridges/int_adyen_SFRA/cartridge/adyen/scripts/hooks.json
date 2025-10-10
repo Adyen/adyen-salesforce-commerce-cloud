@@ -31,6 +31,10 @@
         {
           "name": "dw.ocapi.shop.basket.payment_methods.modifyGETResponse",
           "script": "./hooks/payment/applicablePaymentMethods"
+        },
+        {
+          "name": "dw.order.payment.authorize",
+          "script": "./hooks/payment/authorizeCSC"
         }
     ]
 }
