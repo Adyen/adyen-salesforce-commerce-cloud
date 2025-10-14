@@ -14,9 +14,13 @@ const setErrorType = require('*/cartridge/adyen/logs/setErrorType');
  * @param {sfra.Next} next - next
  * @returns {sfra.Next} next - next
  */
+// eslint-disable-next-line
 function handleCheckoutReview(req, res, next) {
   try {
-    const currentBasket = BasketMgr.getCurrentBasket();
+    const tempBasketId = session.privacy.temporaryBasketId;
+    const currentBasket = tempBasketId
+      ? BasketMgr.getTemporaryBasket(tempBasketId)
+      : BasketMgr.getCurrentBasket();
     if (!currentBasket) {
       res.redirect(URLUtils.url('Cart-Show'));
       return next();
