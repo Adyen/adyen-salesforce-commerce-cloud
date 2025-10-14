@@ -8,18 +8,21 @@ const { httpClient } = require('../../commons/httpClient');
  */
 async function makeExpressPaymentDetailsCall(data) {
   try {
-    const csrfToken = document.querySelector(
-      '#showConfirmationForm input[id="adyen-token"]',
-    ).value;
+    const { isExpressPdp } = data || {};
     const response = await httpClient({
       method: 'POST',
       url: window.makeExpressPaymentDetailsCall,
       data: {
-        csrf_token: csrfToken,
-        data: JSON.stringify({ data }),
+        csrf_token: $('#adyen-token').val(),
+        data: JSON.stringify({
+          data,
+          ...(isExpressPdp !== undefined ? { isExpressPdp } : {}),
+        }),
       },
     });
     helpers.setOrderFormData(response);
+    document.querySelector('#additionalDetailsHidden').value =
+      JSON.stringify(data);
     document.querySelector('#showConfirmationForm').submit();
   } catch (error) {
     $.spinner().stop();
