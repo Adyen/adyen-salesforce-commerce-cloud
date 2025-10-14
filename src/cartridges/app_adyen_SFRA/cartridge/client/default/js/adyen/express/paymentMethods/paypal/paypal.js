@@ -81,6 +81,7 @@ class Paypal {
         method: 'POST',
         url: this.makeExpressPaymentsCallUrl,
         data: {
+          csrf_token: $('#adyen-token').val(),
           data: JSON.stringify({
             ...state.data,
             isExpressPdp: this.isExpressPdp,
@@ -210,7 +211,10 @@ class Paypal {
           method: 'POST',
           url: this.saveExpressPaymentDataUrl,
           data: {
-            data: JSON.stringify(state.data),
+            data: JSON.stringify({
+              ...state.data,
+              isExpressPdp: this.isExpressPdp,
+            }),
           },
         });
         if (response.success && response.redirectUrl) {
