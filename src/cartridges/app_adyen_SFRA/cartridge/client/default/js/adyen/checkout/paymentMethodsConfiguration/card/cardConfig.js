@@ -62,7 +62,6 @@ class CardConfig {
   };
 
   onSubmit = () => {
-    this.helpers.assignPaymentMethodValue();
     const submitPaymentButton = document.querySelector(
       this.submitPaymentButtonSelector,
     );

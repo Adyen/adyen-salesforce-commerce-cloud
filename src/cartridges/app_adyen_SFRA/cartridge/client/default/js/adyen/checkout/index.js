@@ -4,11 +4,7 @@ const {
   actionHandler,
 } = require('./checkoutConfiguration');
 const { renderCheckout } = require('./renderPaymentMethod');
-const {
-  assignPaymentMethodValue,
-  showValidation,
-  paymentFromComponent,
-} = require('./helpers');
+const { showValidation, paymentFromComponent } = require('./helpers');
 const billing = require('../../checkout/billing');
 const { httpClient } = require('../commons/httpClient');
 const { getPaymentMethods } = require('../commons');
@@ -88,6 +84,17 @@ async function registerRenderPaymentMethodListener() {
     $('body').trigger('checkout:selectFirstPaymentMethod');
     window.arePaymentMethodsRendering = false;
   });
+}
+
+function assignPaymentMethodValue() {
+  const adyenPaymentMethod = document.querySelector('#adyenPaymentMethodName');
+  // if currently selected paymentMethod contains a brand it will be part of the label ID
+  const paymentMethodlabelId = `#lb_${store.selectedMethod}`;
+  if (adyenPaymentMethod) {
+    adyenPaymentMethod.value = store.brand
+      ? store.brand
+      : document.querySelector(paymentMethodlabelId)?.innerHTML;
+  }
 }
 
 function setAdyenInputValues() {

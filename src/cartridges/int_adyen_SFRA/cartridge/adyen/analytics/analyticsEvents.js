@@ -1,7 +1,8 @@
 const CustomObjectMgr = require('dw/object/CustomObjectMgr');
 const UUIDUtils = require('dw/util/UUIDUtils');
 const Transaction = require('dw/system/Transaction');
-const constants = require('./constants');
+const constants = require('*/cartridge/adyen/analytics/constants');
+const adyenConstants = require('*/cartridge/adyen/config/constants');
 
 function createAnalyticsEvent(referenceId, eventSource, eventType, eventCode) {
   Transaction.wrap(() => {
@@ -14,6 +15,7 @@ function createAnalyticsEvent(referenceId, eventSource, eventType, eventCode) {
     customObj.custom.eventSource = eventSource;
     customObj.custom.eventType = eventType;
     customObj.custom.eventCode = eventCode;
+    customObj.custom.version = adyenConstants.VERSION;
     customObj.custom.processingStatus =
       constants.processingStatus.NOT_PROCESSED;
     customObj.custom.retryCount = 0;

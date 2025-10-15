@@ -1,8 +1,9 @@
 const CustomObjectMgr = require('dw/object/CustomObjectMgr');
 const Transaction = require('dw/system/Transaction');
 const analyticsConstants = require('*/cartridge/adyen/analytics/constants');
-const AnalyticsService = require('../analyticsService');
-const AdyenLogs = require('../../logs/adyenCustomLogs');
+const AnalyticsService = require('*/cartridge/adyen/analytics/analyticsService');
+const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
+const constants = require('*/cartridge/adyen/config/constants');
 
 const defaultProperties = {
   channel: 'Web',
@@ -94,25 +95,13 @@ function addEventObject(customObject, requestObjectList) {
   ];
 }
 
-function createAnalyticsRequest(customObjectIterator) {
-  let counter = 0;
-  let requestObjectList = [];
-  requestObjectList.push({ ...defaultProperties });
-  while (customObjectIterator.hasNext()) {
-    if (counter >= analyticsConstants.EVENT_LIMIT) {
-      break;
-    }
-    const customObject = customObjectIterator.next();
-    requestObjectList = addEventObject(customObject, requestObjectList);
-    counter++;
-  }
-  return requestObjectList;
-}
-
-function sendAnalyticsEvents(requestObjectList) {
+function sendAnalyticsEvents(requestObjectList, attemptId = null) {
   requestObjectList.forEach((requestObject) => {
     const { customObjects, ...request } = requestObject;
-    const submission = AnalyticsService.submitData(request);
+    const submission = attemptId
+      ? AnalyticsService.submitData(request, attemptId)
+      : AnalyticsService.submitData(request);
+
     if (submission.data) {
       customObjects.forEach((customObject) => {
         updateProcessingStatus(
@@ -134,6 +123,92 @@ function sendAnalyticsEvents(requestObjectList) {
       throw new Error('Failed to submit full payload for grouped objects.');
     }
   });
+}
+
+function processIncompatibleEventsByVersion(incompatibleEvents) {
+  // Group events by version
+  const eventsByVersion = {};
+
+  incompatibleEvents.forEach((customObject) => {
+    const { version } = customObject.custom;
+    if (!eventsByVersion[version]) {
+      eventsByVersion[version] = [];
+    }
+    eventsByVersion[version].push(customObject);
+  });
+
+  // Process each version group
+  Object.keys(eventsByVersion).forEach((version) => {
+    const eventsForVersion = eventsByVersion[version];
+
+    try {
+      // Create checkout attempt ID with the specific version
+      const checkoutAttemptResult =
+        AnalyticsService.createCheckoutAttemptId(version);
+      if (!checkoutAttemptResult.data) {
+        throw new Error(
+          `Failed to create checkout attempt ID for version ${version}`,
+        );
+      }
+
+      // Create request object for this version
+      let versionRequestObjectList = [];
+      versionRequestObjectList.push({ ...defaultProperties });
+
+      eventsForVersion.forEach((customObject) => {
+        versionRequestObjectList = addEventObject(
+          customObject,
+          versionRequestObjectList,
+        );
+      });
+
+      // Send events for this version
+      sendAnalyticsEvents(versionRequestObjectList, checkoutAttemptResult.data);
+    } catch (error) {
+      AdyenLogs.error_log(
+        `Error processing incompatible events for version ${version}:`,
+        error,
+      );
+      // Mark events as skipped if processing fails
+      eventsForVersion.forEach((customObject) => {
+        updateProcessingStatus(
+          customObject,
+          analyticsConstants.processingStatus.SKIPPED,
+        );
+      });
+    }
+  });
+}
+
+function createAnalyticsRequest(customObjectIterator) {
+  let counter = 0;
+  let requestObjectList = [];
+  requestObjectList.push({ ...defaultProperties });
+  const currentPluginVersion = constants.VERSION;
+  const incompatibleEvents = [];
+
+  while (customObjectIterator.hasNext()) {
+    if (counter >= analyticsConstants.EVENT_LIMIT) {
+      break;
+    }
+    const customObject = customObjectIterator.next();
+
+    // Check if event version matches current plugin version
+    if (customObject.custom.version === currentPluginVersion) {
+      requestObjectList = addEventObject(customObject, requestObjectList);
+      counter++;
+    } else {
+      // Store events with different versions for later processing
+      incompatibleEvents.push(customObject);
+    }
+  }
+
+  // Process incompatible events by their versions
+  if (incompatibleEvents.length > 0) {
+    processIncompatibleEventsByVersion(incompatibleEvents);
+  }
+
+  return requestObjectList;
 }
 
 function processAnalytics() {

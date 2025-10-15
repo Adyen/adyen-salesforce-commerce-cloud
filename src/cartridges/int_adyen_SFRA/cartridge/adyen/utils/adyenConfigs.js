@@ -148,7 +148,8 @@ const adyenConfigsObj = {
   areExpressPaymentsEnabledOnPdp() {
     return (
       this.isApplePayExpressOnPdpEnabled() ||
-      this.isGooglePayExpressOnPdpEnabled()
+      this.isGooglePayExpressOnPdpEnabled() ||
+      this.isPayPalExpressOnPdpEnabled()
     );
   },
 
@@ -174,6 +175,10 @@ const adyenConfigsObj = {
 
   isPayPalExpressEnabled() {
     return getCustomPreference('PayPalExpress_Enabled');
+  },
+
+  isPayPalExpressOnPdpEnabled() {
+    return getCustomPreference('PayPalExpress_Pdp_Enabled');
   },
 
   isPayPalExpressReviewPageEnabled() {

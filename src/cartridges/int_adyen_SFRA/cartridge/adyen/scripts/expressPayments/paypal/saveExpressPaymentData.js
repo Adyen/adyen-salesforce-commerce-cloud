@@ -34,12 +34,17 @@ function updateCurrentBasket(currentBasket, req) {
  * @param {sfra.Next} next - next
  * @returns {sfra.Next} next - next
  */
+// eslint-disable-next-line
 function saveExpressPaymentData(req, res, next) {
   try {
     if (!req.form.data) {
       throw new AdyenError('State data not present in the request');
     }
-    const currentBasket = BasketMgr.getCurrentBasket();
+    const parsedData = JSON.parse(req.form.data || '{}');
+    const { isExpressPdp } = parsedData || {};
+    const currentBasket = isExpressPdp
+      ? BasketMgr.getTemporaryBasket(session.privacy.temporaryBasketId)
+      : BasketMgr.getCurrentBasket();
     if (!currentBasket) {
       res.redirect(URLUtils.url('Cart-Show'));
       return next();
