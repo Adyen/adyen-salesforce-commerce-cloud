@@ -22,8 +22,9 @@ function notify(req, res, next) {
   const hmacKey = AdyenConfigs.getAdyenHmacKey();
   const isHmacValid = handleHmacVerification(hmacKey, req);
   if (!status || !isHmacValid) {
-    res.status(403).render('/adyen/error');
-    return {};
+    res.setStatusCode(403);
+    res.render('/adyen/error');
+    return this.done(req, res);
   }
   Transaction.begin();
   const notificationResult = handleNotify.notify(req.form);
@@ -31,7 +32,8 @@ function notify(req, res, next) {
     Transaction.commit();
     res.render('/notify');
   } else {
-    res.status(403).render('/notifyError', {
+    res.setStatusCode(403);
+    res.render('/notifyError', {
       errorMessage: notificationResult.errorMessage,
     });
     Transaction.rollback();
