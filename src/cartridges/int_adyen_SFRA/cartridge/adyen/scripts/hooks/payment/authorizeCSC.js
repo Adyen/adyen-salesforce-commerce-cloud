@@ -53,7 +53,7 @@ function buildPaymentLinkRequest(
     city: billingAddress.city ? billingAddress.city : 'N/A',
     country: billingCountry,
     houseNumberOrName: billingHouseNumberOrName,
-    postalCode: billingAddress.postalCode ? billingAddress.postalCode : '',
+    postalCode: billingAddress.postalCode ? billingAddress.postalCode : 'N/A',
     stateOrProvince: billingAddress.stateCode
       ? billingAddress.stateCode
       : 'N/A',
@@ -84,9 +84,8 @@ function addPaymentLinkNote(order, paymentLinkUrl) {
   order.addNote('Adyen Payment Link', paymentLinkUrl);
 }
 
-function authorizeAdyenPayment(order, opi) {
+function authorizeAdyenPayment(order, pt) {
   try {
-    const pt = opi.getPaymentTransaction();
     const billingAddress = order.getBillingAddress();
 
     const { billingStreet, billingHouseNumberOrName, billingCountry } =
@@ -119,7 +118,7 @@ function authorizeCSC(order, opi) {
     if (request.clientId === 'dw.csc') {
       const pt = opi.getPaymentTransaction();
       if (pt?.getPaymentProcessor().getID() === 'Adyen_Component') {
-        authorizeAdyenPayment(order, opi);
+        authorizeAdyenPayment(order, pt);
       }
     }
   } catch (e) {
