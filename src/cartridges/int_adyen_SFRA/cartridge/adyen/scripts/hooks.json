@@ -28,13 +28,13 @@
 			"name": "app.payment.post.auth",
 			"script": "./hooks/payment/postAuthorizationHandling"
 		},
-        {
-          "name": "dw.ocapi.shop.basket.payment_methods.modifyGETResponse",
-          "script": "./hooks/payment/applicablePaymentMethods"
-        },
-        {
-          "name": "dw.order.payment.authorize",
-          "script": "./hooks/payment/authorizeCSC"
-        }
-    ]
+    {
+      "name": "dw.ocapi.shop.basket.payment_methods.modifyGETResponse",
+      "script": "./hooks/payment/applicablePaymentMethods"
+    },
+    {
+      "name": "dw.order.payment.authorize",
+      "script": "./hooks/payment/authorizeCSC"
+    }
+  ]
 }
