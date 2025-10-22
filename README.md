@@ -14,7 +14,7 @@ Navigate to [Adyen Docs](https://docs.adyen.com/plugins/salesforce-commerce-clou
 - [5. Customization guide](https://docs.adyen.com/plugins/salesforce-commerce-cloud/sfra/customization-guide),
 - [6. Salesforce Commerce Cloud troubleshooting](https://docs.adyen.com/plugins/salesforce-commerce-cloud/sfra/troubleshooting),
 - [7. Upgrade the cartridge](https://docs.adyen.com/plugins/salesforce-commerce-cloud/sfra/upgrade),
-- [8. Supported payment methods](https://docs.adyen.com/plugins/salesforce-commerce-cloud/supported-payment-methods/)
+- [8. Supported payment methods](https://docs.adyen.com/plugins/salesforce-commerce-cloud/supported-payment-methods)
 
 Adyen provides specialized cartridge support for 2 years for major versions, following the [SFCC B2C Support policy](https://docs.adyen.com/plugins/salesforce-commerce-cloud#support-levels), along with permanent Adyen support. Navigate to your Adyen Customer Area Merchant Account to raise a support case.
 When a major cartridge version is no longer under cartridge support, it will be treated as a custom merchant integration. 
