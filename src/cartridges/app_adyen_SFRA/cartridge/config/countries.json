@@ -38,4 +38,8 @@
 {
 	"id": "de_DE",
 	"currencyCode": "EUR"
+},
+{
+	"id": "en_AU",
+	"currencyCode": "AUD"
 }]

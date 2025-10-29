@@ -14,6 +14,11 @@ const expressPaymentMethods = [
         text: 'Product details page',
         checked: window.isApplePayExpressOnPdpEnabled,
       },
+      {
+        name: 'ApplePayExpress_ShippingPage_Enabled',
+        text: 'Shipping methods page',
+        checked: window.isApplePayExpressOnShippingPageEnabled,
+      },
     ],
   },
   {
@@ -30,6 +35,11 @@ const expressPaymentMethods = [
         name: 'GooglePayExpress_Pdp_Enabled',
         text: 'Product details page',
         checked: window.isGooglePayExpressOnPdpEnabled,
+      },
+      {
+        name: 'GooglePayExpress_ShippingPage_Enabled',
+        text: 'Shipping methods page',
+        checked: window.isGooglePayExpressOnShippingPageEnabled,
       },
     ],
   },
@@ -59,6 +69,11 @@ const expressPaymentMethods = [
         name: 'PayPalExpress_Pdp_Enabled',
         text: 'Product details page',
         checked: window.isPayPalExpressOnPdpEnabled,
+      },
+      {
+        name: 'PayPalExpress_ShippingPage_Enabled',
+        text: 'Shipping methods page',
+        checked: window.isPayPalExpressOnShippingPageEnabled,
       },
       {
         name: 'PayPalExpress_ReviewPage_Enabled',
