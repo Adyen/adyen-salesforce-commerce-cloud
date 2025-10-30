@@ -49,8 +49,10 @@ function doPaymentsCall(order, paymentInstrument, paymentRequest) {
   const transactionAmount = AdyenHelper.getCurrencyValueForApi(
     paymentInstrument?.paymentTransaction?.amount,
   ).getValueOrNull();
-  if (session.privacy.partialPaymentData) {
-    const { remainingAmount } = JSON.parse(session.privacy.partialPaymentData);
+  if (session.privacy.partialPaymentAmounts) {
+    const { remainingAmount } = JSON.parse(
+      session.privacy.partialPaymentAmounts,
+    );
     if (remainingAmount.value !== paymentRequest?.amount?.value) {
       throw new AdyenError('Amounts dont match');
     }
@@ -190,6 +192,7 @@ function createPaymentRequest(args) {
     const adyenPartialPaymentsOrder = JSON.parse(
       paymentInstrument.custom.adyenPartialPaymentsOrder,
     );
+    AdyenLogs.info_log(paymentInstrument.custom.adyenPartialPaymentsOrder);
     if (
       value === adyenPartialPaymentsOrder.amount.value &&
       currency === adyenPartialPaymentsOrder.amount.currency
