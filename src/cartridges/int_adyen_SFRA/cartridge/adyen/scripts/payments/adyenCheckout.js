@@ -192,7 +192,6 @@ function createPaymentRequest(args) {
     const adyenPartialPaymentsOrder = JSON.parse(
       paymentInstrument.custom.adyenPartialPaymentsOrder,
     );
-    AdyenLogs.info_log(paymentInstrument.custom.adyenPartialPaymentsOrder);
     if (
       value === adyenPartialPaymentsOrder.amount.value &&
       currency === adyenPartialPaymentsOrder.amount.currency
