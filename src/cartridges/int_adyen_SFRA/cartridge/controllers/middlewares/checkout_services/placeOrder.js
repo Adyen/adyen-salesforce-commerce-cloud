@@ -6,6 +6,8 @@ const constants = require('*/cartridge/adyen/config/constants');
 const { processPayment, isNotAdyen } = require('*/cartridge/controllers/middlewares/checkout_services/adyenCheckoutServices');
 const Money = require('dw/value/Money');
 const clearForms = require('*/cartridge/adyen/utils/clearForms');
+const { cancelPartialPaymentOrderHelper } = require('*/cartridge/adyen/scripts/partialPayments/cancelPartialPaymentOrder');
+const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 
 /* ### Custom Adyen cartridge end ### */
 
@@ -163,9 +165,25 @@ function placeOrder(req, res, next) {
     /* ### Custom Adyen cartridge end ### */
 
     if (handlePaymentResult.error) {
+        // Cancel partial payment order to refund gift cards if applicable
+        let basketDataCleared = false;
+        if (giftCardsAdded) {
+            try {
+                cancelPartialPaymentOrderHelper(currentBasket);
+                basketDataCleared = true; 
+            } catch (error) {
+                AdyenLogs.error_log('Failed to cancel partial payment order on payment failure:', error);
+            }
+        }
+        Transaction.wrap(function () { OrderMgr.failOrder(order, true); });
+        // Clear basket data if not already cleared by the helper
+        if (!basketDataCleared) {
+            clearForms.clearAdyenBasketData(currentBasket);
+        }
         res.json({
             error: true,
-            errorMessage: Resource.msg('error.payment.not.valid', 'checkout', null)
+            cartError: true,
+            redirectUrl: URLUtils.url('Checkout-Begin', 'stage', 'payment', 'paymentError', Resource.msg('error.payment.not.valid', 'checkout', null)).toString()
         });
         this.emit('route:Complete', req, res);
         return;
