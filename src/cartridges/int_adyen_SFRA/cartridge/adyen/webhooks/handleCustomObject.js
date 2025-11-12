@@ -153,6 +153,7 @@ function handle(customObj) {
             // Move adyen log request to order payment transaction
             paymentInstruments[pi].paymentTransaction.custom.Adyen_log =
               customObj.custom.Adyen_log;
+            paymentInstruments[pi].paymentTransaction.custom.Adyen_merchantSig = null;
           }
         }
         if (customObj.custom.success === 'true') {

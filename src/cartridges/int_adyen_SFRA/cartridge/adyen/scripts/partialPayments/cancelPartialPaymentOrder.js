@@ -14,7 +14,7 @@ const { AdyenError } = require('*/cartridge/adyen/logs/adyenError');
 function cancelPartialPaymentOrder(req, res, next) {
   try {
     const currentBasket = BasketMgr.getCurrentBasket();
-    const { order } = JSON.parse(session.privacy.partialPaymentData);
+    const { order } = JSON.parse(currentBasket.custom.partialPaymentOrderData);
 
     const cancelOrderRequest = {
       merchantAccount: AdyenConfigs.getAdyenMerchantAccount(),
@@ -34,7 +34,7 @@ function cancelPartialPaymentOrder(req, res, next) {
         clearForms.clearAdyenBasketData(currentBasket);
       });
       session.privacy.giftCardResponse = null;
-      session.privacy.partialPaymentData = null;
+      session.privacy.partialPaymentAmounts = null;
       session.privacy.giftCardBalance = null;
     } else {
       throw new AdyenError(`received resultCode ${response.resultCode}`);

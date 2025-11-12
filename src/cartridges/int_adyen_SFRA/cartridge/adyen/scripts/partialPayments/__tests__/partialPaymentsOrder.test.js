@@ -17,6 +17,6 @@ afterEach(() => {
 describe('partial payments order', () => {
   it('should cache order data to reuse at payments', () => {
     createPartialPaymentsOrder(req, res, jest.fn());
-    expect(session.privacy.partialPaymentData).toContain('remainingAmount');
+    expect(session.privacy.partialPaymentAmounts).toContain('remainingAmount');
   });
 });

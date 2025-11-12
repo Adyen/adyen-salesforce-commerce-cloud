@@ -216,9 +216,9 @@ function paymentFromComponent(req, res, next) {
         paymentInstrumentType;
       paymentInstrument.custom.adyenPaymentData = req.form.data;
 
-      if (session.privacy.partialPaymentData) {
+      if (currentBasket.custom.partialPaymentOrderData) {
         paymentInstrument.custom.adyenPartialPaymentsOrder =
-          session.privacy.partialPaymentData;
+          currentBasket.custom.partialPaymentOrderData;
       }
     });
 

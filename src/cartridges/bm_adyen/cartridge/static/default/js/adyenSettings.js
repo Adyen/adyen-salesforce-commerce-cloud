@@ -56,6 +56,11 @@ const expressPaymentMethods = [
         checked: window.isPayPalExpressEnabled,
       },
       {
+        name: 'PayPalExpress_Pdp_Enabled',
+        text: 'Product details page',
+        checked: window.isPayPalExpressOnPdpEnabled,
+      },
+      {
         name: 'PayPalExpress_ReviewPage_Enabled',
         text: 'Order review page',
         checked: window.isPayPalExpressReviewPageEnabled,

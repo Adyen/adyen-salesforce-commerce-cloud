@@ -13,6 +13,7 @@
     window.isGooglePayExpressOnPdpEnabled = ${AdyenConfigs.isGooglePayExpressOnPdpEnabled() || false};
     window.isAmazonPayEnabled = ${AdyenConfigs.isAmazonPayExpressEnabled() || false};
     window.isPayPalExpressEnabled = ${AdyenConfigs.isPayPalExpressEnabled() || false};
+    window.isPayPalExpressOnPdpEnabled = ${AdyenConfigs.isPayPalExpressOnPdpEnabled() || false};
     window.isPayPalExpressReviewPageEnabled = ${AdyenConfigs.isPayPalExpressReviewPageEnabled() || false};
     window.expressMethodsOrder = "${AdyenConfigs.getExpressPaymentsOrder()}";
 </script>
