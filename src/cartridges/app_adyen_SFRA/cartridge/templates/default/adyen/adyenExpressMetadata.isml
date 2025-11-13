@@ -10,6 +10,7 @@
    window.countryCode = window.locale.slice(-2);
    window.areCartExpressPaymentsEnabled = "${AdyenConfigs.areExpressPaymentsEnabled()}";
    window.areExpressPaymentsEnabledOnPdp = "${AdyenConfigs.areExpressPaymentsEnabledOnPdp()}";
+   window.areExpressPaymentsEnabledOnShipping = "${AdyenConfigs.areExpressPaymentsEnabledOnShipping()}";
 
    window.getExpressPaymentMethodsURL = "${URLUtils.https('Adyen-GetExpressPaymentMethods')}";
    window.shippingMethodsUrl = "${URLUtils.https('Adyen-ShippingMethods')}";

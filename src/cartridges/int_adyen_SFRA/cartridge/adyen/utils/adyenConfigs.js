@@ -153,7 +153,7 @@ const adyenConfigsObj = {
     );
   },
 
-  areExpressPaymentsEnabledOnShippingPage() {
+  areExpressPaymentsEnabledOnShipping() {
     return (
       this.isApplePayExpressOnShippingPageEnabled() ||
       this.isGooglePayExpressOnShippingPageEnabled() ||
