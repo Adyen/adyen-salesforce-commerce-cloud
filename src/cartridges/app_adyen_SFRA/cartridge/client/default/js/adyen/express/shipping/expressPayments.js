@@ -35,11 +35,11 @@ function ensureExpressContainer() {
 }
 
 function getExpressPaymentButtons(paymentMethodsResponse) {
-  const { pdpExpressMethods } = paymentMethodsResponse || {};
-  if (!pdpExpressMethods || !pdpExpressMethods.length) {
+  const { shippingExpressMethods } = paymentMethodsResponse || {};
+  if (!shippingExpressMethods || !shippingExpressMethods.length) {
     return [];
   }
-  return pdpExpressMethods.map((pm) => {
+  return shippingExpressMethods.map((pm) => {
     const $container = document.createElement('div');
     $container.setAttribute('id', `${pm}-container`);
     $container.setAttribute('class', `expressComponent ${pm}`);
@@ -131,7 +131,7 @@ async function renderExpressPaymentContainerListener(e, response) {
   }
 }
 
-function registerRenderers() {
+function registerRenderers(paymentMethodsResponse) {
   const events = [
     {
       name: `shipping:render${PAYPAL}Button`,
@@ -149,6 +149,16 @@ function registerRenderers() {
       name: 'shipping:renderExpressPaymentContainer',
       handler: renderExpressPaymentContainerListener,
     },
+    {
+      name: 'checkout:updateCheckoutView',
+      handler: (e, data) => {
+        $('body').trigger('shipping:renderExpressPaymentContainer', {
+          paymentMethodsResponse:
+            store.paymentMethodsResponse || paymentMethodsResponse,
+          order: data?.order,
+        });
+      },
+    },
   ];
   events.forEach(({ name, handler }) => {
     if (!hasEventListener(name)) {
@@ -165,22 +175,14 @@ async function init() {
     return;
   }
 
-  registerRenderers();
-
   const paymentMethodsResponse = await getExpressPaymentMethods();
   store.paymentMethodsResponse = paymentMethodsResponse;
+
+  registerRenderers(paymentMethodsResponse);
 
   $(document).ready(() => {
     $('body').trigger('shipping:renderExpressPaymentContainer', {
       paymentMethodsResponse,
-    });
-  });
-
-  $('body').on('checkout:updateCheckoutView', (e, data) => {
-    $('body').trigger('shipping:renderExpressPaymentContainer', {
-      paymentMethodsResponse:
-        store.paymentMethodsResponse || paymentMethodsResponse,
-      order: data?.order,
     });
   });
 }

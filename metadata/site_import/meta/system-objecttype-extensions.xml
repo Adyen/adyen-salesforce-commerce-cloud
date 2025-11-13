@@ -688,11 +688,14 @@
                 <attribute attribute-id="ExpressPayments_order"/>
                 <attribute attribute-id="ApplePayExpress_Enabled"/>
                 <attribute attribute-id="ApplePayExpress_Pdp_Enabled"/>
+                <attribute attribute-id="ApplePayExpress_ShippingPage_Enabled"/>
                 <attribute attribute-id="AmazonPayExpress_Enabled"/>
                 <attribute attribute-id="PayPalExpress_Enabled"/>
                 <attribute attribute-id="PayPalExpress_ReviewPage_Enabled"/>
+                <attribute attribute-id="PayPalExpress_ShippingPage_Enabled"/>
                 <attribute attribute-id="GooglePayExpress_Enabled"/>
                 <attribute attribute-id="GooglePayExpress_Pdp_Enabled"/>
+                <attribute attribute-id="GooglePayExpress_ShippingPage_Enabled"/>
                 <attribute attribute-id="AdyenAnalytics_Enabled"/>
             </attribute-group>
         </group-definitions>

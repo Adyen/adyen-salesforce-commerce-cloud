@@ -63,7 +63,7 @@ describe('Shipping Express Payments', () => {
       document.body.appendChild(existingContainer);
 
       mockHttpClient.mockResolvedValue({
-        pdpExpressMethods: ['paypal'],
+        shippingExpressMethods: ['paypal'],
       });
 
       await expressPayments.init();
@@ -76,7 +76,7 @@ describe('Shipping Express Payments', () => {
 
     it('should create container and prepend to .shipping-method-list', async () => {
       mockHttpClient.mockResolvedValue({
-        pdpExpressMethods: [],
+        shippingExpressMethods: [],
       });
 
       await expressPayments.init();
@@ -98,7 +98,7 @@ describe('Shipping Express Payments', () => {
       `;
 
       mockHttpClient.mockResolvedValue({
-        pdpExpressMethods: [],
+        shippingExpressMethods: [],
       });
 
       await expressPayments.init();
@@ -116,7 +116,7 @@ describe('Shipping Express Payments', () => {
       document.body.innerHTML = `<div id="checkout-main"></div>`;
 
       mockHttpClient.mockResolvedValue({
-        pdpExpressMethods: [],
+        shippingExpressMethods: [],
       });
 
       await expressPayments.init();
@@ -134,7 +134,7 @@ describe('Shipping Express Payments', () => {
       document.body.innerHTML = `<div></div>`;
 
       mockHttpClient.mockResolvedValue({
-        pdpExpressMethods: [],
+        shippingExpressMethods: [],
       });
 
       await expressPayments.init();
@@ -149,7 +149,7 @@ describe('Shipping Express Payments', () => {
   });
 
   describe('getExpressPaymentButtons', () => {
-    it('should return empty array when pdpExpressMethods is undefined', async () => {
+    it('should return empty array when shippingExpressMethods is undefined', async () => {
       mockHttpClient.mockResolvedValue({});
 
       await expressPayments.init();
@@ -160,9 +160,9 @@ describe('Shipping Express Payments', () => {
       expect(container.children.length).toBe(0);
     });
 
-    it('should return empty array when pdpExpressMethods is empty', async () => {
+    it('should return empty array when shippingExpressMethods is empty', async () => {
       mockHttpClient.mockResolvedValue({
-        pdpExpressMethods: [],
+        shippingExpressMethods: [],
       });
 
       await expressPayments.init();
@@ -179,7 +179,7 @@ describe('Shipping Express Payments', () => {
       }));
 
       mockHttpClient.mockResolvedValue({
-        pdpExpressMethods: ['paypal'],
+        shippingExpressMethods: ['paypal'],
         AdyenPaymentMethods: {
           paymentMethods: [{ type: 'paypal', configuration: {} }],
         },
@@ -210,7 +210,7 @@ describe('Shipping Express Payments', () => {
       }));
 
       mockHttpClient.mockResolvedValue({
-        pdpExpressMethods: ['paypal', 'applepay', 'googlepay'],
+        shippingExpressMethods: ['paypal', 'applepay', 'googlepay'],
         AdyenPaymentMethods: {
           paymentMethods: [
             { type: 'paypal', configuration: {} },
@@ -237,7 +237,7 @@ describe('Shipping Express Payments', () => {
       const onSpy = jest.spyOn($.fn, 'on');
 
       mockHttpClient.mockResolvedValue({
-        pdpExpressMethods: [],
+        shippingExpressMethods: [],
       });
 
       await expressPayments.init();
@@ -280,7 +280,7 @@ describe('Shipping Express Payments', () => {
 
     it('should fetch payment methods when enabled', async () => {
       mockHttpClient.mockResolvedValue({
-        pdpExpressMethods: [],
+        shippingExpressMethods: [],
       });
 
       await expressPayments.init();
@@ -290,7 +290,7 @@ describe('Shipping Express Payments', () => {
 
     it('should store payment methods in store', async () => {
       const mockResponse = {
-        pdpExpressMethods: ['paypal'],
+        shippingExpressMethods: ['paypal'],
         AdyenPaymentMethods: {},
       };
       mockHttpClient.mockResolvedValue(mockResponse);
@@ -302,7 +302,7 @@ describe('Shipping Express Payments', () => {
 
     it('should register checkout:updateCheckoutView listener', async () => {
       mockHttpClient.mockResolvedValue({
-        pdpExpressMethods: [],
+        shippingExpressMethods: [],
       });
 
       const onSpy = jest.spyOn($.fn, 'on');
