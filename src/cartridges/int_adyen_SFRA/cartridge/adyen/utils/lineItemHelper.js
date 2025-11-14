@@ -121,7 +121,7 @@ const __LineItemHelper = {
         !this.isBonusProductLineItem(lineItem)) ||
       this.isShippingLineItem(lineItem) ||
       (this.isPriceAdjustment(lineItem) &&
-        lineItem.promotion?.promotionClass ===
+        lineItem?.promotion?.promotionClass ===
           dw.campaign.Promotion.PROMOTION_CLASS_ORDER)
     );
   },
