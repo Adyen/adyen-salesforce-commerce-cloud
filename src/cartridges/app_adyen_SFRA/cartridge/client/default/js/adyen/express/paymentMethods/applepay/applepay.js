@@ -302,7 +302,15 @@ class ApplePay {
       this.translations,
     );
     const applePayConfig = this.getConfig();
-    return window.AdyenWeb.createComponent(APPLE_PAY, checkout, applePayConfig);
+    const component = window.AdyenWeb.createComponent(
+      APPLE_PAY,
+      checkout,
+      applePayConfig,
+    );
+    if (!component.isAvailable()) {
+      return null;
+    }
+    return component;
   }
 }
 

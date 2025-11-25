@@ -53,6 +53,7 @@ exports[`Render Payment Method should render payment method with shopper informa
     },
   },
   "scheme": {
+    "isAvailable": true,
     "isValid": undefined,
     "node": {
       "mount": [MockFunction] {
@@ -130,6 +131,7 @@ exports[`Render Payment Method should render stored payment method with missing 
     },
   },
   "storedCardmocked_id": {
+    "isAvailable": true,
     "isValid": undefined,
     "node": {
       "mount": [MockFunction] {
