@@ -14,6 +14,21 @@ function hasEventListener(eventName) {
   return events && events[eventName];
 }
 
+function isOnShippingStage() {
+  const checkoutMain = document.getElementById('checkout-main');
+  const dataStage = checkoutMain?.getAttribute('data-checkout-stage');
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const urlStage = urlParams.get('stage');
+  const { hash } = window.location;
+
+  const isCustomerStage =
+    dataStage === 'customer' || urlStage === 'customer' || hash === '#customer';
+
+  // Only show on customer stage
+  return isCustomerStage;
+}
+
 function getPaymentMethodConfig(adyenPaymentMethods, paymentMethodType) {
   return adyenPaymentMethods?.paymentMethods.find(
     (pm) => paymentMethodType.indexOf(pm.type) > -1,
@@ -131,6 +146,25 @@ async function renderExpressPaymentContainerListener(e, response) {
   }
 }
 
+function handleExpressButtonVisibility() {
+  const container = document.getElementById('express-container');
+  if (!container) {
+    return;
+  }
+
+  if (!isOnShippingStage()) {
+    // Hide buttons when not on customer stage
+    container.replaceChildren();
+    container.style.display = 'none';
+  } else {
+    // Show and render buttons on customer stage
+    container.style.display = 'block';
+    $('body').trigger('shipping:renderExpressPaymentContainer', {
+      paymentMethodsResponse: store.paymentMethodsResponse,
+    });
+  }
+}
+
 function registerRenderers(paymentMethodsResponse) {
   const events = [
     {
@@ -164,6 +198,31 @@ function registerRenderers(paymentMethodsResponse) {
     if (!hasEventListener(name)) {
       $('body').on(name, handler);
     }
+  });
+
+  const checkoutMain = document.getElementById('checkout-main');
+  if (checkoutMain) {
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (
+          mutation.type === 'attributes' &&
+          mutation.attributeName === 'data-checkout-stage'
+        ) {
+          handleExpressButtonVisibility();
+        }
+      });
+    });
+
+    observer.observe(checkoutMain, {
+      attributes: true,
+      attributeFilter: ['data-checkout-stage'],
+    });
+
+    handleExpressButtonVisibility();
+  }
+
+  $(window).on('hashchange', () => {
+    handleExpressButtonVisibility();
   });
 }
 
