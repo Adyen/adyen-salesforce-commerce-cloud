@@ -11,6 +11,7 @@
    window.areCartExpressPaymentsEnabled = "${AdyenConfigs.areExpressPaymentsEnabled()}";
    window.areExpressPaymentsEnabledOnPdp = "${AdyenConfigs.areExpressPaymentsEnabledOnPdp()}";
    window.areExpressPaymentsEnabledOnShipping = "${AdyenConfigs.areExpressPaymentsEnabledOnShipping()}";
+   window.sfra6Compatibility = ${pdict.AdyenConfigs.getAdyenSFRA6Compatibility()};
 
    window.getExpressPaymentMethodsURL = "${URLUtils.https('Adyen-GetExpressPaymentMethods')}";
    window.shippingMethodsUrl = "${URLUtils.https('Adyen-ShippingMethods')}";

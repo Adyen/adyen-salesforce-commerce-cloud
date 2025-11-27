@@ -14,19 +14,37 @@ function hasEventListener(eventName) {
   return events && events[eventName];
 }
 
-function isOnShippingStage() {
+// eslint-disable-next-line complexity
+function stageCheck(dataStage, urlStage, hash, sfra6Compatibility) {
+  if (sfra6Compatibility) {
+    return (
+      dataStage === 'customer' ||
+      urlStage === 'customer' ||
+      hash === '#customer'
+    );
+  }
+  return (
+    dataStage === 'shipping' || urlStage === 'shipping' || hash === '#shipping'
+  );
+}
+
+function allowedStage() {
   const checkoutMain = document.getElementById('checkout-main');
   const dataStage = checkoutMain?.getAttribute('data-checkout-stage');
 
   const urlParams = new URLSearchParams(window.location.search);
   const urlStage = urlParams.get('stage');
   const { hash } = window.location;
+  const { sfra6Compatibility } = window;
 
-  const isCustomerStage =
-    dataStage === 'customer' || urlStage === 'customer' || hash === '#customer';
-
-  // Only show on customer stage
-  return isCustomerStage;
+  const isAllowedStage = stageCheck(
+    dataStage,
+    urlStage,
+    hash,
+    sfra6Compatibility,
+  );
+  // Only show on allowed stage
+  return isAllowedStage;
 }
 
 function getPaymentMethodConfig(adyenPaymentMethods, paymentMethodType) {
@@ -152,12 +170,12 @@ function handleExpressButtonVisibility() {
     return;
   }
 
-  if (!isOnShippingStage()) {
-    // Hide buttons when not on customer stage
+  if (!allowedStage()) {
+    // Hide buttons when not on an allowed stage
     container.replaceChildren();
     container.style.display = 'none';
   } else {
-    // Show and render buttons on customer stage
+    // Show and render buttons on allowed stage
     container.style.display = 'block';
     $('body').trigger('shipping:renderExpressPaymentContainer', {
       paymentMethodsResponse: store.paymentMethodsResponse,
