@@ -118,9 +118,13 @@ export default class CheckoutPageSFRA {
     return `/s/RefArch/cart?lang=${locale}`;
   };
 
-  addProductToCart = async (locale, itemCount = 1) => {
+  navigateToPdp = async (locale) => {
     await this.consentButton.click();
-    await this.page.goto(`/s/RefArch/25720033M.html?lang=${locale}`);
+    await this.page.goto(`/s/RefArch/25599638M.html?lang=${locale}`);
+  };
+
+  addProductToCart = async (locale, itemCount = 1) => {
+    await this.navigateToPdp(locale);
     if (itemCount > 1) {
       await this.selectQuantity.selectOption({ index: itemCount });
     }
