@@ -30,7 +30,7 @@ function stageCheck(dataStage, urlStage, hash, sfra6Compatibility) {
 
 function allowedStage() {
   const checkoutMain = document.getElementById('checkout-main');
-  const dataStage = checkoutMain?.getAttribute('data-checkout-stage');
+  const dataStage = checkoutMain?.dataset?.checkoutStage;
 
   const urlParams = new URLSearchParams(window.location.search);
   const urlStage = urlParams.get('stage');
@@ -152,7 +152,7 @@ async function renderExpressPaymentContainerListener(e, response) {
   if (expressPaymentButtons.length) {
     container.replaceChildren(...expressPaymentButtons);
     expressPaymentButtons.forEach((button) => {
-      const expressType = button.getAttribute('data-method');
+      const expressType = button.dataset.method;
       $('body').trigger(`shipping:render${expressType}Button`, {
         paymentMethodsResponse,
         button,
