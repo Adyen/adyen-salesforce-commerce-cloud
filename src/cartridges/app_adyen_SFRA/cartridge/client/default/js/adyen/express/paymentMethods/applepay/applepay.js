@@ -296,13 +296,35 @@ class ApplePay {
     };
   }
 
+  static async checkIfComponentIsAvailable(component) {
+    if (typeof component.isAvailable === 'function') {
+      try {
+        const isComponentAvailable = await component.isAvailable();
+        return isComponentAvailable;
+      } catch (error) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   async getComponent() {
     const checkout = await initializeCheckout(
       this.applicationInfo,
       this.translations,
     );
     const applePayConfig = this.getConfig();
-    return window.AdyenWeb.createComponent(APPLE_PAY, checkout, applePayConfig);
+    const component = window.AdyenWeb.createComponent(
+      APPLE_PAY,
+      checkout,
+      applePayConfig,
+    );
+    const isComponentAvailable =
+      await ApplePay.checkIfComponentIsAvailable(component);
+    if (isComponentAvailable !== false) {
+      return component;
+    }
+    return null;
   }
 }
 
