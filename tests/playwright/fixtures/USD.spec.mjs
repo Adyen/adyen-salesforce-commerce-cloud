@@ -323,7 +323,7 @@ for (const environment of environments) {
       await redirectShopper.doGooglePayExpressPayment();
     });
 
-    test.only('Express shipping buttons should be visible / not visible @quick', async ({page}) => {
+    test('Express shipping buttons should be visible / not visible @quick', async ({page}) => {
       checkoutPage = new environment.CheckoutPage(page);
       await checkoutPage.addProductToCart();
       await checkoutPage.navigateToCheckout(regionsEnum.US);
