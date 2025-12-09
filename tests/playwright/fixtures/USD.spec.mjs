@@ -327,10 +327,10 @@ for (const environment of environments) {
       checkoutPage = new environment.CheckoutPage(page);
       await checkoutPage.addProductToCart();
       await checkoutPage.navigateToCheckout(regionsEnum.US);
-      await page.locator('#express-container').isVisible();
+      await expect(page.locator('#express-container')).toBeVisible();
       await checkoutPage.setEmail();
       await page.locator('.submit-customer').click();
-      await page.locator('express-container').isVisible(false);
+      await expect(page.locator('#express-container')).toBeHidden();
     });
   });
 }
