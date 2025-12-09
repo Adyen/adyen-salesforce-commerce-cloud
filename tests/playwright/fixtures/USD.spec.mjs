@@ -322,5 +322,15 @@ for (const environment of environments) {
       redirectShopper = new RedirectShopper(page);
       await redirectShopper.doGooglePayExpressPayment();
     });
+
+    test.only('Express shipping buttons should be visible / not visible @quick', async ({page}) => {
+      checkoutPage = new environment.CheckoutPage(page);
+      await checkoutPage.addProductToCart();
+      await checkoutPage.navigateToCheckout(regionsEnum.US);
+      await page.locator('#express-container').isVisible();
+      await checkoutPage.setEmail();
+      await page.locator('.submit-customer').click();
+      await page.locator('express-container').isVisible(false);
+    });
   });
 }
