@@ -156,7 +156,7 @@ describe('Paypal class', () => {
         updatePaymentData: jest.fn(),
       };
 
-      expect(() => Paypal.updateComponent(null, component)).toThrow();
+      expect(() => Paypal.updateComponent(null, component)).toThrow(TypeError);
     });
   });
 
