@@ -140,6 +140,15 @@ async function renderPayPalButtonListener(e, response) {
   if (!paypalConfig) return;
   const paypal = new Paypal(paypalConfig, applicationInfo, adyenTranslations);
   const paypalComponent = await paypal.getComponent();
+
+  // This is a hack to destroy the previous paypal component as PayPal does not support multiple components on the same page
+  if (
+    window.paypal &&
+    typeof window.paypal.__internal_destroy__ === 'function'
+  ) {
+    window.paypal.__internal_destroy__();
+  }
+
   paypalComponent.mount(button);
 }
 
