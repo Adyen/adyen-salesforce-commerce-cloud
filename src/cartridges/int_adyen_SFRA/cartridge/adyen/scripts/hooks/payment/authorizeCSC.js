@@ -4,6 +4,8 @@ const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
 const constants = require('*/cartridge/adyen/config/constants');
 
+const ADYEN_PBL_NOTE_KEY = 'Adyen Payment Link';
+
 function getBillingAddressDetails(billingAddress) {
   let billingStreet = '';
   let billingHouseNumberOrName = '';
@@ -82,7 +84,7 @@ function createAdyenPaymentLink(paymentLinkRequest) {
 }
 
 function addPaymentLinkNote(order, paymentLinkUrl) {
-  order.addNote('Adyen Payment Link', paymentLinkUrl);
+  order.addNote(ADYEN_PBL_NOTE_KEY, paymentLinkUrl);
 }
 
 function authorizeAdyenPayment(order, pt) {
@@ -104,6 +106,8 @@ function authorizeAdyenPayment(order, pt) {
     if (response && response.url) {
       addPaymentLinkNote(order, response.url);
     }
+
+    return response.url;
   } catch (e) {
     AdyenLogs.error_log(
       `Error during Adyen Payment Link authorization for order ${
@@ -111,6 +115,7 @@ function authorizeAdyenPayment(order, pt) {
       }`,
       e,
     );
+    return null;
   }
 }
 
@@ -119,14 +124,17 @@ function authorizeCSC(order, opi) {
     if (request.clientId === 'dw.csc') {
       const pt = opi.getPaymentTransaction();
       if (pt?.getPaymentProcessor().getID() === 'Adyen_Component') {
-        authorizeAdyenPayment(order, pt);
-        // Intercept the flow with throwing an error.
-        // If not intercepted order will be placed and should be kept in CREATED state.
-        return new Status(
-          Status.ERROR,
-          null,
-          `Pending payment for order ${order.orderNo}.`,
-        );
+        const paymentLink = authorizeAdyenPayment(order, pt);
+        if (paymentLink) {
+          // Intercept the flow with throwing an error.
+          // If not intercepted order will be placed and should be kept in CREATED state.
+          return new Status(
+            Status.ERROR,
+            null,
+            `Pending payment for order ${order.orderNo}. \n Payment link: ${paymentLink}`,
+          );
+        }
+        return new Status(Status.ERROR);
       }
     }
   } catch (e) {
@@ -134,6 +142,7 @@ function authorizeCSC(order, opi) {
       `Failed to authorize Adyen CSC payment for order ${order.orderNo}`,
       e,
     );
+    return new Status(Status.ERROR);
   }
   return new Status(Status.OK);
 }
