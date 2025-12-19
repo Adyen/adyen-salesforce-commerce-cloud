@@ -1,3 +1,4 @@
+const Status = require('dw/system/Status');
 const AdyenConfigs = require('*/cartridge/adyen/utils/adyenConfigs');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
@@ -119,6 +120,13 @@ function authorizeCSC(order, opi) {
       const pt = opi.getPaymentTransaction();
       if (pt?.getPaymentProcessor().getID() === 'Adyen_Component') {
         authorizeAdyenPayment(order, pt);
+        // Intercept the flow with throwing an error.
+        // If not intercepted order will be placed and should be kept in CREATED state.
+        return new Status(
+          Status.ERROR,
+          null,
+          `Pending payment for order ${order.orderNo}.`,
+        );
       }
     }
   } catch (e) {
@@ -127,6 +135,7 @@ function authorizeCSC(order, opi) {
       e,
     );
   }
+  return new Status(Status.OK);
 }
 
 exports.authorize = authorizeCSC;
