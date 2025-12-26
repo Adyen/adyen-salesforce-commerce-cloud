@@ -9,7 +9,7 @@ beforeEach(() => {
   notify = adyen.notify;
   jest.clearAllMocks();
   req = {};
-  res = { render: jest.fn(), status: jest.fn(() => res)};
+  res = { render: jest.fn(), setStatusCode: jest.fn(), json: jest.fn()};
 });
 
 afterEach(() => {
