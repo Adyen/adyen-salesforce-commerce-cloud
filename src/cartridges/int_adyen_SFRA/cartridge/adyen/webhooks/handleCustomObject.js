@@ -39,13 +39,14 @@
 
 const PaymentMgr = require('dw/order/PaymentMgr');
 const Order = require('dw/order/Order');
-const LineItemCtnr = require('dw/order/LineItemCtnr');
 const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 
 // script includes
 const constants = require('*/cartridge/adyen/config/constants');
 const adyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
+
+const collections = require('*/cartridge/scripts/util/collections');
 
 function placeOrder(order) {
   const fraudDetectionStatus = { status: 'success' };
@@ -186,13 +187,15 @@ function handle(customObj) {
             } else {
               if (order.custom.Adyen_serviceChannel === 'CSC') {
                 order.custom.Adyen_pspReference = customObj.custom.pspReference;
-                order.custom.Adyen_paymentMethod = customObj.custom.paymentMethod;
-                for (const pi in paymentInstruments) {
-                  pi.custom.adyenPaymentMethod = customObj.custom.paymentMethod;
-                  pi.custom[`${constants.OMS_NAMESPACE}__Adyen_Payment_Method`] = customObj.custom.paymentMethod;
-                  pi.custom.Adyen_Payment_Method_Variant = customObj.custom.paymentMethod;
-                  pi.custom[`${constants.OMS_NAMESPACE}__Adyen_Payment_Method_Variant`] = customObj.custom.paymentMethod;
-                }
+
+                const paymentMethod = customObj.custom.paymentMethod;
+                order.custom.Adyen_paymentMethod = paymentMethod;
+                collections.forEach(order.getPaymentInstruments(), (pi) => {
+                  pi.custom.adyenPaymentMethod = paymentMethod;
+                  pi.custom[`${constants.OMS_NAMESPACE}__Adyen_Payment_Method`] = paymentMethod;
+                  pi.custom.Adyen_Payment_Method_Variant = paymentMethod;
+                  pi.custom[`${constants.OMS_NAMESPACE}__Adyen_Payment_Method_Variant`] = paymentMethod;
+                });
               }
               const placeOrderResult = placeOrder(order);
               if (!placeOrderResult.error) {
