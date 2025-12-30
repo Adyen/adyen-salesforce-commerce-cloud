@@ -39,6 +39,7 @@
 
 const PaymentMgr = require('dw/order/PaymentMgr');
 const Order = require('dw/order/Order');
+const LineItemCtnr = require('dw/order/LineItemCtnr');
 const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 
 // script includes
@@ -183,6 +184,16 @@ function handle(customObj) {
                 'Order sent for manual review in Adyen Customer Area',
               );
             } else {
+              if (order.custom.Adyen_serviceChannel === 'CSC') {
+                order.custom.Adyen_pspReference = customObj.custom.pspReference;
+                order.custom.Adyen_paymentMethod = customObj.custom.paymentMethod;
+                for (const pi in paymentInstruments) {
+                  pi.custom.adyenPaymentMethod = customObj.custom.paymentMethod;
+                  pi.custom[`${constants.OMS_NAMESPACE}__Adyen_Payment_Method`] = customObj.custom.paymentMethod;
+                  pi.custom.Adyen_Payment_Method_Variant = customObj.custom.paymentMethod;
+                  pi.custom[`${constants.OMS_NAMESPACE}__Adyen_Payment_Method_Variant`] = customObj.custom.paymentMethod;
+                }
+              }
               const placeOrderResult = placeOrder(order);
               if (!placeOrderResult.error) {
                 markOrderAsPaid(order);

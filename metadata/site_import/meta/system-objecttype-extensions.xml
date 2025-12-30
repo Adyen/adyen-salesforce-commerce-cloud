@@ -44,6 +44,14 @@
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
             </attribute-definition>
+            <attribute-definition attribute-id="Adyen_serviceChannel">
+                <display-name xml:lang="x-default">Adyen service channel used (SFRA/CSC)</display-name>
+                <description xml:lang="x-default">Service channel used to authorize the payment</description>
+                <type>text</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
         </custom-attribute-definitions>
         <group-definitions>
             <attribute-group group-id="AdyenPayments">
@@ -54,6 +62,7 @@
                 <attribute attribute-id="Adyen_value"/>
                 <attribute attribute-id="Adyen_donationAmount"/>
                 <attribute attribute-id="Adyen_paypalExpressResponse"/>
+                <attribute attribute-id="Adyen_serviceChannel"/>
             </attribute-group>
         </group-definitions>
     </type-extension>

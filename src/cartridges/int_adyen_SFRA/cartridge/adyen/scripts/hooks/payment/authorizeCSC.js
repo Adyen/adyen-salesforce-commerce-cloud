@@ -122,6 +122,7 @@ function authorizeAdyenPayment(order, pt) {
 function authorizeCSC(order, opi) {
   try {
     if (request.clientId === 'dw.csc') {
+      order.custom.Adyen_serviceChannel = 'CSC';
       const pt = opi.getPaymentTransaction();
       if (pt?.getPaymentProcessor().getID() === 'Adyen_Component') {
         const paymentLink = authorizeAdyenPayment(order, pt);
