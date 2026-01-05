@@ -647,6 +647,12 @@ const adyenHelperObj = {
       case 'googlepay':
         methodName = 'Google Pay';
         break;
+      case 'fastlane':
+        methodName = 'PayPal Fastlane';
+        break;
+      case 'payto':
+        methodName = 'PayTo';
+        break;
       default:
         methodName = paymentMethod;
     }

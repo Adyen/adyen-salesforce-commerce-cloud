@@ -59,7 +59,7 @@ function handle(basket, paymentInformation) {
 
     if (paymentInformation.partialPaymentsOrder) {
       paymentInstrument.custom.adyenPartialPaymentsOrder =
-        session.privacy.partialPaymentData;
+        currentBasket.custom.partialPaymentOrderData;
     }
 
     paymentInstrument.custom.Adyen_Payment_Method_Variant =

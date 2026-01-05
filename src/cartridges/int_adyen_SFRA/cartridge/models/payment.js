@@ -1,5 +1,7 @@
 const collections = require('*/cartridge/scripts/util/collections');
-const { createSelectedPaymentInstruments } = require('./createPayment');
+const {
+  createSelectedPaymentInstruments,
+} = require('*/cartridge/models/createPayment');
 
 const base = module.superModule;
 

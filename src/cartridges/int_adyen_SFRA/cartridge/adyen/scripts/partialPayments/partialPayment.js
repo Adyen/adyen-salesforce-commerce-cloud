@@ -46,7 +46,7 @@ function makePartialPayment(req, res, next) {
       brand,
       type: 'giftcard',
     };
-    const { order } = JSON.parse(session.privacy.partialPaymentData);
+    const { order } = JSON.parse(currentBasket.custom.partialPaymentOrderData);
     const partialPaymentRequest = {
       merchantAccount: AdyenConfigs.getAdyenMerchantAccount(),
       amount: JSON.parse(session.privacy.giftCardBalance),
@@ -83,16 +83,12 @@ function makePartialPayment(req, res, next) {
     );
 
     // Update cached session data
-    const partialPaymentsOrderData = JSON.parse(
-      session.privacy.partialPaymentData,
+    const partialPaymentAmounts = JSON.parse(
+      session.privacy.partialPaymentAmounts,
     );
-    partialPaymentsOrderData.order = {
-      orderData: response?.order?.orderData,
-      pspReference: response?.order?.pspReference,
-    };
-    partialPaymentsOrderData.remainingAmount = response?.order?.remainingAmount;
-    session.privacy.partialPaymentData = JSON.stringify(
-      partialPaymentsOrderData,
+    partialPaymentAmounts.remainingAmount = response?.order?.remainingAmount;
+    session.privacy.partialPaymentAmounts = JSON.stringify(
+      partialPaymentAmounts,
     );
 
     const divideBy = AdyenHelper.getDivisorForCurrency(remainingAmount);
@@ -134,6 +130,13 @@ function makePartialPayment(req, res, next) {
 
     Transaction.wrap(() => {
       currentBasket.custom.adyenGiftCards = JSON.stringify(addedGiftCards);
+      currentBasket.custom.partialPaymentOrderData = JSON.stringify({
+        order: {
+          orderData: response?.order?.orderData,
+          pspReference: response?.order?.pspReference,
+        },
+        ...partialPaymentAmounts,
+      });
     });
 
     const totalDiscountedAmount = new Money(

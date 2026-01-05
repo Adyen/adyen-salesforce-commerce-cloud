@@ -1,4 +1,5 @@
 const { httpClient } = require('./httpClient');
+const { buildTemporaryBasketPayload } = require('./helper');
 
 /**
  * Makes an ajax call to the controller function FetchGiftCards
@@ -52,16 +53,29 @@ module.exports.createTemporaryBasket = async function createTemporaryBasket() {
   const data = new FormData(productForm);
   const dataFromEntries = Object.fromEntries(data.entries());
   const parsedData = JSON.parse(dataFromEntries['selected-express-product']);
+  const payload = buildTemporaryBasketPayload(parsedData);
   return httpClient({
     method: 'POST',
     url: window.createTemporaryBasketUrl,
     data: {
-      data: JSON.stringify({
-        id: parsedData.id,
-        bundledProducts: parsedData.bundledProducts,
-        options: parsedData.options,
-        selectedQuantity: parsedData.selectedQuantity,
-      }),
+      data: JSON.stringify(payload),
+    },
+  });
+};
+
+/**
+ * Makes an ajax call to the controller function calculatePrice
+ */
+module.exports.calculateProductPrice = async function calculateProductPrice(
+  productId,
+  quantity,
+) {
+  return httpClient({
+    method: 'POST',
+    url: window.productPriceCalculateUrl,
+    data: {
+      pid: productId,
+      quantity,
     },
   });
 };

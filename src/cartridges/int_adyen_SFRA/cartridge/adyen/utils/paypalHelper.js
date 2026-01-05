@@ -183,9 +183,15 @@ function setBillingAndShippingAddress(currentBasket, shopperDetails) {
     billingAddress.setCountryCode(shopperDetails.billingAddress.country);
 
     shippingAddress.setFirstName(shopperDetails.shippingAddress.firstName);
+    if (shopperDetails.shippingAddress.lastName) {
+      shippingAddress.setLastName(shopperDetails.shippingAddress.lastName);
+    }
     shippingAddress.setAddress1(shopperDetails.shippingAddress.street);
     shippingAddress.setCity(shopperDetails.shippingAddress.city);
-    shippingAddress.setPhone(shopperDetails.telephoneNumber);
+    shippingAddress.setPhone(
+      shopperDetails.shippingAddress.telephoneNumber ||
+        shopperDetails.telephoneNumber,
+    );
     shippingAddress.setPostalCode(shopperDetails.shippingAddress.postalCode);
     shippingAddress.setStateCode(
       shopperDetails.shippingAddress.stateOrProvince,

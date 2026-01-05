@@ -11,6 +11,10 @@ jest.mock('*/cartridge/config/adyenTranslations', () => jest.fn(), {
   virtual: true,
 });
 
+jest.mock('*/cartridge/config/adyenPaymentMethodTitles', () => jest.fn(), {
+  virtual: true,
+});
+
 jest.mock('*/cartridge/models/shipping/shippingMethod', () => jest.fn(), {
   virtual: true,
 });
@@ -20,6 +24,14 @@ jest.mock(
   () => ({
     getShipmentByUUID: jest.fn(() => 'mocked_uuid'),
     selectShippingMethod: jest.fn(),
+  }),
+  { virtual: true },
+);
+
+jest.mock(
+  '*/cartridge/scripts/helpers/pricing',
+  () => ({
+    getPromotionPrice: jest.fn(),
   }),
   { virtual: true },
 );

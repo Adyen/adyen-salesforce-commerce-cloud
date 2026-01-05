@@ -11,33 +11,53 @@ const clearForms = require('*/cartridge/adyen/utils/clearForms');
 const setErrorType = require('*/cartridge/adyen/logs/setErrorType');
 const { AdyenError } = require('*/cartridge/adyen/logs/adyenError');
 
+/**
+ * Helper function to cancel partial payment order and refund gift cards
+ * @param {dw.order.Basket} basket - The current basket
+ * @returns {Object} Response from Adyen API
+ * @throws {AdyenError} If cancellation fails
+ */
+function cancelPartialPaymentOrderHelper(basket) {
+  if (!basket || !basket.custom.partialPaymentOrderData) {
+    return null;
+  }
+
+  const { order } = JSON.parse(basket.custom.partialPaymentOrderData);
+
+  const cancelOrderRequest = {
+    merchantAccount: AdyenConfigs.getAdyenMerchantAccount(),
+    order,
+  };
+
+  const response =
+    adyenCheckout.doCancelPartialPaymentOrderCall(cancelOrderRequest);
+
+  if (response.resultCode === constants.RESULTCODES.RECEIVED) {
+    Transaction.wrap(() => {
+      collections.forEach(basket.getPaymentInstruments(), (item) => {
+        if (item.custom.adyenPartialPaymentsOrder) {
+          basket.removePaymentInstrument(item);
+        }
+      });
+      clearForms.clearAdyenBasketData(basket);
+    });
+    session.privacy.giftCardResponse = null;
+    session.privacy.partialPaymentAmounts = null;
+    session.privacy.giftCardBalance = null;
+  } else {
+    throw new AdyenError(`received resultCode ${response.resultCode}`);
+  }
+
+  return response;
+}
+
 function cancelPartialPaymentOrder(req, res, next) {
   try {
     const currentBasket = BasketMgr.getCurrentBasket();
-    const { order } = JSON.parse(session.privacy.partialPaymentData);
+    const response = cancelPartialPaymentOrderHelper(currentBasket);
 
-    const cancelOrderRequest = {
-      merchantAccount: AdyenConfigs.getAdyenMerchantAccount(),
-      order,
-    };
-
-    const response =
-      adyenCheckout.doCancelPartialPaymentOrderCall(cancelOrderRequest);
-
-    if (response.resultCode === constants.RESULTCODES.RECEIVED) {
-      Transaction.wrap(() => {
-        collections.forEach(currentBasket.getPaymentInstruments(), (item) => {
-          if (item.custom.adyenPartialPaymentsOrder) {
-            currentBasket.removePaymentInstrument(item);
-          }
-        });
-        clearForms.clearAdyenBasketData(currentBasket);
-      });
-      session.privacy.giftCardResponse = null;
-      session.privacy.partialPaymentData = null;
-      session.privacy.giftCardBalance = null;
-    } else {
-      throw new AdyenError(`received resultCode ${response.resultCode}`);
+    if (!response) {
+      throw new AdyenError('No partial payment order data found');
     }
 
     const amount = {
@@ -62,3 +82,5 @@ function cancelPartialPaymentOrder(req, res, next) {
 }
 
 module.exports = cancelPartialPaymentOrder;
+module.exports.cancelPartialPaymentOrderHelper =
+  cancelPartialPaymentOrderHelper;

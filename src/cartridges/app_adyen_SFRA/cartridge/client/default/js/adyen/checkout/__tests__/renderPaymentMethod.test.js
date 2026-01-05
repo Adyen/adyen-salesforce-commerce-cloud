@@ -40,7 +40,7 @@ describe('Render Payment Method', () => {
     expect(store.componentsObj).toMatchSnapshot();
   });
 
-  it('should render payment method with shopper information fields', () => {
+  it('should render payment method with shopper information fields', async () => {
     document.body.innerHTML += `
     <input id="shippingFirstNamedefault" value="shippingFirstNamedefaultMock" />
       <input id="shippingLastNamedefault" value="shippingLastNamedefaultMock" />
@@ -66,7 +66,7 @@ describe('Render Payment Method', () => {
       name: 'mocked_name',
       lastFour: '1234',
     };
-    renderPaymentMethod(
+    await renderPaymentMethod(
         paymentMethod,
         false,
         '/mocked_path/',

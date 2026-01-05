@@ -326,7 +326,6 @@
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
-                <default-value>oj9GsQ</default-value>
             </attribute-definition>
             <attribute-definition attribute-id="AdyenOneClickEnabled">
                 <display-name xml:lang="x-default">Store shopper details: one-click</display-name>
@@ -559,6 +558,13 @@
                 <externally-managed-flag>false</externally-managed-flag>
                 <default-value>true</default-value>
             </attribute-definition>
+            <attribute-definition attribute-id="PayPalExpress_Pdp_Enabled">
+                <display-name xml:lang="x-default">Enable PayPal express on product detail page</display-name>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <default-value>true</default-value>
+            </attribute-definition>
             <attribute-definition attribute-id="PayPalExpress_ReviewPage_Enabled">
                 <display-name xml:lang="x-default">Enable PayPal express review page</display-name>
                 <type>boolean</type>
@@ -706,6 +712,14 @@
             <attribute-definition attribute-id="paypalExpressPaymentData">
                 <display-name xml:lang="x-default">paypalExpressPaymentData</display-name>
                 <description xml:lang="x-default">Paypal Express payment data for review page</description>
+                <type>text</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="partialPaymentOrderData">
+                <display-name xml:lang="x-default">partialPaymentOrderData</display-name>
+                <description xml:lang="x-default">Adyen order data when using giftcards</description>
                 <type>text</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>

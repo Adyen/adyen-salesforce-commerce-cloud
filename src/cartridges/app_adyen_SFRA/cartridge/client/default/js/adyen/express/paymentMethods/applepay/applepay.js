@@ -6,7 +6,13 @@ const { initializeCheckout } = require('../../initializeCheckout');
 const { createTemporaryBasket } = require('../../../commons');
 
 class ApplePay {
-  constructor(config, applicationInfo, adyenTranslations, isExpressPdp) {
+  constructor(
+    config,
+    applicationInfo,
+    adyenTranslations,
+    isExpressPdp,
+    initialAmount,
+  ) {
     const {
       basketAmount,
       showConfirmationAction,
@@ -16,7 +22,7 @@ class ApplePay {
     } = window;
     this.store = store;
     this.helpers = helpers;
-    this.amount = JSON.parse(basketAmount);
+    this.amount = initialAmount || JSON.parse(basketAmount);
     this.showPayButton = true;
     this.isExpress = true;
     this.isExpressPdp = isExpressPdp;
@@ -186,6 +192,9 @@ class ApplePay {
       isExpressPdp: this.isExpressPdp,
     });
     helpers.createShowConfirmationForm(this.showConfirmationAction);
+    if (this.isExpressPdp) {
+      this.helpers.setExpressRedirectUrl();
+    }
     helpers.setOrderFormData(response);
     if (document.querySelector('#additionalDetailsHidden')) {
       document.querySelector('#additionalDetailsHidden').value =
@@ -287,13 +296,35 @@ class ApplePay {
     };
   }
 
+  static async checkIfComponentIsAvailable(component) {
+    if (typeof component.isAvailable === 'function') {
+      try {
+        const isComponentAvailable = await component.isAvailable();
+        return isComponentAvailable;
+      } catch (error) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   async getComponent() {
     const checkout = await initializeCheckout(
       this.applicationInfo,
       this.translations,
     );
     const applePayConfig = this.getConfig();
-    return window.AdyenWeb.createComponent(APPLE_PAY, checkout, applePayConfig);
+    const component = window.AdyenWeb.createComponent(
+      APPLE_PAY,
+      checkout,
+      applePayConfig,
+    );
+    const isComponentAvailable =
+      await ApplePay.checkIfComponentIsAvailable(component);
+    if (isComponentAvailable !== false) {
+      return component;
+    }
+    return null;
   }
 }
 

@@ -53,7 +53,7 @@ export default class PaymentMethodsPage {
     }
 
     await payPalButton.click();
-    const popup = await popupPromise;	
+    const popup = await popupPromise;
 
     // Wait for the page load
     await popup.waitForNavigation({
@@ -108,7 +108,7 @@ export default class PaymentMethodsPage {
     }
     await this.page.waitForLoadState('domcontentloaded');
     await this.page.click(".adyen-checkout__amazonpay__button");
-  
+
     // Amazon Sandbox selectors
     this.emailInput = this.page.locator("#ap_email");
     this.passwordInput = this.page.locator("#ap_password");
@@ -116,9 +116,12 @@ export default class PaymentMethodsPage {
     this.changePaymentButton = this.page.locator("#change-payment-button");
     this.confirmPaymentChangeButton = this.page.locator("#a-autoid-8");
     this.amazonCaptcha = this.page.locator('#captcha-container');
+    this.continueButton = this.page.locator('.a-button-input');
+
 
     await this.emailInput.click();
     await this.emailInput.type(paymentData.AmazonPay.username);
+    await this.continueButton.click();
     await this.passwordInput.click();
     await this.passwordInput.type(paymentData.AmazonPay.password);
     await this.loginButton.click();
@@ -130,12 +133,12 @@ export default class PaymentMethodsPage {
 
     // Handles the saved 3DS2 Masstercard saved in Amazon Sandbox
     if (selectedCard == "3ds2_card") {
-      
+
       await this.changePaymentButton.click();
       await this.page.click(".MASTERCARD");
       await this.confirmPaymentChangeButton.click();
     }
-  
+
     if (!success) {
       await this.changePaymentButton.click();
       this.rejectionCard = this.page.locator(
@@ -149,7 +152,7 @@ export default class PaymentMethodsPage {
     await this.submitButton.waitFor({ state: 'visible' });
     await this.submitButton.click();
   };
-  
+
   continueAmazonExpressFlow = async () => {
     this.amazonCaptcha = this.page.locator('//img[contains(@alt,"captcha")]');
     this.confirmExpressPaymentButton = this.page.locator(
@@ -160,7 +163,7 @@ export default class PaymentMethodsPage {
     }
     await this.confirmExpressPaymentButton.click();
   };
-  
+
 
   initiateBillDeskPayment = async (paymentMethod) => {
     await this.page.locator(`#rb_${paymentMethod}`).click();
@@ -171,7 +174,7 @@ export default class PaymentMethodsPage {
     const dropDown = this.page.locator(
       `#component_${paymentMethod} .adyen-checkout__dropdown__button`,
     );
-    const issuer = this.page 
+    const issuer = this.page
       .locator(`#component_${paymentMethod} .adyen-checkout__dropdown__list li`)
       .first();
     await input.click();
@@ -187,11 +190,11 @@ export default class PaymentMethodsPage {
 
       success == true ? await this.page.locator("#component_upi input").fill("testvpa@icici")
         : await this.page.locator("#component_upi input").fill("notCorrectWillFail");
+      await continueButton.click();
     }
     if (paymentMethod == "upi_qr") {
-      await this.page.locator("#upi-button-qrCode").click();
+      await this.page.locator("#upi-area-qrCode button").click();
     }
-    await continueButton.click();
   };
 
 
@@ -207,6 +210,18 @@ export default class PaymentMethodsPage {
     await this.page.locator('button[id="bank-item-TESTNL2A"]').click();
     const actionButton = testSuccess ? this.page.getByRole('button', { name: 'Success', exact: true }) : this.page.getByRole('button', { name: 'Cancellation', exact: true });
     await actionButton.click();
+  };
+
+  fillInRivertyData = async (testSuccess) => {
+    if (testSuccess) {
+      await this.page.locator('input[id="birthDateInput"]').fill('01/01/1990');
+      await this.page.locator('r-button[id="payButton"]').click();
+    } else {
+      await this.page.locator('button[id="cancelPaymentButton"]').click();
+      await this.page
+        .locator('r-button[id="confirmCancelationButton"]')
+        .click();
+    }
   };
 
   submitBankSimulator = async () => {
@@ -271,7 +286,7 @@ export default class PaymentMethodsPage {
 
     await this.page.locator(".adyen-checkout__button--pay").click();
     await new Promise(r => setTimeout(r, 2000));
-    
+
     if (await this.page.locator(".adyen-checkout__button--pay").isVisible()){
 	    await this.page.locator(".adyen-checkout__button--pay").click();
     }

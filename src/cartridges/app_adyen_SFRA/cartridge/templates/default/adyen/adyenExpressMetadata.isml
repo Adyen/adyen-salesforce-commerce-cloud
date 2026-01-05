@@ -19,6 +19,7 @@
    window.showConfirmationAction = "${URLUtils.https('Adyen-ShowConfirmationPaymentFromComponent')}";
    window.returnUrl = "${URLUtils.https('Cart-Show')}";
    window.createTemporaryBasketUrl = "${URLUtils.https('Adyen-CreateTemporaryBasket')}";
+   window.productPriceCalculateUrl = "${URLUtils.https('Adyen-CalculatePrice')}";
    window.fractionDigits = "${AdyenHelper.getFractionDigits()}"
 
    window.expressMethodsOrder = "${AdyenConfigs.getExpressPaymentsOrder()}";
@@ -26,6 +27,7 @@
    window.isApplePayExpressOnPdpEnabled = "${AdyenConfigs.isApplePayExpressOnPdpEnabled()}";
    window.isAmazonPayExpressEnabled = "${AdyenConfigs.isAmazonPayExpressEnabled()}";
    window.isPayPalExpressEnabled = "${AdyenConfigs.isPayPalExpressEnabled()}";
+   window.isPayPalExpressOnPdpEnabled = "${AdyenConfigs.isPayPalExpressOnPdpEnabled()}";
    window.isPayPalExpressReviewPageEnabled = "${AdyenConfigs.isPayPalExpressReviewPageEnabled()}";
    window.isGooglePayExpressEnabled = "${AdyenConfigs.isGooglePayExpressEnabled()}";
    window.isGooglePayExpressOnPdpEnabled = "${AdyenConfigs.isGooglePayExpressOnPdpEnabled()}";

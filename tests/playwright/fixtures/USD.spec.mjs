@@ -164,7 +164,7 @@ for (const environment of environments) {
       await checkoutPage.expectRefusal();
     });
 
-    test('CashApp Renders', async ({page}) => {
+    test('CashApp Renders @quick', async ({page}) => {
       if (environment.name.indexOf('v5') !== -1) {
         await checkoutPage.setEmail();
       }
@@ -306,6 +306,13 @@ for (const environment of environments) {
         await checkoutPage.expectSuccess();
       }
       await expect(page.locator('.tax-total')).toContainText('$5.98');
+    });
+
+    test('PayPal Express PDP @quick', async ({page}) => {
+      checkoutPage = new environment.CheckoutPage(page);
+      await checkoutPage.navigateToPdp(regionsEnum.US);
+      redirectShopper = new RedirectShopper(page);
+      await redirectShopper.doPayPalPayment(true, false, true);
     });
 
     test('Google Pay Express @quick', async ({page}) => {

@@ -8,6 +8,63 @@ const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
 const hooksHelper = require('*/cartridge/scripts/helpers/hooks');
 const setErrorType = require('*/cartridge/adyen/logs/setErrorType');
 const { AdyenError } = require('*/cartridge/adyen/logs/adyenError');
+
+/**
+ * Validates basket products haven't changed
+ * @param {dw.order.Basket} currentBasket - the current basket
+ * @throws {AdyenError} if basket products have changed
+ */
+function validateBasketProducts(currentBasket) {
+  const productLines = currentBasket.getAllProductLineItems().toArray();
+  const productQuantity = currentBasket.getProductQuantityTotal();
+  const hashedProducts = AdyenHelper.getAdyenHash(
+    productLines,
+    productQuantity,
+  );
+  if (hashedProducts !== currentBasket.custom.adyenProductLineItems) {
+    throw new AdyenError(
+      'Basket products changed, cannot complete transaction',
+    );
+  }
+}
+
+/**
+ * Validates the order using hooks
+ * @param {dw.order.Basket} currentBasket - the current basket
+ * @throws {AdyenError} if validation fails
+ */
+function validateOrder(currentBasket) {
+  const validationOrderStatus = hooksHelper(
+    'app.validate.order',
+    'validateOrder',
+    currentBasket,
+    // eslint-disable-next-line global-require
+    require('*/cartridge/scripts/hooks/validateOrder').validateOrder,
+  );
+  if (validationOrderStatus.error) {
+    throw new AdyenError(validationOrderStatus.message);
+  }
+}
+
+/**
+ * Creates order from basket
+ * @param {dw.order.Basket} currentBasket - the current basket
+ * @returns {dw.order.Order} the created order
+ * @throws {AdyenError} if order creation fails
+ */
+function createOrderFromBasket(currentBasket) {
+  let order = null;
+  Transaction.wrap(() => {
+    order = OrderMgr.createOrder(
+      currentBasket,
+      session.privacy.paypalExpressOrderNo,
+    );
+  });
+  if (!order) {
+    throw new AdyenError('Order could not be created for paypal express');
+  }
+  return order;
+}
 /*
  * Makes a payment details call to Adyen to confirm the current status of a payment.
    It is currently used only for PayPal Express Flow
@@ -15,41 +72,14 @@ const { AdyenError } = require('*/cartridge/adyen/logs/adyenError');
 function makeExpressPaymentDetailsCall(req, res, next) {
   try {
     const request = JSON.parse(req.form.data);
-    const currentBasket = BasketMgr.getCurrentBasket();
-    const productLines = currentBasket.getAllProductLineItems().toArray();
-    const productQuantity = currentBasket.getProductQuantityTotal();
-    const hashedProducts = AdyenHelper.getAdyenHash(
-      productLines,
-      productQuantity,
-    );
-    if (hashedProducts !== currentBasket.custom.adyenProductLineItems) {
-      throw new AdyenError(
-        'Basket products changed, cannot complete transaction',
-      );
-    }
+    const { isExpressPdp } = request || {};
+    const currentBasket = isExpressPdp
+      ? BasketMgr.getTemporaryBasket(session.privacy.temporaryBasketId)
+      : BasketMgr.getCurrentBasket();
 
-    const validationOrderStatus = hooksHelper(
-      'app.validate.order',
-      'validateOrder',
-      currentBasket,
-      // eslint-disable-next-line global-require
-      require('*/cartridge/scripts/hooks/validateOrder').validateOrder,
-    );
-    if (validationOrderStatus.error) {
-      throw new AdyenError(validationOrderStatus.message);
-    }
-
-    // create order
-    let order = null;
-    Transaction.wrap(() => {
-      order = OrderMgr.createOrder(
-        currentBasket,
-        session.privacy.paypalExpressOrderNo,
-      );
-    });
-    if (!order) {
-      throw new AdyenError('Order could not be created for paypal express');
-    }
+    validateBasketProducts(currentBasket);
+    validateOrder(currentBasket);
+    const order = createOrderFromBasket(currentBasket);
 
     const response = adyenCheckout.doPaymentsDetailsCall(request.data);
 

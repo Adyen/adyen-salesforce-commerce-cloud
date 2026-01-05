@@ -81,7 +81,7 @@ for (const environment of environments) {
       await redirectShopper.doGiropayPayment(page);
       await checkoutPage.completeCheckout();
       await redirectShopper.completeGiropayRedirect(false);
-      await checkoutPage.expectRefusal() || test.skip();
+      (await checkoutPage.expectRefusal()) || test.skip();
     });
   });
 
@@ -90,8 +90,13 @@ for (const environment of environments) {
       await page.goto(`${environment.urlExtension}`);
       checkoutPage = new environment.CheckoutPage(page);
     });
-  
-    async function rivertyCheckoutFlow({ page, email, shopperDetails, expectSuccess = true }) {
+
+    async function rivertyCheckoutFlow({
+      page,
+      email,
+      shopperDetails,
+      expectSuccess = true,
+    }) {
       await checkoutPage.goToCheckoutPageWithFullCart(regionsEnum.DE, 1, email);
       await checkoutPage.setShopperDetails(shopperDetails);
 
@@ -102,7 +107,7 @@ for (const environment of environments) {
       redirectShopper = new RedirectShopper(page);
       await redirectShopper.doRivertyPayment(email);
       await checkoutPage.completeCheckout();
-
+      await redirectShopper.completeRivertyRedirect(expectSuccess);
       if (expectSuccess) {
         await checkoutPage.expectSuccess();
       } else {
@@ -115,7 +120,7 @@ for (const environment of environments) {
         page,
         email: shopperData.DERiverty.successShopperEmail,
         shopperDetails: shopperData.DERiverty,
-        expectSuccess: true,    
+        expectSuccess: true,
       });
     });
 
@@ -124,8 +129,8 @@ for (const environment of environments) {
         page,
         email: shopperData.DERiverty.refusalShopperEmail,
         shopperDetails: shopperData.DERiverty,
-        expectSuccess: false,    
+        expectSuccess: false,
       });
     });
-  }); 
+  });
 }

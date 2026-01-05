@@ -1,4 +1,5 @@
 const BasketMgr = require('dw/order/BasketMgr');
+const Transaction = require('dw/system/Transaction');
 const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
 const adyenCheckout = require('*/cartridge/adyen/scripts/payments/adyenCheckout');
 const AdyenConfigs = require('*/cartridge/adyen/utils/adyenConfigs');
@@ -41,15 +42,23 @@ function createPartialPaymentsOrder(req, res, next) {
       partialPaymentsRequest,
     );
 
-    // Cache order data to reuse at payments
-    session.privacy.partialPaymentData = JSON.stringify({
-      order: {
-        orderData: response?.orderData,
-        pspReference: response?.pspReference,
-      },
+    const partialPaymentAmounts = {
       remainingAmount: response?.remainingAmount,
       amount: orderAmount,
+    };
+    // Cache order data to reuse at payments
+    Transaction.wrap(() => {
+      currentBasket.custom.partialPaymentOrderData = JSON.stringify({
+        order: {
+          orderData: response?.orderData,
+          pspReference: response?.pspReference,
+        },
+        ...partialPaymentAmounts,
+      });
     });
+    session.privacy.partialPaymentAmounts = JSON.stringify(
+      partialPaymentAmounts,
+    );
 
     const responseData = {
       resultCode: response?.resultCode,
