@@ -20,6 +20,7 @@ function handleAdyenPaymentInstruments(paymentInstruments, customObj) {
     if (methodMatch || processorMatch) {
       foundAdyen = true;
       pi.paymentTransaction.custom.Adyen_log = customObj.custom.Adyen_log;
+      pi.paymentTransaction.custom.Adyen_merchantSig = null;
     }
   });
   return foundAdyen;
