@@ -18,7 +18,6 @@ function isNotAdyen(currentBasket) {
     (paymentInstrument) => {
       if (
         [
-          constants.METHOD_ADYEN,
           paymentInstrument.METHOD_CREDIT_CARD,
           constants.METHOD_ADYEN_POS,
           constants.METHOD_ADYEN_COMPONENT,
