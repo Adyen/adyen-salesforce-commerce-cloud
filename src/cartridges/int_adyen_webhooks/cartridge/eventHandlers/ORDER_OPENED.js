@@ -1,5 +1,5 @@
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
-const { isWebhookSuccessful } = require('../utils/webhookUtils');
+const { isWebhookSuccessful } = require('*/cartridge/utils/webhookUtils');
 
 function handle({ order, customObj }) {
   if (isWebhookSuccessful(customObj)) {

@@ -1,7 +1,7 @@
 const Order = require('dw/order/Order');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
-const { placeOrder } = require('../utils/paymentUtils');
-const { isWebhookSuccessful } = require('../utils/webhookUtils');
+const { placeOrder } = require('*/cartridge/utils/paymentUtils');
+const { isWebhookSuccessful } = require('*/cartridge/utils/webhookUtils');
 
 function handle({ order, customObj, totalAmount }) {
   // Placing the order for partial payments once ORDER_CLOSED webhook came, and the total amount matches order amount
