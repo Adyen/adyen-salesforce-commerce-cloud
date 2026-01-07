@@ -66,6 +66,7 @@ module.exports = {
 
   SERVICE: {
     PAYMENT: 'AdyenPayment',
+    PAYMENT_LINKS: 'AdyenPaymentLinks',
     PAYMENTDETAILS: 'AdyenPaymentDetails',
     RECURRING_DISABLE: 'AdyenRecurringDisable',
     POSPAYMENT: 'AdyenPosPayment',
