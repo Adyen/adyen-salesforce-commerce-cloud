@@ -21,4 +21,5 @@ module.exports = {
     PENDING: 'PENDING',
   },
   FRAUD_STATUS_AMBER: 'AMBER',
+  OMS_NAMESPACE: 'adyen_payment',
 };

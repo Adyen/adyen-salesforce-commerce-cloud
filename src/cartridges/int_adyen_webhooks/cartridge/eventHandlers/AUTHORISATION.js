@@ -137,9 +137,9 @@ function handle({ order, customObj, result, totalAmount }) {
         'Order sent for manual review in Adyen Customer Area',
       );
     } else {
-      handleCSCOrderProperties(order, customObj);
       handleFailedOrderRecovery(order, amountPaid, totalAmount);
       handleSuccessfulAuthorisation(order, result);
+      handleCSCOrderProperties(order, customObj);
     }
 
     updateOrderWithAdyenData(order, customObj, amountPaid);
