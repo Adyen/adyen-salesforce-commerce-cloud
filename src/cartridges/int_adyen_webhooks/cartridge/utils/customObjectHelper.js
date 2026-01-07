@@ -66,7 +66,7 @@ function setCustomObjectStatus(
  * @returns {string}
  */
 function createLogMessage(notificationData) {
-  const VERSION = '4d';
+  const VERSION = notificationData.version;
   let msg = '';
   msg = `AdyenNotification v ${VERSION}`;
   msg += '\n================================================================\n';

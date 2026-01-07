@@ -2,6 +2,7 @@
 const OrderMgr = require('dw/order/OrderMgr');
 const adyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
+const { createLogMessage } = require('./utils/customObjectHelper');
 
 /**
  * Extracts and processes the order ID from the custom object
@@ -132,27 +133,6 @@ function processEventHandler(order, customObj, result, totalAmount) {
   return false;
 }
 
-function createLogMessage(customObj) {
-  const VERSION = customObj.custom.version;
-  let msg = '';
-  msg = `AdyenNotification v ${VERSION} - Payment info (Called from : ${customObj.custom.httpRemoteAddress})`;
-  msg += '\n================================================================\n';
-  // msg = msg + "\nSessionID : " + args.CurrentSession.sessionID;
-  msg = `${msg}reason : ${customObj.custom.reason}`;
-  msg = `${msg}\neventDate : ${customObj.custom.eventDate}`;
-  msg = `${msg}\nmerchantReference : ${customObj.custom.merchantReference}`;
-  msg = `${msg}\ncurrency : ${customObj.custom.currency}`;
-  msg = `${msg}\npspReference : ${customObj.custom.pspReference}`;
-  msg = `${msg}\nmerchantAccountCode : ${customObj.custom.merchantAccountCode}`;
-  msg = `${msg}\neventCode : ${customObj.custom.eventCode}`;
-  msg = `${msg}\nvalue : ${customObj.custom.value}`;
-  msg = `${msg}\noperations : ${customObj.custom.operations}`;
-  msg = `${msg}\nsuccess : ${customObj.custom.success}`;
-  msg = `${msg}\npaymentMethod : ${customObj.custom.paymentMethod}`;
-  msg = `${msg}\nlive : ${customObj.custom.live}`;
-  return msg;
-}
-
 /**
  * Finalizes the order by updating PSP reference and adding notes
  * @param {Object} order - The order object
@@ -167,7 +147,10 @@ function finalizeOrder(order, customObj) {
     order.custom.Adyen_pspReference = customObj.custom.pspReference;
   }
   // Add a note with all details
-  order.addNote('Adyen Payment Notification', createLogMessage(customObj));
+  order.addNote(
+    'Adyen Payment Notification',
+    createLogMessage(customObj.custom),
+  );
   setProcessedCOInfo(customObj);
 }
 
