@@ -4,6 +4,7 @@ const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 const { placeOrder } = require('*/cartridge/utils/paymentUtils');
 const { isWebhookSuccessful } = require('*/cartridge/utils/webhookUtils');
 const constants = require('*/cartridge/utils/constants');
+const collections = require('*/cartridge/scripts/util/collections');
 
 /**
  * Handles duplicate callback when order is already paid
@@ -91,6 +92,28 @@ function updateOrderWithAdyenData(order, customObj, amountPaid) {
 }
 
 /**
+ * Handles CSC order properties
+ * @param {dw.order.Order} order - The order object
+ * @param {Object} customObj - Custom object from webhook
+ */
+function handleCSCOrderProperties(order, customObj) {
+  if (order.custom.Adyen_serviceChannel === 'CSC') {
+    order.custom.Adyen_pspReference = customObj.custom.pspReference;
+
+    const { paymentMethod } = customObj.custom;
+    order.custom.Adyen_paymentMethod = paymentMethod;
+    collections.forEach(order.getPaymentInstruments(), (pi) => {
+      pi.custom.adyenPaymentMethod = paymentMethod;
+      pi.custom[`${constants.OMS_NAMESPACE}__Adyen_Payment_Method`] =
+        paymentMethod;
+      pi.custom.Adyen_Payment_Method_Variant = paymentMethod;
+      pi.custom[`${constants.OMS_NAMESPACE}__Adyen_Payment_Method_Variant`] =
+        paymentMethod;
+    });
+  }
+}
+
+/**
  * Main handler for AUTHORISATION webhook events
  * @param {Object} params - Handler parameters
  * @param {dw.order.Order} params.order - The order object
@@ -114,6 +137,7 @@ function handle({ order, customObj, result, totalAmount }) {
         'Order sent for manual review in Adyen Customer Area',
       );
     } else {
+      handleCSCOrderProperties(order, customObj);
       handleFailedOrderRecovery(order, amountPaid, totalAmount);
       handleSuccessfulAuthorisation(order, result);
     }
