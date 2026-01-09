@@ -287,4 +287,13 @@
         <profile-id>Adyen</profile-id>
         <credential-id>AdyenAnalytics</credential-id>
     </service>
+<service service-id="AdyenPaymentLinks">
+        <service-type>HTTP</service-type>
+        <enabled>true</enabled>
+        <log-prefix>adyen</log-prefix>
+        <comm-log-enabled>true</comm-log-enabled>
+        <mock-mode-enabled>false</mock-mode-enabled>
+        <profile-id>Adyen</profile-id>
+        <credential-id>AdyenPaymentLinks</credential-id>
+    </service>
 </services>
