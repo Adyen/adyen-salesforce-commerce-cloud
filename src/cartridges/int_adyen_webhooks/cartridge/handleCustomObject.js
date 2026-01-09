@@ -101,7 +101,7 @@ function extractPendingStatus(handlerResult, eventCode) {
  * @param {Object} customObj - The custom object
  * @param {Object} result - The result object
  * @param {number} totalAmount - The total amount
- * @returns {boolean} The pending status from event processing
+ * @returns {Object} An object containing isHandled status and pending status
  */
 function processEventHandler(order, customObj, result, totalAmount) {
   // Handle all events using dedicated event handlers
@@ -117,7 +117,13 @@ function processEventHandler(order, customObj, result, totalAmount) {
         result,
         totalAmount,
       });
-      return extractPendingStatus(handlerResult, customObj.custom.eventCode);
+      return {
+        isHandled: true,
+        pending: extractPendingStatus(
+          handlerResult,
+          customObj.custom.eventCode,
+        ),
+      };
     }
   } catch (error) {
     // Handler module doesn't exist for this event type
@@ -130,7 +136,7 @@ function processEventHandler(order, customObj, result, totalAmount) {
   AdyenLogs.info_log(
     `Order ${order.orderNo} received unhandled status ${customObj.custom.eventCode}`,
   );
-  return false;
+  return { isHandled: false, pending: false };
 }
 
 /**
@@ -183,11 +189,18 @@ function handle(customObj) {
     order.getTotalGrossPrice(),
   ).value;
 
-  const pending = processEventHandler(order, customObj, result, totalAmount);
-  finalizeOrder(order, customObj);
+  const processingResult = processEventHandler(
+    order,
+    customObj,
+    result,
+    totalAmount,
+  );
+  if (processingResult.isHandled) {
+    finalizeOrder(order, customObj);
+  }
 
   result.status = PIPELET_NEXT;
-  result.Pending = pending;
+  result.Pending = processingResult.pending;
 
   return result;
 }
