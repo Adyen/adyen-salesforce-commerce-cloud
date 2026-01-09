@@ -287,7 +287,7 @@
         <profile-id>Adyen</profile-id>
         <credential-id>AdyenAnalytics</credential-id>
     </service>
-        <service service-id="AdyenPaymentLinks">
+<service service-id="AdyenPaymentLinks">
         <service-type>HTTP</service-type>
         <enabled>true</enabled>
         <log-prefix>adyen</log-prefix>
