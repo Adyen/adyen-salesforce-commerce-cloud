@@ -153,6 +153,14 @@ const adyenConfigsObj = {
     );
   },
 
+  areExpressPaymentsEnabledOnShipping() {
+    return (
+      this.isApplePayExpressOnShippingPageEnabled() ||
+      this.isGooglePayExpressOnShippingPageEnabled() ||
+      this.isPayPalExpressOnShippingPageEnabled()
+    );
+  },
+
   isApplePayExpressEnabled() {
     return getCustomPreference('ApplePayExpress_Enabled');
   },
@@ -161,12 +169,20 @@ const adyenConfigsObj = {
     return getCustomPreference('ApplePayExpress_Pdp_Enabled');
   },
 
+  isApplePayExpressOnShippingPageEnabled() {
+    return getCustomPreference('ApplePayExpress_ShippingPage_Enabled');
+  },
+
   isGooglePayExpressEnabled() {
     return getCustomPreference('GooglePayExpress_Enabled');
   },
 
   isGooglePayExpressOnPdpEnabled() {
     return getCustomPreference('GooglePayExpress_Pdp_Enabled');
+  },
+
+  isGooglePayExpressOnShippingPageEnabled() {
+    return getCustomPreference('GooglePayExpress_ShippingPage_Enabled');
   },
 
   isAmazonPayExpressEnabled() {
@@ -179,6 +195,10 @@ const adyenConfigsObj = {
 
   isPayPalExpressOnPdpEnabled() {
     return getCustomPreference('PayPalExpress_Pdp_Enabled');
+  },
+
+  isPayPalExpressOnShippingPageEnabled() {
+    return getCustomPreference('PayPalExpress_ShippingPage_Enabled');
   },
 
   isPayPalExpressReviewPageEnabled() {

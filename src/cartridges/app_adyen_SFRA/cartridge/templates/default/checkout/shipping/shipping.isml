@@ -1,0 +1,46 @@
+<isinclude template="adyen/adyenExpressMetadata" />
+<div id="express-container"></div>
+
+<div class="card ghost shipping">
+    <div class="card-header">
+        <h2 class="card-header-custom">${Resource.msg('heading.checkout.shipping', 'checkout', null)}</h2>
+    </div>
+</div>
+
+<div class="card shipping-section">
+    <div class="single-shipping">
+        <isset name="shippingModel" value="${pdict.order.shipping[0]}" scope="page" />
+        <isset name="shipmentLoopState" value="${null}" scope="page" />
+        <isset name="lineItem" value="${null}" scope="page" />
+        <div data-shipment-uuid="${shippingModel.UUID}">
+            <div class="card-header">
+                <h2 class="card-header-custom">${Resource.msg('heading.checkout.shipping', 'checkout', null)}</h2>
+            </div>
+
+            <div class="shipping-error"></div>
+
+            <isinclude template="checkout/shipping/multiShipCheckbox" />
+
+            <!-- Adyen Express: container moved to top of page -->
+
+            <isinclude template="checkout/shipping/shipmentCard" />
+        </div>
+    </div>
+
+    <div class="multi-shipping">
+        <isloop items="${pdict.order.shipping}" var="shippingModel" status="shipmentLoopState">
+            <isloop items="${shippingModel.productLineItems.items}" var="lineItem">
+                <div class="card" data-shipment-uuid="${shippingModel.UUID}">
+                    <div class="card-header">
+                        <isinclude template="checkout/productCard/productShippingCard" />
+                    </div>
+
+                    <isinclude template="checkout/shipping/shipmentCard" />
+                </div>
+            </isloop>
+        </isloop>
+    </div>
+</div>
+
+<!-- Adyen Express: load shipping express JS initializer -->
+<script src="${URLUtils.httpsStatic('/js/shippingExpressPayments.js')}" type="text/javascript"></script>

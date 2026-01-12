@@ -9,11 +9,14 @@
 
     window.isApplePayEnabled = ${AdyenConfigs.isApplePayExpressEnabled() || false};
     window.isApplePayExpressOnPdpEnabled = ${AdyenConfigs.isApplePayExpressOnPdpEnabled() || false};
+    window.isApplePayExpressOnShippingPageEnabled = ${AdyenConfigs.isApplePayExpressOnShippingPageEnabled() || false};
     window.isGooglePayEnabled = ${AdyenConfigs.isGooglePayExpressEnabled() || false};
     window.isGooglePayExpressOnPdpEnabled = ${AdyenConfigs.isGooglePayExpressOnPdpEnabled() || false};
+    window.isGooglePayExpressOnShippingPageEnabled = ${AdyenConfigs.isGooglePayExpressOnShippingPageEnabled() || false};
     window.isAmazonPayEnabled = ${AdyenConfigs.isAmazonPayExpressEnabled() || false};
     window.isPayPalExpressEnabled = ${AdyenConfigs.isPayPalExpressEnabled() || false};
     window.isPayPalExpressOnPdpEnabled = ${AdyenConfigs.isPayPalExpressOnPdpEnabled() || false};
+    window.isPayPalExpressOnShippingPageEnabled = ${AdyenConfigs.isPayPalExpressOnShippingPageEnabled() || false};
     window.isPayPalExpressReviewPageEnabled = ${AdyenConfigs.isPayPalExpressReviewPageEnabled() || false};
     window.expressMethodsOrder = "${AdyenConfigs.getExpressPaymentsOrder()}";
 </script>
