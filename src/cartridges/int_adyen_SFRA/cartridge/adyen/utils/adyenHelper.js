@@ -797,7 +797,7 @@ const adyenHelperObj = {
 
     applicationInfo.externalPlatform = {
       name: constants.EXTERNAL_PLATFORM_NAME,
-      version: constants.EXTERNAL_PLATFORM_VERSION,
+      version: AdyenConfigs.getAdyenSFRAVersion(),
       integrator: AdyenConfigs.getSystemIntegratorName(),
     };
 
