@@ -86,6 +86,17 @@ async function registerRenderPaymentMethodListener() {
   });
 }
 
+function assignPaymentMethodValue() {
+  const adyenPaymentMethod = document.querySelector('#adyenPaymentMethodName');
+  // if currently selected paymentMethod contains a brand it will be part of the label ID
+  const paymentMethodlabelId = `#lb_${store.selectedMethod}`;
+  if (adyenPaymentMethod) {
+    adyenPaymentMethod.value = store.brand
+      ? store.brand
+      : document.querySelector(paymentMethodlabelId)?.innerHTML;
+  }
+}
+
 function setAdyenInputValues() {
   const customMethods = {};
 
@@ -204,6 +215,7 @@ function submitPayment() {
       selectedPaymentOption === 'AdyenComponent' ||
       selectedPaymentOption === 'CREDIT_CARD'
     ) {
+      assignPaymentMethodValue();
       setAdyenInputValues();
       return showValidation();
     }

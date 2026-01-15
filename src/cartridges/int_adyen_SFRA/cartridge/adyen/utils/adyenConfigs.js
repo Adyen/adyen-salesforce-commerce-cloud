@@ -148,7 +148,16 @@ const adyenConfigsObj = {
   areExpressPaymentsEnabledOnPdp() {
     return (
       this.isApplePayExpressOnPdpEnabled() ||
-      this.isGooglePayExpressOnPdpEnabled()
+      this.isGooglePayExpressOnPdpEnabled() ||
+      this.isPayPalExpressOnPdpEnabled()
+    );
+  },
+
+  areExpressPaymentsEnabledOnShipping() {
+    return (
+      this.isApplePayExpressOnShippingPageEnabled() ||
+      this.isGooglePayExpressOnShippingPageEnabled() ||
+      this.isPayPalExpressOnShippingPageEnabled()
     );
   },
 
@@ -160,6 +169,10 @@ const adyenConfigsObj = {
     return getCustomPreference('ApplePayExpress_Pdp_Enabled');
   },
 
+  isApplePayExpressOnShippingPageEnabled() {
+    return getCustomPreference('ApplePayExpress_ShippingPage_Enabled');
+  },
+
   isGooglePayExpressEnabled() {
     return getCustomPreference('GooglePayExpress_Enabled');
   },
@@ -168,12 +181,24 @@ const adyenConfigsObj = {
     return getCustomPreference('GooglePayExpress_Pdp_Enabled');
   },
 
+  isGooglePayExpressOnShippingPageEnabled() {
+    return getCustomPreference('GooglePayExpress_ShippingPage_Enabled');
+  },
+
   isAmazonPayExpressEnabled() {
     return getCustomPreference('AmazonPayExpress_Enabled');
   },
 
   isPayPalExpressEnabled() {
     return getCustomPreference('PayPalExpress_Enabled');
+  },
+
+  isPayPalExpressOnPdpEnabled() {
+    return getCustomPreference('PayPalExpress_Pdp_Enabled');
+  },
+
+  isPayPalExpressOnShippingPageEnabled() {
+    return getCustomPreference('PayPalExpress_ShippingPage_Enabled');
   },
 
   isPayPalExpressReviewPageEnabled() {
@@ -217,6 +242,10 @@ const adyenConfigsObj = {
     const SFRAversion =
       Resource.msg('global.version.number', 'version', null) || '';
     return SFRAversion.split('.')[0] >= SFRA6;
+  },
+
+  getAdyenSFRAVersion() {
+    return Resource.msg('global.version.number', 'version', null) || 'unknown';
   },
 
   isAdyenAnalyticsEnabled() {

@@ -47,7 +47,7 @@ jobs:
       - name: Checkout SFRA code
         uses: actions/checkout@v3
         with:
-          repository: SalesforceCommerceCloud/storefront-reference-architecture
+          repository: AdyenAutomationBot/storefront-reference-architecture
           ref: ${{ inputs.sfra_version }}
           ssh-key: ${{ secrets.SERVICE_ACCOUNT_SSH_KEY }}
           path: storefront-reference-architecture
@@ -142,9 +142,3 @@ jobs:
           AMAZONPAY_PASSWORD: ${{ secrets.AMAZONPAY_PASSWORD }}
           SFRA_VERSION: ${{ inputs.sfra_version }}
           SFCC_HOSTNAME: ${{ secrets.SFCC_STOREFRONT_URL }}
-      - name: Archive test result artifacts
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: playwright-report
-          path: playwright-report

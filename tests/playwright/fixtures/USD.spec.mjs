@@ -308,6 +308,13 @@ for (const environment of environments) {
       await expect(page.locator('.tax-total')).toContainText('$5.98');
     });
 
+    test('PayPal Express PDP @quick', async ({page}) => {
+      checkoutPage = new environment.CheckoutPage(page);
+      await checkoutPage.navigateToPdp(regionsEnum.US);
+      redirectShopper = new RedirectShopper(page);
+      await redirectShopper.doPayPalPayment(true, false, true);
+    });
+
     test('Google Pay Express @quick', async ({page}) => {
       checkoutPage = new environment.CheckoutPage(page);
       await checkoutPage.addProductToCart(regionsEnum.US);
@@ -321,6 +328,16 @@ for (const environment of environments) {
       await checkoutPage.addProductToCart(regionsEnum.US);
       redirectShopper = new RedirectShopper(page);
       await redirectShopper.doGooglePayExpressPayment();
+    });
+
+    test('Express shipping buttons should be visible / not visible @quick', async ({page}) => {
+      checkoutPage = new environment.CheckoutPage(page);
+      await checkoutPage.addProductToCart();
+      await checkoutPage.navigateToCheckout(regionsEnum.US);
+      await expect(page.locator('#express-container')).toBeVisible();
+      await checkoutPage.setEmail();
+      await page.locator('.submit-customer').click();
+      await expect(page.locator('#express-container')).toBeHidden();
     });
   });
 }

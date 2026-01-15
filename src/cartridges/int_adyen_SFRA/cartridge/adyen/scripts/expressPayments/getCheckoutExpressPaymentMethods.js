@@ -62,6 +62,17 @@ function getCheckoutExpressPaymentMethods(req, res, next) {
         !!AdyenConfigs.isApplePayExpressOnPdpEnabled(),
       [constants.PAYMENTMETHODS.GOOGLEPAY]:
         !!AdyenConfigs.isGooglePayExpressOnPdpEnabled(),
+      [constants.PAYMENTMETHODS.PAYPAL]:
+        !!AdyenConfigs.isPayPalExpressOnPdpEnabled(),
+    };
+
+    const expressPaymentMethodsShipping = {
+      [constants.PAYMENTMETHODS.APPLEPAY]:
+        !!AdyenConfigs.isApplePayExpressOnShippingPageEnabled(),
+      [constants.PAYMENTMETHODS.GOOGLEPAY]:
+        !!AdyenConfigs.isGooglePayExpressOnShippingPageEnabled(),
+      [constants.PAYMENTMETHODS.PAYPAL]:
+        !!AdyenConfigs.isPayPalExpressOnShippingPageEnabled(),
     };
 
     const expressPaymentMethodsCart = {
@@ -85,6 +96,9 @@ function getCheckoutExpressPaymentMethods(req, res, next) {
       applicationInfo: AdyenHelper.getApplicationInfo(),
       cartExpressMethods: getExpressPaymentMethods(expressPaymentMethodsCart),
       pdpExpressMethods: getExpressPaymentMethods(expressPaymentMethodsPdp),
+      shippingExpressMethods: getExpressPaymentMethods(
+        expressPaymentMethodsShipping,
+      ),
     });
   } catch (error) {
     AdyenLogs.fatal_log('Failed to fetch express payment methods', error);

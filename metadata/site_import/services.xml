@@ -11,6 +11,16 @@
         <user-id></user-id>
         <password/>
     </service-credential>
+    <service-credential service-credential-id="AdyenPaymentLinks">
+        <url>https://checkout-test.adyen.com/checkout/[CHECKOUT_API_VERSION]/paymentLinks</url>
+        <user-id></user-id>
+        <password/>
+    </service-credential>
+    <service-credential service-credential-id="AdyenPaymentLinksLive">
+        <url>https://[YOUR_LIVE_PREFIX]-checkout-live.adyenpayments.com/checkout/[CHECKOUT_API_VERSION]/paymentLinks</url>
+        <user-id></user-id>
+        <password/>
+    </service-credential>
     <service-credential service-credential-id="AdyenPaymentDetails">
         <url>https://checkout-test.adyen.com/checkout/[CHECKOUT_API_VERSION]/payments/details</url>
         <user-id></user-id>
@@ -276,5 +286,14 @@
         <mock-mode-enabled>false</mock-mode-enabled>
         <profile-id>Adyen</profile-id>
         <credential-id>AdyenAnalytics</credential-id>
+    </service>
+<service service-id="AdyenPaymentLinks">
+        <service-type>HTTP</service-type>
+        <enabled>true</enabled>
+        <log-prefix>adyen</log-prefix>
+        <comm-log-enabled>true</comm-log-enabled>
+        <mock-mode-enabled>false</mock-mode-enabled>
+        <profile-id>Adyen</profile-id>
+        <credential-id>AdyenPaymentLinks</credential-id>
     </service>
 </services>

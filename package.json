@@ -1,6 +1,6 @@
 {
   "name": "app_adyen_SFRA",
-  "version": "25.5.0",
+  "version": "25.6.0",
   "description": "Adyen's official cartridge for SFRA",
   "main": "index.js",
   "paths": {
@@ -13,7 +13,7 @@
     "lint:fix": "eslint --ext js --fix src",
     "format": "prettier-eslint $PWD/src/**/*.js",
     "upload": "sgmf-scripts --upload -- ",
-    "uploadCartridge": "sgmf-scripts --uploadCartridge int_adyen_SFRA && sgmf-scripts --uploadCartridge app_adyen_SFRA && sgmf-scripts --uploadCartridge bm_adyen",
+    "uploadCartridge": "sgmf-scripts --uploadCartridge int_adyen_SFRA && sgmf-scripts --uploadCartridge app_adyen_SFRA && sgmf-scripts --uploadCartridge bm_adyen && sgmf-scripts --uploadCartridge int_adyen_webhooks",
     "watch": "sgmf-scripts --watch",
     "compile:js": "sgmf-scripts --compile js",
     "transpile": "babel ./src/cartridges -d ./cartridges --delete-dir-on-start --copy-files --no-copy-ignored --extensions .js,.test.js,.snap",
