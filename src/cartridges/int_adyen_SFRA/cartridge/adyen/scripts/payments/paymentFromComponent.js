@@ -12,6 +12,9 @@ const AdyenConfigs = require('*/cartridge/adyen/utils/adyenConfigs');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 const GiftCardsHelper = require('*/cartridge/adyen/utils/giftCardsHelper');
 const setErrorType = require('*/cartridge/adyen/logs/setErrorType');
+const {
+  cancelPartialPaymentOrderHelper,
+} = require('*/cartridge/adyen/scripts/partialPayments/cancelPartialPaymentOrder');
 
 const expressMethods = [
   constants.PAYMENTMETHODS.APPLEPAY,
@@ -130,6 +133,13 @@ function handleCancellation(res, next, reqDataObj) {
     reqDataObj.orderToken,
   );
   failOrder(order);
+  const currentBasket = BasketMgr.getCurrentBasket();
+  const giftCardsAdded = currentBasket.custom?.adyenGiftCards
+    ? JSON.parse(currentBasket.custom.adyenGiftCards)
+    : null;
+  if (giftCardsAdded) {
+    cancelPartialPaymentOrderHelper(currentBasket);
+  }
   res.redirect(URLUtils.url('Checkout-Begin', 'stage', 'placeOrder'));
   return next();
 }

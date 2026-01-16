@@ -12,9 +12,14 @@ function validateBasketAmount(currentBasket) {
   }
 }
 
+// eslint-disable-next-line complexity
 function validatePaymentDataFromRequest(req, res, next) {
   try {
-    const { isExpressPdp } = req.form?.data ? JSON.parse(req.form.data) : null;
+    const requestData = req.form?.data ? JSON.parse(req.form.data) : null;
+    if (requestData?.cancelTransaction) {
+      return next();
+    }
+    const { isExpressPdp } = requestData || {};
     const currentBasket = isExpressPdp
       ? BasketMgr.getTemporaryBasket(session.privacy.temporaryBasketId)
       : BasketMgr.getCurrentBasket();
