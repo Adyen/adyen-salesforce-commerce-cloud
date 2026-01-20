@@ -9,6 +9,8 @@ const constants = require('*/cartridge/adyen/config/constants');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 const bmHelper = require('*/cartridge/utils/helper');
 const managementApi = require('*/cartridge/scripts/managementApi');
+const analyticsConstants = require('*/cartridge/adyen/analytics/constants');
+const analyticsEvents = require('*/cartridge/adyen/analytics/analyticsEvents');
 
 server.get('Start', (_req, res, next) => {
   if (!csrfProtection.validateRequest()) {
@@ -26,6 +28,12 @@ server.post('Save', server.middleware.https, (req, res, next) => {
       Transaction.wrap(() => {
         AdyenConfigs.setCustomPreference(setting.key, setting.value);
       });
+      analyticsEvents.createConfigurationTimeEvent(
+        setting.key,
+        analyticsConstants.eventSource.CONFIGURATION_TIME,
+        analyticsConstants.eventType.EXPECTED_END,
+        analyticsConstants.eventCode.INFO,
+      );
     });
     res.json({
       success: true,
@@ -44,6 +52,12 @@ server.post('Save', server.middleware.https, (req, res, next) => {
 });
 
 server.post('TestConnection', server.middleware.https, (req, res, next) => {
+  analyticsEvents.createConfigurationTimeEvent(
+    analyticsConstants.eventReference.TEST_CONNECTION,
+    analyticsConstants.eventSource.CONFIGURATION_TIME,
+    analyticsConstants.eventType.EXPECTED_END,
+    analyticsConstants.eventCode.INFO,
+  );
   try {
     const service = AdyenHelper.getService(
       constants.SERVICE.CHECKOUTPAYMENTMETHODS,
