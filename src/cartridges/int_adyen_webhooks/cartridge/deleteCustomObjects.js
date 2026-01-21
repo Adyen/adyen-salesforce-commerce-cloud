@@ -31,7 +31,10 @@ function remove(co) {
   try {
     CustomObjectMgr.remove(co);
   } catch (error) {
-    AdyenLogs.error_log('Error occured during delete CO, ID: ${co.custom.orderId}, erorr message ${e.message}', error);
+    AdyenLogs.error_log(
+      `Error occured during delete CO, ID: ${co.custom.orderId}, erorr message ${error.message}`,
+      error,
+    );
   }
 }
 

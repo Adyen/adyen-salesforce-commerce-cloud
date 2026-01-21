@@ -1,12 +1,10 @@
 // Adyen constants
 
 module.exports = {
-  METHOD_ADYEN: 'Adyen',
   METHOD_ADYEN_POS: 'AdyenPOS',
   METHOD_ADYEN_COMPONENT: 'AdyenComponent',
   METHOD_CREDIT_CARD: 'CREDIT_CARD',
 
-  PAYMENT_INSTRUMENT_ADYEN_CREDIT: 'ADYEN_CREDIT',
   PAYMENT_INSTRUMENT_ADYEN_POS: 'Adyen_POS',
   PAYMENT_INSTRUMENT_ADYEN_COMPONENT: 'Adyen_Component',
   SCHEME: 'scheme',
@@ -68,6 +66,7 @@ module.exports = {
 
   SERVICE: {
     PAYMENT: 'AdyenPayment',
+    PAYMENT_LINKS: 'AdyenPaymentLinks',
     PAYMENTDETAILS: 'AdyenPaymentDetails',
     RECURRING_DISABLE: 'AdyenRecurringDisable',
     POSPAYMENT: 'AdyenPosPayment',
@@ -165,5 +164,5 @@ module.exports = {
 
   CHECKOUT_COMPONENT_VERSION: '6.21.0',
   CHECKOUT_API_VERSION: 'v71',
-  VERSION: '25.6.0',
+  VERSION: '26.1.0',
 };

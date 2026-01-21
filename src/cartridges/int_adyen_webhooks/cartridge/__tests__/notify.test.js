@@ -5,7 +5,7 @@ let res;
 let notify;
 
 beforeEach(() => {
-  const { adyen } = require('../../../controllers/middlewares/index');
+  const { adyen } = require('../../../int_adyen_SFRA/cartridge/controllers/middlewares/index');
   notify = adyen.notify;
   jest.clearAllMocks();
   req = {};
@@ -18,19 +18,19 @@ afterEach(() => {
 
 describe('Notify', () => {
   it('should render error when status is falsy', () => {
-    const checkAuth = require('*/cartridge/adyen/webhooks/checkNotificationAuth');
+    const checkAuth = require('*/cartridge/checkNotificationAuth');
     checkAuth.check.mockImplementation(() => false);
     notify(req, res, jest.fn());
     expect(res.render).toHaveBeenCalledWith('/adyen/error');
   });
   it('should render notify when notification result is successful', () => {
-    const handleNotify = require('*/cartridge/adyen/webhooks/handleNotify');
+    const handleNotify = require('*/cartridge/handleNotify');
     handleNotify.notify.mockImplementation(() => ({ success: true }));
     notify(req, res, jest.fn());
     expect(res.render).toHaveBeenCalledWith('/notify');
   });
   it('should render notifyError when notification result is not successful', () => {
-    const handleNotify = require('*/cartridge/adyen/webhooks/handleNotify');
+    const handleNotify = require('*/cartridge/handleNotify');
     handleNotify.notify.mockImplementation(() => ({
       success: false,
       errorMessage: 'mocked_error_message',

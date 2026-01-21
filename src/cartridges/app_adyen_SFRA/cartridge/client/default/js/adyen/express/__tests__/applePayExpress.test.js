@@ -220,7 +220,9 @@ describe('ApplePay class', () => {
   it('should get component correctly', async () => {
     const initializeCheckout = jest.fn();
     initializeCheckout.mockResolvedValueOnce({});
-    window.AdyenWeb.createComponent.mockReturnValueOnce({});
+    window.AdyenWeb.createComponent.mockReturnValueOnce({
+      isAvailable: jest.fn().mockReturnValue(true),
+    });
 
     await applePay.getComponent();
     expect(window.AdyenWeb.createComponent).toHaveBeenCalledTimes(1);

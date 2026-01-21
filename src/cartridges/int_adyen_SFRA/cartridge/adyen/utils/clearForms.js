@@ -11,7 +11,7 @@ function clearCustomSessionFields() {
   session.privacy.adyenIssuerName = null;
   session.privacy.ratePayFingerprint = null;
   session.privacy.giftCardResponse = null;
-  session.privacy.partialPaymentData = null;
+  session.privacy.partialPaymentAmounts = null;
   session.privacy.amazonExpressShopperDetail = null;
   session.privacy.giftCardBalance = null;
   session.privacy.temporaryBasketId = null;
@@ -45,6 +45,7 @@ function clearAdyenBasketData(basket) {
     Transaction.wrap(() => {
       basket.custom.adyenGiftCards = null;
       basket.custom.adyenGiftCardsOrderNo = null;
+      basket.custom.partialPaymentOrderData = null;
     });
   }
 }

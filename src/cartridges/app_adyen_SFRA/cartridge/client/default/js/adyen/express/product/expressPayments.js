@@ -11,6 +11,55 @@ const {
 const { httpClient } = require('../../commons/httpClient');
 const { ApplePay, GooglePay, Paypal } = require('../paymentMethods');
 
+function findCurrentProductIdFromDom() {
+  const pidFromAttr = document
+    .querySelector('[data-pid]')
+    ?.getAttribute('data-pid');
+  if (pidFromAttr) return pidFromAttr;
+  return document
+    .querySelector('#selected-express-product')
+    ?.getAttribute('data-pid');
+}
+
+function buildFallbackProduct() {
+  const id = findCurrentProductIdFromDom();
+  const readyToOrderData = $('.global-availability').data('ready-to-order');
+  const availableData = $('.global-availability').data('available');
+  return {
+    id,
+    readyToOrder: readyToOrderData !== undefined ? readyToOrderData : true,
+    available: availableData !== undefined ? availableData : true,
+  };
+}
+
+async function fetchInitialProductVariation(dataUrl) {
+  return httpClient({ url: dataUrl, method: 'GET' });
+}
+
+async function renderInitialExpress(paymentMethodsResponse) {
+  $.spinner().start();
+  const dataUrl = $('.quantity-select').find('option:selected').data('url');
+  if (dataUrl) {
+    const productVariation = await fetchInitialProductVariation(dataUrl);
+    if (productVariation?.product) {
+      $('body').trigger('product:renderExpressPaymentContainer', {
+        product: productVariation.product,
+        paymentMethodsResponse,
+      });
+      $.spinner().stop();
+      return;
+    }
+  }
+  const fallbackProduct = buildFallbackProduct();
+  if (fallbackProduct.id) {
+    $('body').trigger('product:renderExpressPaymentContainer', {
+      product: fallbackProduct,
+      paymentMethodsResponse,
+    });
+  }
+  $.spinner().stop();
+}
+
 function getProductForm(product) {
   const $productInputEl = document.createElement('input');
   $productInputEl.setAttribute('id', 'selected-express-product');
@@ -222,19 +271,7 @@ async function init() {
       });
     });
     $(document).ready(async () => {
-      $.spinner().start();
-      const dataUrl = $('.quantity-select').find('option:selected').data('url');
-      const productVariation = await httpClient({
-        url: dataUrl,
-        method: 'GET',
-      });
-      if (productVariation?.product) {
-        $('body').trigger('product:renderExpressPaymentContainer', {
-          product: productVariation?.product,
-          paymentMethodsResponse,
-        });
-      }
-      $.spinner().stop();
+      await renderInitialExpress(paymentMethodsResponse);
     });
   }
 }

@@ -44,6 +44,14 @@
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
             </attribute-definition>
+            <attribute-definition attribute-id="Adyen_serviceChannel">
+                <display-name xml:lang="x-default">Adyen service channel used (SFRA/CSC)</display-name>
+                <description xml:lang="x-default">Service channel used to authorize the payment</description>
+                <type>text</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
         </custom-attribute-definitions>
         <group-definitions>
             <attribute-group group-id="AdyenPayments">
@@ -54,6 +62,7 @@
                 <attribute attribute-id="Adyen_value"/>
                 <attribute attribute-id="Adyen_donationAmount"/>
                 <attribute attribute-id="Adyen_paypalExpressResponse"/>
+                <attribute attribute-id="Adyen_serviceChannel"/>
             </attribute-group>
         </group-definitions>
     </type-extension>
@@ -326,7 +335,6 @@
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
-                <default-value>oj9GsQ</default-value>
             </attribute-definition>
             <attribute-definition attribute-id="AdyenOneClickEnabled">
                 <display-name xml:lang="x-default">Store shopper details: one-click</display-name>
@@ -531,6 +539,13 @@
                 <externally-managed-flag>false</externally-managed-flag>
                 <default-value>true</default-value>
             </attribute-definition>
+            <attribute-definition attribute-id="ApplePayExpress_ShippingPage_Enabled">
+                <display-name xml:lang="x-default">Enable Apple Pay express on shipping page</display-name>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <default-value>true</default-value>
+            </attribute-definition>
             <attribute-definition attribute-id="AmazonPayExpress_Enabled">
                 <display-name xml:lang="x-default">Enable Amazon Pay express checkout</display-name>
                 <type>boolean</type>
@@ -552,6 +567,13 @@
                 <externally-managed-flag>false</externally-managed-flag>
                 <default-value>true</default-value>
             </attribute-definition>
+            <attribute-definition attribute-id="GooglePayExpress_ShippingPage_Enabled">
+                <display-name xml:lang="x-default">Enable Google Pay express on shipping page</display-name>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <default-value>true</default-value>
+            </attribute-definition>
             <attribute-definition attribute-id="PayPalExpress_Enabled">
                 <display-name xml:lang="x-default">Enable PayPal express checkout</display-name>
                 <type>boolean</type>
@@ -561,6 +583,13 @@
             </attribute-definition>
             <attribute-definition attribute-id="PayPalExpress_Pdp_Enabled">
                 <display-name xml:lang="x-default">Enable PayPal express on product detail page</display-name>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <default-value>true</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="PayPalExpress_ShippingPage_Enabled">
+                <display-name xml:lang="x-default">Enable PayPal express on shipping page</display-name>
                 <type>boolean</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
@@ -667,11 +696,14 @@
                 <attribute attribute-id="ExpressPayments_order"/>
                 <attribute attribute-id="ApplePayExpress_Enabled"/>
                 <attribute attribute-id="ApplePayExpress_Pdp_Enabled"/>
+                <attribute attribute-id="ApplePayExpress_ShippingPage_Enabled"/>
                 <attribute attribute-id="AmazonPayExpress_Enabled"/>
                 <attribute attribute-id="PayPalExpress_Enabled"/>
                 <attribute attribute-id="PayPalExpress_ReviewPage_Enabled"/>
+                <attribute attribute-id="PayPalExpress_ShippingPage_Enabled"/>
                 <attribute attribute-id="GooglePayExpress_Enabled"/>
                 <attribute attribute-id="GooglePayExpress_Pdp_Enabled"/>
+                <attribute attribute-id="GooglePayExpress_ShippingPage_Enabled"/>
                 <attribute attribute-id="AdyenAnalytics_Enabled"/>
             </attribute-group>
         </group-definitions>
@@ -713,6 +745,14 @@
             <attribute-definition attribute-id="paypalExpressPaymentData">
                 <display-name xml:lang="x-default">paypalExpressPaymentData</display-name>
                 <description xml:lang="x-default">Paypal Express payment data for review page</description>
+                <type>text</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="partialPaymentOrderData">
+                <display-name xml:lang="x-default">partialPaymentOrderData</display-name>
+                <description xml:lang="x-default">Adyen order data when using giftcards</description>
                 <type>text</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
