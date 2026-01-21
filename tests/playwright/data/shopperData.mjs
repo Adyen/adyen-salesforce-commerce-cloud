@@ -133,7 +133,7 @@ export class ShopperData {
       street: 'Arapahoe',
       houseNumberOrName: '1001',
     },
-    password: '12qw!@QW',
+    // password: '12qw!@QW', // Removed hardcoded password
   };
   USAccountTestUser = {
     shopperName: {
@@ -150,7 +150,7 @@ export class ShopperData {
       street: 'AL-5',
       houseNumberOrName: '18285',
     },
-    password: '12qw!@QW',
+    // password: '12qw!@QW', // Removed hardcoded password
   };
   BR = {
     shopperName: {
