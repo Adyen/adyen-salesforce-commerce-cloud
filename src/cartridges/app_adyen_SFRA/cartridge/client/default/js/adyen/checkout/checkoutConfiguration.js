@@ -27,6 +27,7 @@ const actionHandler = async (action) => {
 };
 
 async function handleOnAdditionalDetails(state) {
+  $('#action-container').spinner().start();
   const requestData = JSON.stringify({
     data: state.data,
     orderToken: window.orderToken,
@@ -44,6 +45,7 @@ async function handleOnAdditionalDetails(state) {
   } else {
     window.location.href = data.redirectUrl;
   }
+  $('#action-container').spinner().stop();
 }
 
 async function setCheckoutConfiguration({ email, paymentMethodsResponse }) {
