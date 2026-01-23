@@ -16,9 +16,7 @@ const store = require('../../../../../../config/store');
 const helpers = require('../helpers');
 const { httpClient } = require('../../commons/httpClient');
 
-function getPaymentMethodsConfiguration(email, paymentMethodsResponse) {
-  const { amount, AdyenPaymentMethods } = paymentMethodsResponse;
-
+function getPaymentMethodsConfiguration(email, amount, AdyenPaymentMethods) {
   const cardConfig = new CardConfig(store, helpers, email, amount).getConfig();
   const storedCardConfig = new StoredCardConfig(store, helpers).getConfig();
   const bcmcConfig = new BcmcConfig(store, helpers).getConfig();
