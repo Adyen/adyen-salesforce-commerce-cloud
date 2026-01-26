@@ -64,7 +64,7 @@ async function renderGiftCardsIfEnabled() {
 
 async function registerRenderPaymentMethodListener() {
   $('body').on('checkout:renderPaymentMethod', async (e, response) => {
-    const { email } = response;
+    const { email, amount } = response;
     const { showFastlane, shopperEmail } = paymentMethodsResponse;
     const { fastlane } = store;
 
@@ -75,6 +75,7 @@ async function registerRenderPaymentMethodListener() {
     await setCheckoutConfiguration({
       email,
       paymentMethodsResponse,
+      amount,
     });
     await renderCheckout(paymentMethodsResponse);
     await renderGiftCardsIfEnabled();

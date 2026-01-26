@@ -204,6 +204,10 @@ class GiftCardConfig {
         sessionStorage.setItem('partialPaymentsObj', JSON.stringify(rest));
         this.store.addedGiftCards = giftCards;
         this.helpers.setOrderFormData(response);
+        $('body').trigger('checkout:renderPaymentMethod', {
+          email: null,
+          amount: rest.remainingAmount,
+        });
         resolve();
       }
     });

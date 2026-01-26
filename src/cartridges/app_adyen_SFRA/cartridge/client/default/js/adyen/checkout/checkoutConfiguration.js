@@ -48,17 +48,17 @@ async function handleOnAdditionalDetails(state) {
   $('#action-container').spinner().stop();
 }
 
-async function setCheckoutConfiguration({ email, paymentMethodsResponse }) {
-  const {
-    amount,
-    countryCode,
-    AdyenPaymentMethods,
-    imagePath,
-    adyenTranslations,
-  } = paymentMethodsResponse;
+async function setCheckoutConfiguration({
+  email,
+  paymentMethodsResponse,
+  amount,
+}) {
+  const { countryCode, AdyenPaymentMethods, imagePath, adyenTranslations } =
+    paymentMethodsResponse;
   const paymentMethodsConfiguration = getPaymentMethodsConfiguration(
     email,
-    paymentMethodsResponse,
+    amount || paymentMethodsResponse.amount,
+    paymentMethodsResponse.AdyenPaymentMethods,
   );
   store.checkoutConfiguration = {
     ...store.checkoutConfiguration,
@@ -67,7 +67,7 @@ async function setCheckoutConfiguration({ email, paymentMethodsResponse }) {
     onAdditionalDetails: handleOnAdditionalDetails,
     clientKey: window.adyenClientKey,
     translations: adyenTranslations,
-    amount,
+    amount: paymentMethodsResponse.amount,
     countryCode,
     paymentMethodsResponse: {
       ...AdyenPaymentMethods,
