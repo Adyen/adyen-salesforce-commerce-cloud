@@ -130,6 +130,47 @@ async function initializeCardComponent() {
   await initializeCardComponent();
 })();
 
+document.addEventListener('DOMContentLoaded', function() {
+    const tabs = Array.from(document.querySelectorAll('.adyen-tab'));
+
+    function activateTab(tab) {
+        tabs.forEach(t => {
+            t.setAttribute('aria-selected', 'false');
+            t.setAttribute('tabindex', '-1');
+            t.classList.remove('active'); // Remove active class for styling if used
+        });
+        tab.setAttribute('aria-selected', 'true');
+        tab.setAttribute('tabindex', '0');
+        tab.classList.add('active'); // Add active class for styling if used
+        tab.focus();
+    }
+
+    tabs.forEach(tab => {
+        // Click handler
+        tab.addEventListener('click', function(e) {
+            e.preventDefault();
+            activateTab(this);
+        });
+
+        // Keyboard handler
+        tab.addEventListener('keydown', function(e) {
+            let idx = tabs.indexOf(document.activeElement);
+            if (e.key === 'ArrowRight' || e.key === 'Right') {
+                let next = tabs[(idx + 1) % tabs.length];
+                activateTab(next);
+            } else if (e.key === 'ArrowLeft' || e.key === 'Left') {
+                let prev = tabs[(idx - 1 + tabs.length) % tabs.length];
+                activateTab(prev);
+            }
+        });
+    });
+
+    // Optionally, activate the first tab on page load
+    if (tabs.length > 0) {
+        activateTab(tabs[0]);
+    }
+});
+
 module.exports = {
   initializeCardComponent,
   handleAction,
