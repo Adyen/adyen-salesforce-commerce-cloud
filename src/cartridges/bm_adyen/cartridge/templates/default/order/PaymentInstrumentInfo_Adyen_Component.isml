@@ -12,6 +12,11 @@
 		var adyenAction = JSON.parse(paymentInstrument.custom.adyenAction);
 		var adyenPaymentMethod = paymentInstrument.custom.adyenPaymentMethod;
 	}
+	var mode : String = dw.system.Site.getCurrent().getCustomPreferenceValue("Adyen_Mode");
+	var urlPrefixType : String = 'test';
+	if (mode == 'LIVE') {
+		urlPrefixType = 'live';
+	}
 </isscript>
 <BR><BR>
 
@@ -26,22 +31,32 @@
 		</tr>
 	</thead>
 	<tbody>
-		<tr>
-		    <td class='infobox_title'>PSP reference</td>
-		    <td class='infobox_item'>
-		        <isscript>
-	                    var mode : String = dw.system.Site.getCurrent().getCustomPreferenceValue("Adyen_Mode");
-	                    var urlPrefixType : String = 'test';
-	                    if (mode == 'LIVE') {
-	                        urlPrefixType = 'live';
-	                    }
-			</isscript>
-			<A target='new' HREF='https://ca-${urlPrefixType}.adyen.com/ca/ca/accounts/showTx.shtml?pspReference=${order.custom.Adyen_pspReference}&txType=Payment'>
-			    <isprint value="${order.custom.Adyen_pspReference}">
-	                </A>
-	            </td>
-	        </tr>
-		<tr><td class='infobox_title'>Payment Method</td><td class='infobox_item'><isprint value="${order.custom.Adyen_paymentMethod}"></td></tr>
+		<isif condition="${order.getPaymentInstruments().size() > 1}">
+			<isloop items="${order.getPaymentInstruments()}" var="paymentInstrument" status="piStatus">
+				<tr>
+					<isif condition="${paymentInstrument.paymentTransaction.custom.Adyen_pspReference != null}">
+						<td class='infobox_title'>PSP reference</td>
+						<td class='infobox_item'>
+							<A target='new' HREF='https://ca-${urlPrefixType}.adyen.com/ca/ca/accounts/showTx.shtml?pspReference=${paymentInstrument.paymentTransaction.custom.Adyen_pspReference}&txType=Payment'>
+								<isprint value="${paymentInstrument.paymentTransaction.custom.Adyen_pspReference}">
+							</A>
+						</td>
+						<td class='infobox_item'><isprint value="${paymentInstrument.custom.adyenPaymentMethod}"></td>
+					</isif>
+				</tr>
+			</isloop>
+		<iselse/>
+			<tr>
+				<td class='infobox_title'>PSP reference</td>
+				<td class='infobox_item'>
+					<A target='new' HREF='https://ca-${urlPrefixType}.adyen.com/ca/ca/accounts/showTx.shtml?pspReference=${order.custom.Adyen_pspReference}&txType=Payment'>
+						<isprint value="${order.custom.Adyen_pspReference}">
+					</A>
+				</td>
+			</tr>
+			<tr><td class='infobox_title'>Payment Method</td><td class='infobox_item'><isprint value="${order.custom.Adyen_paymentMethod}"></td></tr>
+		</isif>
+		
 		<tr><td class='infobox_title'>Eventcode</td><td class='infobox_item'><isprint value="${order.custom.Adyen_eventCode}"></td></tr>
 		<isif condition="${adyenAdditionalPaymentData != null}">
 			<isloop items="${adyenAdditionalPaymentData}" var="additionalItem" status="loopstate">
