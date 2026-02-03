@@ -201,7 +201,7 @@ for (const environment of environments) {
       await checkoutPage.expectRefusal();
     });
 
-    test.skip('co-branded BCMC/Maestro oneClick test success', async () => {
+    test('co-branded BCMC/Maestro oneClick test success', async () => {
       await cards.doCardPaymentOneclick(cardData.coBrandedBCMC);
       await checkoutPage.completeCheckoutLoggedInUser();
       await cards.do3Ds2Verification();
@@ -331,6 +331,7 @@ for (const environment of environments) {
     });
 
     test('Express shipping buttons should be visible / not visible @quick', async ({page}) => {
+      test.skip(environment.name.indexOf('v5') !== -1, 'Test not applicable for SFRA5');
       checkoutPage = new environment.CheckoutPage(page);
       await checkoutPage.addProductToCart();
       await checkoutPage.navigateToCheckout(regionsEnum.US);
