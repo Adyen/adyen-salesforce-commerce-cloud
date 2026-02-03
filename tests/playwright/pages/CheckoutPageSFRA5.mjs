@@ -106,6 +106,7 @@ export default class CheckoutPageSFRA5 {
     await this.successMessage.waitFor({ visible: true });
 
     await this.navigateToCheckout(locale);
+    await this.page.waitForLoadState('networkidle');
     await this.checkoutGuest.click();
   };
 
