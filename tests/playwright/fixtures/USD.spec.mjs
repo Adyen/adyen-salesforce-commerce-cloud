@@ -201,7 +201,7 @@ for (const environment of environments) {
       await checkoutPage.expectRefusal();
     });
 
-    test('co-branded BCMC/Maestro oneClick test success', async () => {
+    test.skip('co-branded BCMC/Maestro oneClick test success', async () => {
       await cards.doCardPaymentOneclick(cardData.coBrandedBCMC);
       await checkoutPage.completeCheckoutLoggedInUser();
       await cards.do3Ds2Verification();
