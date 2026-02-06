@@ -331,6 +331,7 @@ for (const environment of environments) {
     });
 
     test('Express shipping buttons should be visible / not visible @quick', async ({page}) => {
+      test.skip(environment.name.indexOf('v5') !== -1, 'Test not applicable for SFRA5');
       checkoutPage = new environment.CheckoutPage(page);
       await checkoutPage.addProductToCart();
       await checkoutPage.navigateToCheckout(regionsEnum.US);
