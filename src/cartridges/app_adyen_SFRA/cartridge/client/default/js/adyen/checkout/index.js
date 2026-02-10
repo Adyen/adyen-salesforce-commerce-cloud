@@ -294,6 +294,18 @@ function handlePaymentAction() {
       await overridePlaceOrderRequest(settings.url);
     }
   });
+
+  $(document).ajaxComplete(async (event, xhr, settings) => {
+    const isSelectShippingMethod =
+      settings.url &&
+      settings.url.includes('CheckoutShippingServices-SelectShippingMethod');
+    if (isSelectShippingMethod && xhr.status === 200) {
+      paymentMethodsResponse = await getPaymentMethods();
+      $('body').trigger('checkout:renderPaymentMethod', {
+        email: paymentMethodsResponse.shopperEmail,
+      });
+    }
+  });
 }
 
 function registerUpdateCheckoutView() {

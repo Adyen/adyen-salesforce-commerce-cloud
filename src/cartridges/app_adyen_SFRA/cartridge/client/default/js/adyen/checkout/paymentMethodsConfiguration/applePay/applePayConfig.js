@@ -1,8 +1,9 @@
 class ApplePayConfig {
-  constructor(helpers) {
+  constructor(helpers, amount) {
     this.showPayButton = true;
     this.buttonColor = 'black';
     this.helpers = helpers;
+    this.amount = amount;
   }
 
   // eslint-disable-next-line class-methods-use-this
@@ -33,6 +34,7 @@ class ApplePayConfig {
     return {
       showPayButton: this.showPayButton,
       buttonColor: this.buttonColor,
+      amount: this.amount,
       onAuthorized: this.onAuthorized,
       onSubmit: this.onSubmit,
     };
