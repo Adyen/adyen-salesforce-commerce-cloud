@@ -205,7 +205,7 @@ class GiftCardConfig {
         this.store.addedGiftCards = giftCards;
         this.helpers.setOrderFormData(response);
         $('body').trigger('checkout:renderPaymentMethod', {
-          email: null,
+          email: document.querySelector('.customer-summary-email')?.textContent,
           amount: rest.remainingAmount,
         });
         resolve();

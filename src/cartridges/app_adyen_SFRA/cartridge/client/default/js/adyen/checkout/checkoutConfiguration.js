@@ -67,7 +67,7 @@ async function setCheckoutConfiguration({
     onAdditionalDetails: handleOnAdditionalDetails,
     clientKey: window.adyenClientKey,
     translations: adyenTranslations,
-    amount: paymentMethodsResponse.amount,
+    amount: amount || paymentMethodsResponse.amount,
     countryCode,
     paymentMethodsResponse: {
       ...AdyenPaymentMethods,
