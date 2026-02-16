@@ -43,6 +43,7 @@ function recreateBasketAfterKlarnaPayment(req, res, next) {
       if (isKlarnaPayment) {
         Transaction.wrap(() => {
           OrderMgr.failOrder(order, true);
+          session.privacy.orderNo = null;
         });
       }
     }
