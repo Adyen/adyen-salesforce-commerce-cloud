@@ -38,12 +38,9 @@ function checkIsKlarnaPayment(order) {
 function recreateBasketAfterKlarnaPayment(req, res, next) {
   try {
     if (session.privacy.orderNo) {
-      AdyenLogs.info_log(session.privacy.orderNo);
       const order = OrderMgr.getOrder(session.privacy.orderNo);
       const isKlarnaPayment = checkIsKlarnaPayment(order);
-      AdyenLogs.info_log(isKlarnaPayment);
       if (isKlarnaPayment) {
-        AdyenLogs.info_log('recreate order');
         Transaction.wrap(() => {
           OrderMgr.failOrder(order, true);
         });

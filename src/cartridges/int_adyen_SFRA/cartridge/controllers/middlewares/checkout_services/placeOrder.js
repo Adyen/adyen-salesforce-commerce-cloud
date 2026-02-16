@@ -25,7 +25,6 @@ function placeOrder(req, res, next) {
 
     const currentBasket = BasketMgr.getCurrentBasket();
     if (!currentBasket) {
-      AdyenLogs.info_log('no basket')
         res.json({
             error: true,
             cartError: true,
