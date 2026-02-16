@@ -1,15 +1,19 @@
+const OrderMgr = require('dw/order/OrderMgr');
+const URLUtils = require('dw/web/URLUtils');
+const Transaction = require('dw/system/Transaction');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
+const setErrorType = require('*/cartridge/adyen/logs/setErrorType');
 
 /**
- * Checks if the payment instrument in the basket is a Klarna payment
- * @param {dw.order.Basket} basket - The current basket
+ * Checks if the payment instrument in the order contains a Klarna payment
+ * @param {dw.order.Order} order - The previous order
  * @returns {boolean} - True if the payment instrument is Klarna
  */
-function checkIsKlarnaPayment(basket) {
-  if (!basket) {
+function checkIsKlarnaPayment(order) {
+  if (!order) {
     return false;
   }
-  const paymentInstruments = basket.getPaymentInstruments().toArray();
+  const paymentInstruments = order.getPaymentInstruments().toArray();
   if (!paymentInstruments.length) {
     return false;
   }
@@ -31,6 +35,29 @@ function checkIsKlarnaPayment(basket) {
   });
 }
 
+function recreateBasketAfterKlarnaPayment(req, res, next) {
+  try {
+    if (session.privacy.orderNo) {
+      AdyenLogs.info_log(session.privacy.orderNo);
+      const order = OrderMgr.getOrder(session.privacy.orderNo);
+      const isKlarnaPayment = checkIsKlarnaPayment(order);
+      AdyenLogs.info_log(isKlarnaPayment);
+      if (isKlarnaPayment) {
+        AdyenLogs.info_log('recreate order');
+        Transaction.wrap(() => {
+          OrderMgr.failOrder(order, true);
+        });
+      }
+    }
+    return next();
+  } catch (e) {
+    AdyenLogs.fatal_log('Error occurred:', e.message);
+    setErrorType(e, res);
+    return res.redirect(URLUtils.url('Error-ErrorCode', 'err', 'general'));
+  }
+}
+
 module.exports = {
   checkIsKlarnaPayment,
+  recreateBasketAfterKlarnaPayment,
 };

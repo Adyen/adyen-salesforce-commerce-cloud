@@ -76,6 +76,7 @@ server.post(
   'PaymentFromComponent',
   server.middleware.https,
   csrf.validateRequest,
+  adyen.recreateBasketAfterKlarnaPayment,
   adyen.validatePaymentDataFromRequest,
   adyen.paymentFromComponent,
 );

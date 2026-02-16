@@ -8,7 +8,6 @@ const adyenCheckout = require('*/cartridge/adyen/scripts/payments/adyenCheckout'
 const constants = require('*/cartridge/adyen/config/constants');
 const collections = require('*/cartridge/scripts/util/collections');
 const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
-const AdyenConfigs = require('*/cartridge/adyen/utils/adyenConfigs');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 const GiftCardsHelper = require('*/cartridge/adyen/utils/giftCardsHelper');
 const setErrorType = require('*/cartridge/adyen/logs/setErrorType');
@@ -172,18 +171,6 @@ function canSkipSummaryPage(reqDataObj) {
 }
 
 function handleOrderCreation(reqDataObj, currentBasket) {
-  const isKlarnaPayment = reqDataObj.paymentMethod?.type.includes('klarna');
-  const isKlarnaWidgetEnabled = AdyenConfigs.getKlarnaInlineWidgetEnabled();
-  if (isKlarnaPayment && isKlarnaWidgetEnabled) {
-    const orderNumber =
-      currentBasket.custom.adyenGiftCardsOrderNo || OrderMgr.createOrderNo();
-    return {
-      orderOrBasket: currentBasket,
-      orderNumber,
-      orderToken: null,
-    };
-  }
-
   const order = AdyenHelper.createOrder(currentBasket);
   return {
     orderOrBasket: order,

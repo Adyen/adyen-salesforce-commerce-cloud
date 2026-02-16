@@ -23,6 +23,9 @@ const validatePaymentDataFromRequest = require('*/cartridge/adyen/utils/validate
 const createTemporaryBasket = require('*/cartridge/adyen/scripts/expressPayments/createTemporaryBasket');
 const saveExpressPaymentData = require('*/cartridge/adyen/scripts/expressPayments/paypal/saveExpressPaymentData');
 const calculatePrice = require('*/cartridge/adyen/scripts/expressPayments/calculatePrice');
+const {
+  recreateBasketAfterKlarnaPayment,
+} = require('*/cartridge/adyen/utils/klarnaHelper');
 
 module.exports = {
   getCheckoutPaymentMethods,
@@ -50,4 +53,5 @@ module.exports = {
   getConnectedTerminals,
   saveExpressPaymentData,
   calculatePrice,
+  recreateBasketAfterKlarnaPayment,
 };
