@@ -1,8 +1,10 @@
 const OrderMgr = require('dw/order/OrderMgr');
+const BasketMgr = require('dw/order/BasketMgr');
 const URLUtils = require('dw/web/URLUtils');
 const Transaction = require('dw/system/Transaction');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 const setErrorType = require('*/cartridge/adyen/logs/setErrorType');
+const clearForms = require('*/cartridge/adyen/utils/clearForms');
 
 /**
  * Checks if the payment instrument in the order contains a Klarna payment
@@ -44,6 +46,9 @@ function recreateBasketAfterKlarnaPayment(req, res, next) {
         Transaction.wrap(() => {
           OrderMgr.failOrder(order, true);
           session.privacy.orderNo = null;
+          session.privacy.partialPaymentAmounts = null;
+          const currentBasket = BasketMgr.getCurrentBasket();
+          clearForms.clearAdyenBasketData(currentBasket);
         });
       }
     }
