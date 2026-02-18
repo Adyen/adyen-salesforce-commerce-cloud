@@ -5,6 +5,7 @@ const Transaction = require('dw/system/Transaction');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 const setErrorType = require('*/cartridge/adyen/logs/setErrorType');
 const clearForms = require('*/cartridge/adyen/utils/clearForms');
+const constants = require('*/cartridge/adyen/config/constants');
 
 /**
  * Checks if the payment instrument in the order contains a Klarna payment
@@ -42,7 +43,10 @@ function recreateBasketAfterKlarnaPayment(req, res, next) {
     if (session.privacy.orderNo) {
       const order = OrderMgr.getOrder(session.privacy.orderNo);
       const isKlarnaPayment = checkIsKlarnaPayment(order);
-      if (isKlarnaPayment) {
+      if (
+        isKlarnaPayment &&
+        order.custom.Adyen_eventCode === constants.RESULTCODES.PENDING
+      ) {
         Transaction.wrap(() => {
           OrderMgr.failOrder(order, true);
           session.privacy.orderNo = null;

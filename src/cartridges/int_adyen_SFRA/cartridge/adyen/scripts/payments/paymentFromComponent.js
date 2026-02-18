@@ -170,15 +170,6 @@ function canSkipSummaryPage(reqDataObj) {
   );
 }
 
-function handleOrderCreation(reqDataObj, currentBasket) {
-  const order = AdyenHelper.createOrder(currentBasket);
-  return {
-    orderOrBasket: order,
-    orderNumber: order.orderNo,
-    orderToken: order.orderToken,
-  };
-}
-
 /**
  * Make a payment from inside a component, skipping the summary page. (paypal, QRcodes, MBWay)
  */
@@ -220,34 +211,32 @@ function paymentFromComponent(req, res, next) {
     });
 
     handleExpressPayment(reqDataObj, currentBasket);
-    const { orderOrBasket, orderNumber, orderToken } = handleOrderCreation(
-      reqDataObj,
-      currentBasket,
-    );
-    session.privacy.orderNo = orderNumber;
+    const order = AdyenHelper.createOrder(currentBasket);
+    session.privacy.orderNo = order.orderNo;
 
     let result;
     Transaction.wrap(() => {
       result = adyenCheckout.createPaymentRequest({
-        Order: orderOrBasket,
-        OrderNo: orderNumber,
-        OrderToken: orderToken,
+        Order: order,
+        OrderNo: order.orderNo,
+        OrderToken: order.orderToken,
       });
+      order.custom.Adyen_eventCode = result.resultCode;
     });
 
     currentBasket.custom.amazonExpressShopperDetails = null;
 
     if (result.resultCode === constants.RESULTCODES.REFUSED) {
-      handleRefusedResultCode(result, reqDataObj, orderOrBasket);
+      handleRefusedResultCode(result, reqDataObj, order);
     }
 
-    handleGiftCardPayment(currentBasket, orderOrBasket);
+    handleGiftCardPayment(currentBasket, order);
 
     // Check if summary page can be skipped in case payment is already authorized
     result.skipSummaryPage = canSkipSummaryPage(reqDataObj);
 
-    result.orderNo = orderNumber;
-    result.orderToken = orderToken;
+    result.orderNo = order.orderNo;
+    result.orderToken = order.orderToken;
     res.json(result);
   } catch (error) {
     AdyenLogs.fatal_log('Failed payment from component', error);
