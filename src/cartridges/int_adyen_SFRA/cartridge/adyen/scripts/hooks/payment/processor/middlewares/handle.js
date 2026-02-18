@@ -62,22 +62,17 @@ function handle(basket, paymentInformation) {
         currentBasket.custom.partialPaymentOrderData;
     }
 
-    paymentInstrument.custom.Adyen_Payment_Method_Variant =
-      paymentInformation.stateData
-        ? JSON.parse(paymentInformation.stateData)?.paymentMethod?.type
-        : null;
-    paymentInstrument.custom[
-      `${constants.OMS_NAMESPACE}__Adyen_Payment_Method_Variant`
-    ] = paymentInformation.stateData
-      ? JSON.parse(paymentInformation.stateData)?.paymentMethod?.type
-      : null;
+    if (paymentInformation.stateData) {
+      const paymentRequest = JSON.parse(paymentInformation.stateData);
+      AdyenHelper.setPaymentInstrumentFields(
+        paymentInstrument,
+        paymentRequest,
+        paymentInformation.adyenPaymentMethod,
+      );
+    }
+
     if (paymentInformation.isCreditCard) {
-      // If the card wasn't a stored card we need to convert sfccCardType
       convertToSfccCardType(paymentInformation, paymentInstrument);
-    } else {
-      paymentInstrument.custom[
-        `${constants.OMS_NAMESPACE}__Adyen_Payment_Method`
-      ] = paymentInformation.adyenPaymentMethod;
     }
   });
 

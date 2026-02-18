@@ -497,20 +497,24 @@ const adyenHelperObj = {
     return paymentRequest;
   },
 
-  setPaymentInstrumentFields(paymentInstrument, paymentRequest) {
+  setPaymentInstrumentFields(paymentInstrument, paymentRequest, adyenPaymentMethod) {
     try {
       if (!(paymentInstrument instanceof dw.order.OrderPaymentInstrument)) {
         return null;
       }
       const paymentMethodType = paymentRequest.paymentMethod.type;
-      // Currently this doesn't set the fields for cards and giftcards, they are handled by other flow
-      if (
-        [
-          constants.PAYMENTMETHODS.SCHEME,
-          constants.PAYMENTMETHODS.GIFTCARD,
-        ].indexOf(paymentMethodType) === -1
-      ) {
-        Transaction.wrap(() => {
+      const isCardOrGiftcard = [
+        constants.PAYMENTMETHODS.SCHEME,
+        constants.PAYMENTMETHODS.GIFTCARD,
+      ].indexOf(paymentMethodType) !== -1;
+
+      Transaction.wrap(() => {
+        if (isCardOrGiftcard && adyenPaymentMethod) {
+          paymentInstrument.custom.adyenPaymentMethod = adyenPaymentMethod;
+          paymentInstrument.custom[
+            `${constants.OMS_NAMESPACE}__Adyen_Payment_Method`
+          ] = adyenPaymentMethod;
+        } else if (!isCardOrGiftcard) {
           paymentInstrument.custom.adyenPaymentMethod =
             adyenHelperObj.getAdyenComponentType(
               paymentRequest.paymentMethod.type,
@@ -520,13 +524,14 @@ const adyenHelperObj = {
           ] = adyenHelperObj.getAdyenComponentType(
             paymentRequest.paymentMethod.type,
           );
-          paymentInstrument.custom.Adyen_Payment_Method_Variant =
-            paymentRequest.paymentMethod.type.toLowerCase();
-          paymentInstrument.custom[
-            `${constants.OMS_NAMESPACE}__Adyen_Payment_Method_Variant`
-          ] = paymentRequest.paymentMethod.type.toLowerCase();
-        });
-      }
+        }
+
+        paymentInstrument.custom.Adyen_Payment_Method_Variant =
+          paymentRequest.paymentMethod.type.toLowerCase();
+        paymentInstrument.custom[
+          `${constants.OMS_NAMESPACE}__Adyen_Payment_Method_Variant`
+        ] = paymentRequest.paymentMethod.type.toLowerCase();
+      });
     } catch (e) {
       AdyenLogs.error_log('Failed to set the payment instrument fields', e);
     }
