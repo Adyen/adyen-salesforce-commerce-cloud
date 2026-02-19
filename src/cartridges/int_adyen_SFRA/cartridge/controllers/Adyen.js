@@ -76,7 +76,6 @@ server.post(
   'PaymentFromComponent',
   server.middleware.https,
   csrf.validateRequest,
-  adyen.recreateBasketAfterKlarnaPayment,
   adyen.validatePaymentDataFromRequest,
   adyen.paymentFromComponent,
 );
@@ -147,7 +146,6 @@ server.post(
   'CheckBalance',
   server.middleware.https,
   csrf.validateRequest,
-  adyen.recreateBasketAfterKlarnaPayment,
   adyen.checkBalance,
 );
 
@@ -158,7 +156,6 @@ server.post(
   'CancelPartialPaymentOrder',
   server.middleware.https,
   csrf.validateRequest,
-  adyen.recreateBasketAfterKlarnaPayment,
   adyen.cancelPartialPaymentOrder,
 );
 
@@ -179,7 +176,6 @@ server.post(
   'partialPayment',
   server.middleware.https,
   csrf.validateRequest,
-  adyen.recreateBasketAfterKlarnaPayment,
   adyen.partialPayment,
 );
 

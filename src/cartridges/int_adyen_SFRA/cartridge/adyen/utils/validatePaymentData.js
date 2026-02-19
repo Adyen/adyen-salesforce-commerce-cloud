@@ -1,4 +1,5 @@
 const BasketMgr = require('dw/order/BasketMgr');
+const OrderMgr = require('dw/order/OrderMgr');
 const URLUtils = require('dw/web/URLUtils');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 const setErrorType = require('*/cartridge/adyen/logs/setErrorType');
@@ -20,10 +21,13 @@ function validatePaymentDataFromRequest(req, res, next) {
       return next();
     }
     const { isExpressPdp } = requestData || {};
-    const currentBasket = isExpressPdp
+    let currentBasketOrOrder = isExpressPdp
       ? BasketMgr.getTemporaryBasket(session.privacy.temporaryBasketId)
       : BasketMgr.getCurrentBasket();
-    validateBasketAmount(currentBasket);
+    if (!currentBasketOrOrder && session.privacy.orderNo) {
+      currentBasketOrOrder = OrderMgr.getOrder(session.privacy.orderNo);
+    }
+    validateBasketAmount(currentBasketOrOrder);
     return next();
   } catch (e) {
     AdyenLogs.fatal_log('Error occurred:', e.message);

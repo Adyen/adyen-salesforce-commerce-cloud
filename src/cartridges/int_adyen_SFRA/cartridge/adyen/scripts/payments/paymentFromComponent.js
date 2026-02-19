@@ -8,6 +8,7 @@ const adyenCheckout = require('*/cartridge/adyen/scripts/payments/adyenCheckout'
 const constants = require('*/cartridge/adyen/config/constants');
 const collections = require('*/cartridge/scripts/util/collections');
 const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
+const AdyenConfigs = require('*/cartridge/adyen/utils/adyenConfigs');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 const GiftCardsHelper = require('*/cartridge/adyen/utils/giftCardsHelper');
 const setErrorType = require('*/cartridge/adyen/logs/setErrorType');
@@ -170,11 +171,31 @@ function canSkipSummaryPage(reqDataObj) {
   );
 }
 
+function failKlarnaInlineOrderIfNotCompleted() {
+  if (session.privacy.attemptedKlarnaPayment && session.privacy.orderNo) {
+    const order = OrderMgr.getOrder(session.privacy.orderNo);
+    failOrder(order);
+    session.privacy.attemptedKlarnaPayment = null;
+    session.privacy.orderNo = null;
+  }
+}
+
+function handleKlarnaInlinePayment(result, reqDataObj) {
+  if (
+    result.resultCode === constants.RESULTCODES.PENDING &&
+    reqDataObj.paymentMethod?.type.includes('klarna') &&
+    AdyenConfigs.getKlarnaInlineWidgetEnabled()
+  ) {
+    session.privacy.attemptedKlarnaPayment = true;
+  }
+}
+
 /**
  * Make a payment from inside a component, skipping the summary page. (paypal, QRcodes, MBWay)
  */
 function paymentFromComponent(req, res, next) {
   try {
+    failKlarnaInlineOrderIfNotCompleted();
     session.privacy.orderNo = null;
     const { isExpressPdp, ...reqDataObj } = JSON.parse(req.form.data);
     if (reqDataObj.cancelTransaction) {
@@ -229,6 +250,8 @@ function paymentFromComponent(req, res, next) {
     if (result.resultCode === constants.RESULTCODES.REFUSED) {
       handleRefusedResultCode(result, reqDataObj, order);
     }
+
+    handleKlarnaInlinePayment(result, reqDataObj);
 
     handleGiftCardPayment(currentBasket, order);
 

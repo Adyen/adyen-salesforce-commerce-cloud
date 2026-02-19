@@ -36,8 +36,18 @@ function getAddedGiftCards(basket) {
     : null;
 }
 
+function failKlarnaInlineOrderIfNotCompleted() {
+  if (session.privacy.attemptedKlarnaPayment && session.privacy.orderNo) {
+    const order = OrderMgr.getOrder(session.privacy.orderNo);
+    OrderMgr.failOrder(order, true);
+    session.privacy.attemptedKlarnaPayment = null;
+    session.privacy.orderNo = null;
+  }
+}
+
 function callCheckBalance(req, res, next) {
   try {
+    failKlarnaInlineOrderIfNotCompleted();
     const currentBasket = BasketMgr.getCurrentBasket();
     const orderNo =
       currentBasket.custom?.adyenGiftCardsOrderNo || OrderMgr.createOrderNo();
