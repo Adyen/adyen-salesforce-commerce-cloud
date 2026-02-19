@@ -497,16 +497,21 @@ const adyenHelperObj = {
     return paymentRequest;
   },
 
-  setPaymentInstrumentFields(paymentInstrument, paymentRequest, adyenPaymentMethod) {
+  setPaymentInstrumentFields(
+    paymentInstrument,
+    paymentRequest,
+    adyenPaymentMethod,
+  ) {
     try {
       if (!(paymentInstrument instanceof dw.order.OrderPaymentInstrument)) {
         return null;
       }
       const paymentMethodType = paymentRequest.paymentMethod.type;
-      const isCardOrGiftcard = [
-        constants.PAYMENTMETHODS.SCHEME,
-        constants.PAYMENTMETHODS.GIFTCARD,
-      ].indexOf(paymentMethodType) !== -1;
+      const isCardOrGiftcard =
+        [
+          constants.PAYMENTMETHODS.SCHEME,
+          constants.PAYMENTMETHODS.GIFTCARD,
+        ].indexOf(paymentMethodType) !== -1;
 
       Transaction.wrap(() => {
         if (isCardOrGiftcard && adyenPaymentMethod) {
@@ -514,11 +519,14 @@ const adyenHelperObj = {
           paymentInstrument.custom[
             `${constants.OMS_NAMESPACE}__Adyen_Payment_Method`
           ] = adyenPaymentMethod;
-        } else if (!isCardOrGiftcard) {
-          paymentInstrument.custom.adyenPaymentMethod =
-            adyenHelperObj.getAdyenComponentType(
-              paymentRequest.paymentMethod.type,
-            );
+        } else {
+          // Set adyenPaymentMethod if it is null
+          if (paymentInstrument.custom.adyenPaymentMethod === null) {
+            paymentInstrument.custom.adyenPaymentMethod =
+              adyenHelperObj.getAdyenComponentType(
+                paymentRequest.paymentMethod.type,
+              );
+          }
           paymentInstrument.custom[
             `${constants.OMS_NAMESPACE}__Adyen_Payment_Method`
           ] = adyenHelperObj.getAdyenComponentType(
