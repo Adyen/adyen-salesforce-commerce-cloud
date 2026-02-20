@@ -8,6 +8,7 @@ const AdyenConfigs = require('*/cartridge/adyen/utils/adyenConfigs');
 const constants = require('*/cartridge/adyen/config/constants');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 const setErrorType = require('*/cartridge/adyen/logs/setErrorType');
+const failUnsuccessfulKlarnaInlineOrder = require('*/cartridge/adyen/utils/failUnsuccessfulKlarnaInlineOrder');
 
 function getFormattedProperties(checkBalanceResponse, orderAmount) {
   if (checkBalanceResponse.resultCode === 'Success') {
@@ -36,18 +37,9 @@ function getAddedGiftCards(basket) {
     : null;
 }
 
-function failKlarnaInlineOrderIfNotCompleted() {
-  if (session.privacy.attemptedKlarnaPayment && session.privacy.orderNo) {
-    const order = OrderMgr.getOrder(session.privacy.orderNo);
-    OrderMgr.failOrder(order, true);
-    session.privacy.attemptedKlarnaPayment = null;
-    session.privacy.orderNo = null;
-  }
-}
-
 function callCheckBalance(req, res, next) {
   try {
-    failKlarnaInlineOrderIfNotCompleted();
+    failUnsuccessfulKlarnaInlineOrder();
     const currentBasket = BasketMgr.getCurrentBasket();
     const orderNo =
       currentBasket.custom?.adyenGiftCardsOrderNo || OrderMgr.createOrderNo();

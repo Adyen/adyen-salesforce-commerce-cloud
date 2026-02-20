@@ -15,6 +15,7 @@ const setErrorType = require('*/cartridge/adyen/logs/setErrorType');
 const {
   cancelPartialPaymentOrderHelper,
 } = require('*/cartridge/adyen/scripts/partialPayments/cancelPartialPaymentOrder');
+const failUnsuccessfulKlarnaInlineOrder = require('*/cartridge/adyen/utils/failUnsuccessfulKlarnaInlineOrder');
 
 const expressMethods = [
   constants.PAYMENTMETHODS.APPLEPAY,
@@ -171,15 +172,6 @@ function canSkipSummaryPage(reqDataObj) {
   );
 }
 
-function failKlarnaInlineOrderIfNotCompleted() {
-  if (session.privacy.attemptedKlarnaPayment && session.privacy.orderNo) {
-    const order = OrderMgr.getOrder(session.privacy.orderNo);
-    failOrder(order);
-    session.privacy.attemptedKlarnaPayment = null;
-    session.privacy.orderNo = null;
-  }
-}
-
 function handleKlarnaInlinePayment(result, reqDataObj) {
   if (
     result.resultCode === constants.RESULTCODES.PENDING &&
@@ -195,7 +187,7 @@ function handleKlarnaInlinePayment(result, reqDataObj) {
  */
 function paymentFromComponent(req, res, next) {
   try {
-    failKlarnaInlineOrderIfNotCompleted();
+    failUnsuccessfulKlarnaInlineOrder();
     session.privacy.orderNo = null;
     const { isExpressPdp, ...reqDataObj } = JSON.parse(req.form.data);
     if (reqDataObj.cancelTransaction) {

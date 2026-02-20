@@ -1,6 +1,5 @@
-const OrderMgr = require('dw/order/OrderMgr');
-const Transaction = require('dw/system/Transaction');
 const server = require('server');
+const failUnsuccessfulKlarnaInlineOrder = require('*/cartridge/adyen/utils/failUnsuccessfulKlarnaInlineOrder');
 
 server.extend(module.superModule);
 
@@ -9,14 +8,7 @@ const submitCustomer = require('*/cartridge/controllers/middlewares/checkout_ser
 const AdyenConfigs = require('*/cartridge/adyen/utils/adyenConfigs');
 
 server.prepend('SubmitPayment', server.middleware.https, (req, res, next) => {
-  if (session.privacy.attemptedKlarnaPayment && session.privacy.orderNo) {
-    Transaction.wrap(() => {
-      const order = OrderMgr.getOrder(session.privacy.orderNo);
-      OrderMgr.failOrder(order, true);
-      session.privacy.attemptedKlarnaPayment = null;
-      session.privacy.orderNo = null;
-    });
-  }
+  failUnsuccessfulKlarnaInlineOrder();
   next();
 });
 
