@@ -491,6 +491,12 @@ jest.mock(
 );
 
 jest.mock(
+  '*/cartridge/adyen/utils/failUnsuccessfulKlarnaInlineOrder',
+  () => jest.fn(),
+  { virtual: true },
+);
+
+jest.mock(
   '*/cartridge/client/default/js/adyen_checkout/helpers',
   () => ({
     setOrderFormData: jest.fn(),
