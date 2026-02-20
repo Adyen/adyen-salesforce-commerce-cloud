@@ -18,18 +18,32 @@ jest.mock('dw/value/Money', () => {
   }));
 });
 
-jest.mock('*/cartridge/adyen/utils/adyenHelper', () => ({
-  setPaymentTransactionType: jest.fn(),
-}));
-
 describe('giftCardsHelper', () => {
   describe('createGiftCardPaymentInstrument', () => {
-    const mockOrder = {
-      createPaymentInstrument: jest.fn().mockReturnValue({
+    let mockPaymentInstrument;
+    let mockOrder;
+    
+    beforeEach(() => {
+      mockPaymentInstrument = {
         paymentTransaction: { custom: {} },
         custom: {},
-      }),
-    };
+      };
+      
+      mockOrder = {
+        createPaymentInstrument: jest.fn().mockReturnValue(mockPaymentInstrument),
+      };
+      
+      AdyenHelper.setPaymentInstrumentFields.mockImplementation((paymentInstrument, paymentRequest, adyenPaymentMethod) => {
+        if (paymentInstrument && paymentInstrument.custom && paymentRequest) {
+          paymentInstrument.custom.adyenPaymentMethod = adyenPaymentMethod;
+          paymentInstrument.custom[`${constants.OMS_NAMESPACE}__Adyen_Payment_Method`] = adyenPaymentMethod;
+          paymentInstrument.custom.Adyen_Payment_Method_Variant = paymentRequest.paymentMethod.type.toLowerCase();
+          paymentInstrument.custom[`${constants.OMS_NAMESPACE}__Adyen_Payment_Method_Variant`] = paymentRequest.paymentMethod.type.toLowerCase();
+        }
+      });
+      
+      AdyenHelper.setPaymentTransactionType.mockImplementation(() => {});
+    });
 
     const parsedGiftCardObj = {
       giftCard: {
@@ -52,8 +66,8 @@ describe('giftCardsHelper', () => {
       expect(createdInstrument.paymentTransaction.transactionID).toBe(parsedGiftCardObj.giftCard.pspReference);
       expect(createdInstrument.custom.adyenPaymentMethod).toBe(parsedGiftCardObj.giftCard.name);
       expect(createdInstrument.custom[`${constants.OMS_NAMESPACE}__Adyen_Payment_Method`]).toBe(parsedGiftCardObj.giftCard.name);
-      expect(createdInstrument.custom.Adyen_Payment_Method_Variant).toBe(parsedGiftCardObj.giftCard.brand);
-      expect(createdInstrument.custom[`${constants.OMS_NAMESPACE}__Adyen_Payment_Method_Variant`]).toBe(parsedGiftCardObj.giftCard.brand);
+      expect(createdInstrument.custom.Adyen_Payment_Method_Variant).toBe(parsedGiftCardObj.giftCard.brand.toLowerCase());
+      expect(createdInstrument.custom[`${constants.OMS_NAMESPACE}__Adyen_Payment_Method_Variant`]).toBe(parsedGiftCardObj.giftCard.brand.toLowerCase());
       expect(createdInstrument.paymentTransaction.custom.Adyen_log).toBe(JSON.stringify(parsedGiftCardObj));
       expect(createdInstrument.paymentTransaction.custom.Adyen_pspReference).toBe(parsedGiftCardObj.giftCard.pspReference);
       expect(AdyenHelper.setPaymentTransactionType).toHaveBeenCalledWith(
