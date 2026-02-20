@@ -28,7 +28,7 @@ function getPaymentMethodsConfiguration(email, amount, AdyenPaymentMethods) {
   ).getConfig();
   const cashAppConfig = new CashAppConfig(helpers).getConfig();
   const upiConfig = new UpiConfig(helpers).getConfig();
-  const applePayConfig = new ApplePayConfig(helpers).getConfig();
+  const applePayConfig = new ApplePayConfig(helpers, amount).getConfig();
   const payPalConfig = new PayPalConfig(store, helpers).getConfig();
   const amazonPayConfig = new AmazonPayConfig(
     store,
