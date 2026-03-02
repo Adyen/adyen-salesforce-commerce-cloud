@@ -251,6 +251,10 @@ const adyenConfigsObj = {
   isAdyenAnalyticsEnabled() {
     return getCustomPreference('AdyenAnalytics_Enabled');
   },
+
+  isAdyenSFRA6CompatibilityEnabled() {
+    return getCustomPreference('SFRA6Compatibility_Enabled');
+  },
 };
 
 module.exports = adyenConfigsObj;

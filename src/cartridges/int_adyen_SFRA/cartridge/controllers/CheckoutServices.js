@@ -14,7 +14,8 @@ server.prepend('SubmitPayment', server.middleware.https, (req, res, next) => {
 
 server.prepend('PlaceOrder', server.middleware.https, placeOrder);
 
-if (AdyenConfigs.getAdyenSFRA6Compatibility() === true) {
+if (AdyenConfigs.isAdyenSFRA6CompatibilityEnabled() === true) {
+  // to be reverted to AdyenConfigs.getAdyenSFRA6Compatibility() when SFRA6 is released
   server.prepend('SubmitCustomer', server.middleware.https, submitCustomer);
 }
 
