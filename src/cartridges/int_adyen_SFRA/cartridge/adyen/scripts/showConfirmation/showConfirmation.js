@@ -52,7 +52,7 @@ function handleOrderConfirm(
 
   clearForms.clearForms();
   // determines SFRA version for backwards compatibility
-  if (AdyenConfigs.getAdyenSFRA6Compatibility() === true) {
+  if (AdyenConfigs.isAdyenSFRA6CompatibilityEnabled() === true) {
     res.render('orderConfirmForm', {
       orderID: order.orderNo,
       orderToken: order.orderToken,

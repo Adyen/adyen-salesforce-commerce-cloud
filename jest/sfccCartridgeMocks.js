@@ -375,7 +375,7 @@ jest.mock(
     ),
     getAdyenGivingBackgroundUrl: jest.fn(() => 'mocked_background_url'),
     getAdyenGivingLogoUrl: jest.fn(() => 'mocked_logo_url'),
-    getAdyenSFRA6Compatibility: jest.fn(() => false),
+    isAdyenSFRA6CompatibilityEnabled: jest.fn(() => false),
     getAdyenHmacKey: jest.fn(() => 'mocked_hmacKey'),
     getAdyenBasketFieldsEnabled: jest.fn(() => false),
     getAdyen3DS2Enabled: jest.fn(() => false),
