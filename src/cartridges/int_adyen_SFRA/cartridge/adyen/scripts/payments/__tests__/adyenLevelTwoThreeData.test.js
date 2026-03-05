@@ -1,5 +1,23 @@
+jest.mock('*/cartridge/adyen/utils/lineItemHelper', () => ({
+  getDescription: jest.fn((lineItem) => lineItem.productName),
+  getId: jest.fn((lineItem) => lineItem.productID),
+  getQuantity: jest.fn((lineItem) => lineItem.quantityValue),
+  getItemAmount: jest.fn((lineItem) => ({
+    value: lineItem.adjustedNetPrice,
+    divide: jest.fn((qty) => ({
+      value: { toFixed: () => String(lineItem.adjustedNetPrice / qty) },
+    })),
+  })),
+  getVatAmount: jest.fn((lineItem) => ({
+    value: lineItem.getAdjustedTax,
+    divide: jest.fn((qty) => ({
+      value: { toFixed: () => String(lineItem.getAdjustedTax / qty) },
+    })),
+  })),
+  isProductLineItem: jest.fn(() => false),
+}));
+
 const { getLineItems } = require('*/cartridge/adyen/scripts/payments/adyenLevelTwoThreeData');
-const AdyenConfigs = require('*/cartridge/adyen/utils/adyenConfigs');
 
 describe('getLineItems (Enhanced Scheme Data)', () => {
   const mockLineItem = {
@@ -13,6 +31,9 @@ describe('getLineItems (Enhanced Scheme Data)', () => {
   const createMockOrderOrBasket = (customerData = {}) => ({
     getProductLineItems: () => ({
       toArray: () => [mockLineItem],
+    }),
+    getShipments: () => ({
+      toArray: () => [],
     }),
     getCustomer: () => ({
       registered: customerData.registered || false,
@@ -34,7 +55,7 @@ describe('getLineItems (Enhanced Scheme Data)', () => {
       'enhancedSchemeData.totalTaxAmount': 10, 
       'enhancedSchemeData.customerReference': 'cust-9999',
       'enhancedSchemeData.itemDetailLine1.unitPrice': '50', 
-      'enhancedSchemeData.itemDetailLine1.totalAmount': 60, 
+      'enhancedSchemeData.itemDetailLine1.totalAmount': 100, 
       'enhancedSchemeData.itemDetailLine1.quantity': 2,
       'enhancedSchemeData.itemDetailLine1.unitOfMeasure': 'EAC',
       'enhancedSchemeData.itemDetailLine1.commodityCode': 'mocked_comodity_code',
@@ -69,6 +90,9 @@ describe('getLineItems (Enhanced Scheme Data)', () => {
       Order: {
         getProductLineItems: () => ({
           toArray: () => [mockLineItem],
+        }),
+        getShipments: () => ({
+          toArray: () => [],
         }),
         getCustomer: () => ({
           getID: () => null
