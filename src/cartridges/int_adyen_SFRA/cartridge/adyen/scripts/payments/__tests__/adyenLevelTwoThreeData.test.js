@@ -18,6 +18,7 @@ jest.mock('*/cartridge/adyen/utils/lineItemHelper', () => ({
 }));
 
 const { getLineItems } = require('*/cartridge/adyen/scripts/payments/adyenLevelTwoThreeData');
+const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
 
 describe('getLineItems (Enhanced Scheme Data)', () => {
   const mockLineItem = {
@@ -103,4 +104,49 @@ describe('getLineItems (Enhanced Scheme Data)', () => {
 
     expect(result['enhancedSchemeData.customerReference']).toBe('no-unique-ref');
   });
+
+  it('should include discount amount when product has basePrice > adjustedPrice', () => {
+    const lineItemHelper = require('*/cartridge/adyen/utils/lineItemHelper');
+    lineItemHelper.isProductLineItem.mockReturnValueOnce(true);
+
+    AdyenHelper.getCurrencyValueForApi = jest.fn(() => ({
+      divide: jest.fn(() => ({
+        value: { toFixed: () => '10' },
+      })),
+    }));
+
+    const discountedLineItem = {
+      ...mockLineItem,
+      basePrice: {
+        value: 120,
+        subtract: jest.fn((adjustedPrice) => ({
+          value: 20,
+        })),
+      },
+      adjustedPrice: {
+        value: 100,
+      },
+    };
+
+    const result = getLineItems({
+      Order: {
+        getProductLineItems: () => ({
+          toArray: () => [discountedLineItem],
+        }),
+        getShipments: () => ({
+          toArray: () => [],
+        }),
+        getCustomer: () => ({
+          registered: true,
+          getID: () => 'cust-id',
+          getProfile: () => ({ getCustomerNo: () => 'cust-123' }),
+        }),
+        getCustomerNo: () => 'cust-123',
+      },
+    });
+
+    expect(result['enhancedSchemeData.itemDetailLine1.discountAmount']).toBe('10');
+  });
+
+  
 });
