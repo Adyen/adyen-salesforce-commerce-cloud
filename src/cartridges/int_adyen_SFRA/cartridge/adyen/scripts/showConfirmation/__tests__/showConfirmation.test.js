@@ -75,7 +75,7 @@ describe('Show Confirmation', () => {
       const adyenCheckout = require('*/cartridge/adyen/scripts/payments/adyenCheckout');
       const adyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
       adyenHelper.getOrderMainPaymentInstrumentType.mockReturnValue('AdyenComponent');
-      adyenConfigs.isAdyenSFRA6CompatibilityEnabled.mockReturnValue(true);
+      adyenConfigs.getAdyenSFRA6Compatibility.mockReturnValue(true);
       adyenCheckout.doPaymentsDetailsCall.mockImplementation(() => ({
         resultCode: a,
         paymentMethod: [],
@@ -92,7 +92,7 @@ describe('Show Confirmation', () => {
         const adyenCheckout = require('*/cartridge/adyen/scripts/payments/adyenCheckout');
         const adyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
         adyenHelper.getOrderMainPaymentInstrumentType.mockReturnValue('AdyenComponent');
-        adyenConfigs.isAdyenSFRA6CompatibilityEnabled.mockReturnValue(false);
+        adyenConfigs.getAdyenSFRA6Compatibility.mockReturnValue(false);
         const URLUtils = require('dw/web/URLUtils');
         adyenCheckout.doPaymentsDetailsCall.mockImplementation(() => ({
           resultCode: a,
