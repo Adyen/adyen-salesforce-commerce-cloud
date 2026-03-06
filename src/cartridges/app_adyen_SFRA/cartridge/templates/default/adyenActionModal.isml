@@ -1,8 +1,9 @@
-<div class="modal fade" id="action-modal" role="dialog">
+<div class="modal fade" id="action-modal" role="dialog" aria-modal="true" aria-labelledby="action-modal">
    <div class="modal-dialog" id="adyenModalDialog">
         <div id="action-container">
+            <h2 id="action-modal-title" class="sr-only">Action Required</h2>
             <div class='invisible' id="cancelQrMethodsButton">
-               <button id='cancelQrMethodsButtonStyling' onclick="location.href='${URLUtils.https('Checkout-Begin')}';">
+               <button id='cancelQrMethodsButtonStyling' onclick="location.href='${URLUtils.https('Checkout-Begin')}';" aria-label="${Resource.msg('aria.cancel.qr.payment', 'aria', null)}">
                      <img src="${URLUtils.staticURL('images/cancel.svg')}" alt="Cancel" />
                </button>
             </div>

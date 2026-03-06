@@ -26,7 +26,7 @@
             class="payment-form"
             method="POST"
             id="payment-form" ${pdict.paymentForm.attributes}>
-            <div id="cardError" class="card-error alert alert-danger">
+            <div id="cardError" class="card-error alert alert-danger" role="alert">
                 <span>${Resource.msg('error.card.information.error', 'creditCard', null)}</span>
             </div>
             <script type="text/javascript">
@@ -45,10 +45,10 @@
             <!-- Cancel and Save Buttons -->
             <div class="row">
                 <div class="col">
-                    <a href="${URLUtils.url('PaymentInstruments-List')}" class="btn btn-block btn-outline-primary">${Resource.msg('button.cancel','account',null)}</a>
+                    <a href="${URLUtils.url('PaymentInstruments-List')}" class="btn btn-block btn-outline-primary" aria-label="${Resource.msg('aria.cancel.return.payment.list','account',null)}">${Resource.msg('button.cancel','account',null)}</a>
                 </div>
                 <div class="col">
-                    <button type="submit" name="save" class="btn btn-save btn-block btn-primary" value="add-new-payment">
+                     <button type="submit" name="save" class="btn btn-save btn-block btn-primary" value="add-new-payment" aria-label="${Resource.msg('aria.save.payment.method','account',null)}">
                         ${Resource.msg('button.save','account',null)}
                     </button>
                 </div>
