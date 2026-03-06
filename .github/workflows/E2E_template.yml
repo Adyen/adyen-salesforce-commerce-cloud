@@ -41,7 +41,7 @@ on:
 
 jobs:
   setup-the-cartridge:
-    if: ${{ github.actor != 'renovate[bot]' || github.actor != 'lgtm-com[bot]' }}
+    if: ${{ !startsWith(github.head_ref, 'renovate/') }}
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout SFRA code
@@ -87,7 +87,7 @@ jobs:
         working-directory: adyen-salesforce-commerce-cloud
         run: npm run check-build:sfra
   end-to-end-testing:
-    if: ${{ github.actor != 'renovate[bot]' || github.actor != 'lgtm-com[bot]' }}
+    if: ${{ !startsWith(github.head_ref, 'renovate/') }}
     needs: setup-the-cartridge
     runs-on:
       group: larger-runners
