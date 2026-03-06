@@ -133,6 +133,13 @@ jest.mock(
 );
 
 jest.mock(
+  '*/cartridge/adyen/scripts/partialPayments/getBasketAmount',
+  () =>
+    require('../src/cartridges/int_adyen_SFRA/cartridge/adyen/scripts/partialPayments/getBasketAmount'),
+  { virtual: true },
+);
+
+jest.mock(
 	'*/cartridge/adyen/scripts/donations/adyenGiving',
 	() =>
 	  require('../src/cartridges/int_adyen_SFRA/cartridge/adyen/scripts/donations/adyenGiving'),

@@ -413,11 +413,22 @@ function showGiftCardInfoMessage() {
   );
 }
 
-function isCartModified(orderAmount) {
-  const basketAmount = JSON.parse(window.basketAmount);
+async function isCartModified() {
+  const response = await httpClient({
+    url: window.getBasketAmountUrl,
+    method: 'GET',
+  });
+
+  if (response.error) {
+    throw new Error(response.message);
+  }
+
+  const initialAmount = store.addedGiftCards[0].orderAmount;
+  const { basketAmount } = response;
+
   return (
-    basketAmount.currency !== orderAmount.currency ||
-    basketAmount.value !== orderAmount.value
+    basketAmount.currency !== initialAmount.currency ||
+    basketAmount.value !== initialAmount.value
   );
 }
 
@@ -430,12 +441,11 @@ function renderGiftCardLogo(imagePath) {
 
 async function applyGiftCards() {
   const now = new Date().toISOString();
-  const { orderAmount } = store.partialPaymentsOrderObj;
 
   const isPartialPaymentExpired = store.addedGiftCards.some(
     (cart) => now > cart.expiresAt,
   );
-  const cartModified = isCartModified(orderAmount);
+  const cartModified = await isCartModified();
 
   if (isPartialPaymentExpired) {
     await removeGiftCards();
