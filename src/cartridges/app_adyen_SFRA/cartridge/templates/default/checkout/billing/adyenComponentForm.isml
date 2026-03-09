@@ -32,7 +32,7 @@
       window.getBasketAmountUrl = "${URLUtils.https('Adyen-GetBasketAmount')}";
       window.fetchGiftCardsUrl = "${URLUtils.https('Adyen-fetchGiftCards')}";
       window.activeTerminalApiStores = '${pdict.AdyenConfigs.getAdyenActiveStoreId()}';
-      window.sfra6Compatibility = ${pdict.AdyenConfigs.isAdyenSFRA6CompatibilityEnabled()};
+      window.sfra6Compatibility = ${pdict.AdyenConfigs.getAdyenSFRA6Compatibility()};
       
       window.remainingAmountGiftCardResource = "${Resource.msg('remainingAmount.giftCard', 'adyen', null)}";
       window.discountedAmountGiftCardResource = "${Resource.msg('discountedAmount.giftCard', 'adyen', null)}";

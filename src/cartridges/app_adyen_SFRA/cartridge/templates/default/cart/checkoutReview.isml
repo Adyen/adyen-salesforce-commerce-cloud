@@ -36,7 +36,7 @@
         <div class="col-sm-7">
 
             <!-- Customer -->
-		<isif condition="${pdict.AdyenConfigs.isAdyenSFRA6CompatibilityEnabled()}">
+		<isif condition="${pdict.AdyenConfigs.getAdyenSFRA6Compatibility()}">
             <div class="card customer-summary">
                 <div class="card-header clearfix">
                     <h2 class="pull-left card-header-custom">${Resource.msg('heading.checkout.customer', 'checkout', null)}</h2>

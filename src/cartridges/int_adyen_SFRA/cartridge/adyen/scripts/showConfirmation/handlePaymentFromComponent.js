@@ -64,7 +64,7 @@ function handleAuthorisedPayment(
   clearForms.clearAdyenData(adyenPaymentInstrument);
   clearForms.clearForms();
   // determines SFRA version for backwards compatibility
-  if (AdyenConfigs.isAdyenSFRA6CompatibilityEnabled() === true) {
+  if (AdyenConfigs.getAdyenSFRA6Compatibility() === true) {
     res.render('orderConfirmForm', {
       orderID: order.orderNo,
       orderToken: order.orderToken,
