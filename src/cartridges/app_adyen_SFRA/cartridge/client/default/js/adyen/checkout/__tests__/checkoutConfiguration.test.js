@@ -252,7 +252,7 @@ describe('Checkout Configuration', () => {
       $.ajax = jest.fn().mockReturnValue({
         resultCode: 'Authorised',
       });
-      applepay.onSubmit({ data: {} });
+      applepay.onSubmit({ data: {} }, null, { resolve: jest.fn(), reject: jest.fn() });
       expect($.ajax).toHaveBeenCalledTimes(1);
     });
   });

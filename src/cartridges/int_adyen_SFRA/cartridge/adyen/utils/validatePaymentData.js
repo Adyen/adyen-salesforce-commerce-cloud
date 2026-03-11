@@ -1,4 +1,5 @@
 const BasketMgr = require('dw/order/BasketMgr');
+const OrderMgr = require('dw/order/OrderMgr');
 const URLUtils = require('dw/web/URLUtils');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 const setErrorType = require('*/cartridge/adyen/logs/setErrorType');
@@ -12,13 +13,21 @@ function validateBasketAmount(currentBasket) {
   }
 }
 
+// eslint-disable-next-line complexity
 function validatePaymentDataFromRequest(req, res, next) {
   try {
-    const { isExpressPdp } = req.form?.data ? JSON.parse(req.form.data) : null;
-    const currentBasket = isExpressPdp
+    const requestData = req.form?.data ? JSON.parse(req.form.data) : null;
+    if (requestData?.cancelTransaction) {
+      return next();
+    }
+    const { isExpressPdp } = requestData || {};
+    let currentBasketOrOrder = isExpressPdp
       ? BasketMgr.getTemporaryBasket(session.privacy.temporaryBasketId)
       : BasketMgr.getCurrentBasket();
-    validateBasketAmount(currentBasket);
+    if (!currentBasketOrOrder && session.privacy.orderNo) {
+      currentBasketOrOrder = OrderMgr.getOrder(session.privacy.orderNo);
+    }
+    validateBasketAmount(currentBasketOrOrder);
     return next();
   } catch (e) {
     AdyenLogs.fatal_log('Error occurred:', e.message);

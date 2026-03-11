@@ -12,6 +12,7 @@ const cancelPartialPaymentOrder = require('*/cartridge/adyen/scripts/partialPaym
 const partialPaymentsOrder = require('*/cartridge/adyen/scripts/partialPayments/partialPaymentsOrder');
 const partialPayment = require('*/cartridge/adyen/scripts/partialPayments/partialPayment');
 const fetchGiftCards = require('*/cartridge/adyen/scripts/partialPayments/fetchGiftCards');
+const getBasketAmount = require('*/cartridge/adyen/scripts/partialPayments/getBasketAmount');
 const showConfirmationPaymentFromComponent = require('*/cartridge/adyen/scripts/showConfirmation/showConfirmationPaymentFromComponent');
 const showConfirmation = require('*/cartridge/adyen/scripts/showConfirmation/showConfirmation');
 const notify = require('*/cartridge/notify');
@@ -38,6 +39,7 @@ module.exports = {
   partialPaymentsOrder,
   partialPayment,
   fetchGiftCards,
+  getBasketAmount,
   showConfirmation,
   showConfirmationPaymentFromComponent,
   notify,

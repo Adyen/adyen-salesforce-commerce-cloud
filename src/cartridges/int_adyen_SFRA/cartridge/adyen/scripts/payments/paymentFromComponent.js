@@ -12,6 +12,10 @@ const AdyenConfigs = require('*/cartridge/adyen/utils/adyenConfigs');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 const GiftCardsHelper = require('*/cartridge/adyen/utils/giftCardsHelper');
 const setErrorType = require('*/cartridge/adyen/logs/setErrorType');
+const {
+  cancelPartialPaymentOrderHelper,
+} = require('*/cartridge/adyen/scripts/partialPayments/cancelPartialPaymentOrder');
+const failUnsuccessfulKlarnaInlineOrder = require('*/cartridge/adyen/utils/failUnsuccessfulKlarnaInlineOrder');
 
 const expressMethods = [
   constants.PAYMENTMETHODS.APPLEPAY,
@@ -130,6 +134,13 @@ function handleCancellation(res, next, reqDataObj) {
     reqDataObj.orderToken,
   );
   failOrder(order);
+  const currentBasket = BasketMgr.getCurrentBasket();
+  const giftCardsAdded = currentBasket.custom?.adyenGiftCards
+    ? JSON.parse(currentBasket.custom.adyenGiftCards)
+    : null;
+  if (giftCardsAdded) {
+    cancelPartialPaymentOrderHelper(currentBasket);
+  }
   res.redirect(URLUtils.url('Checkout-Begin', 'stage', 'placeOrder'));
   return next();
 }
@@ -161,25 +172,14 @@ function canSkipSummaryPage(reqDataObj) {
   );
 }
 
-function handleOrderCreation(reqDataObj, currentBasket) {
-  const isKlarnaPayment = reqDataObj.paymentMethod?.type.includes('klarna');
-  const isKlarnaWidgetEnabled = AdyenConfigs.getKlarnaInlineWidgetEnabled();
-  if (isKlarnaPayment && isKlarnaWidgetEnabled) {
-    const orderNumber =
-      currentBasket.custom.adyenGiftCardsOrderNo || OrderMgr.createOrderNo();
-    return {
-      orderOrBasket: currentBasket,
-      orderNumber,
-      orderToken: null,
-    };
+function handleKlarnaInlinePayment(result, reqDataObj) {
+  if (
+    result.resultCode === constants.RESULTCODES.PENDING &&
+    reqDataObj.paymentMethod?.type.includes('klarna') &&
+    AdyenConfigs.getKlarnaInlineWidgetEnabled()
+  ) {
+    session.privacy.attemptedKlarnaPayment = true;
   }
-
-  const order = AdyenHelper.createOrder(currentBasket);
-  return {
-    orderOrBasket: order,
-    orderNumber: order.orderNo,
-    orderToken: order.orderToken,
-  };
 }
 
 /**
@@ -187,6 +187,7 @@ function handleOrderCreation(reqDataObj, currentBasket) {
  */
 function paymentFromComponent(req, res, next) {
   try {
+    failUnsuccessfulKlarnaInlineOrder();
     session.privacy.orderNo = null;
     const { isExpressPdp, ...reqDataObj } = JSON.parse(req.form.data);
     if (reqDataObj.cancelTransaction) {
@@ -223,34 +224,34 @@ function paymentFromComponent(req, res, next) {
     });
 
     handleExpressPayment(reqDataObj, currentBasket);
-    const { orderOrBasket, orderNumber, orderToken } = handleOrderCreation(
-      reqDataObj,
-      currentBasket,
-    );
-    session.privacy.orderNo = orderNumber;
+    const order = AdyenHelper.createOrder(currentBasket);
+    session.privacy.orderNo = order.orderNo;
 
     let result;
     Transaction.wrap(() => {
       result = adyenCheckout.createPaymentRequest({
-        Order: orderOrBasket,
-        OrderNo: orderNumber,
-        OrderToken: orderToken,
+        Order: order,
+        OrderNo: order.orderNo,
+        OrderToken: order.orderToken,
       });
+      order.custom.Adyen_eventCode = result.resultCode;
     });
 
     currentBasket.custom.amazonExpressShopperDetails = null;
 
     if (result.resultCode === constants.RESULTCODES.REFUSED) {
-      handleRefusedResultCode(result, reqDataObj, orderOrBasket);
+      handleRefusedResultCode(result, reqDataObj, order);
     }
 
-    handleGiftCardPayment(currentBasket, orderOrBasket);
+    handleKlarnaInlinePayment(result, reqDataObj);
+
+    handleGiftCardPayment(currentBasket, order);
 
     // Check if summary page can be skipped in case payment is already authorized
     result.skipSummaryPage = canSkipSummaryPage(reqDataObj);
 
-    result.orderNo = orderNumber;
-    result.orderToken = orderToken;
+    result.orderNo = order.orderNo;
+    result.orderToken = order.orderToken;
     res.json(result);
   } catch (error) {
     AdyenLogs.fatal_log('Failed payment from component', error);

@@ -41,7 +41,7 @@ on:
 
 jobs:
   setup-the-cartridge:
-    if: ${{ github.actor != 'renovate[bot]' || github.actor != 'lgtm-com[bot]' }}
+    if: ${{ !startsWith(github.head_ref, 'renovate/') }}
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout SFRA code
@@ -87,7 +87,7 @@ jobs:
         working-directory: adyen-salesforce-commerce-cloud
         run: npm run check-build:sfra
   end-to-end-testing:
-    if: ${{ github.actor != 'renovate[bot]' || github.actor != 'lgtm-com[bot]' }}
+    if: ${{ !startsWith(github.head_ref, 'renovate/') }}
     needs: setup-the-cartridge
     runs-on:
       group: larger-runners
@@ -96,26 +96,20 @@ jobs:
     strategy:
       fail-fast: false
     steps:
-      - name: setup Node
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ inputs.node_version }}
       - name: Checkout
         uses: actions/checkout@v3
         with:
           path: adyen-salesforce-commerce-cloud
-      - name: install e2e test dependencies
-        working-directory: adyen-salesforce-commerce-cloud/tests/playwright/
-        run: npm i
       - name: setup Node 18 
         uses: actions/setup-node@v3
         with:
           node-version: '18'
-      - name: Check node version
-        run: node --version
-      - name: setup playwright dependencies
+      - name: install e2e test dependencies
         working-directory: adyen-salesforce-commerce-cloud/tests/playwright/
-        run: npx playwright install --with-deps
+        run: npm ci
+      - name: Install Playwright browsers
+        working-directory: adyen-salesforce-commerce-cloud/tests/playwright/
+        run: npx playwright install chromium --with-deps
       - name: run e2e tests full coverage
         working-directory: adyen-salesforce-commerce-cloud/tests/playwright/
         if: github.event.pull_request.base.ref == 'main'

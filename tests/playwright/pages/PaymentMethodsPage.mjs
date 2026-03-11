@@ -214,7 +214,9 @@ export default class PaymentMethodsPage {
 
   fillInRivertyData = async (testSuccess) => {
     if (testSuccess) {
-      await this.page.locator('input[id="birthDateInput"]').fill('01/01/1990');
+      await this.page.locator('input[data-date-type="DD"]').fill('01');
+      await this.page.locator('input[data-date-type="MM"]').fill('01');
+      await this.page.locator('input[data-date-type="YYYY"]').fill('1990');
       await this.page.locator('r-button[id="payButton"]').click();
     } else {
       await this.page.locator('button[id="cancelPaymentButton"]').click();

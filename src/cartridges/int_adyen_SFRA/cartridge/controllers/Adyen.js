@@ -221,6 +221,11 @@ server.post(
 );
 
 /**
+ * Called by Adyen to get current basket amount
+ */
+server.get('GetBasketAmount', server.middleware.https, adyen.getBasketAmount);
+
+/**
  * Called by Adyen to create temporary basket for express payment on pdp.
  */
 server.post(

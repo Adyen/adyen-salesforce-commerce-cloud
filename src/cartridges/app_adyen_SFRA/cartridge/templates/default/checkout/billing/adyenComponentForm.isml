@@ -29,6 +29,7 @@
       window.partialPaymentsOrderUrl = "${URLUtils.https('Adyen-PartialPaymentsOrder')}";
       window.partialPaymentUrl = "${URLUtils.https('Adyen-partialPayment')}";
       window.cancelPartialPaymentOrderUrl = "${URLUtils.https('Adyen-CancelPartialPaymentOrder')}";
+      window.getBasketAmountUrl = "${URLUtils.https('Adyen-GetBasketAmount')}";
       window.fetchGiftCardsUrl = "${URLUtils.https('Adyen-fetchGiftCards')}";
       window.activeTerminalApiStores = '${pdict.AdyenConfigs.getAdyenActiveStoreId()}';
       window.sfra6Compatibility = ${pdict.AdyenConfigs.getAdyenSFRA6Compatibility()};
