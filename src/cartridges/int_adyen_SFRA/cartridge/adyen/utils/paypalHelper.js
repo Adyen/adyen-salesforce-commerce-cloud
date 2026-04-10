@@ -117,18 +117,20 @@ function createPaypalUpdateOrderRequest(
   // On gross sites, shipping costs already include tax, so we must subtract
   // the shipping tax from totalTax to prevent double-counting.
   // On net sites, shipping costs exclude tax, so totalTax is passed unchanged.
-  const totalTax = isGrossSite
-    ? {
-        currency: currentBasket.currencyCode,
-        value:
-          AdyenHelper.getCurrencyValueForApi(currentBasket.totalTax).value -
-          AdyenHelper.getCurrencyValueForApi(currentBasket.shippingTotalTax)
-            .value,
-      }
-    : {
-        currency: currentBasket.currencyCode,
-        value: AdyenHelper.getCurrencyValueForApi(currentBasket.totalTax).value,
-      };
+  let totalTaxValue;
+  if (isGrossSite) {
+    totalTaxValue =
+      AdyenHelper.getCurrencyValueForApi(currentBasket.totalTax).value -
+      AdyenHelper.getCurrencyValueForApi(currentBasket.shippingTotalTax).value;
+  } else {
+    totalTaxValue = AdyenHelper.getCurrencyValueForApi(
+      currentBasket.totalTax,
+    ).value;
+  }
+  const totalTax = {
+    currency: currentBasket.currencyCode,
+    value: totalTaxValue,
+  };
 
   // All delivery methods use the catalog shipping cost (gross on gross-price sites,
   // net on net-price sites). The selected method is determined by the shipment's
