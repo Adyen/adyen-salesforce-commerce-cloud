@@ -61,8 +61,12 @@ function callGetShippingMethods(req, res, next) {
         shipment,
         address,
       );
+      const selectedMethod = methods.find((method) => method.selected);
       Transaction.wrap(() => {
-        shippingHelper.selectShippingMethod(shipment);
+        shippingHelper.selectShippingMethod(
+          shipment,
+          selectedMethod?.ID || null,
+        );
         basketCalculationHelpers.calculateTotals(currentBasket);
       });
       if (methods && methods.length > 0) {

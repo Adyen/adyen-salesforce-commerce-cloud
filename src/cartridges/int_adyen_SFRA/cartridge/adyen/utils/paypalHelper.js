@@ -20,6 +20,7 @@
  */
 const Money = require('dw/value/Money');
 const Transaction = require('dw/system/Transaction');
+const TaxMgr = require('dw/order/TaxMgr');
 const LineItemHelper = require('*/cartridge/adyen/utils/lineItemHelper');
 const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
 
@@ -58,7 +59,8 @@ function getLineItems({ Order: order, Basket: basket }, isExpress) {
       lineItemObject.amountExcludingTax = itemAmount.getValue().toFixed();
       // For paypal express tax amount could change based on shipping Address
       // so the tax amount in lineItem is excluded in the initial /Payments call.
-      // The final tax would be passed as tax_total in /paypalUpdateOrder call.
+      // The final tax is passed as tax_total in /paypalUpdateOrder. On gross-price sites,
+      // shipping tax is subtracted from tax_total to prevent double-counting.
       if (!isExpress) {
         lineItemObject.taxAmount = vatAmount.getValue().toFixed();
       }
@@ -102,21 +104,40 @@ function createPaypalUpdateOrderRequest(
   currentShippingMethods,
   paymentData,
 ) {
+  const isGrossSite = TaxMgr.taxationPolicy === TaxMgr.TAX_POLICY_GROSS;
+
   const totalGrossPrice = {
     currency: currentBasket.currencyCode,
-    value: AdyenHelper.getCurrencyValueForApi(currentBasket.totalGrossPrice)
-      .value,
+    value: AdyenHelper.getCurrencyValueForApi(
+      currentBasket.getTotalGrossPrice(),
+    ).value,
   };
 
+  // Validation rule: Original Amount + Shipping + Tax = New Amount
+  // On gross sites, shipping costs already include tax, so we must subtract
+  // the shipping tax from totalTax to prevent double-counting.
+  // On net sites, shipping costs exclude tax, so totalTax is passed unchanged.
+  let totalTaxValue;
+  if (isGrossSite) {
+    totalTaxValue =
+      AdyenHelper.getCurrencyValueForApi(currentBasket.totalTax).value -
+      AdyenHelper.getCurrencyValueForApi(currentBasket.shippingTotalTax).value;
+  } else {
+    totalTaxValue = AdyenHelper.getCurrencyValueForApi(
+      currentBasket.totalTax,
+    ).value;
+  }
   const totalTax = {
     currency: currentBasket.currencyCode,
-    value: AdyenHelper.getCurrencyValueForApi(currentBasket.totalTax).value,
+    value: totalTaxValue,
   };
 
+  // All delivery methods use the catalog shipping cost (gross on gross-price sites,
+  // net on net-price sites). The selected method is determined by the shipment's
+  // current shipping method, which is applied in shippingMethods.js before calling this function.
   const deliveryMethods = currentShippingMethods.map((shippingMethod) => {
     const { currencyCode, value } = shippingMethod.shippingCost;
     const isSelected = shippingMethod.selected;
-
     return {
       reference: shippingMethod.ID,
       description: shippingMethod.displayName,
@@ -124,9 +145,7 @@ function createPaypalUpdateOrderRequest(
       amount: {
         currency: currencyCode,
         value: AdyenHelper.getCurrencyValueForApi(
-          isSelected
-            ? currentBasket.adjustedShippingTotalNetPrice
-            : new Money(value, currencyCode),
+          new Money(value, currencyCode),
         ).value,
       },
       selected: isSelected,
@@ -137,9 +156,6 @@ function createPaypalUpdateOrderRequest(
   const anySelected = deliveryMethods.some((method) => method.selected);
   if (!anySelected && deliveryMethods.length > 0) {
     deliveryMethods[0].selected = true;
-    deliveryMethods[0].amount.value = AdyenHelper.getCurrencyValueForApi(
-      currentBasket.adjustedShippingTotalNetPrice,
-    ).value;
   }
 
   return {
