@@ -90,7 +90,7 @@
     "braces": "3.0.3",
     "jszip": "3.8.0",
     "merge": "2.1.1",
-    "got": "12.6.1",
+    "got": "14.6.6",
     "@babel/traverse": "7.23.2",
     "get-func-name": "3.0.0",
     "tough-cookie": "4.1.3",
