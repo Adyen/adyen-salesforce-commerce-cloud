@@ -17,7 +17,9 @@ jest.mock('*/cartridge/adyen/utils/lineItemHelper', () => ({
   isProductLineItem: jest.fn(() => false),
 }));
 
-const { getLineItems } = require('*/cartridge/adyen/scripts/payments/adyenLevelTwoThreeData');
+const {
+  getLineItems,
+} = require('*/cartridge/adyen/scripts/payments/adyenLevelTwoThreeData');
 const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
 
 describe('getLineItems (Enhanced Scheme Data)', () => {
@@ -26,7 +28,7 @@ describe('getLineItems (Enhanced Scheme Data)', () => {
     productID: 'SW1234567890X',
     quantityValue: 2,
     adjustedNetPrice: 100,
-	getAdjustedTax: 20,
+    getAdjustedTax: 20,
   };
 
   const createMockOrderOrBasket = (customerData = {}) => ({
@@ -49,17 +51,21 @@ describe('getLineItems (Enhanced Scheme Data)', () => {
 
   it('should return enhanced line item fields with tax, description, and commodity code', () => {
     const result = getLineItems({
-      Order: createMockOrderOrBasket({ registered: true, customerNo: 'cust-9999' }),
+      Order: createMockOrderOrBasket({
+        registered: true,
+        customerNo: 'cust-9999',
+      }),
     });
 
     expect(result).toEqual({
-      'enhancedSchemeData.totalTaxAmount': 10, 
+      'enhancedSchemeData.totalTaxAmount': 10,
       'enhancedSchemeData.customerReference': 'cust-9999',
-      'enhancedSchemeData.itemDetailLine1.unitPrice': '50', 
-      'enhancedSchemeData.itemDetailLine1.totalAmount': 100, 
+      'enhancedSchemeData.itemDetailLine1.unitPrice': '50',
+      'enhancedSchemeData.itemDetailLine1.totalAmount': 100,
       'enhancedSchemeData.itemDetailLine1.quantity': 2,
       'enhancedSchemeData.itemDetailLine1.unitOfMeasure': 'EAC',
-      'enhancedSchemeData.itemDetailLine1.commodityCode': 'mocked_comodity_code',
+      'enhancedSchemeData.itemDetailLine1.commodityCode':
+        'mocked_comodity_code',
       'enhancedSchemeData.itemDetailLine1.description': 'Super Widget',
       'enhancedSchemeData.itemDetailLine1.productCode': 'SW1234567890',
     });
@@ -68,10 +74,15 @@ describe('getLineItems (Enhanced Scheme Data)', () => {
   it('should truncate customerReference to 25 characters', () => {
     const longCustomerNo = 'very-long-customer-number-1234567890';
     const result = getLineItems({
-      Order: createMockOrderOrBasket({ registered: true, customerNo: longCustomerNo }),
+      Order: createMockOrderOrBasket({
+        registered: true,
+        customerNo: longCustomerNo,
+      }),
     });
 
-    expect(result['enhancedSchemeData.customerReference'].length).toBeLessThanOrEqual(25);
+    expect(
+      result['enhancedSchemeData.customerReference'].length,
+    ).toBeLessThanOrEqual(25);
   });
 
   it('should return null when no Order or Basket is passed', () => {
@@ -96,13 +107,15 @@ describe('getLineItems (Enhanced Scheme Data)', () => {
           toArray: () => [],
         }),
         getCustomer: () => ({
-          getID: () => null
+          getID: () => null,
         }),
         getCustomerNo: () => null,
       },
     });
 
-    expect(result['enhancedSchemeData.customerReference']).toBe('no-unique-ref');
+    expect(result['enhancedSchemeData.customerReference']).toBe(
+      'no-unique-ref',
+    );
   });
 
   it('should include discount amount when product has basePrice > adjustedPrice', () => {
@@ -110,17 +123,20 @@ describe('getLineItems (Enhanced Scheme Data)', () => {
     lineItemHelper.isProductLineItem.mockReturnValueOnce(true);
 
     AdyenHelper.getCurrencyValueForApi = jest.fn(() => ({
-      divide: jest.fn(() => ({
-        value: { toFixed: () => '10' },
-      })),
+      value: { toFixed: () => '20' },
     }));
 
+    // qty=2, basePrice=60/unit (line=120), adjustedPrice=100 (line total).
+    // Expected total line discount = 60*2 - 100 = 20.
     const discountedLineItem = {
       ...mockLineItem,
       basePrice: {
-        value: 120,
-        subtract: jest.fn((adjustedPrice) => ({
-          value: 20,
+        value: 60,
+        multiply: jest.fn(() => ({
+          value: 120,
+          subtract: jest.fn(() => ({
+            value: 20,
+          })),
         })),
       },
       adjustedPrice: {
@@ -145,8 +161,12 @@ describe('getLineItems (Enhanced Scheme Data)', () => {
       },
     });
 
-    expect(result['enhancedSchemeData.itemDetailLine1.discountAmount']).toBe('10');
+    // Total line discount (not per-unit). Adyen formula:
+    // totalAmount = quantity * unitPrice - discountAmount => 100 = 2 * 60 - 20
+    expect(result['enhancedSchemeData.itemDetailLine1.discountAmount']).toBe(
+      '20',
+    );
+    expect(result['enhancedSchemeData.itemDetailLine1.unitPrice']).toBe('60');
+    expect(result['enhancedSchemeData.itemDetailLine1.totalAmount']).toBe(100);
   });
-
-  
 });

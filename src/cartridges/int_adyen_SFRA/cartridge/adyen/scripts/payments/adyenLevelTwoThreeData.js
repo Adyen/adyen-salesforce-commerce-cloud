@@ -33,18 +33,16 @@ function getShopperReference(orderOrBasket) {
   return orderNo || customer.getID() || 'no-unique-ref';
 }
 
-function getDiscountAmount(lineItem, quantity) {
-  if (LineItemHelper.isProductLineItem(lineItem)) {
-    const { basePrice } = lineItem;
-    const { adjustedPrice } = lineItem;
-    if (basePrice && adjustedPrice && basePrice.value > adjustedPrice.value) {
-      const discountPerUnit = AdyenHelper.getCurrencyValueForApi(
-        basePrice.subtract(adjustedPrice),
-      ).divide(quantity);
-      return discountPerUnit.value.toFixed();
-    }
-  }
-  return null;
+function getDiscountAmount(lineItem) {
+  if (!LineItemHelper.isProductLineItem(lineItem)) return null;
+  const { basePrice, adjustedPrice } = lineItem;
+  if (!basePrice || !adjustedPrice) return null;
+  // Total line discount = (per-unit basePrice * quantity) - adjustedPrice line total.
+  const baseTotal = basePrice.multiply(LineItemHelper.getQuantity(lineItem));
+  if (baseTotal.value <= adjustedPrice.value) return null;
+  return AdyenHelper.getCurrencyValueForApi(
+    baseTotal.subtract(adjustedPrice),
+  ).value.toFixed();
 }
 
 function collectShippingLineItems(shipments) {
@@ -60,7 +58,7 @@ function collectShippingLineItems(shipments) {
 
 function buildEnhancedSchemeDataFields(
   index,
-  itemAmount,
+  unitPrice,
   quantity,
   totalAmount,
   commodityCode,
@@ -69,8 +67,7 @@ function buildEnhancedSchemeDataFields(
   discountAmount,
 ) {
   return {
-    [`enhancedSchemeData.itemDetailLine${index + 1}.unitPrice`]:
-      itemAmount.value.toFixed(),
+    [`enhancedSchemeData.itemDetailLine${index + 1}.unitPrice`]: unitPrice,
     [`enhancedSchemeData.itemDetailLine${index + 1}.totalAmount`]: totalAmount,
     [`enhancedSchemeData.itemDetailLine${index + 1}.quantity`]: quantity,
     [`enhancedSchemeData.itemDetailLine${index + 1}.unitOfMeasure`]: 'EAC',
@@ -98,17 +95,18 @@ function processLineItem(acc, lineItem, index) {
   const description = LineItemHelper.getDescription(lineItem);
   const id = LineItemHelper.getId(lineItem);
   const quantity = LineItemHelper.getQuantity(lineItem);
-  const itemAmount = LineItemHelper.getItemAmount(lineItem).divide(quantity);
+  const lineAmount = LineItemHelper.getItemAmount(lineItem);
   const vatAmount = LineItemHelper.getVatAmount(lineItem).divide(quantity);
-  const discountAmount = getDiscountAmount(lineItem, quantity);
+  const discountAmount = getDiscountAmount(lineItem);
   const commodityCode = AdyenConfigs.getAdyenLevel23CommodityCode();
-  const unitPrice = parseFloat(itemAmount.value.toFixed());
+  // Derive unitPrice from totalAmount = quantity * unitPrice - discountAmount.
+  const totalAmount = parseFloat(lineAmount.value.toFixed());
   const quantityNum = parseFloat(quantity);
   const discount = discountAmount ? parseFloat(discountAmount) : 0;
-  const totalAmount = quantityNum * unitPrice - discount;
+  const unitPrice = ((totalAmount + discount) / quantityNum).toFixed();
   const currentLineItem = buildEnhancedSchemeDataFields(
     index,
-    itemAmount,
+    unitPrice,
     quantity,
     totalAmount,
     commodityCode,
