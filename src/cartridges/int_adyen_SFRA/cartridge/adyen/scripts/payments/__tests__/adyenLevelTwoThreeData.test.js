@@ -58,7 +58,7 @@ describe('getLineItems (Enhanced Scheme Data)', () => {
     });
 
     expect(result).toEqual({
-      'enhancedSchemeData.totalTaxAmount': 10,
+      'enhancedSchemeData.totalTaxAmount': 20,
       'enhancedSchemeData.customerReference': 'cust-9999',
       'enhancedSchemeData.itemDetailLine1.unitPrice': '50',
       'enhancedSchemeData.itemDetailLine1.totalAmount': 100,

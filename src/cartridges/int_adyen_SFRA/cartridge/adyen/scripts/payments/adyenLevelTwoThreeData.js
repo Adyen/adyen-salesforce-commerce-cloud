@@ -33,12 +33,12 @@ function getShopperReference(orderOrBasket) {
   return orderNo || customer.getID() || 'no-unique-ref';
 }
 
-function getDiscountAmount(lineItem) {
+function getDiscountAmount(lineItem, quantity) {
   if (!LineItemHelper.isProductLineItem(lineItem)) return null;
   const { basePrice, adjustedPrice } = lineItem;
   if (!basePrice || !adjustedPrice) return null;
   // Total line discount = (per-unit basePrice * quantity) - adjustedPrice line total.
-  const baseTotal = basePrice.multiply(LineItemHelper.getQuantity(lineItem));
+  const baseTotal = basePrice.multiply(quantity);
   if (baseTotal.value <= adjustedPrice.value) return null;
   return AdyenHelper.getCurrencyValueForApi(
     baseTotal.subtract(adjustedPrice),
@@ -95,13 +95,13 @@ function processLineItem(acc, lineItem, index) {
   const description = LineItemHelper.getDescription(lineItem);
   const id = LineItemHelper.getId(lineItem);
   const quantity = LineItemHelper.getQuantity(lineItem);
+  const quantityNum = parseFloat(quantity) || 1;
   const lineAmount = LineItemHelper.getItemAmount(lineItem);
-  const vatAmount = LineItemHelper.getVatAmount(lineItem).divide(quantity);
-  const discountAmount = getDiscountAmount(lineItem);
+  const vatAmount = LineItemHelper.getVatAmount(lineItem);
+  const discountAmount = getDiscountAmount(lineItem, quantityNum);
   const commodityCode = AdyenConfigs.getAdyenLevel23CommodityCode();
   // Derive unitPrice from totalAmount = quantity * unitPrice - discountAmount.
   const totalAmount = parseFloat(lineAmount.value.toFixed());
-  const quantityNum = parseFloat(quantity);
   const discount = discountAmount ? parseFloat(discountAmount) : 0;
   const unitPrice = ((totalAmount + discount) / quantityNum).toFixed();
   const currentLineItem = buildEnhancedSchemeDataFields(
