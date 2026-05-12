@@ -143,4 +143,12 @@ describe('getTerminalApiEnvironment', () => {
 		const result = getTerminalApiEnvironment();
 		expect(result).toBe('live');
 	  });
+
+	  it('should return LIVE NEA endpoint for LIVE environment with NEA region', () => {
+		const adyenConfigs = require('*/cartridge/adyen/utils/adyenConfigs');
+		adyenConfigs.getAdyenEnvironment.mockReturnValue('LIVE');
+		adyenConfigs.getAdyenPosRegion.mockReturnValue('NEA');
+		const result = getTerminalApiEnvironment();
+		expect(result).toBe('live-nea');
+	  });
   })
