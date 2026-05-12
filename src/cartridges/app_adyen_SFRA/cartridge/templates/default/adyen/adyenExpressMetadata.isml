@@ -4,7 +4,7 @@
 <link rel="stylesheet" type="text/css" href="${AdyenHelper.getCheckoutCSS()}"/>
 <link rel="stylesheet" type="text/css" href="${URLUtils.staticURL('/css/adyenCss.css')}" />
 <script type="text/javascript">
-   window.environment = "${AdyenConfigs.getAdyenEnvironment()}";
+   window.environment = "${AdyenHelper.getCheckoutEnvironment()}";
    window.clientKey = "${AdyenConfigs.getAdyenClientKey()}",
    window.locale = "${request.locale}";
    window.countryCode = window.locale.slice(-2);
