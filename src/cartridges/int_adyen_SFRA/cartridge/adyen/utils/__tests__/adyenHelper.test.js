@@ -1,6 +1,6 @@
 /* eslint-disable global-require */
 const Money = require('../../../../../../../jest/__mocks__/dw/value/Money');
-const { getApplicableShippingMethods, getTerminalApiEnvironment } = require('../adyenHelper');
+const { getApplicableShippingMethods, getTerminalApiEnvironment, getCheckoutEnvironment } = require('../adyenHelper');
 const savePaymentDetails = require('../adyenHelper').savePaymentDetails;
 describe('savePaymentDetails', () => {
   let paymentInstrument;
@@ -143,4 +143,22 @@ describe('getTerminalApiEnvironment', () => {
 		const result = getTerminalApiEnvironment();
 		expect(result).toBe('live');
 	  });
+
+	  it('should return LIVE NEA endpoint for LIVE environment with NEA region', () => {
+		const adyenConfigs = require('*/cartridge/adyen/utils/adyenConfigs');
+		adyenConfigs.getAdyenEnvironment.mockReturnValue('LIVE');
+		adyenConfigs.getAdyenPosRegion.mockReturnValue('NEA');
+		const result = getTerminalApiEnvironment();
+		expect(result).toBe('live-nea');
+	  });
   })
+
+describe('getCheckoutEnvironment', () => {
+  it('should return LIVE NEA endpoint for LIVE environment with NEA region', () => {
+    const adyenConfigs = require('*/cartridge/adyen/utils/adyenConfigs');
+    adyenConfigs.getAdyenEnvironment.mockReturnValue('LIVE');
+    adyenConfigs.getAdyenFrontendRegion.mockReturnValue('NEA');
+    const result = getCheckoutEnvironment();
+    expect(result).toBe('live-nea');
+  });
+});

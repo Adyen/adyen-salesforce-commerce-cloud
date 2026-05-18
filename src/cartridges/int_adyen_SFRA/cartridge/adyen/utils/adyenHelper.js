@@ -234,6 +234,10 @@ const adyenHelperObj = {
           returnValue = constants.CHECKOUT_ENVIRONMENT_LIVE_APSE;
           break;
         }
+        if (frontEndRegion === constants.FRONTEND_REGIONS.NEA) {
+          returnValue = constants.CHECKOUT_ENVIRONMENT_LIVE_NEA;
+          break;
+        }
         returnValue = constants.CHECKOUT_ENVIRONMENT_LIVE_EU;
         break;
     }
@@ -258,6 +262,10 @@ const adyenHelperObj = {
         }
         if (terminalRegion === constants.POS_REGIONS.APSE) {
           returnValue = constants.POS_ENVIRONMENT_LIVE_APSE;
+          break;
+        }
+        if (terminalRegion === constants.POS_REGIONS.NEA) {
+          returnValue = constants.POS_ENVIRONMENT_LIVE_NEA;
           break;
         }
         returnValue = constants.POS_ENVIRONMENT_LIVE_EU;
