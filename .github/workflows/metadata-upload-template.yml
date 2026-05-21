@@ -35,10 +35,16 @@ jobs:
         run: zip -r $GITHUB_WORKSPACE/site_import.zip site_import
       - name: Upload metadata
         working-directory: adyen-salesforce-commerce-cloud/metadata
+        env:
+          SFCC_CLIENT_ID: ${{ secrets.SFCC_CLIENT_ID }}
+          SFCC_CLIENT_SECRET: ${{ secrets.SFCC_CLIENT_SECRET }}
+          SFCC_HOSTNAME: ${{ secrets.SFCC_HOSTNAME }}
         run: |
-          sfcc-ci client:auth '${{ secrets.SFCC_CLIENT_ID }}' '${{ secrets.SFCC_CLIENT_SECRET }}'
-          sfcc-ci instance:upload "$GITHUB_WORKSPACE/site_import.zip" -i "${{ secrets.SFCC_HOSTNAME }}"
+          sfcc-ci client:auth "$SFCC_CLIENT_ID" "$SFCC_CLIENT_SECRET"
+          sfcc-ci instance:upload "$GITHUB_WORKSPACE/site_import.zip" -i "$SFCC_HOSTNAME"
       - name: Import metadata
         working-directory: adyen-salesforce-commerce-cloud/metadata
+        env:
+          SFCC_HOSTNAME: ${{ secrets.SFCC_HOSTNAME }}
         run: |
-          sfcc-ci instance:import site_import.zip -i "${{ secrets.SFCC_HOSTNAME }}" -s
+          sfcc-ci instance:import site_import.zip -i "$SFCC_HOSTNAME" -s
