@@ -1,7 +1,43 @@
 /* eslint-disable global-require */
 const Money = require('../../../../../../../jest/__mocks__/dw/value/Money');
-const { getApplicableShippingMethods, getTerminalApiEnvironment, getCheckoutEnvironment } = require('../adyenHelper');
-const savePaymentDetails = require('../adyenHelper').savePaymentDetails;
+const adyenHelper = require('../adyenHelper');
+const {
+  getApplicableShippingMethods,
+  getTerminalApiEnvironment,
+  getCheckoutEnvironment,
+} = adyenHelper;
+const savePaymentDetails = adyenHelper.savePaymentDetails;
+
+describe('createAdyenRequestObject', () => {
+  it('should remove brand for stored payment methods', () => {
+    jest.spyOn(adyenHelper, 'createRedirectUrl').mockReturnValue('mocked_url');
+    jest.spyOn(adyenHelper, 'getApplicationInfo').mockReturnValue({});
+
+    const paymentInstrument = {
+      custom: {
+        adyenPaymentData: JSON.stringify({
+          paymentMethod: {
+            type: 'scheme',
+            storedPaymentMethodId: '8415995487234109',
+            brand: 'visa',
+          },
+        }),
+      },
+    };
+
+    const result = adyenHelper.createAdyenRequestObject(
+      'ORDER-123',
+      'TOKEN-123',
+      paymentInstrument,
+      'shopper@example.com',
+    );
+
+    expect(result.paymentMethod.storedPaymentMethodId).toBe('8415995487234109');
+    expect(result.paymentMethod.brand).toBeUndefined();
+    jest.restoreAllMocks();
+  });
+});
+
 describe('savePaymentDetails', () => {
   let paymentInstrument;
   let order;
