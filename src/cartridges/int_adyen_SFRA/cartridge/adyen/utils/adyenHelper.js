@@ -579,6 +579,7 @@ const adyenHelperObj = {
     }
 
     if (stateData.paymentMethod?.storedPaymentMethodId) {
+      delete stateData.paymentMethod.brand;
       stateData.recurringProcessingModel =
         constants.RECURRING_PROCESSING_MODEL.CARD_ON_FILE;
       stateData.shopperInteraction = constants.SHOPPER_INTERACTIONS.CONT_AUTH;
