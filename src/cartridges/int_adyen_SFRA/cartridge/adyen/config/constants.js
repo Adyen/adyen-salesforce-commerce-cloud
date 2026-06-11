@@ -64,7 +64,7 @@ module.exports = {
     'clearpay',
   ],
 
-  L23_PAYMENT_METHODS: ['applepay', 'googlepay', 'scheme'],
+  L23_PAYMENT_METHODS: ['applepay', 'googlepay', 'paywithgoogle', 'scheme'],
 
   SERVICE: {
     PAYMENT: 'AdyenPayment',
