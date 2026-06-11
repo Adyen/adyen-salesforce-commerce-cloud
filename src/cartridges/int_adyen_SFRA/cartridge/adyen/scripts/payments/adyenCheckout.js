@@ -163,7 +163,9 @@ function createPaymentRequest(args) {
   // L2/3 Data
   if (
     AdyenConfigs.getAdyenLevel23DataEnabled() &&
-    paymentMethodType.indexOf('scheme') > -1
+    constants.L23_PAYMENT_METHODS.some(
+      (pm) => paymentMethodType.indexOf(pm) > -1,
+    )
   ) {
     paymentRequest.additionalData = {
       ...paymentRequest.additionalData,
