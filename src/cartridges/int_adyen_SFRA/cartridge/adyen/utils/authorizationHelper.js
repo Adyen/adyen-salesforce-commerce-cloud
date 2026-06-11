@@ -9,11 +9,11 @@ const getPayments = require('*/cartridge/adyen/utils/getPayments');
  * @returns {Object} an error object
  */
 function handlePayments(order) {
-  if (order.totalNetPrice?.value === 0.0) {
+  if (order?.totalNetPrice?.value === 0.0) {
     return {};
   }
 
-  if (order.paymentInstruments.length) {
+  if (order?.paymentInstruments?.length) {
     return getPayments(order);
   }
 
