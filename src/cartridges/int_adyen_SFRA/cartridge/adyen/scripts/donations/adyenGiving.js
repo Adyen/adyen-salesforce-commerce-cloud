@@ -75,7 +75,10 @@ function donate(donationReference, donationAmount, orderToken) {
     paymentData.fullResponse?.paymentMethod?.type;
 
   const campaignsResponse = getActiveCampaigns();
-  if (campaignsResponse.error || !campaignsResponse.donationCampaigns?.length) {
+  if (
+    campaignsResponse?.error ||
+    !campaignsResponse?.donationCampaigns?.length
+  ) {
     throw new AdyenError('Donation campaigns are not available');
   }
   const donationCampaign = campaignsResponse.donationCampaigns[0];
