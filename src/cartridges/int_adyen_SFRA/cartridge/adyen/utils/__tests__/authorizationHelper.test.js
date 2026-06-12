@@ -28,7 +28,7 @@ afterEach(() => {
 describe('Adyen Helpers', () => {
   describe('Handle Payments', () => {
     it('should return when totalNetPrice is 0.0', () => {
-      order.totalNetPrice = 0.0;
+      order.totalNetPrice = { value: 0.0 };
       const handlePaymentsResult = handlePayments(order);
       expect(handlePaymentsResult).toEqual({});
     });
