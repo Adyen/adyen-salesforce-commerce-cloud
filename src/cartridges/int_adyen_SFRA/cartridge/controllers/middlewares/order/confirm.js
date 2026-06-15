@@ -18,7 +18,8 @@ function getOrderToken(req) {
 function handleAdyenGiving(req, res) {
   const clientKey = AdyenConfigs.getAdyenClientKey();
   const environment = AdyenHelper.getCheckoutEnvironment();
-  const campaign = adyenGiving.getActiveCampaigns().donationCampaigns[0];
+  const campaignsResponse = adyenGiving.getActiveCampaigns();
+  const campaign = campaignsResponse?.donationCampaigns?.[0];
   if (!campaign) {
     return;
   }
