@@ -17,10 +17,6 @@
 
 <iscomment> ### Custom Adyen cartridge start ### </iscomment>
 <fieldset>
-    <input type="hidden" class="form-control" id="selectedPaymentOption"
-           name="${pdict.forms.billingForm.paymentMethod.htmlName}"
-           value="paymentMethod">
-
     <isset name="creditFields" value="${pdict.forms.billingForm.creditCardFields}" scope="page"/>
     <iscomment> ### Custom Adyen cartridge end ### </iscomment>
 <div class="credit-card-selection-new" >
