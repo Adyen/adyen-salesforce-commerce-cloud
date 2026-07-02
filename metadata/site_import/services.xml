@@ -87,7 +87,7 @@
         <password/>
     </service-credential>
     <service-credential service-credential-id="AdyenDonationCampaignsLive">
-        <url>https://[YOUR_LIVE_PREFIX]-checkout-live.adyenpayments.com/[CHECKOUT_API_VERSION]/donationCampaigns</url>
+        <url>https://[YOUR_LIVE_PREFIX]-checkout-live.adyenpayments.com/checkout/[CHECKOUT_API_VERSION]/donationCampaigns</url>
         <user-id></user-id>
         <password/>
     </service-credential>
