@@ -33,6 +33,14 @@ describe('Begin', () => {
     expect(res.setViewData.mock.calls).toMatchSnapshot();
   });
 
+  it('should set installments to an empty array string when disabled', () => {
+    const AdyenConfigs = require('*/cartridge/adyen/utils/adyenConfigs');
+    AdyenConfigs.getAdyenInstallmentsEnabled.mockImplementationOnce(() => false);
+    begin(req, res, jest.fn());
+    const viewData = res.setViewData.mock.calls[0][0];
+    expect(viewData.adyen.installments).toBe('[]');
+  });
+
   it('should not attempt to restore cart when no order number is cached', () =>{
     begin(req, res, jest.fn());
     expect(res.setViewData.mock.calls).toMatchSnapshot();

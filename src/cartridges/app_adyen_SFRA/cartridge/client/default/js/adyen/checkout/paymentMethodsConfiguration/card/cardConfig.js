@@ -21,9 +21,13 @@ class CardConfig {
     if (installmentLocales.indexOf(window.Configuration?.locale) < 0) {
       return;
     }
-    const installments = JSON.parse(
-      window.installments?.replace(/&quot;/g, '"'),
-    );
+    let installments;
+    try {
+      installments = JSON.parse(window.installments?.replace(/&quot;/g, '"'));
+    } catch (e) {
+      // Malformed or empty installments value; skip installments config.
+      return;
+    }
     if (installments?.length && this.amount) {
       const installmentOptions = {};
       installments.forEach((installment) => {

@@ -43,7 +43,7 @@ function getAdyenViewData() {
   const environment = AdyenHelper.getCheckoutEnvironment();
   const installments = AdyenConfigs.getAdyenInstallmentsEnabled()
     ? AdyenConfigs.getCreditCardInstallments()
-    : {};
+    : '[]';
   const adyenClientKey = AdyenConfigs.getAdyenClientKey();
   const googleMerchantID = AdyenConfigs.getGoogleMerchantID();
   const merchantAccount = AdyenConfigs.getAdyenMerchantAccount();
