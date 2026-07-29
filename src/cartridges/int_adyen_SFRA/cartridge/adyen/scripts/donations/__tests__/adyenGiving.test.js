@@ -22,6 +22,17 @@ const createCampaignsResponse = (donation) => ({
   donationCampaigns: [{ id: 'mocked_campaignId', donation }],
 });
 
+const createRoundupCampaignsResponse = () =>
+  createCampaignsResponse({ type: 'roundup', maxRoundupAmount: 100 });
+
+const mockOrder = (
+  paymentTransactionCustom = createPaymentTransactionCustom(),
+) => {
+  const order = createOrder(paymentTransactionCustom);
+  OrderMgr.getOrder.mockReturnValue(order);
+  return order;
+};
+
 beforeEach(() => {
   adyenGiving = require('../adyenGiving');
   AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
@@ -36,9 +47,7 @@ afterEach(() => {
 
 describe('donate', () => {
   it('should send a donation request without a payment method', () => {
-    OrderMgr.getOrder.mockReturnValueOnce(
-      createOrder(createPaymentTransactionCustom()),
-    );
+    mockOrder();
     AdyenHelper.executeCall
       .mockReturnValueOnce(createCampaignsResponse())
       .mockReturnValueOnce({ status: 'completed' });
@@ -75,36 +84,33 @@ describe('donate', () => {
     expect(AdyenHelper.executeCall).not.toHaveBeenCalled();
   });
 
-  it('should throw when no donation campaigns are available', () => {
-    OrderMgr.getOrder.mockReturnValue(
-      createOrder(createPaymentTransactionCustom()),
-    );
-
+  it('should throw when the campaigns call returns an error', () => {
+    mockOrder();
     AdyenHelper.executeCall.mockReturnValueOnce({ error: true });
+
     expect(() =>
       adyenGiving.donate('mocked_orderNo', donationAmount, 'mocked_orderToken'),
     ).toThrow('Donation campaigns are not available');
-
-    AdyenHelper.executeCall.mockReturnValueOnce({ donationCampaigns: [] });
-    expect(() =>
-      adyenGiving.donate('mocked_orderNo', donationAmount, 'mocked_orderToken'),
-    ).toThrow('Donation campaigns are not available');
-
-    expect(AdyenHelper.executeCall).toHaveBeenCalledTimes(2);
+    expect(AdyenHelper.executeCall).toHaveBeenCalledTimes(1);
   });
 
-  it('should validate the donation amount against the roundup amount', () => {
-    const roundupCampaign = createCampaignsResponse({
-      type: 'roundup',
-      maxRoundupAmount: 100,
-    });
+  it('should throw when no donation campaigns are returned', () => {
+    mockOrder();
+    AdyenHelper.executeCall.mockReturnValueOnce({ donationCampaigns: [] });
 
-    OrderMgr.getOrder.mockReturnValue(
-      createOrder(createPaymentTransactionCustom()),
-    );
+    expect(() =>
+      adyenGiving.donate('mocked_orderNo', donationAmount, 'mocked_orderToken'),
+    ).toThrow('Donation campaigns are not available');
+    expect(AdyenHelper.executeCall).toHaveBeenCalledTimes(1);
+  });
+
+  it('should throw when the donation amount does not match the roundup amount', () => {
+    mockOrder();
     AdyenHelper.getCurrencyValueForApi.mockReturnValue(1030);
+    AdyenHelper.executeCall.mockReturnValueOnce(
+      createRoundupCampaignsResponse(),
+    );
 
-    AdyenHelper.executeCall.mockReturnValueOnce(roundupCampaign);
     expect(() =>
       adyenGiving.donate(
         'mocked_orderNo',
@@ -113,39 +119,56 @@ describe('donate', () => {
       ),
     ).toThrow('Donation amount does not match the roundup amount');
     expect(AdyenHelper.executeCall).toHaveBeenCalledTimes(1);
+  });
 
+  it('should send the donation request when the roundup amount matches', () => {
+    mockOrder();
+    AdyenHelper.getCurrencyValueForApi.mockReturnValue(1030);
     AdyenHelper.executeCall
-      .mockReturnValueOnce(roundupCampaign)
+      .mockReturnValueOnce(createRoundupCampaignsResponse())
       .mockReturnValueOnce({ status: 'completed' });
+
     adyenGiving.donate(
       'mocked_orderNo',
       { value: '70', currency: 'EUR' },
       'mocked_orderToken',
     );
-    expect(AdyenHelper.executeCall.mock.calls[2][1]).not.toHaveProperty(
-      'paymentMethod',
-    );
+
+    const [service, requestObject] = AdyenHelper.executeCall.mock.calls[1];
+    expect(service).toBe('AdyenGiving');
+    expect(requestObject).not.toHaveProperty('paymentMethod');
+    expect(requestObject.amount).toEqual({ value: '70', currency: 'EUR' });
   });
 
-  it('should only clear the donation token when the donation is completed', () => {
-    const completedCustom = createPaymentTransactionCustom();
-    const completedOrder = createOrder(completedCustom);
-    OrderMgr.getOrder.mockReturnValueOnce(completedOrder);
+  it('should clear the donation token and store the amount when the donation is completed', () => {
+    const paymentTransactionCustom = createPaymentTransactionCustom();
+    const order = mockOrder(paymentTransactionCustom);
     AdyenHelper.executeCall
       .mockReturnValueOnce(createCampaignsResponse())
       .mockReturnValueOnce({ status: 'completed' });
+
     adyenGiving.donate('mocked_orderNo', donationAmount, 'mocked_orderToken');
-    expect(completedCustom.Adyen_donationToken).toBeNull();
-    expect(completedOrder.custom.Adyen_donationAmount).toBe(
+
+    expect(paymentTransactionCustom.Adyen_donationToken).toBeNull();
+    expect(order.custom.Adyen_donationAmount).toBe(
       JSON.stringify(donationAmount),
     );
+  });
 
-    const pendingCustom = createPaymentTransactionCustom();
-    OrderMgr.getOrder.mockReturnValueOnce(createOrder(pendingCustom));
+  it('should not clear the donation token when the donation is pending', () => {
+    const paymentTransactionCustom = createPaymentTransactionCustom();
+    const order = mockOrder(paymentTransactionCustom);
     AdyenHelper.executeCall
       .mockReturnValueOnce(createCampaignsResponse())
       .mockReturnValueOnce({ status: 'pending' });
+
     adyenGiving.donate('mocked_orderNo', donationAmount, 'mocked_orderToken');
-    expect(pendingCustom.Adyen_donationToken).toBe('mocked_donationToken');
+
+    expect(paymentTransactionCustom.Adyen_donationToken).toBe(
+      'mocked_donationToken',
+    );
+    expect(order.custom.Adyen_donationAmount).toBe(
+      JSON.stringify(donationAmount),
+    );
   });
 });
