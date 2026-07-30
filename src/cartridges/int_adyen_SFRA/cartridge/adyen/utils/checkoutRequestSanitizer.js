@@ -27,12 +27,12 @@ const V72_FIELD_LIMITS = {
   REFERENCE: 80,
   RETURN_URL: 1024,
   SHOPPER_EMAIL: 256,
-  SHOPPER_IP: 50,
+  SHOPPER_IP: 256,
   SHOPPER_NAME: 100,
   TELEPHONE_NUMBER: 64,
   SOCIAL_SECURITY_NUMBER: 50,
   POSTAL_CODE: 10,
-  BILLING_STATE_OR_PROVINCE: 3,
+  BILLING_STATE_OR_PROVINCE: 10,
   CAPTURE_DELAY_HOURS: 672,
   METADATA_KEY: 20,
   METADATA_VALUE: 80,
@@ -42,6 +42,7 @@ const ENTITY_TYPES = ['NaturalPerson', 'CompanyName'];
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
 const ISO_DATE_PREFIX = /^(\d{4}-\d{2}-\d{2})/;
 const ALPHA_2 = /^[A-Za-z]{2}$/;
+const STATE_OR_PROVINCE_PLACEHOLDER = 'N/A';
 const QUOTED_LOCAL_PART = /^"(?:[^"\\]|\\.)*"$/;
 const PERCENT_ESCAPE = /(%[0-9A-Fa-f]{2})/;
 const HIGH_SURROGATE = /[\uD800-\uDBFF]$/;
@@ -187,6 +188,17 @@ function applyDateOfBirth(container, key, path) {
   AdyenLogs.info_log(`Checkout v72: reformatted ${path} to YYYY-MM-DD`);
 }
 
+function logUnmodifiedStateOrProvince(path, value, requirement) {
+  // Neither dropped nor truncated: stateOrProvince is a required address field,
+  // so deleting it turns a format rejection into a misleading "not provided"
+  // rejection, and truncating turns "Queensland" into the valid-looking but
+  // wrong "QU", which produces a silent AVS partial match.
+  AdyenLogs.error_log(
+    `Checkout v72: ${path} is sent unmodified`,
+    `${requirement} (length ${value.length})`,
+  );
+}
+
 function applyBillingStateOrProvince(container, key, path) {
   const value = container[key];
   if (
@@ -195,31 +207,25 @@ function applyBillingStateOrProvince(container, key, path) {
   ) {
     return;
   }
-  // Dropped rather than truncated for the same reason as the delivery address:
-  // a wrong-but-well-formed state code produces a silent AVS partial match,
-  // which is worse for the merchant than no state code at all.
-  delete container[key];
-  AdyenLogs.error_log(
-    `Checkout v72: dropped ${path}, over ${V72_FIELD_LIMITS.BILLING_STATE_OR_PROVINCE} characters (length ${value.length})`,
+  logUnmodifiedStateOrProvince(
+    path,
+    value,
+    `over ${V72_FIELD_LIMITS.BILLING_STATE_OR_PROVINCE} characters`,
   );
 }
 
 function applyDeliveryStateOrProvince(container, key, path) {
   const value = container[key];
-  if (typeof value !== 'string') {
+  // The placeholder is what the address builders send for countries that have
+  // no state or province, where the field is required but has no valid code.
+  if (typeof value !== 'string' || value === STATE_OR_PROVINCE_PLACEHOLDER) {
     return;
   }
-  // The caller is assumed to supply an ISO 3166-1 alpha-2 code. Anything else is
-  // dropped rather than truncated, because truncating turns "Queensland" into the
-  // valid-looking but wrong "QU".
-  if (!ALPHA_2.test(value)) {
-    delete container[key];
-    AdyenLogs.error_log(
-      `Checkout v72: dropped ${path}, not an ISO 3166-1 alpha-2 code (length ${value.length})`,
-    );
+  if (ALPHA_2.test(value)) {
+    container[key] = value.toUpperCase();
     return;
   }
-  container[key] = value.toUpperCase();
+  logUnmodifiedStateOrProvince(path, value, 'not an ISO 3166-1 alpha-2 code');
 }
 
 function applyEntityType(container, key, path) {

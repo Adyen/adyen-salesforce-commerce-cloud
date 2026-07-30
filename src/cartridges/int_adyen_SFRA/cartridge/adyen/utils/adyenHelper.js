@@ -476,9 +476,11 @@ const adyenHelperObj = {
         : 'ZZ',
       houseNumberOrName: shippingHouseNumberOrName,
       postalCode: shippingAddress.postalCode ? shippingAddress.postalCode : '',
-      ...(shippingAddress.stateCode && {
-        stateOrProvince: shippingAddress.stateCode,
-      }),
+      // Required by the Adyen address model, so countries without a state still
+      // need a placeholder.
+      stateOrProvince: shippingAddress.stateCode
+        ? shippingAddress.stateCode
+        : 'N/A',
       street: shippingStreet,
     };
 
@@ -506,9 +508,9 @@ const adyenHelperObj = {
         : 'ZZ',
       houseNumberOrName: billingHouseNumberOrName,
       postalCode: billingAddress.postalCode ? billingAddress.postalCode : '',
-      ...(billingAddress.stateCode && {
-        stateOrProvince: billingAddress.stateCode,
-      }),
+      stateOrProvince: billingAddress.stateCode
+        ? billingAddress.stateCode
+        : 'N/A',
       street: billingStreet,
     };
 

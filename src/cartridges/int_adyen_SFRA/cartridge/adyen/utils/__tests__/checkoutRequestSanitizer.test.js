@@ -49,7 +49,7 @@ describe('sanitizeRequest', () => {
 
   it('never mutates the caller object', () => {
     const request = validRequest();
-    request.shopperIP = 'x'.repeat(80);
+    request.shopperIP = 'x'.repeat(300);
     const snapshot = JSON.stringify(request);
 
     sanitizeRequest(request);
@@ -111,7 +111,7 @@ describe('sanitizeRequest', () => {
     it('truncates the over-long length-capped fields', () => {
       const request = {
         ...validRequest(),
-        shopperIP: 'i'.repeat(80),
+        shopperIP: 'i'.repeat(300),
         shopperName: { firstName: 'f'.repeat(120), lastName: 'l'.repeat(120) },
         telephoneNumber: 't'.repeat(70),
         socialSecurityNumber: 's'.repeat(60),
@@ -152,7 +152,9 @@ describe('sanitizeRequest', () => {
     });
 
     it('never logs the value of a PII field', () => {
-      sanitizeRequest({ telephoneNumber: '+31612345678901234567890'.repeat(4) });
+      sanitizeRequest({
+        telephoneNumber: '+31612345678901234567890'.repeat(4),
+      });
 
       const loggedMessages = AdyenLogs.info_log.mock.calls.join(' ');
       expect(loggedMessages).toContain('telephoneNumber');
@@ -302,49 +304,60 @@ describe('sanitizeRequest', () => {
       ).toBeUndefined();
       expect(AdyenLogs.error_log).toHaveBeenCalled();
     });
+  });
 
-    it('drops a delivery stateOrProvince that is not an alpha-2 code', () => {
+  describe('stateOrProvince', () => {
+    it('logs but never drops a delivery code that is not alpha-2, because the field is required', () => {
       expect(
         sanitizeRequest({ deliveryAddress: { stateOrProvince: 'Queensland' } })
           .deliveryAddress.stateOrProvince,
-      ).toBeUndefined();
+      ).toBe('Queensland');
       expect(AdyenLogs.error_log).toHaveBeenCalled();
     });
-  });
 
-  describe('billing versus delivery stateOrProvince', () => {
-    it('drops an over-long code on both rather than truncating it', () => {
+    it('logs but never drops an over-long billing code', () => {
+      expect(
+        sanitizeRequest({
+          billingAddress: { stateOrProvince: 'Noord-Holland' },
+        }).billingAddress.stateOrProvince,
+      ).toBe('Noord-Holland');
+      expect(AdyenLogs.error_log).toHaveBeenCalled();
+    });
+
+    it('keeps a ten-character billing code that the delivery rule flags', () => {
       const sanitized = sanitizeRequest({
         billingAddress: { stateOrProvince: 'Queensland' },
         deliveryAddress: { stateOrProvince: 'Queensland' },
       });
 
-      expect(sanitized.billingAddress.stateOrProvince).toBeUndefined();
-      expect(sanitized.deliveryAddress.stateOrProvince).toBeUndefined();
+      expect(sanitized.billingAddress.stateOrProvince).toBe('Queensland');
+      expect(sanitized.deliveryAddress.stateOrProvince).toBe('Queensland');
+      expect(AdyenLogs.error_log).toHaveBeenCalledTimes(1);
     });
 
-    it('keeps a three-character billing code that the delivery rule rejects', () => {
+    it('leaves the N/A placeholder of a stateless country alone without logging', () => {
       const sanitized = sanitizeRequest({
-        billingAddress: { stateOrProvince: 'SAO' },
-        deliveryAddress: { stateOrProvince: 'SAO' },
+        billingAddress: { stateOrProvince: 'N/A' },
+        deliveryAddress: { stateOrProvince: 'N/A' },
       });
 
-      expect(sanitized.billingAddress.stateOrProvince).toBe('SAO');
-      expect(sanitized.deliveryAddress.stateOrProvince).toBeUndefined();
+      expect(sanitized.billingAddress.stateOrProvince).toBe('N/A');
+      expect(sanitized.deliveryAddress.stateOrProvince).toBe('N/A');
+      expect(AdyenLogs.error_log).not.toHaveBeenCalled();
     });
   });
 
   describe('clamping', () => {
     it('clamps captureDelayHours to the maximum', () => {
-      expect(sanitizeRequest({ captureDelayHours: 1000 }).captureDelayHours).toBe(
-        672,
-      );
+      expect(
+        sanitizeRequest({ captureDelayHours: 1000 }).captureDelayHours,
+      ).toBe(672);
     });
 
     it('leaves captureDelayHours within the maximum alone', () => {
-      expect(sanitizeRequest({ captureDelayHours: 672 }).captureDelayHours).toBe(
-        672,
-      );
+      expect(
+        sanitizeRequest({ captureDelayHours: 672 }).captureDelayHours,
+      ).toBe(672);
     });
   });
 

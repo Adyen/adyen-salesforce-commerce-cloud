@@ -45,10 +45,10 @@ describe('authorizeCSC payment link request', () => {
     expect(getSentBillingAddress().stateOrProvince).toBe('NH');
   });
 
-  it('omits stateOrProvince entirely when the billing address has no stateCode', () => {
+  it('falls back to N/A when the billing address has no stateCode', () => {
     authorize(buildOrder(null), buildOrderPaymentInstrument());
 
-    expect('stateOrProvince' in getSentBillingAddress()).toBe(false);
+    expect(getSentBillingAddress().stateOrProvince).toBe('N/A');
   });
 
   it('keeps the N/A fallbacks for the other billing address fields', () => {

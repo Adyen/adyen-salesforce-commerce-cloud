@@ -202,20 +202,20 @@ describe('executeCall', () => {
   it('sends the sanitized request body', () => {
     adyenHelper.executeCall(constants.SERVICE.PAYMENT, {
       reference: '00001202',
-      shopperIP: 'i'.repeat(80),
+      shopperIP: 'i'.repeat(300),
       shopperEmail: '  shopper@example.com  ',
     });
 
-    expect(getSentBody().shopperIP).toBe('i'.repeat(50));
+    expect(getSentBody().shopperIP).toBe('i'.repeat(256));
     expect(getSentBody().shopperEmail).toBe('shopper@example.com');
   });
 
   it('does not mutate the request object it was given', () => {
-    const requestObject = { shopperIP: 'i'.repeat(80) };
+    const requestObject = { shopperIP: 'i'.repeat(300) };
 
     adyenHelper.executeCall(constants.SERVICE.PAYMENT, requestObject);
 
-    expect(requestObject.shopperIP).toBe('i'.repeat(80));
+    expect(requestObject.shopperIP).toBe('i'.repeat(300));
   });
 
   it('sanitizes once and re-sends the identical body on every retry', () => {
@@ -223,7 +223,7 @@ describe('executeCall', () => {
 
     expect(() =>
       adyenHelper.executeCall(constants.SERVICE.PAYMENT, {
-        shopperIP: 'i'.repeat(80),
+        shopperIP: 'i'.repeat(300),
       }),
     ).toThrow();
 
@@ -268,25 +268,26 @@ describe('createAddressObjects', () => {
     expect(paymentRequest.billingAddress.stateOrProvince).toBe('ZH');
   });
 
-  it('omits stateOrProvince entirely when the address has no stateCode', () => {
+  it('falls back to N/A when the address has no stateCode', () => {
     const paymentRequest = createAddressObjects(
       buildOrder(null, undefined),
       'scheme',
       {},
     );
 
-    expect('stateOrProvince' in paymentRequest.deliveryAddress).toBe(false);
-    expect('stateOrProvince' in paymentRequest.billingAddress).toBe(false);
+    expect(paymentRequest.deliveryAddress.stateOrProvince).toBe('N/A');
+    expect(paymentRequest.billingAddress.stateOrProvince).toBe('N/A');
   });
 
-  it('never falls back to the N/A literal for stateOrProvince', () => {
+  it('falls back to N/A when the stateCode is an empty string', () => {
     const paymentRequest = createAddressObjects(
       buildOrder('', ''),
       'scheme',
       {},
     );
 
-    expect(JSON.stringify(paymentRequest)).not.toContain('stateOrProvince');
+    expect(paymentRequest.deliveryAddress.stateOrProvince).toBe('N/A');
+    expect(paymentRequest.billingAddress.stateOrProvince).toBe('N/A');
   });
 
   it('keeps the N/A fallbacks for the other address fields', () => {
