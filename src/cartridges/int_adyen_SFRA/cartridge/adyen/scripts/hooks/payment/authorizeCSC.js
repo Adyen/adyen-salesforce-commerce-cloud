@@ -57,9 +57,9 @@ function buildPaymentLinkRequest(
     country: billingCountry,
     houseNumberOrName: billingHouseNumberOrName,
     postalCode: billingAddress.postalCode ? billingAddress.postalCode : 'N/A',
-    stateOrProvince: billingAddress.stateCode
-      ? billingAddress.stateCode
-      : 'N/A',
+    ...(billingAddress.stateCode && {
+      stateOrProvince: billingAddress.stateCode,
+    }),
     street: billingStreet,
   };
 

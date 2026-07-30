@@ -167,10 +167,10 @@ function createPaymentRequest(args) {
       (pm) => paymentMethodType.indexOf(pm) > -1,
     )
   ) {
-    paymentRequest.additionalData = {
-      ...paymentRequest.additionalData,
-      ...adyenLevelTwoThreeData.getLineItems(args),
-    };
+    const enhancedSchemeData = adyenLevelTwoThreeData.getLineItems(args);
+    if (enhancedSchemeData?.levelTwoThree?.itemDetailLines?.length > 0) {
+      paymentRequest.enhancedSchemeData = enhancedSchemeData;
+    }
   }
 
   // Add installments

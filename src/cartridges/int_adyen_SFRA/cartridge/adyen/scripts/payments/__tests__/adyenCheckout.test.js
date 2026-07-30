@@ -101,7 +101,24 @@ describe('AdyenCheckout', () => {
 
     describe('L2/3 Data filtering with L23_PAYMENT_METHODS', () => {
         let getLineItemsSpy;
-        const l23MockData = { 'enhancedSchemeData.totalTaxAmount': 10 };
+        const l23MockData = {
+            levelTwoThree: {
+                customerReferenceNumber: 'cust-1',
+                totalTaxAmount: 10,
+                itemDetailLines: [
+                    {
+                        unitPrice: 50,
+                        totalAmount: 100,
+                        quantity: 2,
+                        unitOfMeasure: 'EAC',
+                    },
+                ],
+            },
+        };
+
+        function getSentPaymentRequest() {
+            return AdyenHelper.createShopperObject.mock.calls[0][0].paymentRequest;
+        }
 
         function createArgs() {
             return {
@@ -114,6 +131,7 @@ describe('AdyenCheckout', () => {
                     getCustomerEmail: jest.fn(),
                     getBillingAddress: jest.fn(),
                     getDefaultShipment: jest.fn(),
+                    getProductLineItems: jest.fn(() => ({ toArray: () => [] })),
                     paymentInstrument: {
                         custom: {
                             adyenPaymentData: "{}",
@@ -133,11 +151,13 @@ describe('AdyenCheckout', () => {
             getLineItemsSpy = jest.spyOn(adyenLevelTwoThreeData, 'getLineItems')
                 .mockReturnValue(l23MockData);
             AdyenConfigs.getAdyenLevel23DataEnabled.mockReturnValue(true);
+            AdyenHelper.createShopperObject.mockClear();
         });
 
         afterEach(() => {
             getLineItemsSpy.mockRestore();
             AdyenConfigs.getAdyenLevel23DataEnabled.mockReturnValue(false);
+            AdyenConfigs.getAdyenBasketFieldsEnabled.mockReturnValue(false);
             AdyenHelper.createAdyenRequestObject.mockReturnValue({
                 paymentMethod: { type: 'scheme' },
             });
@@ -149,6 +169,58 @@ describe('AdyenCheckout', () => {
             });
             adyenCheckout.createPaymentRequest(createArgs());
             expect(getLineItemsSpy).toHaveBeenCalled();
+        });
+
+        it('should send L2/3 data as enhancedSchemeData, not in additionalData', () => {
+            AdyenHelper.createAdyenRequestObject.mockReturnValue({
+                paymentMethod: { type: 'scheme' },
+            });
+            adyenCheckout.createPaymentRequest(createArgs());
+            const paymentRequest = getSentPaymentRequest();
+            expect(paymentRequest.enhancedSchemeData).toEqual(l23MockData);
+            expect(paymentRequest.additionalData).toBeUndefined();
+        });
+
+        it('should not add enhancedSchemeData when there are no itemDetailLines', () => {
+            getLineItemsSpy.mockReturnValue({
+                levelTwoThree: {
+                    customerReferenceNumber: 'cust-1',
+                    totalTaxAmount: 0,
+                    itemDetailLines: [],
+                },
+            });
+            AdyenHelper.createAdyenRequestObject.mockReturnValue({
+                paymentMethod: { type: 'scheme' },
+            });
+            adyenCheckout.createPaymentRequest(createArgs());
+            expect(getSentPaymentRequest().enhancedSchemeData).toBeUndefined();
+        });
+
+        it('should not add enhancedSchemeData when getLineItems returns null', () => {
+            getLineItemsSpy.mockReturnValue(null);
+            AdyenHelper.createAdyenRequestObject.mockReturnValue({
+                paymentMethod: { type: 'scheme' },
+            });
+            adyenCheckout.createPaymentRequest(createArgs());
+            expect(getSentPaymentRequest().enhancedSchemeData).toBeUndefined();
+        });
+
+        it('should keep enhancedSchemeData out of a populated additionalData', () => {
+            AdyenConfigs.getAdyenBasketFieldsEnabled.mockReturnValue(true);
+            AdyenHelper.createAdyenRequestObject.mockReturnValue({
+                paymentMethod: { type: 'scheme' },
+                additionalData: { 'openinvoicedata.numberOfLines': '1' },
+            });
+
+            adyenCheckout.createPaymentRequest(createArgs());
+
+            const paymentRequest = getSentPaymentRequest();
+            expect(paymentRequest.enhancedSchemeData).toEqual(l23MockData);
+            expect(
+                Object.keys(paymentRequest.additionalData).every(
+                    (key) => key.indexOf('enhancedSchemeData') !== 0,
+                ),
+            ).toBe(true);
         });
 
         it('should add L2/3 data for applepay payment method', () => {

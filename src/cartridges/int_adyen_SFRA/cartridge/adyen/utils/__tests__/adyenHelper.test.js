@@ -162,3 +162,183 @@ describe('getCheckoutEnvironment', () => {
     expect(result).toBe('live-nea');
   });
 });
+
+describe('executeCall', () => {
+  const adyenHelper = require('../adyenHelper');
+  const constants = require('*/cartridge/adyen/config/constants');
+  let service;
+  let callResult;
+
+  const getSentBody = (nthCall = 0) =>
+    JSON.parse(service.call.mock.calls[nthCall][0]);
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    const adyenConfigs = require('*/cartridge/adyen/utils/adyenConfigs');
+    adyenConfigs.getAdyenEnvironment.mockReturnValue('TEST');
+    callResult = {
+      isOk: jest.fn(() => true),
+      object: { getText: jest.fn(() => '{"resultCode":"Authorised"}') },
+      getError: jest.fn(() => 500),
+      getStatus: jest.fn(() => 'ERROR'),
+      getErrorMessage: jest.fn(() => ''),
+      getMsg: jest.fn(() => ''),
+    };
+    service = {
+      getURL: jest.fn(
+        () => 'https://checkout-test.adyen.com/[CHECKOUT_API_VERSION]/payments',
+      ),
+      setURL: jest.fn(),
+      addHeader: jest.fn(),
+      call: jest.fn(() => callResult),
+    };
+    jest.spyOn(adyenHelper, 'getService').mockReturnValue(service);
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it('sends the sanitized request body', () => {
+    adyenHelper.executeCall(constants.SERVICE.PAYMENT, {
+      reference: '00001202',
+      shopperIP: 'i'.repeat(80),
+      shopperEmail: '  shopper@example.com  ',
+    });
+
+    expect(getSentBody().shopperIP).toBe('i'.repeat(50));
+    expect(getSentBody().shopperEmail).toBe('shopper@example.com');
+  });
+
+  it('does not mutate the request object it was given', () => {
+    const requestObject = { shopperIP: 'i'.repeat(80) };
+
+    adyenHelper.executeCall(constants.SERVICE.PAYMENT, requestObject);
+
+    expect(requestObject.shopperIP).toBe('i'.repeat(80));
+  });
+
+  it('sanitizes once and re-sends the identical body on every retry', () => {
+    callResult.isOk.mockReturnValue(false);
+
+    expect(() =>
+      adyenHelper.executeCall(constants.SERVICE.PAYMENT, {
+        shopperIP: 'i'.repeat(80),
+      }),
+    ).toThrow();
+
+    expect(service.call).toHaveBeenCalledTimes(constants.MAX_API_RETRIES);
+    const [firstBody] = service.call.mock.calls[0];
+    service.call.mock.calls.forEach(([body]) => expect(body).toBe(firstBody));
+  });
+
+  it('substitutes the checkout API version placeholder', () => {
+    adyenHelper.executeCall(constants.SERVICE.PAYMENT, {});
+
+    expect(service.setURL).toHaveBeenCalledWith(
+      `https://checkout-test.adyen.com/${constants.CHECKOUT_API_VERSION}/payments`,
+    );
+  });
+});
+
+describe('createAddressObjects', () => {
+  const { createAddressObjects } = require('../adyenHelper');
+
+  const buildAddress = (stateCode) => ({
+    address1: 'Simon Carmiggeltstraat 6',
+    city: 'Amsterdam',
+    postalCode: '1011DJ',
+    countryCode: { value: 'nl' },
+    stateCode,
+  });
+
+  const buildOrder = (shippingStateCode, billingStateCode) => ({
+    defaultShipment: { shippingAddress: buildAddress(shippingStateCode) },
+    getBillingAddress: () => buildAddress(billingStateCode),
+  });
+
+  it('includes stateOrProvince when the address has a stateCode', () => {
+    const paymentRequest = createAddressObjects(
+      buildOrder('NH', 'ZH'),
+      'scheme',
+      {},
+    );
+
+    expect(paymentRequest.deliveryAddress.stateOrProvince).toBe('NH');
+    expect(paymentRequest.billingAddress.stateOrProvince).toBe('ZH');
+  });
+
+  it('omits stateOrProvince entirely when the address has no stateCode', () => {
+    const paymentRequest = createAddressObjects(
+      buildOrder(null, undefined),
+      'scheme',
+      {},
+    );
+
+    expect('stateOrProvince' in paymentRequest.deliveryAddress).toBe(false);
+    expect('stateOrProvince' in paymentRequest.billingAddress).toBe(false);
+  });
+
+  it('never falls back to the N/A literal for stateOrProvince', () => {
+    const paymentRequest = createAddressObjects(
+      buildOrder('', ''),
+      'scheme',
+      {},
+    );
+
+    expect(JSON.stringify(paymentRequest)).not.toContain('stateOrProvince');
+  });
+
+  it('keeps the N/A fallbacks for the other address fields', () => {
+    const order = buildOrder('NH', 'ZH');
+    order.defaultShipment.shippingAddress.address1 = null;
+    order.defaultShipment.shippingAddress.city = null;
+
+    const paymentRequest = createAddressObjects(order, 'scheme', {});
+
+    expect(paymentRequest.deliveryAddress.street).toBe('N/A');
+    expect(paymentRequest.deliveryAddress.city).toBe('N/A');
+  });
+});
+
+describe('validateStateData', () => {
+  const { validateStateData } = require('../adyenHelper');
+
+  it('strips conversionId, which v72 removed from the request', () => {
+    const { stateData, invalidFields } = validateStateData({
+      paymentMethod: { type: 'scheme' },
+      conversionId: 'abc',
+    });
+
+    expect(stateData.conversionId).toBeUndefined();
+    expect(invalidFields).toContain('conversionId');
+  });
+
+  it('keeps a component-supplied deliveryAddress now that the key matches', () => {
+    const deliveryAddress = { city: 'Amsterdam', country: 'NL' };
+    const { stateData, invalidFields } = validateStateData({
+      paymentMethod: { type: 'scheme' },
+      deliveryAddress,
+    });
+
+    expect(stateData.deliveryAddress).toEqual(deliveryAddress);
+    expect(invalidFields).toHaveLength(0);
+  });
+
+  it('keeps the whitelisted fields', () => {
+    const { stateData, invalidFields } = validateStateData({
+      paymentMethod: { type: 'scheme' },
+      billingAddress: { city: 'Amsterdam' },
+      shopperEmail: 'shopper@example.com',
+      browserInfo: { userAgent: 'jest' },
+    });
+
+    expect(Object.keys(stateData)).toEqual([
+      'paymentMethod',
+      'billingAddress',
+      'shopperEmail',
+      'browserInfo',
+    ]);
+    expect(invalidFields).toHaveLength(0);
+  });
+});
