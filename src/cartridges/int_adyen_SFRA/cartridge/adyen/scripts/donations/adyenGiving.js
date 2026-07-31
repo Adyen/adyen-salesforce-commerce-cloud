@@ -55,7 +55,6 @@ function donate(donationReference, donationAmount, orderToken) {
     throw new AdyenError('Donation reference is invalid');
   }
 
-  let paymentMethodVariant;
   const order = OrderMgr.getOrder(donationReference, orderToken);
   const orderAmount = AdyenHelper.getCurrencyValueForApi(
     order.getTotalGrossPrice(),
@@ -67,12 +66,6 @@ function donate(donationReference, donationAmount, orderToken) {
     paymentInstrument.paymentTransaction.custom.Adyen_donationToken;
   const originalReference =
     paymentInstrument.paymentTransaction.custom.Adyen_pspReference;
-  const paymentData = JSON.parse(
-    paymentInstrument.paymentTransaction.custom.Adyen_log,
-  );
-  paymentMethodVariant =
-    paymentData.paymentMethod?.type ||
-    paymentData.fullResponse?.paymentMethod?.type;
 
   const campaignsResponse = getActiveCampaigns();
   if (
@@ -85,20 +78,6 @@ function donate(donationReference, donationAmount, orderToken) {
   const donationCampaignId = donationCampaign.id;
   const donationCampaignType = donationCampaign.donation?.type;
 
-  // for iDeal donations, the payment method variant needs to be set to sepadirectdebit
-  if (paymentMethodVariant === constants.PAYMENTMETHODS.IDEAL) {
-    paymentMethodVariant = constants.PAYMENTMETHODS.SEPADIRECTDEBIT;
-  }
-  // for Apple Pay donations, the payment method variant needs to be the brand
-  if (
-    [
-      constants.PAYMENTMETHODS.APPLEPAY,
-      constants.PAYMENTMETHODS.GOOGLEPAY,
-      constants.PAYMENTMETHODS.PAYWITHGOOGLE,
-    ].includes(paymentMethodVariant)
-  ) {
-    paymentMethodVariant = constants.PAYMENTMETHODS.SCHEME;
-  }
   const requestObject = {
     merchantAccount: AdyenConfigs.getAdyenMerchantAccount(),
     donationCampaignId,
@@ -106,9 +85,6 @@ function donate(donationReference, donationAmount, orderToken) {
     reference: `${AdyenConfigs.getAdyenMerchantAccount()}-${donationReference}`,
     donationOriginalPspReference: originalReference,
     donationToken,
-    paymentMethod: {
-      type: paymentMethodVariant,
-    },
   };
 
   if (donationCampaignType === 'roundup') {
