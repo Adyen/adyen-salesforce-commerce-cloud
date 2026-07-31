@@ -37,6 +37,9 @@ const collections = require('*/cartridge/scripts/util/collections');
 const constants = require('*/cartridge/adyen/config/constants');
 const AdyenConfigs = require('*/cartridge/adyen/utils/adyenConfigs');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
+const {
+  sanitizeRequest,
+} = require('*/cartridge/adyen/utils/checkoutRequestSanitizer');
 const { AdyenError } = require('*/cartridge/adyen/logs/adyenError');
 const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 
@@ -473,6 +476,8 @@ const adyenHelperObj = {
         : 'ZZ',
       houseNumberOrName: shippingHouseNumberOrName,
       postalCode: shippingAddress.postalCode ? shippingAddress.postalCode : '',
+      // Required by the Adyen address model, so countries without a state still
+      // need a placeholder.
       stateOrProvince: shippingAddress.stateCode
         ? shippingAddress.stateCode
         : 'N/A',
@@ -842,7 +847,7 @@ const adyenHelperObj = {
     const validFields = [
       'paymentMethod',
       'billingAddress',
-      ' deliveryAddress',
+      'deliveryAddress',
       'riskData',
       'shopperName',
       'dateOfBirth',
@@ -853,7 +858,6 @@ const adyenHelperObj = {
       'browserInfo',
       'installments',
       'storePaymentMethod',
-      'conversionId',
     ];
     const invalidFields = [];
     const filteredStateData = {};
@@ -973,6 +977,8 @@ const adyenHelperObj = {
     service.addHeader('X-API-KEY', apiKey);
     service.addHeader('Idempotency-Key', uuid);
 
+    const requestBody = JSON.stringify(sanitizeRequest(requestObject));
+
     let callResult;
     // retry the call until we reach max retries OR the callresult is OK
     for (
@@ -980,7 +986,7 @@ const adyenHelperObj = {
       nrRetries < maxRetries && !callResult?.isOk();
       nrRetries++
     ) {
-      callResult = service.call(JSON.stringify(requestObject));
+      callResult = service.call(requestBody);
     }
 
     if (!callResult.isOk()) {

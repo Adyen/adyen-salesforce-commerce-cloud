@@ -23,6 +23,10 @@ const {
 const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
 
 describe('getLineItems (Enhanced Scheme Data)', () => {
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
   const mockLineItem = {
     productName: 'Super Widget',
     productID: 'SW1234567890X',
@@ -49,7 +53,7 @@ describe('getLineItems (Enhanced Scheme Data)', () => {
     getCustomerNo: () => customerData.customerNo || null,
   });
 
-  it('should return enhanced line item fields with tax, description, and commodity code', () => {
+  it('should return enhanced scheme data with tax, description, and commodity code', () => {
     const result = getLineItems({
       Order: createMockOrderOrBasket({
         registered: true,
@@ -58,20 +62,25 @@ describe('getLineItems (Enhanced Scheme Data)', () => {
     });
 
     expect(result).toEqual({
-      'enhancedSchemeData.totalTaxAmount': 20,
-      'enhancedSchemeData.customerReference': 'cust-9999',
-      'enhancedSchemeData.itemDetailLine1.unitPrice': '50',
-      'enhancedSchemeData.itemDetailLine1.totalAmount': 100,
-      'enhancedSchemeData.itemDetailLine1.quantity': 2,
-      'enhancedSchemeData.itemDetailLine1.unitOfMeasure': 'EAC',
-      'enhancedSchemeData.itemDetailLine1.commodityCode':
-        'mocked_comodity_code',
-      'enhancedSchemeData.itemDetailLine1.description': 'Super Widget',
-      'enhancedSchemeData.itemDetailLine1.productCode': 'SW1234567890',
+      levelTwoThree: {
+        customerReferenceNumber: 'cust-9999',
+        totalTaxAmount: 20,
+        itemDetailLines: [
+          {
+            unitPrice: 50,
+            totalAmount: 100,
+            quantity: 2,
+            unitOfMeasure: 'EAC',
+            commodityCode: 'mocked_comodity_code',
+            description: 'Super Widget',
+            productCode: 'SW1234567890',
+          },
+        ],
+      },
     });
   });
 
-  it('should truncate customerReference to 25 characters', () => {
+  it('should truncate customerReferenceNumber to 25 characters', () => {
     const longCustomerNo = 'very-long-customer-number-1234567890';
     const result = getLineItems({
       Order: createMockOrderOrBasket({
@@ -81,7 +90,7 @@ describe('getLineItems (Enhanced Scheme Data)', () => {
     });
 
     expect(
-      result['enhancedSchemeData.customerReference'].length,
+      result.levelTwoThree.customerReferenceNumber.length,
     ).toBeLessThanOrEqual(25);
   });
 
@@ -94,7 +103,7 @@ describe('getLineItems (Enhanced Scheme Data)', () => {
       Basket: createMockOrderOrBasket({ customerId: 'anon-user' }),
     });
 
-    expect(result['enhancedSchemeData.customerReference']).toBe('anon-user');
+    expect(result.levelTwoThree.customerReferenceNumber).toBe('anon-user');
   });
 
   it('should use default "no-unique-ref" if no customer ID or profile available', () => {
@@ -113,18 +122,82 @@ describe('getLineItems (Enhanced Scheme Data)', () => {
       },
     });
 
-    expect(result['enhancedSchemeData.customerReference']).toBe(
-      'no-unique-ref',
+    expect(result.levelTwoThree.customerReferenceNumber).toBe('no-unique-ref');
+  });
+
+  it('should append shipping line items to itemDetailLines', () => {
+    const shippingLineItem = {
+      productName: 'Ground shipping',
+      productID: 'SHIP001',
+      quantityValue: 1,
+      adjustedNetPrice: 10,
+      getAdjustedTax: 2,
+    };
+    const orderOrBasket = createMockOrderOrBasket();
+    orderOrBasket.getShipments = () => ({
+      toArray: () => [
+        { getShippingLineItems: () => ({ toArray: () => [shippingLineItem] }) },
+      ],
+    });
+
+    const result = getLineItems({ Order: orderOrBasket });
+
+    expect(result.levelTwoThree.itemDetailLines).toHaveLength(2);
+    expect(result.levelTwoThree.itemDetailLines[1]).toEqual(
+      expect.objectContaining({
+        description: 'Ground shipping',
+        productCode: 'SHIP001',
+        totalAmount: 10,
+        unitPrice: 10,
+        quantity: 1,
+      }),
     );
+    expect(result.levelTwoThree.totalTaxAmount).toBe(22);
+  });
+
+  it('should fall back to a quantity of 1 when the quantity is not numeric', () => {
+    const orderOrBasket = createMockOrderOrBasket();
+    orderOrBasket.getProductLineItems = () => ({
+      toArray: () => [{ ...mockLineItem, quantityValue: null }],
+    });
+
+    const result = getLineItems({ Order: orderOrBasket });
+
+    expect(result.levelTwoThree.itemDetailLines[0].quantity).toBe(1);
+    expect(result.levelTwoThree.itemDetailLines[0].unitPrice).toBe(100);
+  });
+
+  it('should omit discountAmount when the line has no price reduction', () => {
+    const lineItemHelper = require('*/cartridge/adyen/utils/lineItemHelper');
+    lineItemHelper.isProductLineItem.mockReturnValueOnce(true);
+
+    const undiscountedLineItem = {
+      ...mockLineItem,
+      basePrice: {
+        value: 50,
+        multiply: jest.fn(() => ({ value: 100 })),
+      },
+      adjustedPrice: { value: 100 },
+    };
+    const orderOrBasket = createMockOrderOrBasket();
+    orderOrBasket.getProductLineItems = () => ({
+      toArray: () => [undiscountedLineItem],
+    });
+
+    const result = getLineItems({ Order: orderOrBasket });
+
+    expect(
+      'discountAmount' in result.levelTwoThree.itemDetailLines[0],
+    ).toBe(false);
   });
 
   it('should include discount amount when product has basePrice > adjustedPrice', () => {
     const lineItemHelper = require('*/cartridge/adyen/utils/lineItemHelper');
     lineItemHelper.isProductLineItem.mockReturnValueOnce(true);
 
-    AdyenHelper.getCurrencyValueForApi = jest.fn(() => ({
+    jest.spyOn(AdyenHelper, 'getCurrencyValueForApi').mockReturnValue({
       value: { toFixed: () => '20' },
-    }));
+    });
 
     // qty=2, basePrice=60/unit (line=120), adjustedPrice=100 (line total).
     // Expected total line discount = 60*2 - 100 = 20.
@@ -163,10 +236,9 @@ describe('getLineItems (Enhanced Scheme Data)', () => {
 
     // Total line discount (not per-unit). Adyen formula:
     // totalAmount = quantity * unitPrice - discountAmount => 100 = 2 * 60 - 20
-    expect(result['enhancedSchemeData.itemDetailLine1.discountAmount']).toBe(
-      '20',
-    );
-    expect(result['enhancedSchemeData.itemDetailLine1.unitPrice']).toBe('60');
-    expect(result['enhancedSchemeData.itemDetailLine1.totalAmount']).toBe(100);
+    const [itemDetailLine] = result.levelTwoThree.itemDetailLines;
+    expect(itemDetailLine.discountAmount).toBe(20);
+    expect(itemDetailLine.unitPrice).toBe(60);
+    expect(itemDetailLine.totalAmount).toBe(100);
   });
 });
