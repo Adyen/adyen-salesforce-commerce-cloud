@@ -47,6 +47,7 @@ function getProcessFormResult(paymentMethod, req, viewData) {
           expirationMonth: paymentInstrument.creditCardExpirationMonth,
           expirationYear: paymentInstrument.creditCardExpirationYear,
           creditCardToken: paymentInstrument.creditCardToken,
+          cardHolder: paymentInstrument.creditCardHolder,
         },
       },
     };

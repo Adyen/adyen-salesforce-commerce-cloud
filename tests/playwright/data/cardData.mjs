@@ -11,6 +11,12 @@ export class CardData {
     expirationDate: '0330',
     cvc: '737',
   };
+  dataOnly = {
+    holderName: 'John Doe',
+    cardNumber: '5201281822783116',
+    expirationDate: '0330',
+    cvc: '737',
+  };
   coBrandedBCMC = {
     holderName: 'John Doe',
     cardNumber: '4871049999999910',

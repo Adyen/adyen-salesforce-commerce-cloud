@@ -3,6 +3,7 @@ const Logger = require('../../../../../../../../jest/__mocks__/dw/system/Logger'
 const AdyenConfigs = require('*/cartridge/adyen/utils/adyenConfigs');
 const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
 const adyenLevelTwoThreeData = require('*/cartridge/adyen/scripts/payments/adyenLevelTwoThreeData');
+const hooksHelper = require('*/cartridge/scripts/helpers/hooks');
 
 describe('AdyenCheckout', () => {
     it('should not error when cached gift card amount and actual amount match', () => {
@@ -98,6 +99,102 @@ describe('AdyenCheckout', () => {
         const testFn = () => {adyenCheckout.createPaymentRequest(args)};
         expect(testFn).toThrow("Cart has been edited after applying a gift card");
     })
+
+    describe('device fingerprint', () => {
+        function createArgs() {
+            return {
+                Order: {
+                    custom: {},
+                    setPaymentStatus: jest.fn(),
+                    setExportStatus: jest.fn(),
+                    getCustomerEmail: jest.fn(),
+                    getBillingAddress: jest.fn(),
+                    getDefaultShipment: jest.fn(),
+                    paymentInstrument: {
+                        custom: {
+                            adyenPaymentData: "{}",
+                        },
+                        paymentTransaction: {
+                            amount: {
+                                value: 1000,
+                                currencyCode: "EUR"
+                            }
+                        }
+                    },
+                },
+            };
+        }
+
+        beforeEach(() => {
+            session.privacy.adyenFingerprint = null;
+            AdyenHelper.executeCall.mockClear();
+        });
+
+        afterEach(() => {
+            session.privacy.adyenFingerprint = null;
+            hooksHelper.mockImplementation(() => ({ error: false }));
+            AdyenHelper.createAdyenRequestObject.mockReturnValue({
+                paymentMethod: { type: 'scheme' },
+            });
+        });
+
+        it('should pass the session fingerprint to the payment request', () => {
+            session.privacy.adyenFingerprint = 'session-fingerprint';
+
+            adyenCheckout.createPaymentRequest(createArgs());
+
+            expect(AdyenHelper.executeCall).toHaveBeenCalledWith(
+                'AdyenPayment',
+                expect.objectContaining({
+                    deviceFingerprint: 'session-fingerprint',
+                }),
+            );
+        });
+
+        it('should not set a fingerprint when the session value is empty', () => {
+            adyenCheckout.createPaymentRequest(createArgs());
+
+            expect(AdyenHelper.executeCall).toHaveBeenCalledWith(
+                'AdyenPayment',
+                expect.not.objectContaining({
+                    deviceFingerprint: expect.anything(),
+                }),
+            );
+        });
+
+        it('should allow the pre-auth hook to override the session fingerprint', () => {
+            session.privacy.adyenFingerprint = 'session-fingerprint';
+            hooksHelper.mockImplementation((_hook, _method, paymentRequest) => {
+                paymentRequest.deviceFingerprint = 'merchant-fingerprint';
+                return { error: false };
+            });
+
+            adyenCheckout.createPaymentRequest(createArgs());
+
+            expect(AdyenHelper.executeCall).toHaveBeenCalledWith(
+                'AdyenPayment',
+                expect.objectContaining({
+                    deviceFingerprint: 'merchant-fingerprint',
+                }),
+            );
+        });
+
+        it('should not pass the generic fingerprint for Riverty', () => {
+            session.privacy.adyenFingerprint = 'session-fingerprint';
+            AdyenHelper.createAdyenRequestObject.mockReturnValue({
+                paymentMethod: { type: 'riverty' },
+            });
+
+            adyenCheckout.createPaymentRequest(createArgs());
+
+            expect(AdyenHelper.executeCall).toHaveBeenCalledWith(
+                'AdyenPayment',
+                expect.not.objectContaining({
+                    deviceFingerprint: expect.anything(),
+                }),
+            );
+        });
+    });
 
     describe('L2/3 Data filtering with L23_PAYMENT_METHODS', () => {
         let getLineItemsSpy;
