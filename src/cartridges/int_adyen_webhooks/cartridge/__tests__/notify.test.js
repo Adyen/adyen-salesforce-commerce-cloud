@@ -1,9 +1,57 @@
 /* eslint-disable global-require */
 
+jest.mock(
+  '*/cartridge/libs/libAuthenticationUtils',
+  () => ({
+    checkGivenCredentials: jest.fn(() => true),
+    calculateHmacSignature: jest.fn(() => 'mocked_signature'),
+  }),
+  { virtual: true },
+);
+
 let req;
 let res;
 let next;
 let notify;
+
+// Models the SFCC transaction state so that committing or rolling back a closed
+// transaction fails the way it does on an instance
+function mockTransactionState(Transaction) {
+  const state = { isOpen: false };
+  Transaction.begin.mockImplementation(() => {
+    if (state.isOpen) {
+      throw new Error('a transaction is already open');
+    }
+    state.isOpen = true;
+  });
+  Transaction.commit.mockImplementation(() => {
+    if (!state.isOpen) {
+      throw new Error('there is no transaction to commit');
+    }
+    state.isOpen = false;
+  });
+  Transaction.rollback.mockImplementation(() => {
+    if (!state.isOpen) {
+      throw new Error('there is no transaction to roll back');
+    }
+    state.isOpen = false;
+  });
+  // A nested wrap joins the open transaction and rolls all of it back when its
+  // callback throws
+  Transaction.wrap.mockImplementation((callback) => {
+    const isOwner = !state.isOpen;
+    state.isOpen = true;
+    try {
+      const result = callback();
+      state.isOpen = !isOwner;
+      return result;
+    } catch (error) {
+      state.isOpen = false;
+      throw error;
+    }
+  });
+  return state;
+}
 
 function createResponseMock() {
   const viewData = {};
@@ -52,6 +100,18 @@ describe('Notify', () => {
     expect(Transaction.rollback).not.toHaveBeenCalled();
     expect(next).toHaveBeenCalled();
   });
+  it('should respond 403 when the notification carries no HMAC signature', () => {
+    const Transaction = require('dw/system/Transaction');
+    const checkAuth = require('*/cartridge/checkNotificationAuth');
+    const { validateHmacSignature } = require('../checkNotificationAuth');
+    checkAuth.validateHmacSignature.mockImplementation(validateHmacSignature);
+    req = { form: { merchantReference: 'mocked_reference' } };
+    notify(req, res, next);
+    expect(res.setStatusCode).toHaveBeenCalledWith(403);
+    expect(res.render).toHaveBeenCalledWith('/adyen/error');
+    expect(Transaction.begin).not.toHaveBeenCalled();
+    expect(next).toHaveBeenCalled();
+  });
   it('should render notify when notification result is successful', () => {
     const Transaction = require('dw/system/Transaction');
     const handleNotify = require('*/cartridge/handleNotify');
@@ -77,6 +137,31 @@ describe('Notify', () => {
     expect(res.json).not.toHaveBeenCalled();
     expect(next).toHaveBeenCalled();
     expect(res.render.mock.calls).toMatchSnapshot();
+  });
+  it('should respond 500 when a nested transaction of handleNotify was rolled back', () => {
+    const Transaction = require('dw/system/Transaction');
+    const handleNotify = require('*/cartridge/handleNotify');
+    const transactionState = mockTransactionState(Transaction);
+    // handleNotify writes its custom objects in a nested transaction and
+    // swallows the failure, see handleNotify.notify
+    handleNotify.notify.mockImplementation(() => {
+      try {
+        Transaction.wrap(() => {
+          throw new Error('mocked_custom_object_error');
+        });
+        return { success: true };
+      } catch (error) {
+        return { success: false, errorMessage: error.message };
+      }
+    });
+    notify(req, res, next);
+    expect(res.setStatusCode).toHaveBeenCalledWith(500);
+    expect(res.render).toHaveBeenCalledWith('/notifyError', {
+      errorMessage: 'mocked_custom_object_error',
+    });
+    expect(Transaction.commit).not.toHaveBeenCalled();
+    expect(transactionState.isOpen).toBe(false);
+    expect(next).toHaveBeenCalled();
   });
   it('should respond 500 and roll back when processing throws', () => {
     const Transaction = require('dw/system/Transaction');

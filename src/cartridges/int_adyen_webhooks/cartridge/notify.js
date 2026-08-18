@@ -19,40 +19,59 @@ function isAuthorized(req) {
   return checkAuth.check(req) && handleHmacVerification(hmacKey, req);
 }
 
+// handleNotify writes its custom objects in nested transactions, which SFCC
+// rolls back on failure. Rolling back a transaction that is already closed
+// throws, and that error must not replace the failure we are reporting.
+function rollbackTransaction() {
+  try {
+    Transaction.rollback();
+  } catch (rollbackError) {
+    AdyenLogs.error_log(
+      'Could not roll back the notification transaction:',
+      rollbackError,
+    );
+  }
+}
+
+// Sole owner of the notification transaction: every exit path either commits or
+// rolls back exactly once, before the response is touched.
+function processNotification(notificationData) {
+  Transaction.begin();
+  try {
+    const notificationResult = handleNotify.notify(notificationData);
+    if (!notificationResult.success) {
+      rollbackTransaction();
+      return notificationResult;
+    }
+    Transaction.commit();
+    return notificationResult;
+  } catch (error) {
+    rollbackTransaction();
+    throw error;
+  }
+}
+
 function notify(req, res, next) {
   // Adyen only queues a notification for retry on a 5xx response, so processing
   // failures must not be reported as 200 or as a 403 rejection.
-  let isTransactionOpen = false;
   try {
     if (!isAuthorized(req)) {
-      AdyenLogs.error_log(
-        'Notification rejected: basic authentication or HMAC signature validation failed',
-      );
       res.setStatusCode(403);
       res.render('/adyen/error');
       return next();
     }
 
-    Transaction.begin();
-    isTransactionOpen = true;
-    const notificationResult = handleNotify.notify(req.form);
+    const notificationResult = processNotification(req.form);
     if (!notificationResult.success) {
-      Transaction.rollback();
-      isTransactionOpen = false;
       res.setStatusCode(500);
       res.render('/notifyError', {
         errorMessage: notificationResult.errorMessage,
       });
       return next();
     }
-    Transaction.commit();
-    isTransactionOpen = false;
     res.render('/notify');
     return next();
   } catch (error) {
-    if (isTransactionOpen) {
-      Transaction.rollback();
-    }
     AdyenLogs.error_log('Could not process notification:', error);
     res.setStatusCode(500);
     res.render('/notifyError', { errorMessage: error.message });
