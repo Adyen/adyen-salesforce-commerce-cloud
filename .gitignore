@@ -13,3 +13,4 @@ Vagrantfile
 cartridges
 !src/cartridges
 .factory
+.agents
