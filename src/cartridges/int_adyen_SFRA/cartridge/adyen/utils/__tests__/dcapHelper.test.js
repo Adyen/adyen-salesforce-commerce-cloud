@@ -30,6 +30,15 @@ describe('DCAP helper', () => {
     expect(dcapHelper.getMissingDcapFields(paymentRequest)).toEqual([]);
   });
 
+  it('accepts numeric address values without warning', () => {
+    const paymentRequest = getUsCardPaymentRequest();
+    paymentRequest.deviceFingerprint = 'merchant-fingerprint';
+    paymentRequest.billingAddress.houseNumberOrName = 123;
+    paymentRequest.billingAddress.postalCode = 10001;
+
+    expect(dcapHelper.getMissingDcapFields(paymentRequest)).toEqual([]);
+  });
+
   it('warns only with missing US DCAP field names', () => {
     const paymentRequest = getUsCardPaymentRequest();
     paymentRequest.shopperIP = '';

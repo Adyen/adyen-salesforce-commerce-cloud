@@ -12,10 +12,13 @@ const REQUIRED_BILLING_FIELDS = [
 ];
 
 function hasValue(value) {
+  if (value === null || value === undefined) {
+    return false;
+  }
+  const stringValue = String(value).trim();
   return (
-    typeof value === 'string' &&
-    value.trim().length > 0 &&
-    PLACEHOLDER_VALUES.indexOf(value.trim().toUpperCase()) === -1
+    stringValue.length > 0 &&
+    PLACEHOLDER_VALUES.indexOf(stringValue.toUpperCase()) === -1
   );
 }
 
