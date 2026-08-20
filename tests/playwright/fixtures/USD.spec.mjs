@@ -69,6 +69,12 @@ for (const environment of environments) {
       await checkoutPage.expectSuccess();
     });
 
+    test('Card payment data-only success', async () => {
+      await cards.doCardPayment(cardData.dataOnly);
+      await checkoutPage.completeCheckout();
+      await checkoutPage.expectSuccess();
+    });
+
     test('Card payment 3DS2 failure', async () => {
       const cardDataInvalid = Object.assign({}, cardData.threeDs2);
       cardDataInvalid.expirationDate = '0150';

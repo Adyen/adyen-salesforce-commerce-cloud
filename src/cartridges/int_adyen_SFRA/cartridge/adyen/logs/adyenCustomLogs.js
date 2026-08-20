@@ -18,9 +18,14 @@ function info_log(msg) {
   Logger.getLogger('Adyen_info', 'Adyen').info(msg);
 }
 
+function warning_log(msg) {
+  Logger.getLogger('Adyen_warning', 'Adyen').warn(msg);
+}
+
 module.exports = {
   fatal_log,
   error_log,
   debug_log,
   info_log,
+  warning_log,
 };

@@ -38,6 +38,7 @@ const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 const paypalHelper = require('*/cartridge/adyen/utils/paypalHelper');
 const { AdyenError } = require('*/cartridge/adyen/logs/adyenError');
 const preAuthorizationHook = require('*/cartridge/adyen/scripts/hooks/payment/preAuthorizationHandling');
+const dcapHelper = require('*/cartridge/adyen/utils/dcapHelper');
 
 // eslint-disable-next-line complexity
 function doPaymentsCall(order, paymentInstrument, paymentRequest) {
@@ -69,6 +70,7 @@ function doPaymentsCall(order, paymentInstrument, paymentRequest) {
   if (preAuthResult?.error) {
     return preAuthResult;
   }
+  dcapHelper.warnForMissingDcapFields(paymentRequest);
   const responseObject = AdyenHelper.executeCall(
     constants.SERVICE.PAYMENT,
     paymentRequest,
@@ -223,7 +225,6 @@ function createPaymentRequest(args) {
     order,
     paymentRequest,
   });
-
   if (
     session.privacy.adyenFingerprint &&
     paymentMethodType.indexOf('riverty') === -1

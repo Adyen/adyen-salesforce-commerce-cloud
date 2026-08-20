@@ -325,6 +325,13 @@ jest.mock(
   { virtual: true },
 );
 
+jest.mock(
+  '*/cartridge/adyen/utils/dcapHelper',
+  () =>
+    require('../src/cartridges/int_adyen_SFRA/cartridge/adyen/utils/dcapHelper'),
+  { virtual: true },
+);
+
 // controllers/middlewares/checkout_services subclasses
 jest.mock(
   '*/cartridge/controllers/middlewares/checkout_services/placeOrder',
