@@ -12,7 +12,7 @@ test-results/
 Vagrantfile
 cartridges
 !src/cartridges
-.windsurf
-.agent
 .factory
+.agents
+.windsurf
 plans
