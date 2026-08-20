@@ -29,6 +29,7 @@ describe('processForm', () => {
     req.form.storedPaymentUUID = 'mockedUUID';
     const processFormOutput = processForm(req, getPaymentForm(), {});
     expect(processFormOutput).toMatchSnapshot();
+    expect(session.privacy.adyenFingerprint).toContain('ryEGX8eZpJ003');
   });
 
   it('should return viewData when authenticated and registered', () => {

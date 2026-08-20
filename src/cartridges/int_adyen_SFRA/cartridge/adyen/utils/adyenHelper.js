@@ -587,6 +587,12 @@ const adyenHelperObj = {
       stateData.recurringProcessingModel =
         constants.RECURRING_PROCESSING_MODEL.CARD_ON_FILE;
       stateData.shopperInteraction = constants.SHOPPER_INTERACTIONS.CONT_AUTH;
+      const holderName = paymentInstrument.getCreditCardHolder
+        ? paymentInstrument.getCreditCardHolder()
+        : paymentInstrument.creditCardHolder;
+      if (holderName) {
+        stateData.paymentMethod.holderName = holderName;
+      }
       if (customerEmail) {
         stateData.shopperEmail = customerEmail;
       }
