@@ -61,7 +61,7 @@ function callGetShippingMethods(req, res, next) {
         shipment,
         address,
       );
-      const selectedMethod = methods.find((method) => method.selected);
+      const selectedMethod = methods?.find((method) => method.selected);
       Transaction.wrap(() => {
         shippingHelper.selectShippingMethod(
           shipment,
