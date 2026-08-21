@@ -9,12 +9,12 @@ For general inquiries related to this repository, developers are welcome to leve
 Navigate to [Adyen Docs](https://docs.adyen.com/plugins/salesforce-commerce-cloud/) to read about how to:
 - [1. Install the cartridge](https://docs.adyen.com/plugins/salesforce-commerce-cloud/sfra/install-the-cartridge-and-import-the-metadata),
 - [2. How to add Adyen Settings page (src/bm_adyen) into SFCC Business Manager](https://docs.adyen.com/plugins/salesforce-commerce-cloud/sfra/set-up-the-cartridge?plugin=Salesforce+SFRA&integration=cartridge#set-up-the-business-manager) for easy payments set-up, 
-- [3. Set-up Adyen Cartridge](https://docs.adyen.com/plugins/salesforce-commerce-cloud/sfra/set-up-the-cartridge),
-- [4. Configure Adyen Payments](https://docs.adyen.com/plugins/salesforce-commerce-cloud/sfra/set-up-payment-methods),
+- [3. Set-up Adyen Cartridge](https://docs.adyen.com/plugins/salesforce-commerce-cloud/sfra/set-up-the-cartridge?plugin=Salesforce+SFRA&integration=cartridge),
+- [4. Configure Adyen Payments](https://docs.adyen.com/plugins/salesforce-commerce-cloud/sfra/set-up-payment-methods?plugin=Salesforce+SFRA&integration=cartridge),
 - [5. How to Customise the cartridge, Front-end and Payment methods](https://docs.adyen.com/plugins/salesforce-commerce-cloud/sfra/customization-guide),
 - [6. See a full list of Supported Payment Methods](https://docs.adyen.com/plugins/salesforce-commerce-cloud/supported-payment-methods/),
 - [7. Upgrade your Adyen cartridge](https://docs.adyen.com/plugins/salesforce-commerce-cloud/sfra/upgrade),
-- [8. Apple Pay configuration using Adyen certificate or own certificate via Salesforce Apple Pay cartridge](https://docs.adyen.com/plugins/salesforce-commerce-cloud/sfra/set-up-payment-methods#set-up-apple-pay-on-the-web). We recommend using Apple pay with Adyen certificate as Adyen has no insight into Salesforce Apple Pay cartridge.
+- [8. Apple Pay configuration using Adyen certificate or own certificate via Salesforce Apple Pay cartridge](https://docs.adyen.com/plugins/salesforce-commerce-cloud/sfra/set-up-payment-methods?plugin=Salesforce+SFRA&integration=cartridge#set-up-apple-pay-on-the-web). We recommend using Apple pay with Adyen certificate as Adyen has no insight into Salesforce Apple Pay cartridge.
 
 Adyen provides specialized cartridge support for 2 years for major versions, following the [SFCC B2C Support policy](https://docs.adyen.com/plugins/salesforce-commerce-cloud#support-levels), along with permanent Adyen support. Navigate to your Adyen Customer Area Merchant Account to raise a support case.
 When a major cartridge version is no longer under cartridge support, it will be treated as a custom merchant integration. 
