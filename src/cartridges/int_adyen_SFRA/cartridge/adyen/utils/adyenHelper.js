@@ -37,6 +37,9 @@ const collections = require('*/cartridge/scripts/util/collections');
 const constants = require('*/cartridge/adyen/config/constants');
 const AdyenConfigs = require('*/cartridge/adyen/utils/adyenConfigs');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
+const {
+  sanitizeRequest,
+} = require('*/cartridge/adyen/utils/checkoutRequestSanitizer');
 const { AdyenError } = require('*/cartridge/adyen/logs/adyenError');
 const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 
@@ -44,23 +47,23 @@ const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 const adyenHelperObj = {
   // Create the service config used to make calls to the Adyen Checkout API (used for all services)
   getService(service, reqMethod = 'POST') {
-       const adyenService = LocalServiceRegistry.createService(service, {
-        createRequest(svc, args) {
-          svc.setRequestMethod(reqMethod);
-          if (args) {
-            return args;
-          }
-          return null;
-        },
-        parseResponse(svc, client) {
-          return client;
-        },
-        filterLogMessage(msg) {
-          return msg;
-        },
-      });
-      AdyenLogs.info_log(`Successfully retrieve service with name ${service}`);
-      return adyenService;
+    const adyenService = LocalServiceRegistry.createService(service, {
+      createRequest(svc, args) {
+        svc.setRequestMethod(reqMethod);
+        if (args) {
+          return args;
+        }
+        return null;
+      },
+      parseResponse(svc, client) {
+        return client;
+      },
+      filterLogMessage(msg) {
+        return msg;
+      },
+    });
+    AdyenLogs.info_log(`Successfully retrieve service with name ${service}`);
+    return adyenService;
   },
 
   // returns SFCC customer object based on currentCustomer object
@@ -75,10 +78,13 @@ const adyenHelperObj = {
   },
 
   /**
-   * Returns shippingCost including taxes for a specific Shipment / ShippingMethod pair including the product level shipping cost if any
-   * @param {dw.order.ShippingMethod} shippingMethod - the default shipment of the current basket
-   * @param {dw.order.Shipment} shipment - a shipment of the current basket
-   * @returns {{currencyCode: String, value: String}} - Shipping Cost including taxes
+   * Returns shippingCost for a specific Shipment / ShippingMethod pair including
+   * the product level shipping cost if any.
+   * On gross-price sites the amount includes tax (per SFCC ShippingCost.getAmount()
+   * semantics); on net-price sites the amount excludes tax.
+   * @param {dw.order.ShippingMethod} shippingMethod
+   * @param {dw.order.Shipment} shipment
+   * @returns {{currencyCode: String, value: String}}
    */
   getShippingCost(shippingMethod, shipment) {
     const shipmentShippingModel =
@@ -94,9 +100,9 @@ const adyenHelperObj = {
         shippingMethod,
       )
         ? productShippingModel
-          .getShippingCost(shippingMethod)
-          .getAmount()
-          .multiply(productQuantity)
+            .getShippingCost(shippingMethod)
+            .getAmount()
+            .multiply(productQuantity)
         : new Money(0, product.getPriceModel().getPrice().getCurrencyCode());
       shippingCost = shippingCost.add(productShippingCost);
     });
@@ -231,6 +237,10 @@ const adyenHelperObj = {
           returnValue = constants.CHECKOUT_ENVIRONMENT_LIVE_APSE;
           break;
         }
+        if (frontEndRegion === constants.FRONTEND_REGIONS.NEA) {
+          returnValue = constants.CHECKOUT_ENVIRONMENT_LIVE_NEA;
+          break;
+        }
         returnValue = constants.CHECKOUT_ENVIRONMENT_LIVE_EU;
         break;
     }
@@ -255,6 +265,10 @@ const adyenHelperObj = {
         }
         if (terminalRegion === constants.POS_REGIONS.APSE) {
           returnValue = constants.POS_ENVIRONMENT_LIVE_APSE;
+          break;
+        }
+        if (terminalRegion === constants.POS_REGIONS.NEA) {
+          returnValue = constants.POS_ENVIRONMENT_LIVE_NEA;
           break;
         }
         returnValue = constants.POS_ENVIRONMENT_LIVE_EU;
@@ -302,16 +316,20 @@ const adyenHelperObj = {
       return false;
     }
 
-    const paymentInstruments = order.getPaymentInstruments(adyenHelperObj.getOrderMainPaymentInstrumentType(order));
+    const paymentInstruments = order.getPaymentInstruments(
+      adyenHelperObj.getOrderMainPaymentInstrumentType(order),
+    );
 
     if (!paymentInstruments.length) {
-        return false;
+      return false;
     }
 
     const paymentInstrument = paymentInstruments[0];
 
-    return AdyenConfigs.getAdyenGivingEnabled() &&
-           !!paymentInstrument.paymentTransaction.custom.Adyen_donationToken;
+    return (
+      AdyenConfigs.getAdyenGivingEnabled() &&
+      !!paymentInstrument.paymentTransaction.custom.Adyen_donationToken
+    );
   },
 
   // gets the ID for ratePay using the custom preference and the encoded session ID
@@ -345,9 +363,9 @@ const adyenHelperObj = {
   },
 
   isPayPalExpress(paymentMethod) {
-    return paymentMethod.type === 'paypal' &&
-      paymentMethod.subtype === 'express';
-
+    return (
+      paymentMethod.type === 'paypal' && paymentMethod.subtype === 'express'
+    );
   },
 
   // Get stored card token of customer saved card based on matched cardUUID
@@ -458,6 +476,8 @@ const adyenHelperObj = {
         : 'ZZ',
       houseNumberOrName: shippingHouseNumberOrName,
       postalCode: shippingAddress.postalCode ? shippingAddress.postalCode : '',
+      // Required by the Adyen address model, so countries without a state still
+      // need a placeholder.
       stateOrProvince: shippingAddress.stateCode
         ? shippingAddress.stateCode
         : 'N/A',
@@ -567,6 +587,12 @@ const adyenHelperObj = {
       stateData.recurringProcessingModel =
         constants.RECURRING_PROCESSING_MODEL.CARD_ON_FILE;
       stateData.shopperInteraction = constants.SHOPPER_INTERACTIONS.CONT_AUTH;
+      const holderName = paymentInstrument.getCreditCardHolder
+        ? paymentInstrument.getCreditCardHolder()
+        : paymentInstrument.creditCardHolder;
+      if (holderName) {
+        stateData.paymentMethod.holderName = holderName;
+      }
       if (customerEmail) {
         stateData.shopperEmail = customerEmail;
       }
@@ -711,7 +737,8 @@ const adyenHelperObj = {
         result.additionalData.paymentMethod;
       order.custom.Adyen_paymentMethod = result.additionalData.paymentMethod;
     } else if (result.paymentMethod) {
-      paymentInstrument.paymentTransaction.custom.Adyen_paymentMethod = result.paymentMethod.type;
+      paymentInstrument.paymentTransaction.custom.Adyen_paymentMethod =
+        result.paymentMethod.type;
       order.custom.Adyen_paymentMethod = result.paymentMethod.type;
     }
 
@@ -826,7 +853,7 @@ const adyenHelperObj = {
     const validFields = [
       'paymentMethod',
       'billingAddress',
-      ' deliveryAddress',
+      'deliveryAddress',
       'riskData',
       'shopperName',
       'dateOfBirth',
@@ -837,7 +864,6 @@ const adyenHelperObj = {
       'browserInfo',
       'installments',
       'storePaymentMethod',
-      'conversionId',
     ];
     const invalidFields = [];
     const filteredStateData = {};
@@ -957,6 +983,8 @@ const adyenHelperObj = {
     service.addHeader('X-API-KEY', apiKey);
     service.addHeader('Idempotency-Key', uuid);
 
+    const requestBody = JSON.stringify(sanitizeRequest(requestObject));
+
     let callResult;
     // retry the call until we reach max retries OR the callresult is OK
     for (
@@ -964,7 +992,7 @@ const adyenHelperObj = {
       nrRetries < maxRetries && !callResult?.isOk();
       nrRetries++
     ) {
-      callResult = service.call(JSON.stringify(requestObject));
+      callResult = service.call(requestBody);
     }
 
     if (!callResult.isOk()) {
@@ -977,7 +1005,9 @@ const adyenHelperObj = {
 
     const resultObject = callResult.object;
     if (!resultObject || !resultObject.getText()) {
-      throw new AdyenError(`No correct response from ${serviceType} service call`);
+      throw new AdyenError(
+        `No correct response from ${serviceType} service call`,
+      );
     }
     return JSON.parse(resultObject.getText());
   },
@@ -995,7 +1025,7 @@ const adyenHelperObj = {
     } else {
       return COHelpers.createOrder(currentBasket);
     }
-  }
+  },
 };
 
 module.exports = adyenHelperObj;

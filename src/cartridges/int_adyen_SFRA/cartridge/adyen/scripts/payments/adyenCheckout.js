@@ -38,6 +38,7 @@ const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 const paypalHelper = require('*/cartridge/adyen/utils/paypalHelper');
 const { AdyenError } = require('*/cartridge/adyen/logs/adyenError');
 const preAuthorizationHook = require('*/cartridge/adyen/scripts/hooks/payment/preAuthorizationHandling');
+const dcapHelper = require('*/cartridge/adyen/utils/dcapHelper');
 
 // eslint-disable-next-line complexity
 function doPaymentsCall(order, paymentInstrument, paymentRequest) {
@@ -69,6 +70,7 @@ function doPaymentsCall(order, paymentInstrument, paymentRequest) {
   if (preAuthResult?.error) {
     return preAuthResult;
   }
+  dcapHelper.warnForMissingDcapFields(paymentRequest);
   const responseObject = AdyenHelper.executeCall(
     constants.SERVICE.PAYMENT,
     paymentRequest,
@@ -163,12 +165,14 @@ function createPaymentRequest(args) {
   // L2/3 Data
   if (
     AdyenConfigs.getAdyenLevel23DataEnabled() &&
-    paymentMethodType.indexOf('scheme') > -1
+    constants.L23_PAYMENT_METHODS.some(
+      (pm) => paymentMethodType.indexOf(pm) > -1,
+    )
   ) {
-    paymentRequest.additionalData = {
-      ...paymentRequest.additionalData,
-      ...adyenLevelTwoThreeData.getLineItems(args),
-    };
+    const enhancedSchemeData = adyenLevelTwoThreeData.getLineItems(args);
+    if (enhancedSchemeData?.levelTwoThree?.itemDetailLines?.length > 0) {
+      paymentRequest.enhancedSchemeData = enhancedSchemeData;
+    }
   }
 
   // Add installments
@@ -221,7 +225,6 @@ function createPaymentRequest(args) {
     order,
     paymentRequest,
   });
-
   if (
     session.privacy.adyenFingerprint &&
     paymentMethodType.indexOf('riverty') === -1

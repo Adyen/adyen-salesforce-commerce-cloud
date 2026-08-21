@@ -38,6 +38,7 @@ exports[`processForm should return viewData when authenticated and registered 1`
     "paymentInformation": {
       "adyenIssuerName": "mocked_issuer_name",
       "adyenPaymentMethod": "mockedPaymentMethod",
+      "cardHolder": "mocked_cc_holder",
       "cardNumber": "mocked_cc_number",
       "cardType": "mocked_cc_type",
       "creditCardToken": "mocked_raw_cc_token ",

@@ -53,12 +53,17 @@ jobs:
         run: npm install
       - name: Create dw.json file
         working-directory: adyen-salesforce-commerce-cloud
+        env:
+          SFCC_USERNAME: ${{ secrets.SFCC_USERNAME }}
+          SFCC_PASSWORD: ${{ secrets.SFCC_PASSWORD }}
+          SFCC_HOSTNAME: ${{ secrets.SFCC_HOSTNAME }}
+          CODE_VERSION: ${{ secrets.CODE_VERSION }}
         run: |
           echo '{
-            "username": "${{ secrets.SFCC_USERNAME }}",
-            "password": "${{ secrets.SFCC_PASSWORD }}",
-            "hostname": "${{ secrets.SFCC_HOSTNAME }}",
-            "code-version": "${{ secrets.CODE_VERSION }}"
+            "username": "'"$SFCC_USERNAME"'",
+            "password": "'"$SFCC_PASSWORD"'",
+            "hostname": "'"$SFCC_HOSTNAME"'",
+            "code-version": "'"$CODE_VERSION"'"
           }' >> dw.json
       - name: Transpile the code
         working-directory: adyen-salesforce-commerce-cloud
@@ -79,10 +84,16 @@ jobs:
         run: zip -r $GITHUB_WORKSPACE/site_import.zip site_import
       - name: Upload the metadata to the sandbox
         working-directory: adyen-salesforce-commerce-cloud/metadata
+        env:
+          SFCC_CLIENT_ID: ${{ secrets.SFCC_CLIENT_ID }}
+          SFCC_CLIENT_SECRET: ${{ secrets.SFCC_CLIENT_SECRET }}
+          SFCC_HOSTNAME: ${{ secrets.SFCC_HOSTNAME }}
         run: |
-          sfcc-ci client:auth '${{ secrets.SFCC_CLIENT_ID }}' '${{ secrets.SFCC_CLIENT_SECRET }}'
-          sfcc-ci instance:upload $GITHUB_WORKSPACE/site_import.zip -i "${{ secrets.SFCC_HOSTNAME }}"
+          sfcc-ci client:auth "$SFCC_CLIENT_ID" "$SFCC_CLIENT_SECRET"
+          sfcc-ci instance:upload "$GITHUB_WORKSPACE/site_import.zip" -i "$SFCC_HOSTNAME"
       - name: Import the metadata to the sandbox
         working-directory: adyen-salesforce-commerce-cloud/metadata
+        env:
+          SFCC_HOSTNAME: ${{ secrets.SFCC_HOSTNAME }}
         run: |
-          sfcc-ci instance:import site_import.zip -i "${{ secrets.SFCC_HOSTNAME }}" -s
+          sfcc-ci instance:import site_import.zip -i "$SFCC_HOSTNAME" -s

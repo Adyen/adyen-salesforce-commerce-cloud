@@ -43,7 +43,13 @@ function check(request) {
 
 function compareHmac(hmacSignature, merchantSignature) {
   let bitwiseComparison;
-  if (hmacSignature.length !== merchantSignature.length) {
+  // A notification without a signature, or a signature we could not calculate,
+  // is unauthorized rather than an unexpected error
+  if (
+    typeof hmacSignature !== 'string' ||
+    typeof merchantSignature !== 'string' ||
+    hmacSignature.length !== merchantSignature.length
+  ) {
     return false;
   }
   for (let i = 0; i < hmacSignature.length; i++) {
@@ -54,7 +60,7 @@ function compareHmac(hmacSignature, merchantSignature) {
 }
 
 function validateHmacSignature(request) {
-  const notificationData = request.form;
+  const notificationData = request.form || {};
   const hmacSignature = notificationData['additionalData.hmacSignature'];
   const merchantSignature = AuthenticationUtils.calculateHmacSignature(request);
   // Checking for timing attacks

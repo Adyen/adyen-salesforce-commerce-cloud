@@ -43,4 +43,12 @@ describe('Confirm', () => {
     confirm(req, res, jest.fn());
     expect(res.setViewData).toMatchSnapshot();
   });
+  it('should not break confirmation page if donationCampaigns call returns error', () => {
+    const adyenGiving = require('*/cartridge/adyen/scripts/donations/adyenGiving');
+    adyenGiving.getActiveCampaigns.mockReturnValueOnce({ error: true });
+    const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
+    AdyenHelper.getOrderMainPaymentInstrumentType.mockReturnValue('AdyenComponent');
+    expect(() => confirm(req, res, jest.fn())).not.toThrow();
+    expect(res.setViewData).toBeCalledTimes(0);
+  });
 });

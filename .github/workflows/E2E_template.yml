@@ -67,12 +67,17 @@ jobs:
         run: npm install
       - name: Create dw.json file
         working-directory: adyen-salesforce-commerce-cloud
+        env:
+          SFCC_USERNAME: ${{ secrets.SFCC_USERNAME }}
+          SFCC_PASSWORD: ${{ secrets.SFCC_PASSWORD }}
+          SFCC_HOSTNAME: ${{ secrets.SFCC_HOSTNAME }}
+          SFCC_CODE_VERSION: ${{ secrets.SFCC_CODE_VERSION }}
         run: |
           echo '{
-            "username": "${{ secrets.SFCC_USERNAME }}",
-            "password": "${{ secrets.SFCC_PASSWORD }}",
-            "hostname": "${{ secrets.SFCC_HOSTNAME }}",
-            "code-version": "${{ secrets.SFCC_CODE_VERSION }}"
+            "username": "'"$SFCC_USERNAME"'",
+            "password": "'"$SFCC_PASSWORD"'",
+            "hostname": "'"$SFCC_HOSTNAME"'",
+            "code-version": "'"$SFCC_CODE_VERSION"'"
           }' >> dw.json
       - name: Transpile the code
         working-directory: adyen-salesforce-commerce-cloud

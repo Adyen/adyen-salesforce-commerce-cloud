@@ -112,6 +112,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const classicPageButton = document.querySelector('#classicButton');
   const debugLogCheckbox = document.getElementById('debugLogs');
   const infoLogCheckbox = document.getElementById('infoLogs');
+  const warningLogCheckbox = document.getElementById('warningLogs');
   const errorLogCheckbox = document.getElementById('errorLogs');
   const fatalLogCheckbox = document.getElementById('fatalLogs');
   const testRadio = document.getElementById('testRadio');
@@ -120,6 +121,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const troubleshootingCheckboxes = [
     debugLogCheckbox,
     infoLogCheckbox,
+    warningLogCheckbox,
     errorLogCheckbox,
     fatalLogCheckbox,
   ];

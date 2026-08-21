@@ -12,3 +12,8 @@ test-results/
 Vagrantfile
 cartridges
 !src/cartridges
+.windsurf
+.agents
+.factory
+.devin
+plans

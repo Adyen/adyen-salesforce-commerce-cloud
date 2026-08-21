@@ -64,6 +64,8 @@ module.exports = {
     'clearpay',
   ],
 
+  L23_PAYMENT_METHODS: ['applepay', 'googlepay', 'paywithgoogle', 'scheme'],
+
   SERVICE: {
     PAYMENT: 'AdyenPayment',
     PAYMENT_LINKS: 'AdyenPaymentLinks',
@@ -98,6 +100,7 @@ module.exports = {
     EU: 'EU',
     IN: 'IN',
     APSE: 'APSE',
+    NEA: 'NEA',
   },
 
   POS_REGIONS: {
@@ -105,6 +108,7 @@ module.exports = {
     AU: 'AU',
     EU: 'EU',
     APSE: 'APSE',
+    NEA: 'NEA',
   },
 
   SHOPPER_INTERACTIONS: {
@@ -132,12 +136,14 @@ module.exports = {
   CHECKOUT_ENVIRONMENT_LIVE_AU: 'live-au',
   CHECKOUT_ENVIRONMENT_LIVE_IN: 'live-in',
   CHECKOUT_ENVIRONMENT_LIVE_APSE: 'live-apse',
+  CHECKOUT_ENVIRONMENT_LIVE_NEA: 'live-nea',
 
   POS_ENVIRONMENT_TEST: 'test',
   POS_ENVIRONMENT_LIVE_EU: 'live',
   POS_ENVIRONMENT_LIVE_US: 'live-us',
   POS_ENVIRONMENT_LIVE_AU: 'live-au',
   POS_ENVIRONMENT_LIVE_APSE: 'live-apse',
+  POS_ENVIRONMENT_LIVE_NEA: 'live-nea',
   POS_REFERENCE_ID: 'SalesforceCommerceCloudPOS',
   POS_PROTOCOL_VERSION: '3.0',
   POS_MESSAGE_CLASS: {
@@ -162,7 +168,7 @@ module.exports = {
   APPLE_DOMAIN_URL:
     '/.well-known/apple-developer-merchantid-domain-association',
 
-  CHECKOUT_COMPONENT_VERSION: '6.30.0',
-  CHECKOUT_API_VERSION: 'v71',
-  VERSION: '26.2.0',
+  CHECKOUT_COMPONENT_VERSION: '6.35.0',
+  CHECKOUT_API_VERSION: 'v72',
+  VERSION: '26.3.0',
 };

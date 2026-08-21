@@ -1,6 +1,7 @@
 /* eslint-disable global-require */
 const BasketMgr = require('dw/order/BasketMgr');
 const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
+const shippingHelper = require('*/cartridge/scripts/checkout/shippingHelpers');
 
 let res;
 let req;
@@ -72,6 +73,31 @@ describe('Shipping methods', () => {
       shippingMethods: ['mocked_shippingMethods'],
     });
     expect(Logger.error.mock.calls.length).toBe(0);
+  });
+
+  it('Should handle no applicable shipping methods', () => {
+    const shipment = {};
+    const currentBasket = {
+      getShipments: jest.fn(() => ({
+        toArray: jest.fn(() => [shipment]),
+      })),
+    };
+    req.form.data = JSON.stringify({});
+    BasketMgr.getCurrentBasket.mockReturnValueOnce(currentBasket);
+    AdyenHelper.getApplicableShippingMethods.mockReturnValueOnce(null);
+
+    callGetShippingMethods(req, res, next);
+
+    expect(shippingHelper.selectShippingMethod).toHaveBeenCalledWith(
+      shipment,
+      null,
+    );
+    expect(res.setStatusCode).toHaveBeenCalledWith(500);
+    expect(res.json).toHaveBeenCalledWith({
+      error: true,
+      errorMessage: 'mocked_error.cannot.find.shipping.methods',
+      errorType: 'AdyenError',
+    });
   });
 
   it('Should fail returning available shipping methods', () => {
