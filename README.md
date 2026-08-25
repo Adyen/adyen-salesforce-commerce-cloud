@@ -38,6 +38,9 @@ This cartridge allows you to integrate with Adyen without the need for any devel
 - Online payments are processed on the back-end using the [Checkout API](https://docs.adyen.com/api-explorer/Checkout/latest/overview), and on the client side, Adyen’s [Web Components](https://docs.adyen.com/online-payments/components-web) are used to render payment methods. 
 - Point of Sale (POS) payments are processed using a cloud-based [Terminal API](https://docs.adyen.com/point-of-sale/terminal-api-fundamentals).
 
+### Card brand mapping
+Adyen card brands are mapped to SFCC card types in `card-type-mapping.json`. See [Card brand mapping](documentation/card-type-mapping.md) for the resolution order, the behaviour for unmapped and co-branded brands, and how to add a brand from your own cartridge.
+
 ### Transpilation 
 Some files in the /src directory contain modern JavaScript (ES6) that Salesforce Commerce Cloud does not natively support. 
 If you want to make ES6 code compatible with ES5 by transpiling, compiling, and uploading the auto-generated code to the /cartridges directory, see [more in our Docs](https://docs.adyen.com/plugins/salesforce-commerce-cloud/install-the-cartridge-and-import-the-metadata/#step-3-build-the-code).

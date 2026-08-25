@@ -1,11 +1,24 @@
+class OrderPaymentInstrument {
+  constructor(custom = {}) {
+    this.custom = custom;
+  }
+}
+
 global.dw = {
   order: {
     Order: {
       PAYMENT_STATUS_PAID: 'MOCKED_PAID',
       EXPORT_STATUS_READY: 'MOCKED_READY',
     },
+    OrderPaymentInstrument,
   },
 };
+
+global.empty = (value) =>
+  value === null ||
+  value === undefined ||
+  value === '' ||
+  (Array.isArray(value) && !value.length);
 global.showStoreDetails = true;
 global.$ = require('jquery');
 
