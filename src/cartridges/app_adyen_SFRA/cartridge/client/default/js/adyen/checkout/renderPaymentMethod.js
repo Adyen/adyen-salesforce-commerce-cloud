@@ -170,6 +170,7 @@ function mountComponentIfAvailable(paymentMethodID, container, li) {
 
   if (isAvailable !== false) {
     componentObj?.node?.mount(container);
+    li.removeAttribute('style');
     return true;
   }
   li.remove();
@@ -205,6 +206,7 @@ async function renderPaymentMethod(
   paymentMethodTitle = null,
 ) {
   let canRender;
+  let li;
   try {
     const paymentMethodsUI = document.querySelector('#paymentMethodsList');
     const paymentMethodID = getPaymentMethodID(isStored, paymentMethod);
@@ -228,14 +230,19 @@ async function renderPaymentMethod(
 
     const imagePath = getImagePath(options);
     const liContents = getListContents({ ...options, imagePath });
-    const li = createListItem(paymentMethodID, liContents);
+    li = createListItem(paymentMethodID, liContents);
 
-    await handlePayment(options);
     configureContainer(options);
-
     li.append(container);
 
+    // The list item takes its place in the DOM before the first await, so the
+    // list follows the order of the payment methods response instead of the
+    // order in which the components resolve. It stays hidden until the
+    // availability check is done, to avoid showing a method that gets removed.
+    li.style.display = 'none';
     paymentMethodsUI.append(li);
+
+    await handlePayment(options);
 
     mountComponentIfAvailable(paymentMethodID, container, li);
 
@@ -248,6 +255,7 @@ async function renderPaymentMethod(
 
     canRender = true;
   } catch (err) {
+    li?.remove();
     canRender = false;
   }
   return canRender;
