@@ -36,6 +36,8 @@
    window.isGooglePayExpressEnabled = "${AdyenConfigs.isGooglePayExpressEnabled()}";
    window.isGooglePayExpressOnPdpEnabled = "${AdyenConfigs.isGooglePayExpressOnPdpEnabled()}";
    window.isGooglePayExpressOnShippingPageEnabled = "${AdyenConfigs.isGooglePayExpressOnShippingPageEnabled()}";
+   window.merchantAccount = "${AdyenConfigs.getAdyenMerchantAccount()}";
+   window.googleMerchantID = "${AdyenConfigs.getGoogleMerchantID()}";
 
    window.basketAmount = "${AdyenHelper.getBasketAmount()}".replace(/&quot;/g, '\"');
    window.makeExpressPaymentsCall = "${URLUtils.https('Adyen-MakeExpressPaymentsCall')}";
