@@ -459,6 +459,13 @@ jest.mock(
 );
 
 jest.mock(
+  '*/cartridge/adyen/config/card-type-mapping.json',
+  () =>
+    require('../src/cartridges/int_adyen_SFRA/cartridge/adyen/config/card-type-mapping.json'),
+  { virtual: true },
+);
+
+jest.mock(
   '*/cartridge/adyen/config/paymentMethodDescriptions',
   () =>
     require('../src/cartridges/int_adyen_SFRA/cartridge/adyen/config/paymentMethodDescriptions'),

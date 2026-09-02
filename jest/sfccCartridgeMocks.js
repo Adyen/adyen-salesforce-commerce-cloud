@@ -303,7 +303,7 @@ jest.mock(
     isOpenInvoiceMethod: jest.fn(() => false),
     getDonationAmounts: jest.fn(() => [10, 20, 30]),
     getCardToken: jest.fn(() => 'mocked_token'),
-    getSFCCCardType: jest.fn(() => 'mocked_cardType'),
+    getSfccCardType: jest.fn(() => 'mocked_cardType'),
     getFirstTwoNumbersFromYear: jest.fn(() => 20),
     createAdyenCheckoutResponse: jest.fn(() => ({
       isFinal: true,

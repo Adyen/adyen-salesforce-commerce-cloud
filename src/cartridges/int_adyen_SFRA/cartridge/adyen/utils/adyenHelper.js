@@ -533,25 +533,24 @@ const adyenHelperObj = {
           constants.PAYMENTMETHODS.GIFTCARD,
         ].indexOf(paymentMethodType) !== -1;
 
+      const omsPaymentMethodField = `${constants.OMS_NAMESPACE}__Adyen_Payment_Method`;
+      const componentType =
+        adyenHelperObj.getAdyenComponentType(paymentMethodType);
+
       Transaction.wrap(() => {
-        if (isCardOrGiftcard && adyenPaymentMethod) {
-          paymentInstrument.custom.adyenPaymentMethod = adyenPaymentMethod;
-          paymentInstrument.custom[
-            `${constants.OMS_NAMESPACE}__Adyen_Payment_Method`
-          ] = adyenPaymentMethod;
+        if (isCardOrGiftcard) {
+          // authorize passes no adyenPaymentMethod: keep the brand resolved at handle time
+          const cardPaymentMethod =
+            adyenPaymentMethod ||
+            paymentInstrument.custom.adyenPaymentMethod ||
+            componentType;
+          paymentInstrument.custom.adyenPaymentMethod = cardPaymentMethod;
+          paymentInstrument.custom[omsPaymentMethodField] = cardPaymentMethod;
         } else {
-          // Set adyenPaymentMethod if it is null
-          if (paymentInstrument.custom.adyenPaymentMethod === null) {
-            paymentInstrument.custom.adyenPaymentMethod =
-              adyenHelperObj.getAdyenComponentType(
-                paymentRequest.paymentMethod.type,
-              );
+          if (empty(paymentInstrument.custom.adyenPaymentMethod)) {
+            paymentInstrument.custom.adyenPaymentMethod = componentType;
           }
-          paymentInstrument.custom[
-            `${constants.OMS_NAMESPACE}__Adyen_Payment_Method`
-          ] = adyenHelperObj.getAdyenComponentType(
-            paymentRequest.paymentMethod.type,
-          );
+          paymentInstrument.custom[omsPaymentMethodField] = componentType;
         }
 
         paymentInstrument.custom.Adyen_Payment_Method_Variant =
@@ -722,7 +721,16 @@ const adyenHelperObj = {
         'cardType argument is not passed to getSfccCardType function',
       );
     }
-    return cardTypeMapping[cardType] || '';
+    const brand = cardType.toLowerCase();
+    // Adyen reports wallet transactions with a suffixed brand, e.g. visa_applepay
+    const baseBrand = brand.replace(/_(applepay|googlepay|samsungpay)$/, '');
+    const sfccCardType = cardTypeMapping[brand] || cardTypeMapping[baseBrand];
+    if (!sfccCardType) {
+      AdyenLogs.warning_log(
+        `No SFCC card type mapping found for Adyen brand "${cardType}". Add it to card-type-mapping.json.`,
+      );
+    }
+    return sfccCardType || '';
   },
 
   // saves the payment details in the paymentInstrument's custom object
