@@ -54,6 +54,33 @@ function handleFailedOrder(handlerResult, order) {
 }
 
 /**
+ * Sends the order confirmation email in the locale of the order
+ * @param {Object} order - The order object
+ */
+function sendOrderConfirmationEmail(order) {
+  const localeId = localeHelper.resolveLocaleId(order.getCustomerLocaleID());
+  const jobLocaleId = request.getLocale();
+  try {
+    // The email templates and resource bundles are resolved with the locale of
+    // the current request, which in a job is the site default.
+    if (!request.setLocale(localeId)) {
+      AdyenLogs.warning_log(
+        `Locale ${localeId} is not available for the confirmation email of order ${order.orderNo}`,
+      );
+    }
+    COHelpers.sendConfirmationEmail(order, localeId);
+  } catch (e) {
+    // A failing email should not stop the remaining notifications
+    AdyenLogs.error_log(
+      `Failed to send the confirmation email for order ${order.orderNo}`,
+      e,
+    );
+  } finally {
+    request.setLocale(jobLocaleId);
+  }
+}
+
+/**
  * Handles successful order processing
  * @param {Object} handlerResult - The result from the handler
  * @param {Object} order - The order object
@@ -64,20 +91,8 @@ function handleSuccessfulOrder(handlerResult, order) {
     return false;
   }
 
-  // Send confirmation email
   if (handlerResult.SubmitOrder) {
-    const customerLocaleId = localeHelper.resolveLocaleId(
-      order.getCustomerLocaleID(),
-    );
-    try {
-      COHelpers.sendConfirmationEmail(order, customerLocaleId);
-    } catch (e) {
-      // A failing email should not stop the remaining notifications
-      AdyenLogs.error_log(
-        `Failed to send the confirmation email for order ${order.orderNo}`,
-        e,
-      );
-    }
+    sendOrderConfirmationEmail(order);
   }
   return true;
 }

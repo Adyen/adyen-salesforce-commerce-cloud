@@ -18,7 +18,10 @@ global.session = {
   },
 };
 
-global.request = { getLocale: jest.fn(() => 'nl_NL') };
+global.request = {
+  getLocale: jest.fn(() => 'nl_NL'),
+  setLocale: jest.fn(() => true),
+};
 
 global.customer = { profile: { customerNo: 'mocked_customerNo' } };
 

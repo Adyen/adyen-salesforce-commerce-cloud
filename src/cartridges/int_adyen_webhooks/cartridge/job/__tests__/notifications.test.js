@@ -94,6 +94,58 @@ describe('processNotifications', () => {
     );
   });
 
+  it('applies the locale of the order while sending the confirmation email and restores the job locale afterwards', () => {
+    global.request.getLocale.mockReturnValueOnce('en_US');
+    objectsHandler.handle.mockReturnValue({
+      status: 'mocked_ok',
+      SubmitOrder: true,
+      Order: buildOrder('nl_NL'),
+    });
+    mockSearchQuery(['mocked_customObject']);
+
+    notifications.processNotifications();
+
+    expect(global.request.setLocale.mock.calls).toEqual([['nl_NL'], ['en_US']]);
+  });
+
+  it('restores the job locale when sending the confirmation email fails', () => {
+    global.request.getLocale.mockReturnValueOnce('en_US');
+    objectsHandler.handle.mockReturnValue({
+      status: 'mocked_ok',
+      SubmitOrder: true,
+      Order: buildOrder('nl_NL'),
+    });
+    COHelpers.sendConfirmationEmail.mockImplementationOnce(() => {
+      throw new Error('mocked_mail_error');
+    });
+    mockSearchQuery(['mocked_customObject']);
+
+    notifications.processNotifications();
+
+    expect(global.request.setLocale).toHaveBeenLastCalledWith('en_US');
+  });
+
+  it('logs a warning when the locale of the order is not available on the site and still sends the confirmation email', () => {
+    global.request.setLocale.mockReturnValueOnce(false);
+    const order = buildOrder('nl_NL');
+    objectsHandler.handle.mockReturnValue({
+      status: 'mocked_ok',
+      SubmitOrder: true,
+      Order: order,
+    });
+    mockSearchQuery(['mocked_customObject']);
+
+    notifications.processNotifications();
+
+    expect(AdyenLogs.warning_log).toHaveBeenCalledWith(
+      'Locale nl_NL is not available for the confirmation email of order mocked_orderNo',
+    );
+    expect(COHelpers.sendConfirmationEmail).toHaveBeenCalledWith(
+      order,
+      'nl_NL',
+    );
+  });
+
   it('logs a failing confirmation email and keeps processing the other notifications', () => {
     objectsHandler.handle.mockReturnValue({
       status: 'mocked_ok',
