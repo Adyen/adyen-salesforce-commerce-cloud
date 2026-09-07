@@ -23,10 +23,10 @@
 const OrderMgr = require('dw/order/OrderMgr');
 const Transaction = require('dw/system/Transaction');
 const CustomObjectMgr = require('dw/object/CustomObjectMgr');
-const Locale = require('dw/util/Locale');
 const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 // script includes
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
+const localeHelper = require('*/cartridge/adyen/utils/localeHelper');
 const deleteCustomObjects = require('*/cartridge/deleteCustomObjects');
 const objectsHandler = require('*/cartridge/handleCustomObject');
 
@@ -66,9 +66,18 @@ function handleSuccessfulOrder(handlerResult, order) {
 
   // Send confirmation email
   if (handlerResult.SubmitOrder) {
-    const customerLocaleId = order.getCustomerLocaleID();
-    const customerLocale = Locale.getLocale(customerLocaleId);
-    COHelpers.sendConfirmationEmail(order, customerLocale);
+    const customerLocaleId = localeHelper.resolveLocaleId(
+      order.getCustomerLocaleID(),
+    );
+    try {
+      COHelpers.sendConfirmationEmail(order, customerLocaleId);
+    } catch (e) {
+      // A failing email should not stop the remaining notifications
+      AdyenLogs.error_log(
+        `Failed to send the confirmation email for order ${order.orderNo}`,
+        e,
+      );
+    }
   }
   return true;
 }
