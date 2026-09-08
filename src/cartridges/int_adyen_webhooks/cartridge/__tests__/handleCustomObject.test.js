@@ -20,6 +20,16 @@ jest.mock(
   { virtual: true },
 );
 
+// Stands in for a handler that fails while being loaded, for example a merchant
+// override with a syntax error
+jest.mock(
+  '*/cartridge/eventHandlers/BROKEN_ON_LOAD',
+  () => {
+    throw new Error('mocked_module_load_error');
+  },
+  { virtual: true },
+);
+
 const OrderMgr = require('dw/order/OrderMgr');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 const captureHandler = require('*/cartridge/eventHandlers/CAPTURE');
@@ -109,8 +119,13 @@ describe('handleCustomObject', () => {
 
     const result = handle(customObj);
 
-    expect(AdyenLogs.info_log).toHaveBeenCalledWith(
-      'No handler module found for event code: NOT_A_REAL_EVENT_CODE',
+    expect(AdyenLogs.error_log).toHaveBeenCalledWith(
+      'Could not load a handler module for event code NOT_A_REAL_EVENT_CODE',
+      expect.objectContaining({
+        message: expect.stringContaining(
+          '*/cartridge/eventHandlers/NOT_A_REAL_EVENT_CODE',
+        ),
+      }),
     );
     expect(AdyenLogs.info_log).toHaveBeenCalledWith(
       'Order 00001234 received unhandled status NOT_A_REAL_EVENT_CODE',
@@ -121,7 +136,23 @@ describe('handleCustomObject', () => {
     expect(result.Pending).toBe(false);
   });
 
-  it('reports a throwing handler as an error instead of a missing module', () => {
+  it('reports the underlying error when a handler module fails to load', () => {
+    const order = mockOrder();
+    const customObj = mockCustomObj({ eventCode: 'BROKEN_ON_LOAD' });
+    OrderMgr.getOrder.mockReturnValue(order);
+
+    const result = handle(customObj);
+
+    expect(AdyenLogs.error_log).toHaveBeenCalledWith(
+      'Could not load a handler module for event code BROKEN_ON_LOAD',
+      expect.objectContaining({ message: 'mocked_module_load_error' }),
+    );
+    expect(order.addNote).not.toHaveBeenCalled();
+    expect(customObj.custom.processedStatus).toBeUndefined();
+    expect(result.status).toBe(PIPELET_NEXT);
+  });
+
+  it('reports a throwing handler as a handler failure, not a load failure', () => {
     const order = mockOrder();
     const customObj = mockCustomObj();
     const handlerError = new Error('mocked_handler_error');
@@ -132,12 +163,10 @@ describe('handleCustomObject', () => {
 
     const result = handle(customObj);
 
+    expect(AdyenLogs.error_log).toHaveBeenCalledTimes(1);
     expect(AdyenLogs.error_log).toHaveBeenCalledWith(
       'Handler for event code CAPTURE failed for order 00001234',
       handlerError,
-    );
-    expect(AdyenLogs.info_log).not.toHaveBeenCalledWith(
-      'No handler module found for event code: CAPTURE',
     );
     expect(order.addNote).not.toHaveBeenCalled();
     expect(customObj.custom.updateStatus).toBeUndefined();

@@ -106,8 +106,14 @@ function resolveEventHandler(eventCode) {
     // eslint-disable-next-line
     return require(`*/cartridge/eventHandlers/${eventCode}`);
   } catch (error) {
-    // An unsupported event code is indistinguishable from a missing module here
-    AdyenLogs.info_log(`No handler module found for event code: ${eventCode}`);
+    // A module that is absent and a module that fails to load both land here,
+    // and a load failure reports the offending file, so the two cannot be told
+    // apart by their message. The error is always logged rather than swallowed,
+    // so that a broken merchant override stays debuggable
+    AdyenLogs.error_log(
+      `Could not load a handler module for event code ${eventCode}`,
+      error,
+    );
     return null;
   }
 }
