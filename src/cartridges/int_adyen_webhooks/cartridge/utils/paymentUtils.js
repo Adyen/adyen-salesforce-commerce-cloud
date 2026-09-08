@@ -1,7 +1,7 @@
 const PaymentMgr = require('dw/order/PaymentMgr');
 const Order = require('dw/order/Order');
 const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
-const constants = require('./constants');
+const constants = require('*/cartridge/utils/constants');
 
 /**
  * Checks Adyen payment instruments and updates Adyen_log if found.

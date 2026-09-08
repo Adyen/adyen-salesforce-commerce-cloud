@@ -600,6 +600,13 @@ jest.mock(
 );
 
 jest.mock(
+  '*/cartridge/utils/customObjectHelper',
+  () =>
+    require('../src/cartridges/int_adyen_webhooks/cartridge/utils/customObjectHelper'),
+  { virtual: true },
+);
+
+jest.mock(
   '*/cartridge/eventHandlers/AUTHORISATION',
   () =>
     require('../src/cartridges/int_adyen_webhooks/cartridge/eventHandlers/AUTHORISATION'),

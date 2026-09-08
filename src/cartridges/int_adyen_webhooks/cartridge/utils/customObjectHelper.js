@@ -1,7 +1,7 @@
 const Transaction = require('dw/system/Transaction');
 const CustomObjectMgr = require('dw/object/CustomObjectMgr');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
-const constants = require('./constants');
+const constants = require('*/cartridge/utils/constants');
 
 /**
  * Create or update a custom object with notification data in a transaction.
