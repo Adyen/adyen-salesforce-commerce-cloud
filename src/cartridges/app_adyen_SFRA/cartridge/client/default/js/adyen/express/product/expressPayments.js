@@ -84,9 +84,9 @@ function getPaymentMethodConfig(adyenPaymentMethods, paymentMethodType) {
 async function getProductPrice(productId, quantity = 1) {
   const response = await calculateProductPrice(productId, quantity);
 
-  const { totalAmount } = response;
+  const totalAmount = response?.totalAmount;
   if (
-    response.success &&
+    response?.success &&
     Number.isSafeInteger(totalAmount?.minorUnitValue) &&
     totalAmount.minorUnitValue >= 0
   ) {

@@ -122,4 +122,19 @@ describe('PDP Express Payments', () => {
       currency: 'BHD',
     });
   });
+
+  it('keeps the initial amount at zero when the price response is null', async () => {
+    mockCalculateProductPrice.mockResolvedValue(null);
+
+    await renderPaymentButtons();
+
+    expect(mockApplePay).toHaveBeenCalledWith({}, {}, {}, true, {
+      value: 0,
+      currency: 'BHD',
+    });
+    expect(mockPaypal).toHaveBeenCalledWith({}, {}, {}, true, {
+      value: 0,
+      currency: 'BHD',
+    });
+  });
 });
