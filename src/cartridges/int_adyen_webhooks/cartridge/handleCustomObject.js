@@ -2,7 +2,7 @@
 const OrderMgr = require('dw/order/OrderMgr');
 const adyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
-const { createLogMessage } = require('./utils/customObjectHelper');
+const { createLogMessage } = require('*/cartridge/utils/customObjectHelper');
 
 /**
  * Extracts and processes the order ID from the custom object
@@ -96,6 +96,29 @@ function extractPendingStatus(handlerResult, eventCode) {
 }
 
 /**
+ * Resolves the event handler for an event code through the cartridge path, so
+ * that merchants can override a handler or add one for a new event code
+ * @param {string} eventCode - The event code to resolve a handler for
+ * @returns {Object|null} The handler module, or null when none is available
+ */
+function resolveEventHandler(eventCode) {
+  try {
+    // eslint-disable-next-line
+    return require(`*/cartridge/eventHandlers/${eventCode}`);
+  } catch (error) {
+    // A module that is absent and a module that fails to load both land here,
+    // and a load failure reports the offending file, so the two cannot be told
+    // apart by their message. The error is always logged rather than swallowed,
+    // so that a broken merchant override stays debuggable
+    AdyenLogs.error_log(
+      `Could not load a handler module for event code ${eventCode}`,
+      error,
+    );
+    return null;
+  }
+}
+
+/**
  * Processes the event using the appropriate event handler
  * @param {Object} order - The order object
  * @param {Object} customObj - The custom object
@@ -104,13 +127,11 @@ function extractPendingStatus(handlerResult, eventCode) {
  * @returns {Object} An object containing isHandled status and pending status
  */
 function processEventHandler(order, customObj, result, totalAmount) {
-  // Handle all events using dedicated event handlers
-  try {
-    // eslint-disable-next-line
-    const handlerModule = require(
-      `./eventHandlers/${customObj.custom.eventCode}`,
-    );
-    if (handlerModule && typeof handlerModule.handle === 'function') {
+  const { eventCode } = customObj.custom;
+  const handlerModule = resolveEventHandler(eventCode);
+
+  if (handlerModule && typeof handlerModule.handle === 'function') {
+    try {
       const handlerResult = handlerModule.handle({
         order,
         customObj,
@@ -119,22 +140,19 @@ function processEventHandler(order, customObj, result, totalAmount) {
       });
       return {
         isHandled: true,
-        pending: extractPendingStatus(
-          handlerResult,
-          customObj.custom.eventCode,
-        ),
+        pending: extractPendingStatus(handlerResult, eventCode),
       };
+    } catch (error) {
+      AdyenLogs.error_log(
+        `Handler for event code ${eventCode} failed for order ${order.orderNo}`,
+        error,
+      );
     }
-  } catch (error) {
-    // Handler module doesn't exist for this event type
-    AdyenLogs.info_log(
-      `No handler module found for event code: ${customObj.custom.eventCode}`,
-    );
   }
 
   // Handle unhandled event types
   AdyenLogs.info_log(
-    `Order ${order.orderNo} received unhandled status ${customObj.custom.eventCode}`,
+    `Order ${order.orderNo} received unhandled status ${eventCode}`,
   );
   return { isHandled: false, pending: false };
 }

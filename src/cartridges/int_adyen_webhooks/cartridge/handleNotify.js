@@ -32,7 +32,7 @@ const {
   createOrUpdateCustomObject,
   setCustomObjectStatus,
   createLogMessage,
-} = require('./utils/customObjectHelper');
+} = require('*/cartridge/utils/customObjectHelper');
 
 function notify(notificationData) {
   // Check the input parameters
