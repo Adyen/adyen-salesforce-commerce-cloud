@@ -14,6 +14,10 @@ global.dw = {
   },
 };
 
+// SFCC pipeline exit codes, provided by the platform at runtime
+global.PIPELET_NEXT = 2;
+global.PIPELET_ERROR = 1;
+
 global.empty = (value) =>
   value === null ||
   value === undefined ||
