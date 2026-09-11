@@ -326,6 +326,13 @@ jest.mock(
 );
 
 jest.mock(
+  '*/cartridge/adyen/utils/localeHelper',
+  () =>
+    require('../src/cartridges/int_adyen_SFRA/cartridge/adyen/utils/localeHelper'),
+  { virtual: true },
+);
+
+jest.mock(
   '*/cartridge/adyen/utils/dcapHelper',
   () =>
     require('../src/cartridges/int_adyen_SFRA/cartridge/adyen/utils/dcapHelper'),

@@ -23,10 +23,10 @@
 const OrderMgr = require('dw/order/OrderMgr');
 const Transaction = require('dw/system/Transaction');
 const CustomObjectMgr = require('dw/object/CustomObjectMgr');
-const Locale = require('dw/util/Locale');
 const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 // script includes
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
+const localeHelper = require('*/cartridge/adyen/utils/localeHelper');
 const deleteCustomObjects = require('*/cartridge/deleteCustomObjects');
 const objectsHandler = require('*/cartridge/handleCustomObject');
 
@@ -54,6 +54,33 @@ function handleFailedOrder(handlerResult, order) {
 }
 
 /**
+ * Sends the order confirmation email in the locale of the order
+ * @param {Object} order - The order object
+ */
+function sendOrderConfirmationEmail(order) {
+  const localeId = localeHelper.resolveLocaleId(order.getCustomerLocaleID());
+  const jobLocaleId = request.getLocale();
+  try {
+    // The email templates and resource bundles are resolved with the locale of
+    // the current request, which in a job is the site default.
+    if (!request.setLocale(localeId)) {
+      AdyenLogs.warning_log(
+        `Locale ${localeId} is not available for the confirmation email of order ${order.orderNo}`,
+      );
+    }
+    COHelpers.sendConfirmationEmail(order, localeId);
+  } catch (e) {
+    // A failing email should not stop the remaining notifications
+    AdyenLogs.error_log(
+      `Failed to send the confirmation email for order ${order.orderNo}`,
+      e,
+    );
+  } finally {
+    request.setLocale(jobLocaleId);
+  }
+}
+
+/**
  * Handles successful order processing
  * @param {Object} handlerResult - The result from the handler
  * @param {Object} order - The order object
@@ -64,11 +91,8 @@ function handleSuccessfulOrder(handlerResult, order) {
     return false;
   }
 
-  // Send confirmation email
   if (handlerResult.SubmitOrder) {
-    const customerLocaleId = order.getCustomerLocaleID();
-    const customerLocale = Locale.getLocale(customerLocaleId);
-    COHelpers.sendConfirmationEmail(order, customerLocale);
+    sendOrderConfirmationEmail(order);
   }
   return true;
 }
