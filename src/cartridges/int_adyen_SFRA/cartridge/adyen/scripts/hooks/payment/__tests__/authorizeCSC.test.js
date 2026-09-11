@@ -1,10 +1,11 @@
 const { authorize } = require('../authorizeCSC');
 const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
+const AdyenConfigs = require('*/cartridge/adyen/utils/adyenConfigs');
 
-const buildOrder = (stateCode) => ({
+const buildOrder = (stateCode, customerLocaleID = 'en_US') => ({
   orderNo: '00001202',
   custom: {},
-  customerLocaleID: 'en_US',
+  customerLocaleID,
   getCustomerNo: () => 'mocked_customerNo',
   getCustomerEmail: () => 'shopper@example.com',
   addNote: jest.fn(),
@@ -24,13 +25,16 @@ const buildOrderPaymentInstrument = () => ({
   }),
 });
 
-const getSentBillingAddress = () =>
-  AdyenHelper.executeCall.mock.calls[0][1].billingAddress;
+const getSentPaymentLinkRequest = () =>
+  AdyenHelper.executeCall.mock.calls[0][1];
+
+const getSentBillingAddress = () => getSentPaymentLinkRequest().billingAddress;
 
 describe('authorizeCSC payment link request', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     global.request.clientId = 'dw.csc';
+    AdyenConfigs.getAdyenDefaultLocale.mockReturnValue('nl_NL');
     AdyenHelper.executeCall.mockReturnValue({
       url: 'https://test.adyen.link/PL123',
     });
@@ -64,5 +68,17 @@ describe('authorizeCSC payment link request', () => {
 
     expect(getSentBillingAddress().city).toBe('N/A');
     expect(getSentBillingAddress().postalCode).toBe('N/A');
+  });
+
+  it('sends the locale of the order as shopperLocale', () => {
+    authorize(buildOrder('NH', 'fr_FR'), buildOrderPaymentInstrument());
+
+    expect(getSentPaymentLinkRequest().shopperLocale).toBe('fr-FR');
+  });
+
+  it('sends the configured default locale when the order has no specific locale', () => {
+    authorize(buildOrder('NH', 'default'), buildOrderPaymentInstrument());
+
+    expect(getSentPaymentLinkRequest().shopperLocale).toBe('nl-NL');
   });
 });

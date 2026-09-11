@@ -83,6 +83,13 @@
             </div>
          </div>
          <div class="form-group">
+            <label class="form-title mb-0" for="defaultLocale">Default locale</label>
+            <small id="defaultLocaleHelp" class="form-text mb-1">Used for order confirmation emails and payment links when the shopper's order has no specific locale, for example en_US.</small>
+            <div class="input-fields">
+               <input type="text" class="form-control" name="Adyen_DefaultLocale" id="defaultLocale" aria-describedby="defaultLocaleHelp" value="${AdyenConfigs.getAdyenDefaultLocale() || ''}">
+            </div>
+         </div>
+         <div class="form-group">
             <label class="form-title mb-0" for="systemIntegrator">System integrator</label>
             <small id="systemIntegratorHelp" class="form-text mb-1">Let us know the name of the company that built your integration with Adyen to get custom support.</small>
             <div class="input-fields">

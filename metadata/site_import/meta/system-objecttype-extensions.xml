@@ -654,6 +654,15 @@
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
             </attribute-definition>
+            <attribute-definition attribute-id="Adyen_DefaultLocale">
+                <display-name xml:lang="x-default">Default locale</display-name>
+                <description xml:lang="x-default">Fallback locale used for order confirmation emails and payment links when the shopper's order has no specific locale (for example en_US)</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+                <default-value>en_US</default-value>
+            </attribute-definition>
             <attribute-definition attribute-id="Adyen_ApplePay_DomainAssociation">
                 <display-name xml:lang="x-default">Apple Pay Domain Association</display-name>
                 <description xml:lang="x-default">Apple Pay Domain Association used for LIVE payments</description>
@@ -688,6 +697,7 @@
                 <attribute attribute-id="Adyen_GooglePayMerchantID"/>
                 <attribute attribute-id="AdyenRatePayID"/>
                 <attribute attribute-id="Adyen_IntegratorName"/>
+                <attribute attribute-id="Adyen_DefaultLocale"/>
                 <attribute attribute-id="Adyen_StoreId"/>
                 <attribute attribute-id="Adyen_SelectedStoreID"/>
                 <attribute attribute-id="AdyenOneClickEnabled"/>

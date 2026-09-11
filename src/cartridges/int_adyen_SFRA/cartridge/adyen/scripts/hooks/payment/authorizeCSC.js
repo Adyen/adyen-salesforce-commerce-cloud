@@ -2,6 +2,7 @@ const Status = require('dw/system/Status');
 const AdyenConfigs = require('*/cartridge/adyen/utils/adyenConfigs');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
+const localeHelper = require('*/cartridge/adyen/utils/localeHelper');
 const constants = require('*/cartridge/adyen/config/constants');
 
 const ADYEN_PBL_NOTE_KEY = 'Adyen Payment Link';
@@ -48,8 +49,7 @@ function buildPaymentLinkRequest(
     shopperInteraction: 'Ecommerce',
     shopperReference: order.getCustomerNo(),
     shopperEmail: order.getCustomerEmail(),
-    shopperLocale:
-      order.customerLocaleID === 'default' ? 'en-US' : order.customerLocaleID,
+    shopperLocale: localeHelper.getShopperLocale(order.customerLocaleID),
   };
 
   paymentLinkRequest.billingAddress = {

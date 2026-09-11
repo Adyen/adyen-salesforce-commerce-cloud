@@ -161,6 +161,11 @@ module.exports = {
   },
   FRAUD_STATUS_AMBER: 'AMBER',
 
+  LOCALE: {
+    DEFAULT_ID: 'default',
+    FALLBACK_ID: 'en_US',
+  },
+
   MERCHANT_APPLICATION_NAME: 'adyen-salesforce-commerce-cloud',
   EXTERNAL_PLATFORM_NAME: 'SalesforceCommerceCloud',
   EXTERNAL_PLATFORM_VERSION: 'SFRA',
