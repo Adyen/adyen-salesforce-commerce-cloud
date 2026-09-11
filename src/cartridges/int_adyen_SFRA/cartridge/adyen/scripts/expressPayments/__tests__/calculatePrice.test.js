@@ -2,6 +2,7 @@
 const ProductMgr = require('dw/catalog/ProductMgr');
 const priceHelper = require('*/cartridge/scripts/helpers/pricing');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
+const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
 
 const calculatePrice = require('../calculatePrice');
 
@@ -45,11 +46,13 @@ describe('calculatePrice', () => {
         { getValue: () => 5 },
         { getValue: () => 10 },
       ],
-      getQuantities: jest.fn().mockReturnValue([
-        { getValue: () => 1 },
-        { getValue: () => 5 },
-        { getValue: () => 10 },
-      ]),
+      getQuantities: jest
+        .fn()
+        .mockReturnValue([
+          { getValue: () => 1 },
+          { getValue: () => 5 },
+          { getValue: () => 10 },
+        ]),
       getPrice: jest.fn().mockReturnValue(mockPrice),
     };
 
@@ -69,6 +72,9 @@ describe('calculatePrice', () => {
     };
     ProductMgr.getProduct = jest.fn().mockReturnValue(mockProduct);
     priceHelper.getPromotionPrice = jest.fn().mockReturnValue(null);
+    AdyenHelper.getCurrencyValueForApi.mockImplementation((amount) => ({
+      value: Math.round(amount.value * 100),
+    }));
   });
 
   describe('validateProduct', () => {
@@ -83,7 +89,7 @@ describe('calculatePrice', () => {
     });
 
     it('should return error when product is not found', () => {
-      ProductMgr.getProduct.mockReturnValue(null);   
+      ProductMgr.getProduct.mockReturnValue(null);
       calculatePrice(req, res, next);
       expect(res.json).toHaveBeenCalledWith({
         success: false,
@@ -101,6 +107,7 @@ describe('calculatePrice', () => {
         success: true,
         totalAmount: {
           value: 21.98,
+          minorUnitValue: 2198,
           currencyCode: 'USD',
         },
       });
@@ -120,6 +127,7 @@ describe('calculatePrice', () => {
         success: true,
         totalAmount: {
           value: 21.98,
+          minorUnitValue: 2198,
           currencyCode: 'USD',
         },
       });
@@ -148,6 +156,7 @@ describe('calculatePrice', () => {
         success: true,
         totalAmount: {
           value: 21.98,
+          minorUnitValue: 2198,
           currencyCode: 'USD',
         },
       });
@@ -172,11 +181,14 @@ describe('calculatePrice', () => {
       ]);
       mockPriceTable.getPrice.mockReturnValue(tierPrice);
       calculatePrice(req, res, next);
-      expect(mockPriceTable.getPrice).toHaveBeenCalledWith(expectedQuantityTier);
+      expect(mockPriceTable.getPrice).toHaveBeenCalledWith(
+        expectedQuantityTier,
+      );
       expect(res.json).toHaveBeenCalledWith({
         success: true,
         totalAmount: {
           value: 62.93,
+          minorUnitValue: 6293,
           currencyCode: 'USD',
         },
       });
@@ -191,10 +203,41 @@ describe('calculatePrice', () => {
         success: true,
         totalAmount: {
           value: 21.98,
+          minorUnitValue: 2198,
           currencyCode: 'USD',
         },
       });
     });
+  });
+
+  describe('minor-unit price response', () => {
+    it.each([
+      ['EUR', 10.99, 1099],
+      ['JPY', 1000, 1000],
+      ['BHD', 10.999, 10999],
+    ])(
+      'returns the correct minor-unit value for %s',
+      (currencyCode, value, minorUnitValue) => {
+        mockPrice.multiply.mockReturnValue({
+          value,
+          currencyCode,
+        });
+        AdyenHelper.getCurrencyValueForApi.mockReturnValue({
+          value: minorUnitValue,
+        });
+
+        calculatePrice(req, res, next);
+
+        expect(res.json).toHaveBeenCalledWith({
+          success: true,
+          totalAmount: {
+            value,
+            minorUnitValue,
+            currencyCode,
+          },
+        });
+      },
+    );
   });
 
   describe('getFinalUnitPrice', () => {
@@ -214,6 +257,7 @@ describe('calculatePrice', () => {
         success: true,
         totalAmount: {
           value: 15.98,
+          minorUnitValue: 1598,
           currencyCode: 'USD',
         },
       });
@@ -231,6 +275,7 @@ describe('calculatePrice', () => {
         success: true,
         totalAmount: {
           value: 21.98,
+          minorUnitValue: 2198,
           currencyCode: 'USD',
         },
       });
@@ -297,6 +342,7 @@ describe('calculatePrice', () => {
         success: true,
         totalAmount: {
           value: 21.98,
+          minorUnitValue: 2198,
           currencyCode: 'USD',
         },
       });

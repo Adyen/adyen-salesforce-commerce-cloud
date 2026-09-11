@@ -2,6 +2,7 @@ const ProductMgr = require('dw/catalog/ProductMgr');
 const Resource = require('dw/web/Resource');
 const priceHelper = require('*/cartridge/scripts/helpers/pricing');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
+const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
 const setErrorType = require('*/cartridge/adyen/logs/setErrorType');
 const { AdyenError } = require('*/cartridge/adyen/logs/adyenError');
 
@@ -113,11 +114,13 @@ function getFinalUnitPrice(product, basePrice) {
 function sendPriceResponse(res, next, product, price, qty) {
   const unitPrice = getFinalUnitPrice(product, price);
   const totalAmount = unitPrice.multiply(qty);
+  const minorUnitValue = AdyenHelper.getCurrencyValueForApi(totalAmount).value;
 
   res.json({
     success: true,
     totalAmount: {
       value: totalAmount.value,
+      minorUnitValue,
       currencyCode: totalAmount.currencyCode,
     },
   });
