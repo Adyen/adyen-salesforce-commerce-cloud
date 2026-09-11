@@ -1,7 +1,7 @@
 /**
  * @jest-environment jsdom
  */
-const { renderPaymentMethod } = require('../renderPaymentMethod');
+const { renderPaymentMethod, renderCheckout } = require('../renderPaymentMethod');
 const store = require('../../../../../../config/store');
 
 let mount;
@@ -98,5 +98,97 @@ describe('Render Payment Method', () => {
         document.querySelector('button[value="submit-payment"]').disabled,
     ).toBeTruthy();
     expect(store.selectedMethod).toBe('paypal');
+  });
+});
+
+describe('Render Checkout', () => {
+  // Apple Pay and Google Pay are the only components with an asynchronous
+  // isAvailable, so they are the ones that used to be pushed to the bottom
+  const SLOW_METHODS = ['applepay', 'googlepay'];
+
+  const paymentMethodsResponse = {
+    locale: 'en_US',
+    imagePath: '/mocked_path/',
+    adyenDescriptions: {},
+    adyenPaymentMethodTitles: { en_US: {} },
+    AdyenPaymentMethods: {
+      storedPaymentMethods: [],
+      paymentMethods: [
+        { type: 'cashapp', name: 'Cash App Pay' },
+        { type: 'paypal', name: 'PayPal' },
+        { type: 'applepay', name: 'Apple Pay' },
+        { type: 'giftcard', brand: 'genericgiftcard', name: 'Generic GiftCard' },
+        { type: 'giftcard', brand: 'givex', name: 'Givex' },
+        { type: 'googlepay', name: 'Google Pay' },
+        { type: 'scheme', name: 'Cards' },
+        { type: 'klarna_account', name: 'Pay over time with Klarna.' },
+        { type: 'affirm', name: 'Affirm' },
+      ],
+    },
+  };
+
+  const getRenderedOrder = () =>
+    Array.from(
+      document.querySelectorAll('#paymentMethodsList input[name="brandCode"]'),
+    ).map((input) => input.value);
+
+  const mockCreateComponent = (availability = {}) =>
+    jest.fn((type) => {
+      const node = { mount: jest.fn() };
+      if (SLOW_METHODS.includes(type)) {
+        node.isAvailable = () =>
+          new Promise((resolve) => {
+            setTimeout(() => resolve(availability[type] !== false), 10);
+          });
+      }
+      return node;
+    });
+
+  beforeEach(() => {
+    document.body.innerHTML = `
+      <ul id="paymentMethodsList"></ul>
+    `;
+    store.componentsObj = {};
+    store.paymentMethodsConfiguration = {};
+    store.checkout = {};
+  });
+
+  it('should render the payment methods in the order of the response', async () => {
+    window.AdyenWeb = { createComponent: mockCreateComponent() };
+
+    await renderCheckout(paymentMethodsResponse);
+
+    expect(getRenderedOrder()).toEqual([
+      'cashapp',
+      'paypal',
+      'applepay',
+      'googlepay',
+      'scheme',
+      'klarna_account',
+      'affirm',
+    ]);
+  });
+
+  it('should not leave a hidden list item for an unavailable payment method', async () => {
+    window.AdyenWeb = {
+      createComponent: mockCreateComponent({ applepay: false }),
+    };
+
+    await renderCheckout(paymentMethodsResponse);
+
+    expect(getRenderedOrder()).toEqual([
+      'cashapp',
+      'paypal',
+      'googlepay',
+      'scheme',
+      'klarna_account',
+      'affirm',
+    ]);
+    expect(
+      Array.from(document.querySelectorAll('#paymentMethodsList li')).filter(
+        (li) => li.style.display === 'none',
+      ),
+    ).toHaveLength(0);
+    expect(store.componentsObj.applepay).toBeUndefined();
   });
 });
