@@ -161,6 +161,9 @@
                     <value-definition>
                         <value>CREDIT_CARD</value>
                     </value-definition>
+                    <value-definition>
+                        <value>AdyenPOS</value>
+                    </value-definition>
                 </value-definitions>
             </attribute-definition>
             <attribute-definition attribute-id="adyenMD">
