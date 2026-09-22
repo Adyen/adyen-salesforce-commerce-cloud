@@ -1,1 +1,1 @@
-<isinclude url="${URLUtils.url('Adyen-PdpExpress')}"/>
+<isinclude url="${URLUtils.https('Adyen-PdpExpress')}"/>

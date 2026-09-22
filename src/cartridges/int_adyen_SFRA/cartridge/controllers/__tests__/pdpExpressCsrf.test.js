@@ -36,7 +36,7 @@ describe('PDP express payments CSRF token', () => {
     );
 
     expect(pdpExtension).toMatch(
-      /<isinclude\s+url="\$\{URLUtils\.url\('Adyen-PdpExpress'\)\}"\s*\/?>/,
+      /<isinclude\s+url="\$\{URLUtils\.https\('Adyen-PdpExpress'\)\}"\s*\/?>/,
     );
     expect(pdpExtension).not.toContain('pdict.csrf');
   });
