@@ -239,6 +239,24 @@ describe('partial payment', () => {
     );
   });
 
+  it('should fail with an AdyenError when no partial payment order exists', () => {
+    currentBasket.custom.partialPaymentOrderData = null;
+
+    makePartialPayment(req, res, jest.fn());
+
+    expect(AdyenHelper.executeCall).not.toHaveBeenCalled();
+    expect(res.json).toHaveBeenCalledWith({
+      error: true,
+      errorType: 'AdyenError',
+    });
+    expect(AdyenLogs.error_log).toHaveBeenCalledWith(
+      'Failed to create partial payment:',
+      expect.objectContaining({
+        message: 'No partial payment order data found',
+      }),
+    );
+  });
+
   it('should not update the basket when the payment is refused', () => {
     const partialPaymentOrderData =
       currentBasket.custom.partialPaymentOrderData;

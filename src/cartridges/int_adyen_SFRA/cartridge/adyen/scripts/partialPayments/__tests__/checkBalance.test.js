@@ -85,6 +85,21 @@ describe('check balance', () => {
     expect(sessionWrite).not.toHaveBeenCalled();
   });
 
+  it('should clear the basket balance when the response carries none', () => {
+    currentBasket.custom.adyenGiftCardBalance = JSON.stringify(BALANCE);
+    adyenCheckout.doCheckBalanceCall.mockReturnValueOnce({
+      resultCode: 'Failed',
+    });
+
+    checkBalance(req, res, jest.fn());
+
+    expect(currentBasket.custom.adyenGiftCardBalance).toBeNull();
+    expect(res.json).toHaveBeenCalledWith({
+      resultCode: 'Failed',
+      balance: undefined,
+    });
+  });
+
   it('should send successful response', () => {
     checkBalance(req, res, jest.fn());
 

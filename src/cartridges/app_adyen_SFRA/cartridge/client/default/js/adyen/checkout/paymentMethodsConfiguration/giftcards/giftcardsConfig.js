@@ -191,33 +191,36 @@ class GiftCardConfig {
     createElementsToShowRemainingGiftCardAmount();
   }
 
-  makePartialPayment(requestData) {
-    // eslint-disable-next-line no-async-promise-executor
-    return new Promise(async (resolve, reject) => {
-      const response = await this.httpClient({
+  async makePartialPayment(requestData) {
+    let response;
+    try {
+      response = await this.httpClient({
         url: window.partialPaymentUrl,
         method: 'POST',
         data: {
           data: JSON.stringify(requestData),
         },
       });
-      if (response.error) {
-        showGiftCardErrorMessage();
-        reject(new Error(`Partial payment error ${response?.error}`));
-      } else {
-        const { giftCards, ...rest } = response;
-        this.store.checkout.options.amount = rest.remainingAmount;
-        this.store.adyenOrderDataCreated = rest.orderCreated;
-        this.store.partialPaymentsOrderObj = rest;
-        sessionStorage.setItem('partialPaymentsObj', JSON.stringify(rest));
-        this.store.addedGiftCards = giftCards;
-        this.helpers.setOrderFormData(response);
-        $('body').trigger('checkout:renderPaymentMethod', {
-          email: document.querySelector('.customer-summary-email')?.textContent,
-          amount: rest.remainingAmount,
-        });
-        resolve();
-      }
+    } catch (error) {
+      showGiftCardErrorMessage();
+      throw error;
+    }
+
+    if (response.error) {
+      showGiftCardErrorMessage();
+      throw new Error(`Partial payment error ${response?.error}`);
+    }
+
+    const { giftCards, ...rest } = response;
+    this.store.checkout.options.amount = rest.remainingAmount;
+    this.store.adyenOrderDataCreated = rest.orderCreated;
+    this.store.partialPaymentsOrderObj = rest;
+    sessionStorage.setItem('partialPaymentsObj', JSON.stringify(rest));
+    this.store.addedGiftCards = giftCards;
+    this.helpers.setOrderFormData(response);
+    $('body').trigger('checkout:renderPaymentMethod', {
+      email: document.querySelector('.customer-summary-email')?.textContent,
+      amount: rest.remainingAmount,
     });
   }
 

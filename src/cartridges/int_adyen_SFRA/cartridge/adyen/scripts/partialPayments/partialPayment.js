@@ -46,6 +46,10 @@ function makePartialPayment(req, res, next) {
       brand,
       type: 'giftcard',
     };
+    if (!currentBasket?.custom?.partialPaymentOrderData) {
+      throw new AdyenError('No partial payment order data found');
+    }
+
     const partialPaymentOrderData = JSON.parse(
       currentBasket.custom.partialPaymentOrderData,
     );

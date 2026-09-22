@@ -19,7 +19,7 @@ function shownErrorMessage() {
 
 beforeEach(() => {
   document.body.innerHTML = `
-        <select id="giftCardSelect"></select>
+        <select id="giftCardSelect"><option value="givex">Givex</option></select>
         <ul id="giftCardUl"></ul>
         <ul id="giftCardsList"></ul>
         <div id="giftCardContainer"></div>
@@ -93,6 +93,33 @@ describe('gift card failures', () => {
     await expect(config.makePartialPayment({})).rejects.toThrow(
       'Partial payment error',
     );
+    expect(shownErrorMessage().textContent).toBe(GIFT_CARD_ERROR_MESSAGE);
+  });
+
+  it('shows an error when the partial payment request fails', async () => {
+    const config = createConfig(
+      jest.fn(async () => {
+        throw new Error('mocked_error');
+      }),
+    );
+
+    await expect(config.makePartialPayment({})).rejects.toThrow('mocked_error');
+    expect(shownErrorMessage().textContent).toBe(GIFT_CARD_ERROR_MESSAGE);
+  });
+
+  // a rejected request used to leave the component promise unsettled
+  it('rejects the gift card request when the partial payment request fails', async () => {
+    const reject = jest.fn();
+    const config = createConfig(
+      jest.fn(async () => {
+        throw new Error('mocked_error');
+      }),
+    );
+    store.adyenOrderDataCreated = true;
+
+    await config.onOrderRequest(jest.fn(), reject, { paymentMethod: {} });
+
+    expect(reject).toHaveBeenCalled();
     expect(shownErrorMessage().textContent).toBe(GIFT_CARD_ERROR_MESSAGE);
   });
 });
