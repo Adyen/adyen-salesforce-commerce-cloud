@@ -50,11 +50,15 @@ function doPaymentsCall(order, paymentInstrument, paymentRequest) {
   const transactionAmount = AdyenHelper.getCurrencyValueForApi(
     paymentInstrument?.paymentTransaction?.amount,
   ).getValueOrNull();
-  if (session.privacy.partialPaymentAmounts) {
-    const { remainingAmount } = JSON.parse(
-      session.privacy.partialPaymentAmounts,
-    );
-    if (remainingAmount.value !== paymentRequest?.amount?.value) {
+  const partialPaymentsOrder = paymentInstrument?.custom
+    ?.adyenPartialPaymentsOrder
+    ? JSON.parse(paymentInstrument.custom.adyenPartialPaymentsOrder)
+    : null;
+  if (partialPaymentsOrder) {
+    if (
+      partialPaymentsOrder.remainingAmount?.value !==
+      paymentRequest?.amount?.value
+    ) {
       throw new AdyenError('Amounts dont match');
     }
   } else if (transactionAmount !== paymentRequest?.amount?.value) {

@@ -21,9 +21,14 @@ const getCountryCode = (currentBasket, locale) => {
   return countryCode || Locale.getLocale(locale.id).country;
 };
 
-const getRemainingAmount = (giftCardResponse, currency, currentBasket) => {
-  if (giftCardResponse && JSON.parse(giftCardResponse).remainingAmount) {
-    const { value = 1000 } = JSON.parse(giftCardResponse).remainingAmount;
+const getRemainingAmount = (currency, currentBasket) => {
+  const partialPaymentOrderData =
+    currentBasket?.custom?.partialPaymentOrderData;
+  const remainingAmount = partialPaymentOrderData
+    ? JSON.parse(partialPaymentOrderData).remainingAmount
+    : null;
+  if (remainingAmount) {
+    const { value = 1000 } = remainingAmount;
     return new dw.value.Money(value, currency);
   }
   return currentBasket?.getTotalGrossPrice().isAvailable()
@@ -50,11 +55,7 @@ function getCheckoutPaymentMethods(req, res, next) {
     const currency = currentBasket
       ? currentBasket.getTotalGrossPrice().currencyCode
       : session.currency.currencyCode;
-    const paymentAmount = getRemainingAmount(
-      session.privacy.giftCardResponse,
-      currency,
-      currentBasket,
-    );
+    const paymentAmount = getRemainingAmount(currency, currentBasket);
     const shopperEmail = AdyenHelper.getCustomerEmail();
 
     const paymentMethods = getPaymentMethods.getMethods(

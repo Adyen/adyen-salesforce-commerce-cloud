@@ -413,6 +413,30 @@ function showGiftCardInfoMessage() {
   );
 }
 
+function showGiftCardErrorMessage() {
+  const { giftCardsInfoMessageContainer } = getGiftCardElements();
+  if (!giftCardsInfoMessageContainer) return;
+
+  giftCardsInfoMessageContainer.innerHTML = '';
+
+  const giftCardsErrorMessage = document.createElement('div');
+  giftCardsErrorMessage.id = 'giftCardErrorMessage';
+  giftCardsErrorMessage.classList.add(
+    'adyen-checkout__alert-message',
+    'adyen-checkout__alert-message--error',
+  );
+  giftCardsErrorMessage.setAttribute('role', 'alert');
+
+  const errorMessage = document.createElement('span');
+  errorMessage.textContent = window.giftCardErrorMessage;
+  giftCardsErrorMessage.appendChild(errorMessage);
+
+  giftCardsInfoMessageContainer.appendChild(giftCardsErrorMessage);
+  giftCardsInfoMessageContainer.classList.add(
+    'gift-cards-info-message-container',
+  );
+}
+
 async function isCartModified() {
   const response = await httpClient({
     url: window.getBasketAmountUrl,
@@ -495,6 +519,7 @@ module.exports = {
   createElementsToShowRemainingGiftCardAmount,
   renderGiftCardSelectForm,
   showGiftCardInfoMessage,
+  showGiftCardErrorMessage,
   giftCardBrands,
   clearGiftCardsContainer,
   attachGiftCardCancelListener,

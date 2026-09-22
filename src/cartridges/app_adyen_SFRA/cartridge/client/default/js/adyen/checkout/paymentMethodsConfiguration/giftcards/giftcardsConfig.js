@@ -2,6 +2,7 @@ const {
   getGiftCardElements,
   renderAddedGiftCard,
   showGiftCardInfoMessage,
+  showGiftCardErrorMessage,
   showGiftCardCancelButton,
   attachGiftCardCancelListener,
   createElementsToShowRemainingGiftCardAmount,
@@ -76,9 +77,11 @@ class GiftCardConfig {
       ) {
         resolve(data);
       } else {
+        showGiftCardErrorMessage();
         reject();
       }
     } catch (error) {
+      showGiftCardErrorMessage();
       reject();
     }
   };
@@ -102,9 +105,13 @@ class GiftCardConfig {
         if (data.resultCode === 'Success') {
           this.store.adyenOrderDataCreated = true;
           await this.makeGiftCardPaymentRequest(paymentMethod, reject);
+        } else {
+          showGiftCardErrorMessage();
+          reject();
         }
       }
     } catch (error) {
+      showGiftCardErrorMessage();
       reject();
     }
   }
@@ -195,6 +202,7 @@ class GiftCardConfig {
         },
       });
       if (response.error) {
+        showGiftCardErrorMessage();
         reject(new Error(`Partial payment error ${response?.error}`));
       } else {
         const { giftCards, ...rest } = response;
