@@ -219,7 +219,9 @@ export default class PaymentMethodsPage {
       await this.page.locator('input[data-date-type="YYYY"]').fill('1990');
       await this.page.locator('r-button[id="payButton"]').click();
     } else {
-      await this.page.locator('button[id="cancelPaymentButton"]').click();
+      // Riverty renders these as r-button custom elements and has changed the
+      // markup before, so match on id only rather than on the element name.
+      await this.page.locator('#cancelPaymentButton').click();
       await this.page
         .locator('r-button[id="confirmCancelationButton"]')
         .click();
