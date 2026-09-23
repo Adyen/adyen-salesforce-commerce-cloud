@@ -55,24 +55,43 @@ export default class PaymentMethodsPage {
     await payPalButton.click();
     const popup = await popupPromise;
 
-    /* The SDK opens this popup on about:blank and only points it at PayPal once
-    Adyen has created the payment session. Polling the URL rides out that
-    redirect chain, whereas waiting on a navigation event misses a popup that
-    already arrived, and it reports where the popup actually ended up. */
+    /* The SDK opens a placeholder window on about:blank and only points one at
+    PayPal once Adyen has created the payment session, and it does not always
+    reuse the window it opened first. Wait for whichever window reaches PayPal
+    and report every open URL when none of them does. */
+    const context = this.page.context();
     await expect
-      .poll(() => popup.url(), { timeout: 30000 })
+      .poll(
+        () =>
+          context
+            .pages()
+            .map((openPage) => openPage.url())
+            .join(' | '),
+        { timeout: 30000 },
+      )
       .toContain('paypal.com');
 
+    const payPalWindow =
+      context
+        .pages()
+        .find((openPage) => openPage.url().includes('paypal.com')) ?? popup;
+
     // Paypal HPP selectors
-    this.emailInput = popup.locator('#email');
-    this.nextButton = popup.locator('#btnNext');
-    this.passwordInput = popup.locator('#password');
-    this.loginButton = popup.locator('#btnLogin');
-    this.agreeAndPayNowButton = popup.locator('button[data-testid="submit-button-initial"]');
-    this.shippingMethodsDropdown = popup.locator('#shippingMethodsDropdown');
-	this.changeAddress = popup.locator('button[data-testid="change-shipping"]');
-	this.selectAddress = popup.locator('#shippingDropdown');
-    this.cancelButton = popup.locator('a[data-testid="cancel-link"]');
+    this.emailInput = payPalWindow.locator('#email');
+    this.nextButton = payPalWindow.locator('#btnNext');
+    this.passwordInput = payPalWindow.locator('#password');
+    this.loginButton = payPalWindow.locator('#btnLogin');
+    this.agreeAndPayNowButton = payPalWindow.locator(
+      'button[data-testid="submit-button-initial"]',
+    );
+    this.shippingMethodsDropdown = payPalWindow.locator(
+      '#shippingMethodsDropdown',
+    );
+    this.changeAddress = payPalWindow.locator(
+      'button[data-testid="change-shipping"]',
+    );
+    this.selectAddress = payPalWindow.locator('#shippingDropdown');
+    this.cancelButton = payPalWindow.locator('a[data-testid="cancel-link"]');
 
     await this.emailInput.click();
     await this.emailInput.fill(paymentData.PayPal.username);
