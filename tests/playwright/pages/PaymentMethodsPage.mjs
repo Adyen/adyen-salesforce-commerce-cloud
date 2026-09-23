@@ -100,10 +100,20 @@ export default class PaymentMethodsPage {
 
     await Promise.race([reachedPayPal, refusedPayment]);
 
+    /* A substring match would also accept a URL where paypal.com is a query
+    parameter or part of another host, so compare parsed hostnames. */
+    const isPayPalWindow = (candidate) => {
+      try {
+        const { hostname } = new URL(candidate);
+        return hostname === 'paypal.com' || hostname.endsWith('.paypal.com');
+      } catch {
+        return false;
+      }
+    };
+
     const payPalWindow =
-      context
-        .pages()
-        .find((openPage) => openPage.url().includes('paypal.com')) ?? popup;
+      context.pages().find((openPage) => isPayPalWindow(openPage.url())) ??
+      popup;
 
     // Paypal HPP selectors
     this.emailInput = payPalWindow.locator('#email');
