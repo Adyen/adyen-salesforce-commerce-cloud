@@ -134,24 +134,24 @@ export default class CheckoutPageSFRA5 {
   };
 
   setShopperDetails = async (shopperDetails) => {
-    /* The shipping form is still hidden until the customer stage finishes
-    transitioning, and type() only focuses its target without checking
-    visibility, so the fields below would silently swallow their input and the
-    country select would be the first to report the problem. */
+    /* The shipping form stays hidden until the customer stage has finished
+    transitioning, so wait for it before filling anything. fill() is used
+    throughout rather than type(), because type() only focuses its target and
+    would send the keystrokes nowhere while the form is still hidden. */
     await this.checkoutPageUserFirstNameInput.waitFor({ state: 'visible' });
 
-    await this.checkoutPageUserFirstNameInput.type(
+    await this.checkoutPageUserFirstNameInput.fill(
       shopperDetails.shopperName.firstName,
     );
-    await this.checkoutPageUserLastNameInput.type(
+    await this.checkoutPageUserLastNameInput.fill(
       shopperDetails.shopperName.lastName,
     );
-    await this.checkoutPageUserStreetInput.type(shopperDetails.address.street);
-    await this.checkoutPageUserHouseNumberInput.type(
+    await this.checkoutPageUserStreetInput.fill(shopperDetails.address.street);
+    await this.checkoutPageUserHouseNumberInput.fill(
       shopperDetails.address.houseNumberOrName,
     );
-    await this.checkoutPageUserCityInput.type(shopperDetails.address.city);
-    await this.checkoutPageUserPostCodeInput.type(
+    await this.checkoutPageUserCityInput.fill(shopperDetails.address.city);
+    await this.checkoutPageUserPostCodeInput.fill(
       shopperDetails.address.postalCode,
     );
 
@@ -159,7 +159,7 @@ export default class CheckoutPageSFRA5 {
       shopperDetails.address.country,
     );
 
-    await this.checkoutPageUserTelephoneInput.type(shopperDetails.telephone);
+    await this.checkoutPageUserTelephoneInput.fill(shopperDetails.telephone);
 
     if (await this.checkoutPageUserStateSelect.isVisible()) {
       await this.checkoutPageUserStateSelect.selectOption({ index: 1 });
