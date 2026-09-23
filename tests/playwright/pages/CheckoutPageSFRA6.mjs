@@ -107,7 +107,22 @@ export default class CheckoutPageSFRA {
 
     await this.navigateToCheckout(locale);
     await this.setEmail(email);
+
+    /* The customer stage POSTs to CheckoutServices-SubmitCustomer and the
+    shipping stage is only re-rendered once that response comes back, so tie the
+    click to it rather than letting the next step race the re-render. This stays
+    best effort on purpose: setShopperDetails gates on the form being usable,
+    which is the condition that actually has to hold. */
+    const submitCustomer = this.page
+      .waitForResponse(
+        (response) =>
+          response.url().includes('CheckoutServices-SubmitCustomer'),
+        { timeout: 15000 },
+      )
+      .catch(() => undefined);
+
     await this.checkoutGuest.click();
+    await submitCustomer;
   };
 
   getCheckoutUrl(locale) {
@@ -138,10 +153,12 @@ export default class CheckoutPageSFRA {
     await this.customerInfoSection.waitFor({ visible: true });
 
     /* The shipping form stays hidden until the customer stage has finished
-    transitioning, so wait for it before filling anything. fill() is used
-    throughout rather than type(), because type() only focuses its target and
-    would send the keystrokes nowhere while the form is still hidden. */
-    await this.checkoutPageUserFirstNameInput.waitFor({ state: 'visible' });
+    transitioning, and it can be visible before it is editable, so gate on both.
+    fill() is used throughout rather than type(), because type() only focuses its
+    target and would send the keystrokes nowhere while the form is still
+    settling. */
+    await expect(this.checkoutPageUserFirstNameInput).toBeVisible();
+    await expect(this.checkoutPageUserFirstNameInput).toBeEditable();
 
     await this.checkoutPageUserFirstNameInput.fill(
       shopperDetails.shopperName.firstName,

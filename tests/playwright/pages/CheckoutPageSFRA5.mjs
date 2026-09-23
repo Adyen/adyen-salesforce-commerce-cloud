@@ -135,10 +135,12 @@ export default class CheckoutPageSFRA5 {
 
   setShopperDetails = async (shopperDetails) => {
     /* The shipping form stays hidden until the customer stage has finished
-    transitioning, so wait for it before filling anything. fill() is used
-    throughout rather than type(), because type() only focuses its target and
-    would send the keystrokes nowhere while the form is still hidden. */
-    await this.checkoutPageUserFirstNameInput.waitFor({ state: 'visible' });
+    transitioning, and it can be visible before it is editable, so gate on both.
+    fill() is used throughout rather than type(), because type() only focuses its
+    target and would send the keystrokes nowhere while the form is still
+    settling. */
+    await expect(this.checkoutPageUserFirstNameInput).toBeVisible();
+    await expect(this.checkoutPageUserFirstNameInput).toBeEditable();
 
     await this.checkoutPageUserFirstNameInput.fill(
       shopperDetails.shopperName.firstName,
