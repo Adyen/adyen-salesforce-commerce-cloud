@@ -1,4 +1,5 @@
 import { chromium, expect } from '@playwright/test';
+import { guestCheckoutEmail } from '../data/checkoutEmail.mjs';
 export default class CheckoutPageSFRA {
   constructor(page) {
     this.page = page;
@@ -195,7 +196,7 @@ export default class CheckoutPageSFRA {
     await this.submitShipping();
   };
 
-  setEmail = async (email = 'test@adyenTest.com') => {
+  setEmail = async (email = guestCheckoutEmail()) => {
     /* Clicking "Next" autoscrolls and remounts the guest form, which discards a
     value that was filled too early. Retrying until the value sticks survives
     that remount. The storefront keeps background requests in flight and never

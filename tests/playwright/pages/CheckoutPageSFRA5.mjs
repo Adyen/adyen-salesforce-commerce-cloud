@@ -1,4 +1,5 @@
 import { chromium, expect } from '@playwright/test';
+import { guestCheckoutEmail } from '../data/checkoutEmail.mjs';
 
 export default class CheckoutPageSFRA5 {
   constructor(page) {
@@ -174,7 +175,7 @@ export default class CheckoutPageSFRA5 {
     await this.submitShipping();
   };
 
-  setEmail = async (email = 'test@adyenTest.com') => {
+  setEmail = async (email = guestCheckoutEmail()) => {
     await this.checkoutPageUserEmailInput.fill('');
     await this.checkoutPageUserEmailInput.fill(email);
     // Pressing Tab to simulate component re-rendering and waiting the components to re-mount
