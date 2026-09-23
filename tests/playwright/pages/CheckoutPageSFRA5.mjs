@@ -1,5 +1,6 @@
 import { chromium, expect } from '@playwright/test';
 import { guestCheckoutEmail } from '../data/checkoutEmail.mjs';
+import { fillShippingForm } from './shippingForm.mjs';
 
 export default class CheckoutPageSFRA5 {
   constructor(page) {
@@ -135,43 +136,7 @@ export default class CheckoutPageSFRA5 {
   };
 
   setShopperDetails = async (shopperDetails) => {
-    /* The shipping form stays hidden until the customer stage has finished
-    transitioning, and it can be visible before it is editable, so gate on both.
-    fill() is used throughout rather than type(), because type() only focuses its
-    target and would send the keystrokes nowhere while the form is still
-    settling. */
-    await expect(this.checkoutPageUserFirstNameInput).toBeVisible();
-    await expect(this.checkoutPageUserFirstNameInput).toBeEditable();
-
-    await this.checkoutPageUserFirstNameInput.fill(
-      shopperDetails.shopperName.firstName,
-    );
-    await this.checkoutPageUserLastNameInput.fill(
-      shopperDetails.shopperName.lastName,
-    );
-    await this.checkoutPageUserStreetInput.fill(shopperDetails.address.street);
-    await this.checkoutPageUserHouseNumberInput.fill(
-      shopperDetails.address.houseNumberOrName,
-    );
-    await this.checkoutPageUserCityInput.fill(shopperDetails.address.city);
-    await this.checkoutPageUserPostCodeInput.fill(
-      shopperDetails.address.postalCode,
-    );
-
-    await this.checkoutPageUserCountrySelect.selectOption(
-      shopperDetails.address.country,
-    );
-
-    await this.checkoutPageUserTelephoneInput.fill(shopperDetails.telephone);
-
-    if (await this.checkoutPageUserStateSelect.isVisible()) {
-      await this.checkoutPageUserStateSelect.selectOption({ index: 1 });
-      if (shopperDetails.address.stateOrProvince !== '') {
-        await this.checkoutPageUserStateSelect.selectOption(
-          shopperDetails.address.stateOrProvince,
-        );
-      }
-    }
+    await fillShippingForm(this, shopperDetails);
     await this.submitShipping();
   };
 
