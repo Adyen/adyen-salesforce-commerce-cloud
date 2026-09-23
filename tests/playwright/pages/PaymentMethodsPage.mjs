@@ -55,10 +55,13 @@ export default class PaymentMethodsPage {
     await payPalButton.click();
     const popup = await popupPromise;
 
-    /* waitForNavigation only resolves on a navigation that starts after it is
-    attached, so it hung whenever the popup had already reached PayPal.
-    waitForURL returns straight away when the popup is there already. */
-    await popup.waitForURL(/.*sandbox\.paypal\.com.*/);
+    /* The SDK opens this popup on about:blank and only points it at PayPal once
+    Adyen has created the payment session. Polling the URL rides out that
+    redirect chain, whereas waiting on a navigation event misses a popup that
+    already arrived, and it reports where the popup actually ended up. */
+    await expect
+      .poll(() => popup.url(), { timeout: 30000 })
+      .toContain('paypal.com');
 
     // Paypal HPP selectors
     this.emailInput = popup.locator('#email');
