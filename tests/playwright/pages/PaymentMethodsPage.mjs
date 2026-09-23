@@ -46,6 +46,24 @@ export default class PaymentMethodsPage {
 
     const popupPromise = this.page.waitForEvent('popup');
 
+    /* Adyen answers the button click with a payment result, and when it refuses
+    there is no PayPal order for the SDK to send the popup to, so the popup stays
+    on about:blank. Capture the refusal so the wait below can report that instead
+    of spending its whole budget and then blaming the popup URL. */
+    const refusal = new Promise((resolve) => {
+      this.page.on('response', async (response) => {
+        if (!response.url().includes('Adyen-PaymentFromComponent')) {
+          return;
+        }
+        const body = await response.json().catch(() => null);
+        if (body?.resultCode === 'Refused') {
+          resolve(
+            `Adyen refused the PayPal payment: ${body.fullResponse?.refusalReason} (pspReference ${body.fullResponse?.pspReference})`,
+          );
+        }
+      });
+    });
+
     // Click PayPal radio button
     if (!expressFlow) {
       await this.page.click('#rb_paypal');
@@ -60,7 +78,7 @@ export default class PaymentMethodsPage {
     reuse the window it opened first. Wait for whichever window reaches PayPal
     and report every open URL when none of them does. */
     const context = this.page.context();
-    await expect
+    const reachedPayPal = expect
       .poll(
         () =>
           context
@@ -70,6 +88,17 @@ export default class PaymentMethodsPage {
         { timeout: 30000 },
       )
       .toContain('paypal.com');
+    const refusedPayment = refusal.then((message) => {
+      throw new Error(message);
+    });
+
+    /* Whichever of the two settles first decides the outcome. The loser stays
+    pending, so take its result here to keep it from later surfacing as an
+    unhandled rejection. */
+    reachedPayPal.catch(() => undefined);
+    refusedPayment.catch(() => undefined);
+
+    await Promise.race([reachedPayPal, refusedPayment]);
 
     const payPalWindow =
       context
