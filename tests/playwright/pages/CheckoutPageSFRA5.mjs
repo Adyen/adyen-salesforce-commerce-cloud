@@ -106,7 +106,6 @@ export default class CheckoutPageSFRA5 {
     await this.successMessage.waitFor({ visible: true });
 
     await this.navigateToCheckout(locale);
-    await this.page.waitForLoadState('networkidle');
     await this.checkoutGuest.click();
   };
 
@@ -120,6 +119,9 @@ export default class CheckoutPageSFRA5 {
 
   navigateToPdp = async (locale) => {
     await this.consentButton.click();
+    /* Dismissing the consent banner can start its own navigation, which aborts
+    a goto issued straight after it with net::ERR_ABORTED. */
+    await this.page.waitForLoadState('load');
     await this.page.goto(`/s/RefArch/25599638M.html?lang=${locale}`);
   };
 
@@ -173,12 +175,15 @@ export default class CheckoutPageSFRA5 {
   };
 
   submitShipping = async () => {
-    await this.page.waitForLoadState('networkidle');
     await this.shippingSubmit.click();
-    await this.page.waitForNavigation({ waitUntil: 'networkidle' });
 
-    // Ugly wait since the submit button takes time to mount.
-    await new Promise((r) => setTimeout(r, 2000));
+    /* The payment stage mounts asynchronously, so wait for its submit button to
+    appear rather than for a load state: the storefront never reaches
+    networkidle, which used to consume the entire test timeout here. */
+    await this.submitPaymentButton.waitFor({ state: 'visible' });
+
+    // The Adyen component inside the payment stage still needs to mount.
+    await this.page.waitForTimeout(2000);
   };
 
   submitPayment = async () => {
@@ -242,9 +247,8 @@ export default class CheckoutPageSFRA5 {
   };
 
   navigateBack = async () => {
-    await this.page.waitForLoadState('networkidle');
     await this.page.goBack();
-    await this.page.waitForLoadState('networkidle');
+    await this.page.waitForLoadState('load');
   };
 
   loginUser = async (credentials) => {

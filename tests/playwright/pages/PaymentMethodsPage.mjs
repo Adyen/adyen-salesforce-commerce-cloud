@@ -55,10 +55,10 @@ export default class PaymentMethodsPage {
     await payPalButton.click();
     const popup = await popupPromise;
 
-    // Wait for the page load
-    await popup.waitForNavigation({
-      url: /.*sandbox.paypal.com*/,
-    });
+    /* waitForNavigation only resolves on a navigation that starts after it is
+    attached, so it hung whenever the popup had already reached PayPal.
+    waitForURL returns straight away when the popup is there already. */
+    await popup.waitForURL(/.*sandbox\.paypal\.com.*/);
 
     // Paypal HPP selectors
     this.emailInput = popup.locator('#email');

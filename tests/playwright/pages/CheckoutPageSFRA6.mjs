@@ -120,6 +120,9 @@ export default class CheckoutPageSFRA {
 
   navigateToPdp = async (locale) => {
     await this.consentButton.click();
+    /* Dismissing the consent banner can start its own navigation, which aborts
+    a goto issued straight after it with net::ERR_ABORTED. */
+    await this.page.waitForLoadState('load');
     await this.page.goto(`/s/RefArch/25599638M.html?lang=${locale}`);
   };
 
@@ -171,21 +174,26 @@ export default class CheckoutPageSFRA {
   };
 
   setEmail = async (email = 'test@adyenTest.com') => {
-    /* After filling the shopper details, clicking "Next" has an autoscroll
-    feature, which leads the email field to be missed, hence the flakiness.
-    Waiting until the full page load prevents this situation */
-    await this.page.waitForLoadState('networkidle');
-    await this.checkoutPageUserEmailInput.fill('');
-    await this.checkoutPageUserEmailInput.fill(email);
+    /* Clicking "Next" autoscrolls and remounts the guest form, which discards a
+    value that was filled too early. Retrying until the value sticks survives
+    that remount. The storefront keeps background requests in flight and never
+    reaches networkidle, so waiting on that load state hung instead. */
+    await expect(async () => {
+      await this.checkoutPageUserEmailInput.fill(email);
+      await expect(this.checkoutPageUserEmailInput).toHaveValue(email);
+    }).toPass({ timeout: 30000 });
   };
 
   submitShipping = async () => {
-    await this.page.waitForLoadState('networkidle');
     await this.shippingSubmit.click();
-    await this.page.waitForNavigation({ waitUntil: "networkidle" });
 
-    // Ugly wait since the submit button takes time to mount.
-    await new Promise(r => setTimeout(r, 2000));
+    /* The payment stage mounts asynchronously, so wait for its submit button to
+    appear rather than for a load state: the storefront never reaches
+    networkidle, which used to consume the entire test timeout here. */
+    await this.submitPaymentButton.waitFor({ state: 'visible' });
+
+    // The Adyen component inside the payment stage still needs to mount.
+    await this.page.waitForTimeout(2000);
   };
 
   submitPayment = async () => {
