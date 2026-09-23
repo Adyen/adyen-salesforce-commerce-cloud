@@ -330,11 +330,20 @@ export default class PaymentMethodsPage {
   };
 
   selectInstallments = async (nrInstallments) => {
-    const installmentsDiv = await this.page.locator(
-      '.adyen-checkout__installments',
-    );
+    const installmentsDiv = this.page.locator('.adyen-checkout__installments');
     await installmentsDiv.locator('button').click();
-    await this.page.locator(`li[data-value="${nrInstallments}"]`).click();
+
+    const installmentOption = this.page.locator(
+      `li[data-value="${nrInstallments}"]`,
+    );
+    await installmentOption.click();
+
+    /* Choosing an installment re-renders the card component. Submitting while
+    that render is still in flight posts incomplete payment data, and the
+    storefront bounces back to the payment stage with a generic invalid payment
+    error. The dropdown list only exists while it is open, so the option going
+    away is the signal that the choice has been applied. */
+    await installmentOption.waitFor({ state: 'hidden' });
   };
 
   fillOneyForm = async (shopper) => {
