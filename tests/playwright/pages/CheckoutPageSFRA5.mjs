@@ -134,6 +134,12 @@ export default class CheckoutPageSFRA5 {
   };
 
   setShopperDetails = async (shopperDetails) => {
+    /* The shipping form is still hidden until the customer stage finishes
+    transitioning, and type() only focuses its target without checking
+    visibility, so the fields below would silently swallow their input and the
+    country select would be the first to report the problem. */
+    await this.checkoutPageUserFirstNameInput.waitFor({ state: 'visible' });
+
     await this.checkoutPageUserFirstNameInput.type(
       shopperDetails.shopperName.firstName,
     );
