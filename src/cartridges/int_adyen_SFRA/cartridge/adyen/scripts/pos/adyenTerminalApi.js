@@ -148,7 +148,6 @@ function createTerminalPayment(order, paymentInstrument, terminalId) {
       paymentInstrument.paymentTransaction.custom.Adyen_log = paymentResult.response
 
       const paymentResponse = parsePaymentResponse(paymentResult);
-      paymentInstrument.custom.adyenMainPaymentInstrument = paymentResponse.paymentInstrumentType;
       paymentInstrument.paymentTransaction.custom.authCode = paymentResponse.result;
       // Set attributes for OMS
       if (paymentResponse.pspReference) {
@@ -157,9 +156,12 @@ function createTerminalPayment(order, paymentInstrument, terminalId) {
         paymentInstrument.paymentTransaction.custom.Adyen_pspReference = paymentResponse.pspReference;
       }
       if(paymentResponse.paymentMethod) {
+        const sfccCardType =
+          AdyenHelper.getSfccCardType(paymentResponse.paymentMethod) ||
+          paymentResponse.paymentMethod;
         order.custom.Adyen_paymentMethod = paymentResponse.paymentMethod;
-        paymentInstrument.custom.adyenPaymentMethod = paymentResponse.paymentMethod;
-        paymentInstrument.custom[`${constants.OMS_NAMESPACE}__Adyen_Payment_Method`] = paymentResponse.paymentMethod;
+        paymentInstrument.custom.adyenPaymentMethod = sfccCardType;
+        paymentInstrument.custom[`${constants.OMS_NAMESPACE}__Adyen_Payment_Method`] = sfccCardType;
         paymentInstrument.paymentTransaction.custom.Adyen_paymentMethod = paymentResponse.paymentMethod;
       }
       if(paymentResponse.paymentMethodVariant) {
