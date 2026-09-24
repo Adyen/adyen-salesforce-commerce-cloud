@@ -46,6 +46,24 @@ export default class PaymentMethodsPage {
 
     const popupPromise = this.page.waitForEvent('popup');
 
+    /* Adyen answers the button click with a payment result, and when it refuses
+    there is no PayPal order for the SDK to send the popup to, so the popup stays
+    on about:blank. Capture the refusal so the wait below can report that instead
+    of spending its whole budget and then blaming the popup URL. */
+    const refusal = new Promise((resolve) => {
+      this.page.on('response', async (response) => {
+        if (!response.url().includes('Adyen-PaymentFromComponent')) {
+          return;
+        }
+        const body = await response.json().catch(() => null);
+        if (body?.resultCode === 'Refused') {
+          resolve(
+            `Adyen refused the PayPal payment: ${body.fullResponse?.refusalReason} (pspReference ${body.fullResponse?.pspReference})`,
+          );
+        }
+      });
+    });
+
     // Click PayPal radio button
     if (!expressFlow) {
       await this.page.click('#rb_paypal');
@@ -55,21 +73,64 @@ export default class PaymentMethodsPage {
     await payPalButton.click();
     const popup = await popupPromise;
 
-    // Wait for the page load
-    await popup.waitForNavigation({
-      url: /.*sandbox.paypal.com*/,
+    /* The SDK opens a placeholder window on about:blank and only points one at
+    PayPal once Adyen has created the payment session, and it does not always
+    reuse the window it opened first. Wait for whichever window reaches PayPal
+    and report every open URL when none of them does. */
+    const context = this.page.context();
+    const reachedPayPal = expect
+      .poll(
+        () =>
+          context
+            .pages()
+            .map((openPage) => openPage.url())
+            .join(' | '),
+        { timeout: 30000 },
+      )
+      .toContain('paypal.com');
+    const refusedPayment = refusal.then((message) => {
+      throw new Error(message);
     });
 
+    /* Whichever of the two settles first decides the outcome. The loser stays
+    pending, so take its result here to keep it from later surfacing as an
+    unhandled rejection. */
+    reachedPayPal.catch(() => undefined);
+    refusedPayment.catch(() => undefined);
+
+    await Promise.race([reachedPayPal, refusedPayment]);
+
+    /* A substring match would also accept a URL where paypal.com is a query
+    parameter or part of another host, so compare parsed hostnames. */
+    const isPayPalWindow = (candidate) => {
+      try {
+        const { hostname } = new URL(candidate);
+        return hostname === 'paypal.com' || hostname.endsWith('.paypal.com');
+      } catch {
+        return false;
+      }
+    };
+
+    const payPalWindow =
+      context.pages().find((openPage) => isPayPalWindow(openPage.url())) ??
+      popup;
+
     // Paypal HPP selectors
-    this.emailInput = popup.locator('#email');
-    this.nextButton = popup.locator('#btnNext');
-    this.passwordInput = popup.locator('#password');
-    this.loginButton = popup.locator('#btnLogin');
-    this.agreeAndPayNowButton = popup.locator('button[data-testid="submit-button-initial"]');
-    this.shippingMethodsDropdown = popup.locator('#shippingMethodsDropdown');
-	this.changeAddress = popup.locator('button[data-testid="change-shipping"]');
-	this.selectAddress = popup.locator('#shippingDropdown');
-    this.cancelButton = popup.locator('a[data-testid="cancel-link"]');
+    this.emailInput = payPalWindow.locator('#email');
+    this.nextButton = payPalWindow.locator('#btnNext');
+    this.passwordInput = payPalWindow.locator('#password');
+    this.loginButton = payPalWindow.locator('#btnLogin');
+    this.agreeAndPayNowButton = payPalWindow.locator(
+      'button[data-testid="submit-button-initial"]',
+    );
+    this.shippingMethodsDropdown = payPalWindow.locator(
+      '#shippingMethodsDropdown',
+    );
+    this.changeAddress = payPalWindow.locator(
+      'button[data-testid="change-shipping"]',
+    );
+    this.selectAddress = payPalWindow.locator('#shippingDropdown');
+    this.cancelButton = payPalWindow.locator('a[data-testid="cancel-link"]');
 
     await this.emailInput.click();
     await this.emailInput.fill(paymentData.PayPal.username);
@@ -219,7 +280,9 @@ export default class PaymentMethodsPage {
       await this.page.locator('input[data-date-type="YYYY"]').fill('1990');
       await this.page.locator('r-button[id="payButton"]').click();
     } else {
-      await this.page.locator('button[id="cancelPaymentButton"]').click();
+      // Riverty renders these as r-button custom elements and has changed the
+      // markup before, so match on id only rather than on the element name.
+      await this.page.locator('#cancelPaymentButton').click();
       await this.page
         .locator('r-button[id="confirmCancelationButton"]')
         .click();
@@ -328,11 +391,20 @@ export default class PaymentMethodsPage {
   };
 
   selectInstallments = async (nrInstallments) => {
-    const installmentsDiv = await this.page.locator(
-      '.adyen-checkout__installments',
-    );
+    const installmentsDiv = this.page.locator('.adyen-checkout__installments');
     await installmentsDiv.locator('button').click();
-    await this.page.locator(`li[data-value="${nrInstallments}"]`).click();
+
+    const installmentOption = this.page.locator(
+      `li[data-value="${nrInstallments}"]`,
+    );
+    await installmentOption.click();
+
+    /* Choosing an installment re-renders the card component. Submitting while
+    that render is still in flight posts incomplete payment data, and the
+    storefront bounces back to the payment stage with a generic invalid payment
+    error. The dropdown list only exists while it is open, so the option going
+    away is the signal that the choice has been applied. */
+    await installmentOption.waitFor({ state: 'hidden' });
   };
 
   fillOneyForm = async (shopper) => {

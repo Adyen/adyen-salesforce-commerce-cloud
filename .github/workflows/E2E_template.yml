@@ -141,3 +141,15 @@ jobs:
           AMAZONPAY_PASSWORD: ${{ secrets.AMAZONPAY_PASSWORD }}
           SFRA_VERSION: ${{ inputs.sfra_version }}
           SFCC_HOSTNAME: ${{ secrets.SFCC_STOREFRONT_URL }}
+      # The config already records a trace per failed test, so the only thing
+      # missing when a run fails is somewhere to read it from.
+      - name: Upload Playwright artifacts
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-artifacts-${{ inputs.sfra_version }}
+          path: |
+            adyen-salesforce-commerce-cloud/tests/playwright/test-results/
+            adyen-salesforce-commerce-cloud/tests/playwright/playwright-report/
+          retention-days: 7
+          if-no-files-found: ignore
