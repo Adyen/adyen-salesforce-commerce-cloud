@@ -227,4 +227,20 @@ describe('ApplePay class', () => {
     await applePay.getComponent();
     expect(window.AdyenWeb.createComponent).toHaveBeenCalledTimes(1);
   });
+
+  it('should return null when the component is not available', async () => {
+    window.AdyenWeb.createComponent.mockReturnValueOnce({
+      isAvailable: jest.fn().mockResolvedValue(false),
+    });
+
+    await expect(applePay.getComponent()).resolves.toBeNull();
+  });
+
+  it('should return null when the availability check rejects', async () => {
+    window.AdyenWeb.createComponent.mockReturnValueOnce({
+      isAvailable: jest.fn().mockRejectedValue(new Error('not supported')),
+    });
+
+    await expect(applePay.getComponent()).resolves.toBeNull();
+  });
 });

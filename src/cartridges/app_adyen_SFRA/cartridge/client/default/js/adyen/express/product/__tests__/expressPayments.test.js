@@ -43,6 +43,9 @@ describe('PDP Express Payments', () => {
     amount: { currency: 'BHD' },
   };
 
+  let applePayMount;
+  let paypalMount;
+
   beforeEach(() => {
     jest.clearAllMocks();
     $('body').off();
@@ -51,11 +54,13 @@ describe('PDP Express Payments', () => {
       <input name="Quantity" value="1" />
     `;
 
+    applePayMount = jest.fn();
+    paypalMount = jest.fn();
     mockApplePay.mockImplementation(() => ({
-      getComponent: jest.fn().mockResolvedValue({ mount: jest.fn() }),
+      getComponent: jest.fn().mockResolvedValue({ mount: applePayMount }),
     }));
     mockPaypal.mockImplementation(() => ({
-      getComponent: jest.fn().mockResolvedValue({ mount: jest.fn() }),
+      getComponent: jest.fn().mockResolvedValue({ mount: paypalMount }),
     }));
   });
 
@@ -136,5 +141,27 @@ describe('PDP Express Payments', () => {
       value: 0,
       currency: 'BHD',
     });
+  });
+
+  it('does not mount Apple Pay when the component is unavailable', async () => {
+    mockCalculateProductPrice.mockResolvedValue(null);
+    mockApplePay.mockImplementation(() => ({
+      getComponent: jest.fn().mockResolvedValue(null),
+    }));
+
+    const unhandledRejections = [];
+    const onUnhandledRejection = (reason) => unhandledRejections.push(reason);
+    process.on('unhandledRejection', onUnhandledRejection);
+
+    try {
+      await renderPaymentButtons();
+      await new Promise((resolve) => setTimeout(resolve, 10));
+    } finally {
+      process.off('unhandledRejection', onUnhandledRejection);
+    }
+
+    expect(applePayMount).not.toHaveBeenCalled();
+    expect(paypalMount).toHaveBeenCalledTimes(1);
+    expect(unhandledRejections).toEqual([]);
   });
 });

@@ -104,6 +104,21 @@ describe('GooglePay class', () => {
       const result = GooglePay.getTransactionInfo(newCalculation);
       expect(result).toEqual(expectedOutput);
     });
+
+    it('falls back to the resolved country when the locale has none', () => {
+      window.countryCode = 'NL';
+
+      expect(
+        GooglePay.getTransactionInfo({ locale: 'default' }).countryCode,
+      ).toBe('NL');
+      expect(GooglePay.getTransactionInfo({}).countryCode).toBe('NL');
+    });
+
+    it('accepts an underscore separated locale', () => {
+      expect(GooglePay.getTransactionInfo({ locale: 'en_GB' }).countryCode).toBe(
+        'GB',
+      );
+    });
 });
 
 describe('formatCustomerObject', () => {

@@ -108,6 +108,10 @@ async function renderApplePayButtonListener(e, response) {
     false,
   );
   const applePayComponent = await applePay.getComponent();
+  // getComponent resolves to null when Apple Pay is not available on the device
+  if (!applePayComponent) {
+    return;
+  }
   applePayComponent.mount(button);
 }
 
