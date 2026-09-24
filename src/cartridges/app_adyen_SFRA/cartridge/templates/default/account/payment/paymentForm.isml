@@ -1,6 +1,7 @@
 <iscomment> ### Custom Adyen cartridge start ### </iscomment>
 <isset name="AdyenHelper" value="${require('*/cartridge/adyen/utils/adyenHelper')}" scope="pdict"/>
 <isset name="AdyenConfigs" value="${require('*/cartridge/adyen/utils/adyenConfigs')}" scope="pdict"/>
+<isset name="localeHelper" value="${require('*/cartridge/adyen/utils/localeHelper')}" scope="pdict"/>
 <div>
     <isif condition="${pdict.AdyenConfigs.getAdyenRecurringPaymentsEnabled()}">
         <link rel="stylesheet" type="text/css" href="${pdict.AdyenHelper.getCheckoutCSS()}"/>
@@ -12,14 +13,14 @@
         </isscript>
         <script type="text/javascript">
             window.Configuration = {
-                locale: '${request.locale}',
+                locale: '${pdict.localeHelper.getShopperLocale(request.locale)}',
                 clientKey: '${pdict.adyen.clientKey}',
                 environment: '${pdict.adyen.environment}'
             };
             window.redirectUrl = "${URLUtils.url('PaymentInstruments-List')}";
             window.paymentsDetailsURL = "${URLUtils.https('Adyen-PaymentsDetails')}";
             window.getPaymentMethodsURL = "${URLUtils.https('Adyen-GetPaymentMethods')}";
-            window.countryCode = window.Configuration.locale.slice(-2);
+            window.countryCode = '${pdict.localeHelper.getCountryCode(request.locale)}';
         </script>
         <form
             action="${URLUtils.url('PaymentInstruments-SavePayment', 'UUID', pdict.UUID)}"

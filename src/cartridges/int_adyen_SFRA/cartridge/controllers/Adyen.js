@@ -97,14 +97,26 @@ server.post(
   adyen.getCheckoutPaymentMethods,
 );
 
-/**
- * csrf.generateToken is used since SFRA5 doens't have a token in PDP
- */
 server.post(
   'GetExpressPaymentMethods',
   server.middleware.https,
-  csrf.generateToken,
+  csrf.validateRequest,
   adyen.getCheckoutExpressPaymentMethods,
+);
+
+/*
+ * Remote include for the PDP express payments section. The PDP itself is
+ * promotion sensitive and cached, so the session CSRF token has to be rendered
+ * by this uncached include instead of being stored in the page cache.
+ */
+server.get(
+  'PdpExpress',
+  server.middleware.include,
+  csrf.generateToken,
+  (req, res, next) => {
+    res.render('adyen/pdpExpress');
+    next();
+  },
 );
 
 server.post(

@@ -125,8 +125,18 @@ class GooglePay {
     });
   };
 
+  // A basket without a locale segment reports 'default', whose last two
+  // characters are not a country
+  static getCountryCode = (locale) => {
+    const country =
+      typeof locale === 'string' ? locale.split(/[-_]/).pop() : '';
+    return /^[a-z]{2}$/i.test(country)
+      ? country.toUpperCase()
+      : window.countryCode;
+  };
+
   static getTransactionInfo = (newCalculation) => ({
-    countryCode: newCalculation?.locale?.slice(-2),
+    countryCode: GooglePay.getCountryCode(newCalculation?.locale),
     currencyCode: newCalculation?.grandTotalAmount?.currency,
     totalPriceStatus: 'FINAL',
     totalPriceLabel: 'Total',

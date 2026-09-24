@@ -1,13 +1,14 @@
 <isset name="AdyenHelper" value="${require('*/cartridge/adyen/utils/adyenHelper')}" scope="page"/>
 <isset name="AdyenConfigs" value="${require('*/cartridge/adyen/utils/adyenConfigs')}" scope="page" />
+<isset name="localeHelper" value="${require('*/cartridge/adyen/utils/localeHelper')}" scope="page" />
 <script src="${AdyenHelper.getCheckoutUrl()}" type="text/javascript"></script>
 <link rel="stylesheet" type="text/css" href="${AdyenHelper.getCheckoutCSS()}"/>
 <link rel="stylesheet" type="text/css" href="${URLUtils.staticURL('/css/adyenCss.css')}" />
 <script type="text/javascript">
    window.environment = "${AdyenHelper.getCheckoutEnvironment()}";
    window.clientKey = "${AdyenConfigs.getAdyenClientKey()}",
-   window.locale = "${request.locale}";
-   window.countryCode = window.locale.slice(-2);
+   window.locale = "${localeHelper.getShopperLocale(request.locale)}";
+   window.countryCode = "${localeHelper.getCountryCode(request.locale)}";
    window.areCartExpressPaymentsEnabled = "${AdyenConfigs.areExpressPaymentsEnabled()}";
    window.areExpressPaymentsEnabledOnPdp = "${AdyenConfigs.areExpressPaymentsEnabledOnPdp()}";
    window.areExpressPaymentsEnabledOnShipping = "${AdyenConfigs.areExpressPaymentsEnabledOnShipping()}";

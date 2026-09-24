@@ -64,6 +64,19 @@ const localeHelper = {
   getShopperLocale(localeId) {
     return this.resolveLocaleId(localeId).replace('_', '-');
   },
+
+  /**
+   * Deriving the country from the last two characters of a locale ID turns
+   * 'default' into 'lt', which components such as Apple Pay reject.
+   * @param {string} localeId - the locale ID of the request
+   * @returns {string} the uppercase ISO 3166-1 alpha-2 country, e.g. 'US'
+   */
+  getCountryCode(localeId) {
+    const locale = Locale.getLocale(this.resolveLocaleId(localeId));
+    return locale && locale.country
+      ? locale.country
+      : Locale.getLocale(constants.LOCALE.FALLBACK_ID).country;
+  },
 };
 
 module.exports = localeHelper;

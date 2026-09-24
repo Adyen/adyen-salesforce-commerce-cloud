@@ -90,3 +90,25 @@ describe('getShopperLocale', () => {
     expect(localeHelper.getShopperLocale('default')).toBe('nl-NL');
   });
 });
+
+describe('getCountryCode', () => {
+  it('returns the country of a usable locale ID', () => {
+    expect(localeHelper.getCountryCode('fr_FR')).toBe('FR');
+  });
+  it('returns the country of the fallback for the default locale ID', () => {
+    expect(localeHelper.getCountryCode('default')).toBe('NL');
+  });
+  it('returns the country of the fallback for an unresolvable locale ID', () => {
+    expect(localeHelper.getCountryCode('mocked_locale')).toBe('NL');
+  });
+  it('returns the built-in fallback country when no locale is configured', () => {
+    AdyenConfigs.getAdyenDefaultLocale.mockReturnValue(null);
+    expect(localeHelper.getCountryCode('default')).toBe('US');
+  });
+  it('returns the built-in fallback country when the locale has no country', () => {
+    Locale.getLocale.mockImplementation((localeId) =>
+      localeId === 'en_US' ? { country: 'US' } : { country: null },
+    );
+    expect(localeHelper.getCountryCode('en')).toBe('US');
+  });
+});
