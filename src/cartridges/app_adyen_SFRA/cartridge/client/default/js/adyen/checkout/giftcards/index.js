@@ -389,30 +389,6 @@ function createElementsToShowRemainingGiftCardAmount() {
   pricingContainer.appendChild(mainContainer);
 }
 
-function showGiftCardInfoMessage() {
-  const messageText = store.partialPaymentsOrderObj.message;
-  const { giftCardsInfoMessageContainer } = getGiftCardElements();
-  giftCardsInfoMessageContainer.innerHTML = '';
-  giftCardsInfoMessageContainer.classList.remove(
-    'gift-cards-info-message-container',
-  );
-  if (!messageText) return;
-  const giftCardsInfoMessage = document.createElement('div');
-  giftCardsInfoMessage.classList.add(
-    'adyen-checkout__alert-message',
-    'adyen-checkout__alert-message--warning',
-  );
-  giftCardsInfoMessage.setAttribute('role', 'alert');
-
-  const infoMessage = document.createElement('span');
-  infoMessage.textContent = messageText;
-  giftCardsInfoMessage.appendChild(infoMessage);
-  giftCardsInfoMessageContainer.appendChild(giftCardsInfoMessage);
-  giftCardsInfoMessageContainer.classList.add(
-    'gift-cards-info-message-container',
-  );
-}
-
 function showGiftCardErrorMessage() {
   const { giftCardsInfoMessageContainer } = getGiftCardElements();
   if (!giftCardsInfoMessageContainer) return;
@@ -481,9 +457,6 @@ async function applyGiftCards() {
     store.addedGiftCards.forEach((card) => {
       renderAddedGiftCard(card);
     });
-    if (store.addedGiftCards?.length) {
-      showGiftCardInfoMessage();
-    }
     store.checkout.options.amount =
       store.addedGiftCards[store.addedGiftCards.length - 1].remainingAmount;
     showGiftCardCancelButton(true);
@@ -518,7 +491,6 @@ module.exports = {
   showGiftCardWarningMessage,
   createElementsToShowRemainingGiftCardAmount,
   renderGiftCardSelectForm,
-  showGiftCardInfoMessage,
   showGiftCardErrorMessage,
   giftCardBrands,
   clearGiftCardsContainer,

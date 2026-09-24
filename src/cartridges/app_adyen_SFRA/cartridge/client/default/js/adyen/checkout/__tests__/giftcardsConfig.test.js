@@ -27,15 +27,22 @@ beforeEach(() => {
         <button id="giftCardAddButton"></button>
         <div id="adyenPartialPaymentsOrder"></div>
         <div id="cancelGiftCardButton"></div>
-        <div id="giftCardsCancelContainer"></div>
+        <div id="giftCardsCancelContainer" class="invisible">
+          <button id="giftCardCancelButton"></button>
+        </div>
         <div id="giftCardsInfoMessage"></div>
         <button value="submit-payment"></button>
+        <div class="card-body order-total-summary"></div>
       `;
   window.giftCardErrorMessage = GIFT_CARD_ERROR_MESSAGE;
   window.checkBalanceUrl = 'mocked_checkBalanceUrl';
   window.partialPaymentsOrderUrl = 'mocked_partialPaymentsOrderUrl';
   window.partialPaymentUrl = 'mocked_partialPaymentUrl';
   store.adyenOrderDataCreated = false;
+  store.checkout = { options: {} };
+  store.checkoutConfiguration = {
+    paymentMethodsResponse: { imagePath: 'mocked_imagePath/' },
+  };
 });
 
 describe('gift card failures', () => {
@@ -121,5 +128,46 @@ describe('gift card failures', () => {
 
     expect(reject).toHaveBeenCalled();
     expect(shownErrorMessage().textContent).toBe(GIFT_CARD_ERROR_MESSAGE);
+  });
+});
+
+describe('gift card success', () => {
+  const partialPaymentResponse = {
+    giftCards: [
+      {
+        giftCard: { brand: 'givex', name: 'Givex' },
+        discountedAmount: '€10.00',
+        remainingAmount: { currency: 'EUR', value: 1000 },
+      },
+    ],
+    // the response carries a remaining amount hint that must not be rendered
+    message: 'Add a gift card to pay the remaining €10.00',
+    remainingAmount: { currency: 'EUR', value: 1000 },
+    remainingAmountFormatted: '€10.00',
+    totalDiscountedAmount: '€10.00',
+    orderCreated: true,
+  };
+
+  it('does not show a warning after a successful partial payment', async () => {
+    const reject = jest.fn();
+    const config = createConfig(jest.fn(async () => partialPaymentResponse));
+    store.adyenOrderDataCreated = true;
+
+    await config.onOrderRequest(jest.fn(), reject, { paymentMethod: {} });
+
+    expect(reject).not.toHaveBeenCalled();
+    expect(document.querySelector('#giftCardsInfoMessage').innerHTML).toBe('');
+    expect(
+      document.querySelector('.adyen-checkout__alert-message--warning'),
+    ).toBeNull();
+    expect(
+      document.querySelector('#giftCardsCancelContainer').classList,
+    ).not.toContain('invisible');
+    expect(document.querySelectorAll('#giftCardsList .gift-card')).toHaveLength(
+      1,
+    );
+    expect(document.querySelector('#remainingAmountEndSpan').innerText).toBe(
+      '€10.00',
+    );
   });
 });

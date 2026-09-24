@@ -1,7 +1,6 @@
 const {
   getGiftCardElements,
   renderAddedGiftCard,
-  showGiftCardInfoMessage,
   showGiftCardErrorMessage,
   showGiftCardCancelButton,
   attachGiftCardCancelListener,
@@ -181,10 +180,6 @@ class GiftCardConfig {
     this.unmountGiftCardComponent();
 
     this.store.addedGiftCards.forEach(renderAddedGiftCard);
-
-    if (this.store.addedGiftCards?.length) {
-      showGiftCardInfoMessage();
-    }
 
     showGiftCardCancelButton(true);
     attachGiftCardCancelListener();
