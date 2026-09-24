@@ -1,4 +1,6 @@
 import { chromium, expect } from '@playwright/test';
+import { guestCheckoutEmail } from '../data/checkoutEmail.mjs';
+import { fillShippingForm } from './shippingForm.mjs';
 
 export default class CheckoutPageSFRA5 {
   constructor(page) {
@@ -106,7 +108,6 @@ export default class CheckoutPageSFRA5 {
     await this.successMessage.waitFor({ visible: true });
 
     await this.navigateToCheckout(locale);
-    await this.page.waitForLoadState('networkidle');
     await this.checkoutGuest.click();
   };
 
@@ -120,6 +121,9 @@ export default class CheckoutPageSFRA5 {
 
   navigateToPdp = async (locale) => {
     await this.consentButton.click();
+    /* Dismissing the consent banner can start its own navigation, which aborts
+    a goto issued straight after it with net::ERR_ABORTED. */
+    await this.page.waitForLoadState('load');
     await this.page.goto(`/s/RefArch/25599638M.html?lang=${locale}`);
   };
 
@@ -132,39 +136,11 @@ export default class CheckoutPageSFRA5 {
   };
 
   setShopperDetails = async (shopperDetails) => {
-    await this.checkoutPageUserFirstNameInput.type(
-      shopperDetails.shopperName.firstName,
-    );
-    await this.checkoutPageUserLastNameInput.type(
-      shopperDetails.shopperName.lastName,
-    );
-    await this.checkoutPageUserStreetInput.type(shopperDetails.address.street);
-    await this.checkoutPageUserHouseNumberInput.type(
-      shopperDetails.address.houseNumberOrName,
-    );
-    await this.checkoutPageUserCityInput.type(shopperDetails.address.city);
-    await this.checkoutPageUserPostCodeInput.type(
-      shopperDetails.address.postalCode,
-    );
-
-    await this.checkoutPageUserCountrySelect.selectOption(
-      shopperDetails.address.country,
-    );
-
-    await this.checkoutPageUserTelephoneInput.type(shopperDetails.telephone);
-
-    if (await this.checkoutPageUserStateSelect.isVisible()) {
-      await this.checkoutPageUserStateSelect.selectOption({ index: 1 });
-      if (shopperDetails.address.stateOrProvince !== '') {
-        await this.checkoutPageUserStateSelect.selectOption(
-          shopperDetails.address.stateOrProvince,
-        );
-      }
-    }
+    await fillShippingForm(this, shopperDetails);
     await this.submitShipping();
   };
 
-  setEmail = async (email = 'test@adyenTest.com') => {
+  setEmail = async (email = guestCheckoutEmail()) => {
     await this.checkoutPageUserEmailInput.fill('');
     await this.checkoutPageUserEmailInput.fill(email);
     // Pressing Tab to simulate component re-rendering and waiting the components to re-mount
@@ -173,12 +149,15 @@ export default class CheckoutPageSFRA5 {
   };
 
   submitShipping = async () => {
-    await this.page.waitForLoadState('networkidle');
     await this.shippingSubmit.click();
-    await this.page.waitForNavigation({ waitUntil: 'networkidle' });
 
-    // Ugly wait since the submit button takes time to mount.
-    await new Promise((r) => setTimeout(r, 2000));
+    /* The payment stage mounts asynchronously, so wait for its submit button to
+    appear rather than for a load state: the storefront never reaches
+    networkidle, which used to consume the entire test timeout here. */
+    await this.submitPaymentButton.waitFor({ state: 'visible' });
+
+    // The Adyen component inside the payment stage still needs to mount.
+    await this.page.waitForTimeout(2000);
   };
 
   submitPayment = async () => {
@@ -242,9 +221,8 @@ export default class CheckoutPageSFRA5 {
   };
 
   navigateBack = async () => {
-    await this.page.waitForLoadState('networkidle');
     await this.page.goBack();
-    await this.page.waitForLoadState('networkidle');
+    await this.page.waitForLoadState('load');
   };
 
   loginUser = async (credentials) => {
