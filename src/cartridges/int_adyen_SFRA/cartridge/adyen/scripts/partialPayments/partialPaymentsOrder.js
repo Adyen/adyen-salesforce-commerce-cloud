@@ -56,9 +56,6 @@ function createPartialPaymentsOrder(req, res, next) {
         ...partialPaymentAmounts,
       });
     });
-    session.privacy.partialPaymentAmounts = JSON.stringify(
-      partialPaymentAmounts,
-    );
 
     const responseData = {
       resultCode: response?.resultCode,

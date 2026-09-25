@@ -41,6 +41,7 @@
       window.cancelGiftCardResource = "${Resource.msg('cancel.giftCard', 'adyen', null)}";
 
       window.giftCardWarningMessage = "${Resource.msg('message.error.giftcard.removed', 'error', null)}";
+      window.giftCardErrorMessage = "${Resource.msg('message.error.giftcard', 'error', null)}";
       window.removeGiftCardButtonText = "${Resource.msg('remove.giftCard', 'adyen', null)}";
 </script>
 
