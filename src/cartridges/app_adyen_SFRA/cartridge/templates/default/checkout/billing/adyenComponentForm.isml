@@ -2,6 +2,7 @@
 <isset name="AdyenHelper" value="${require('*/cartridge/adyen/utils/adyenHelper')}" scope="pdict"/>
 <isset name="adyenKlarnaWidgetEnabled" value="${pdict.AdyenConfigs.getKlarnaInlineWidgetEnabled()}" scope="page"/>
 <isset name="adyenRecurringPaymentsEnabled" value="${pdict.AdyenConfigs.getAdyenRecurringPaymentsEnabled()}" scope="page"/>
+<isset name="adyenTokenisationEnabled" value="${pdict.AdyenConfigs.getAdyenTokenisationEnabled()}" scope="page"/>
 <isset name="AdyenConstants" value="${require('*/cartridge/adyen/config/constants')}" scope="page"/>
 <isset name="localeHelper" value="${require('*/cartridge/adyen/utils/localeHelper')}" scope="page"/>
 <script src="https://pay.google.com/gp/p/js/pay.js"></script>
@@ -68,6 +69,8 @@
          window.merchantAccount = '${pdict.adyen.merchantAccount}';
          window.customerEmail = '${pdict.AdyenHelper.getCustomerEmail()}';
          var showStoreDetails = ${customer.authenticated && adyenRecurringPaymentsEnabled};
+         // tokenisation needs a stable shopperReference, which only authenticated shoppers have
+         window.showCashAppStoreDetails = ${customer.authenticated && adyenTokenisationEnabled};
     </script>
 
      <isset name="AdyenHelper" value="${require('*/cartridge/adyen/utils/adyenHelper')}" scope="pdict"/>
