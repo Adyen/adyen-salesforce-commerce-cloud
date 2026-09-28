@@ -459,6 +459,10 @@ describe('AdyenCheckout', () => {
                 AdyenConfigs.getAdyenTokenisationEnabled.mockReturnValue(false);
                 mockStateData(ONE_TIME);
             }],
+            ['tokenisation is disabled but the component asked to store', () => {
+                AdyenConfigs.getAdyenTokenisationEnabled.mockReturnValue(false);
+                mockStateData(ON_FILE, TOKENISING);
+            }],
             ['the component only granted one-time details', () => {
                 mockStateData(ONE_TIME);
             }],
