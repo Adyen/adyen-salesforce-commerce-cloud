@@ -72,11 +72,11 @@ function callCheckBalance(req, res, next) {
 
     Transaction.wrap(() => {
       currentBasket.custom.adyenGiftCardsOrderNo = orderNo;
+      // a balance-less response must not leave a stale balance on the basket
+      currentBasket.custom.adyenGiftCardBalance = checkBalanceResponse?.balance
+        ? JSON.stringify(checkBalanceResponse.balance)
+        : null;
     });
-
-    session.privacy.giftCardBalance = JSON.stringify(
-      checkBalanceResponse.balance,
-    );
 
     res.json({
       resultCode: checkBalanceResponse.resultCode,

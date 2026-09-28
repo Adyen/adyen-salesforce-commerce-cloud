@@ -80,6 +80,60 @@ describe('getCheckoutPaymentMethods', () => {
     expect(next).toHaveBeenCalled();
   });
 
+  it('uses the remaining amount cached on the basket', () => {
+    global.dw.value = {
+      Money: jest.fn().mockImplementation((value, currency) => ({
+        value,
+        currency,
+      })),
+    };
+    currentBasket = {
+      getDefaultShipment: jest.fn(() => ({ shippingAddress: null })),
+      getTotalGrossPrice: jest.fn(() => ({
+        currencyCode: 'EUR',
+        value: '25000',
+        isAvailable: jest.fn(() => true),
+      })),
+      custom: {
+        partialPaymentOrderData: JSON.stringify({
+          order: { orderData: 'Ab02b4c0!BQABAgB' },
+          remainingAmount: { currency: 'EUR', value: 20000 },
+          amount: { currency: 'EUR', value: 25000 },
+        }),
+      },
+    };
+    BasketMgr.getCurrentBasket.mockReturnValueOnce(currentBasket);
+
+    getCheckoutPaymentMethods(req, res, next);
+
+    expect(res.json).toHaveBeenCalledWith(
+      expect.objectContaining({
+        amount: { currency: 'EUR', value: 20000 },
+      }),
+    );
+  });
+
+  it('falls back to the basket total when no gift card was applied', () => {
+    currentBasket = {
+      getDefaultShipment: jest.fn(() => ({ shippingAddress: null })),
+      getTotalGrossPrice: jest.fn(() => ({
+        currencyCode: 'EUR',
+        value: '25000',
+        isAvailable: jest.fn(() => true),
+      })),
+      custom: { partialPaymentOrderData: null },
+    };
+    BasketMgr.getCurrentBasket.mockReturnValueOnce(currentBasket);
+
+    getCheckoutPaymentMethods(req, res, next);
+
+    expect(res.json).toHaveBeenCalledWith(
+      expect.objectContaining({
+        amount: { currency: 'EUR', value: 1000 },
+      }),
+    );
+  });
+
    it('does not return AdyenPaymentMethods', () => {
       getPaymentMethods.getMethods.mockImplementationOnce(() => {throw new Error('mock error')});
       getCheckoutPaymentMethods(req, res, next);
