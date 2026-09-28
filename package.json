@@ -17,7 +17,7 @@
     "watch": "sgmf-scripts --watch",
     "compile:js": "sgmf-scripts --compile js",
     "transpile": "babel ./src/cartridges -d ./cartridges --delete-dir-on-start --copy-files --no-copy-ignored --extensions .js,.test.js,.snap",
-    "build": "npm run transpile && npm run compile:js && npm run uploadCartridge",
+    "build": "pnpm run transpile && pnpm run compile:js && pnpm run uploadCartridge",
     "test": "jest ./src",
     "test:watch": "jest ./src --watch",
     "test:coverage": "jest ./src --coverage",
