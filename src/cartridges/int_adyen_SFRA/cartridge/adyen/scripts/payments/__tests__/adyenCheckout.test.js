@@ -100,6 +100,74 @@ describe('AdyenCheckout', () => {
         expect(testFn).toThrow("Cart has been edited after applying a gift card");
     })
 
+    describe('doPaymentsCall amount validation', () => {
+        function createOrder() {
+            return {
+                custom: {},
+                setPaymentStatus: jest.fn(),
+                setExportStatus: jest.fn(),
+            };
+        }
+
+        function createPaymentInstrument(adyenPartialPaymentsOrder) {
+            return {
+                custom: adyenPartialPaymentsOrder
+                    ? { adyenPartialPaymentsOrder }
+                    : {},
+                paymentTransaction: {
+                    custom: {},
+                    amount: { value: 1000, currencyCode: 'EUR' },
+                },
+            };
+        }
+
+        const partialPaymentsOrder = JSON.stringify({
+            order: { orderData: 'Ab02b4c0!BQABAgB', pspReference: 'mocked_psp' },
+            remainingAmount: { currency: 'EUR', value: 20799 },
+            amount: { currency: 'EUR', value: 25799 },
+        });
+
+        it('should accept the remaining amount stored on the payment instrument', () => {
+            const paymentResponse = adyenCheckout.doPaymentsCall(
+                createOrder(),
+                createPaymentInstrument(partialPaymentsOrder),
+                { amount: { currency: 'EUR', value: 20799 } },
+            );
+
+            expect(paymentResponse.decision).toBe('ACCEPT');
+        });
+
+        it('should throw when the request amount does not match the payment instrument', () => {
+            const testFn = () =>
+                adyenCheckout.doPaymentsCall(
+                    createOrder(),
+                    createPaymentInstrument(partialPaymentsOrder),
+                    { amount: { currency: 'EUR', value: 25799 } },
+                );
+
+            expect(testFn).toThrow('Amounts dont match');
+        });
+
+        it('should fall back to the transaction amount without a partial payments order', () => {
+            const paymentResponse = adyenCheckout.doPaymentsCall(
+                createOrder(),
+                createPaymentInstrument(),
+                { amount: { currency: 'EUR', value: 1000 } },
+            );
+
+            expect(paymentResponse.decision).toBe('ACCEPT');
+
+            const testFn = () =>
+                adyenCheckout.doPaymentsCall(
+                    createOrder(),
+                    createPaymentInstrument(),
+                    { amount: { currency: 'EUR', value: 2000 } },
+                );
+
+            expect(testFn).toThrow('Amounts dont match');
+        });
+    });
+
     describe('device fingerprint', () => {
         function createArgs() {
             return {

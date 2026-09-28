@@ -41,9 +41,6 @@ function cancelPartialPaymentOrderHelper(basket) {
       });
       clearForms.clearAdyenBasketData(basket);
     });
-    session.privacy.giftCardResponse = null;
-    session.privacy.partialPaymentAmounts = null;
-    session.privacy.giftCardBalance = null;
   } else {
     throw new AdyenError(`received resultCode ${response.resultCode}`);
   }

@@ -10,7 +10,6 @@ const setErrorType = require('*/cartridge/adyen/logs/setErrorType');
 function showConfirmationPaymentFromComponent(req, res, next) {
   const options = { req, res, next };
   try {
-    session.privacy.giftCardResponse = null;
     const stateData = JSON.parse(req.form.additionalDetailsHidden);
     const order = OrderMgr.getOrder(
       req.form.merchantReference,

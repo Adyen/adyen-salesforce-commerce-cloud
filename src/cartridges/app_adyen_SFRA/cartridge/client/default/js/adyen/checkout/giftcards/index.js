@@ -389,25 +389,25 @@ function createElementsToShowRemainingGiftCardAmount() {
   pricingContainer.appendChild(mainContainer);
 }
 
-function showGiftCardInfoMessage() {
-  const messageText = store.partialPaymentsOrderObj.message;
+function showGiftCardErrorMessage() {
   const { giftCardsInfoMessageContainer } = getGiftCardElements();
-  giftCardsInfoMessageContainer.innerHTML = '';
-  giftCardsInfoMessageContainer.classList.remove(
-    'gift-cards-info-message-container',
-  );
-  if (!messageText) return;
-  const giftCardsInfoMessage = document.createElement('div');
-  giftCardsInfoMessage.classList.add(
-    'adyen-checkout__alert-message',
-    'adyen-checkout__alert-message--warning',
-  );
-  giftCardsInfoMessage.setAttribute('role', 'alert');
+  if (!giftCardsInfoMessageContainer) return;
 
-  const infoMessage = document.createElement('span');
-  infoMessage.textContent = messageText;
-  giftCardsInfoMessage.appendChild(infoMessage);
-  giftCardsInfoMessageContainer.appendChild(giftCardsInfoMessage);
+  giftCardsInfoMessageContainer.innerHTML = '';
+
+  const giftCardsErrorMessage = document.createElement('div');
+  giftCardsErrorMessage.id = 'giftCardErrorMessage';
+  giftCardsErrorMessage.classList.add(
+    'adyen-checkout__alert-message',
+    'adyen-checkout__alert-message--error',
+  );
+  giftCardsErrorMessage.setAttribute('role', 'alert');
+
+  const errorMessage = document.createElement('span');
+  errorMessage.textContent = window.giftCardErrorMessage;
+  giftCardsErrorMessage.appendChild(errorMessage);
+
+  giftCardsInfoMessageContainer.appendChild(giftCardsErrorMessage);
   giftCardsInfoMessageContainer.classList.add(
     'gift-cards-info-message-container',
   );
@@ -457,9 +457,6 @@ async function applyGiftCards() {
     store.addedGiftCards.forEach((card) => {
       renderAddedGiftCard(card);
     });
-    if (store.addedGiftCards?.length) {
-      showGiftCardInfoMessage();
-    }
     store.checkout.options.amount =
       store.addedGiftCards[store.addedGiftCards.length - 1].remainingAmount;
     showGiftCardCancelButton(true);
@@ -494,7 +491,7 @@ module.exports = {
   showGiftCardWarningMessage,
   createElementsToShowRemainingGiftCardAmount,
   renderGiftCardSelectForm,
-  showGiftCardInfoMessage,
+  showGiftCardErrorMessage,
   giftCardBrands,
   clearGiftCardsContainer,
   attachGiftCardCancelListener,
