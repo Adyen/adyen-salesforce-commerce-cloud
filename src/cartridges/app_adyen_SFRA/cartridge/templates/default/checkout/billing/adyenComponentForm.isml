@@ -69,7 +69,7 @@
          window.merchantAccount = '${pdict.adyen.merchantAccount}';
          window.customerEmail = '${pdict.AdyenHelper.getCustomerEmail()}';
          var showStoreDetails = ${customer.authenticated && adyenRecurringPaymentsEnabled};
-         window.showCashAppStoreDetails = ${customer.authenticated && adyenTokenisationEnabled};
+         window.showCashAppStoreDetails = ${adyenTokenisationEnabled};
     </script>
 
      <isset name="AdyenHelper" value="${require('*/cartridge/adyen/utils/adyenHelper')}" scope="pdict"/>

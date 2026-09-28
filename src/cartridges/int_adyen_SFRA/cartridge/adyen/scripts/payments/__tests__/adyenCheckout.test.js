@@ -429,7 +429,7 @@ describe('AdyenCheckout', () => {
             return AdyenHelper.executeCall.mock.calls[0][1];
         }
 
-        function withGuestShopper() {
+        function withoutShopperReference() {
             AdyenHelper.createShopperObject.mockImplementation(
                 (input) => input.paymentRequest,
             );
@@ -465,8 +465,8 @@ describe('AdyenCheckout', () => {
             ['storage is requested without on-file details', () => {
                 mockStateData(ONE_TIME, TOKENISING);
             }],
-            ['there is no shopper reference', () => {
-                withGuestShopper();
+            ['the order has no shopper reference at all', () => {
+                withoutShopperReference();
                 mockStateData(ON_FILE, TOKENISING);
             }],
         ])('should send a one-time payment when %s', (_scenario, arrange) => {
