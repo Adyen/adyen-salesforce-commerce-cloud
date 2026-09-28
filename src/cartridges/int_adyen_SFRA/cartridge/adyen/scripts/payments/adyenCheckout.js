@@ -292,8 +292,8 @@ function createPaymentRequest(args) {
 
   if (isCashApp && paymentRequest.storePaymentMethod) {
     const hasOnFileDetails =
-      paymentRequest.paymentMethod.onFileGrantId &&
-      paymentRequest.paymentMethod.cashtag;
+      paymentRequest.paymentMethod?.onFileGrantId &&
+      paymentRequest.paymentMethod?.cashtag;
     if (!hasOnFileDetails || !paymentRequest.shopperReference) {
       AdyenLogs.warning_log(
         'Cash App payment cannot be tokenised, falling back to a one-time payment',

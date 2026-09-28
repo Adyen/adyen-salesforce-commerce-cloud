@@ -6,6 +6,34 @@ const adyenLevelTwoThreeData = require('*/cartridge/adyen/scripts/payments/adyen
 const hooksHelper = require('*/cartridge/scripts/helpers/hooks');
 
 describe('AdyenCheckout', () => {
+    function createArgs({ currencyCode = 'EUR', ...orderOverrides } = {}) {
+        return {
+            Order: {
+                custom: {},
+                setPaymentStatus: jest.fn(),
+                setExportStatus: jest.fn(),
+                getOrderNo: jest.fn(),
+                getOrderToken: jest.fn(),
+                getCustomerEmail: jest.fn(),
+                getBillingAddress: jest.fn(),
+                getDefaultShipment: jest.fn(),
+                getProductLineItems: jest.fn(() => ({ toArray: () => [] })),
+                paymentInstrument: {
+                    custom: {
+                        adyenPaymentData: "{}",
+                    },
+                    paymentTransaction: {
+                        amount: {
+                            value: 1000,
+                            currencyCode,
+                        }
+                    }
+                },
+                ...orderOverrides,
+            },
+        };
+    }
+
     it('should not error when cached gift card amount and actual amount match', () => {
         const args = {
             Order: {
@@ -169,30 +197,6 @@ describe('AdyenCheckout', () => {
     });
 
     describe('device fingerprint', () => {
-        function createArgs() {
-            return {
-                Order: {
-                    custom: {},
-                    setPaymentStatus: jest.fn(),
-                    setExportStatus: jest.fn(),
-                    getCustomerEmail: jest.fn(),
-                    getBillingAddress: jest.fn(),
-                    getDefaultShipment: jest.fn(),
-                    paymentInstrument: {
-                        custom: {
-                            adyenPaymentData: "{}",
-                        },
-                        paymentTransaction: {
-                            amount: {
-                                value: 1000,
-                                currencyCode: "EUR"
-                            }
-                        }
-                    },
-                },
-            };
-        }
-
         beforeEach(() => {
             session.privacy.adyenFingerprint = null;
             AdyenHelper.executeCall.mockClear();
@@ -283,33 +287,6 @@ describe('AdyenCheckout', () => {
 
         function getSentPaymentRequest() {
             return AdyenHelper.createShopperObject.mock.calls[0][0].paymentRequest;
-        }
-
-        function createArgs() {
-            return {
-                Order: {
-                    custom: {},
-                    setPaymentStatus: jest.fn(),
-                    setExportStatus: jest.fn(),
-                    getOrderNo: jest.fn(),
-                    getOrderToken: jest.fn(),
-                    getCustomerEmail: jest.fn(),
-                    getBillingAddress: jest.fn(),
-                    getDefaultShipment: jest.fn(),
-                    getProductLineItems: jest.fn(() => ({ toArray: () => [] })),
-                    paymentInstrument: {
-                        custom: {
-                            adyenPaymentData: "{}",
-                        },
-                        paymentTransaction: {
-                            amount: {
-                                value: 1000,
-                                currencyCode: "EUR"
-                            }
-                        }
-                    },
-                },
-            };
         }
 
         beforeEach(() => {
@@ -421,31 +398,31 @@ describe('AdyenCheckout', () => {
 
     describe('Cash App tokenisation', () => {
         const shopperReference = 'mocked_shopper_reference';
+        const ONE_TIME = {
+            type: 'cashapp',
+            grantId: 'mocked_grantId',
+            customerId: 'mocked_customerId',
+        };
+        const ON_FILE = {
+            type: 'cashapp',
+            onFileGrantId: 'mocked_onFileGrantId',
+            cashtag: '$mocked_cashtag',
+            customerId: 'mocked_customerId',
+        };
+        const TOKENISING = {
+            storePaymentMethod: true,
+            recurringProcessingModel: 'CardOnFile',
+        };
 
-        function createArgs() {
-            return {
-                Order: {
-                    custom: {},
-                    setPaymentStatus: jest.fn(),
-                    setExportStatus: jest.fn(),
-                    getOrderNo: jest.fn(),
-                    getOrderToken: jest.fn(),
-                    getCustomerEmail: jest.fn(),
-                    getBillingAddress: jest.fn(),
-                    getDefaultShipment: jest.fn(),
-                    paymentInstrument: {
-                        custom: {
-                            adyenPaymentData: "{}",
-                        },
-                        paymentTransaction: {
-                            amount: {
-                                value: 1000,
-                                currencyCode: "USD"
-                            }
-                        }
-                    },
-                },
-            };
+        function mockStateData(paymentMethod, extras = {}) {
+            AdyenHelper.createAdyenRequestObject.mockReturnValue({
+                paymentMethod,
+                ...extras,
+            });
+        }
+
+        function createCashAppArgs() {
+            return createArgs({ currencyCode: 'USD' });
         }
 
         function getSentPaymentRequest() {
@@ -477,118 +454,59 @@ describe('AdyenCheckout', () => {
             });
         });
 
-        it('should send a one-time payment when tokenisation is disabled', () => {
-            AdyenConfigs.getAdyenTokenisationEnabled.mockReturnValue(false);
-            AdyenHelper.createAdyenRequestObject.mockReturnValue({
-                paymentMethod: {
-                    type: 'cashapp',
-                    grantId: 'mocked_grantId',
-                    customerId: 'mocked_customerId',
-                },
-            });
+        it.each([
+            ['tokenisation is disabled', () => {
+                AdyenConfigs.getAdyenTokenisationEnabled.mockReturnValue(false);
+                mockStateData(ONE_TIME);
+            }],
+            ['the component only granted one-time details', () => {
+                mockStateData(ONE_TIME);
+            }],
+            ['storage is requested without on-file details', () => {
+                mockStateData(ONE_TIME, TOKENISING);
+            }],
+            ['there is no shopper reference', () => {
+                withGuestShopper();
+                mockStateData(ON_FILE, TOKENISING);
+            }],
+        ])('should send a one-time payment when %s', (_scenario, arrange) => {
+            arrange();
 
-            adyenCheckout.createPaymentRequest(createArgs());
-
-            const paymentRequest = getSentPaymentRequest();
-            expect(paymentRequest.paymentMethod.grantId).toEqual('mocked_grantId');
-            expect(paymentRequest.storePaymentMethod).toBeUndefined();
-            expect(paymentRequest.recurringProcessingModel).toBeUndefined();
-        });
-
-        it('should not tokenise one-time state data when tokenisation is enabled', () => {
-            AdyenHelper.createAdyenRequestObject.mockReturnValue({
-                paymentMethod: {
-                    type: 'cashapp',
-                    grantId: 'mocked_grantId',
-                    customerId: 'mocked_customerId',
-                },
-            });
-
-            adyenCheckout.createPaymentRequest(createArgs());
+            adyenCheckout.createPaymentRequest(createCashAppArgs());
 
             const paymentRequest = getSentPaymentRequest();
-            expect(paymentRequest.paymentMethod.grantId).toEqual('mocked_grantId');
+            expect(paymentRequest.paymentMethod.type).toEqual('cashapp');
             expect(paymentRequest.storePaymentMethod).toBeUndefined();
             expect(paymentRequest.recurringProcessingModel).toBeUndefined();
         });
 
         it('should keep the tokenisation contract when the component granted on-file details', () => {
-            AdyenHelper.createAdyenRequestObject.mockReturnValue({
-                paymentMethod: {
-                    type: 'cashapp',
-                    onFileGrantId: 'mocked_onFileGrantId',
-                    cashtag: '$mocked_cashtag',
-                    customerId: 'mocked_customerId',
-                },
-                storePaymentMethod: true,
-                recurringProcessingModel: 'CardOnFile',
-            });
+            mockStateData(ON_FILE, TOKENISING);
 
-            adyenCheckout.createPaymentRequest(createArgs());
+            adyenCheckout.createPaymentRequest(createCashAppArgs());
 
             const paymentRequest = getSentPaymentRequest();
-            expect(paymentRequest.paymentMethod.onFileGrantId).toEqual(
-                'mocked_onFileGrantId',
-            );
-            expect(paymentRequest.paymentMethod.cashtag).toEqual('$mocked_cashtag');
+            expect(paymentRequest.paymentMethod).toEqual(ON_FILE);
             expect(paymentRequest.storePaymentMethod).toBe(true);
             expect(paymentRequest.recurringProcessingModel).toEqual('CardOnFile');
             expect(paymentRequest.shopperReference).toEqual(shopperReference);
         });
 
-        it('should fall back to a one-time payment when on-file details are missing', () => {
-            AdyenHelper.createAdyenRequestObject.mockReturnValue({
-                paymentMethod: {
-                    type: 'cashapp',
-                    grantId: 'mocked_grantId',
-                    customerId: 'mocked_customerId',
-                },
-                storePaymentMethod: true,
-                recurringProcessingModel: 'CardOnFile',
-            });
+        it('should keep the one-time grant when falling back', () => {
+            mockStateData(ONE_TIME, TOKENISING);
 
-            adyenCheckout.createPaymentRequest(createArgs());
+            adyenCheckout.createPaymentRequest(createCashAppArgs());
 
-            const paymentRequest = getSentPaymentRequest();
-            expect(paymentRequest.paymentMethod.grantId).toEqual('mocked_grantId');
-            expect(paymentRequest.storePaymentMethod).toBeUndefined();
-            expect(paymentRequest.recurringProcessingModel).toBeUndefined();
-        });
-
-        it('should fall back to a one-time payment when there is no shopper reference', () => {
-            withGuestShopper();
-            AdyenHelper.createAdyenRequestObject.mockReturnValue({
-                paymentMethod: {
-                    type: 'cashapp',
-                    onFileGrantId: 'mocked_onFileGrantId',
-                    cashtag: '$mocked_cashtag',
-                    customerId: 'mocked_customerId',
-                },
-                storePaymentMethod: true,
-                recurringProcessingModel: 'CardOnFile',
-            });
-
-            adyenCheckout.createPaymentRequest(createArgs());
-
-            const paymentRequest = getSentPaymentRequest();
-            expect(paymentRequest.paymentMethod.onFileGrantId).toEqual(
-                'mocked_onFileGrantId',
-            );
-            expect(paymentRequest.storePaymentMethod).toBeUndefined();
-            expect(paymentRequest.recurringProcessingModel).toBeUndefined();
+            expect(getSentPaymentRequest().paymentMethod).toEqual(ONE_TIME);
         });
 
         it('should leave a stored Cash App payment untouched', () => {
-            AdyenHelper.createAdyenRequestObject.mockReturnValue({
-                paymentMethod: {
-                    type: 'cashapp',
-                    storedPaymentMethodId: 'mocked_storedPaymentMethodId',
-                },
-                recurringProcessingModel: 'CardOnFile',
-                shopperInteraction: 'ContAuth',
-            });
+            mockStateData(
+                { type: 'cashapp', storedPaymentMethodId: 'mocked_storedPaymentMethodId' },
+                { recurringProcessingModel: 'CardOnFile', shopperInteraction: 'ContAuth' },
+            );
 
-            adyenCheckout.createPaymentRequest(createArgs());
+            adyenCheckout.createPaymentRequest(createCashAppArgs());
 
             const paymentRequest = getSentPaymentRequest();
             expect(paymentRequest.paymentMethod.storedPaymentMethodId).toEqual(
@@ -600,11 +518,9 @@ describe('AdyenCheckout', () => {
         });
 
         it('should still tokenise other payment methods', () => {
-            AdyenHelper.createAdyenRequestObject.mockReturnValue({
-                paymentMethod: { type: 'scheme' },
-            });
+            mockStateData({ type: 'scheme' });
 
-            adyenCheckout.createPaymentRequest(createArgs());
+            adyenCheckout.createPaymentRequest(createCashAppArgs());
 
             const paymentRequest = getSentPaymentRequest();
             expect(paymentRequest.storePaymentMethod).toBe(true);
