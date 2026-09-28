@@ -52,14 +52,14 @@ End-to-End tests can be found in the `adyen-salesforce-commerce-cloud/tests/e2e`
 They are run automatically via Github Actions using the `E2E.yml` workflow.
 To run the tests locally use the following command:
 ```
-`npm run test:e2e`
+`pnpm run test:e2e`
 ```
 Note: Please make sure to fill in the environment variables in the `fixtures` directory before running the tests locally.
 
 As for Unit tests, they are currently only available for SFRA. Test files can be found next to the files they are testing. Mocks are kept in the `jest` directory.
 To run SFRA unit tests locally use the following command:
 ```
-`npm run test`
+`pnpm run test`
 ```
 
 ## Contributing

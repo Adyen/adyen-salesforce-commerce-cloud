@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "e2e tests for Adyen SalesForce Cartridges",
   "main": "index.js",
+  "packageManager": "pnpm@10.20.0",
   "dependencies": {
     "dotenv": "^16.5.0"
   },
@@ -10,8 +11,8 @@
     "@playwright/test": "^1.55.1"
   },
   "scripts": {
-    "test": "npx playwright test",
-    "test:ci": "npx playwright test --project=chromium --config=sfcc.config.js",
-    "test:ci:quick": "npx playwright test --project=chromium --config=sfcc.config.js -g @quick"
+    "test": "pnpm exec playwright test",
+    "test:ci": "pnpm exec playwright test --project=chromium --config=sfcc.config.js",
+    "test:ci:quick": "pnpm exec playwright test --project=chromium --config=sfcc.config.js -g @quick"
   }
 }
