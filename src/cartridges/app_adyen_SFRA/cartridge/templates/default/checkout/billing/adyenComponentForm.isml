@@ -69,7 +69,6 @@
          window.merchantAccount = '${pdict.adyen.merchantAccount}';
          window.customerEmail = '${pdict.AdyenHelper.getCustomerEmail()}';
          var showStoreDetails = ${customer.authenticated && adyenRecurringPaymentsEnabled};
-         // tokenisation needs a stable shopperReference, which only authenticated shoppers have
          window.showCashAppStoreDetails = ${customer.authenticated && adyenTokenisationEnabled};
     </script>
 

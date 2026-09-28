@@ -418,4 +418,197 @@ describe('AdyenCheckout', () => {
             expect(getLineItemsSpy).not.toHaveBeenCalled();
         });
     })
+
+    describe('Cash App tokenisation', () => {
+        const shopperReference = 'mocked_shopper_reference';
+
+        function createArgs() {
+            return {
+                Order: {
+                    custom: {},
+                    setPaymentStatus: jest.fn(),
+                    setExportStatus: jest.fn(),
+                    getOrderNo: jest.fn(),
+                    getOrderToken: jest.fn(),
+                    getCustomerEmail: jest.fn(),
+                    getBillingAddress: jest.fn(),
+                    getDefaultShipment: jest.fn(),
+                    paymentInstrument: {
+                        custom: {
+                            adyenPaymentData: "{}",
+                        },
+                        paymentTransaction: {
+                            amount: {
+                                value: 1000,
+                                currencyCode: "USD"
+                            }
+                        }
+                    },
+                },
+            };
+        }
+
+        function getSentPaymentRequest() {
+            return AdyenHelper.executeCall.mock.calls[0][1];
+        }
+
+        function withGuestShopper() {
+            AdyenHelper.createShopperObject.mockImplementation(
+                (input) => input.paymentRequest,
+            );
+        }
+
+        beforeEach(() => {
+            AdyenHelper.executeCall.mockClear();
+            AdyenConfigs.getAdyenTokenisationEnabled.mockReturnValue(true);
+            AdyenHelper.createShopperObject.mockImplementation((input) => ({
+                ...input.paymentRequest,
+                shopperReference,
+            }));
+        });
+
+        afterEach(() => {
+            AdyenConfigs.getAdyenTokenisationEnabled.mockReturnValue(true);
+            AdyenHelper.createShopperObject.mockImplementation(
+                (input) => input.paymentRequest,
+            );
+            AdyenHelper.createAdyenRequestObject.mockReturnValue({
+                paymentMethod: { type: 'scheme' },
+            });
+        });
+
+        it('should send a one-time payment when tokenisation is disabled', () => {
+            AdyenConfigs.getAdyenTokenisationEnabled.mockReturnValue(false);
+            AdyenHelper.createAdyenRequestObject.mockReturnValue({
+                paymentMethod: {
+                    type: 'cashapp',
+                    grantId: 'mocked_grantId',
+                    customerId: 'mocked_customerId',
+                },
+            });
+
+            adyenCheckout.createPaymentRequest(createArgs());
+
+            const paymentRequest = getSentPaymentRequest();
+            expect(paymentRequest.paymentMethod.grantId).toEqual('mocked_grantId');
+            expect(paymentRequest.storePaymentMethod).toBeUndefined();
+            expect(paymentRequest.recurringProcessingModel).toBeUndefined();
+        });
+
+        it('should not tokenise one-time state data when tokenisation is enabled', () => {
+            AdyenHelper.createAdyenRequestObject.mockReturnValue({
+                paymentMethod: {
+                    type: 'cashapp',
+                    grantId: 'mocked_grantId',
+                    customerId: 'mocked_customerId',
+                },
+            });
+
+            adyenCheckout.createPaymentRequest(createArgs());
+
+            const paymentRequest = getSentPaymentRequest();
+            expect(paymentRequest.paymentMethod.grantId).toEqual('mocked_grantId');
+            expect(paymentRequest.storePaymentMethod).toBeUndefined();
+            expect(paymentRequest.recurringProcessingModel).toBeUndefined();
+        });
+
+        it('should keep the tokenisation contract when the component granted on-file details', () => {
+            AdyenHelper.createAdyenRequestObject.mockReturnValue({
+                paymentMethod: {
+                    type: 'cashapp',
+                    onFileGrantId: 'mocked_onFileGrantId',
+                    cashtag: '$mocked_cashtag',
+                    customerId: 'mocked_customerId',
+                },
+                storePaymentMethod: true,
+                recurringProcessingModel: 'CardOnFile',
+            });
+
+            adyenCheckout.createPaymentRequest(createArgs());
+
+            const paymentRequest = getSentPaymentRequest();
+            expect(paymentRequest.paymentMethod.onFileGrantId).toEqual(
+                'mocked_onFileGrantId',
+            );
+            expect(paymentRequest.paymentMethod.cashtag).toEqual('$mocked_cashtag');
+            expect(paymentRequest.storePaymentMethod).toBe(true);
+            expect(paymentRequest.recurringProcessingModel).toEqual('CardOnFile');
+            expect(paymentRequest.shopperReference).toEqual(shopperReference);
+        });
+
+        it('should fall back to a one-time payment when on-file details are missing', () => {
+            AdyenHelper.createAdyenRequestObject.mockReturnValue({
+                paymentMethod: {
+                    type: 'cashapp',
+                    grantId: 'mocked_grantId',
+                    customerId: 'mocked_customerId',
+                },
+                storePaymentMethod: true,
+                recurringProcessingModel: 'CardOnFile',
+            });
+
+            adyenCheckout.createPaymentRequest(createArgs());
+
+            const paymentRequest = getSentPaymentRequest();
+            expect(paymentRequest.paymentMethod.grantId).toEqual('mocked_grantId');
+            expect(paymentRequest.storePaymentMethod).toBeUndefined();
+            expect(paymentRequest.recurringProcessingModel).toBeUndefined();
+        });
+
+        it('should fall back to a one-time payment when there is no shopper reference', () => {
+            withGuestShopper();
+            AdyenHelper.createAdyenRequestObject.mockReturnValue({
+                paymentMethod: {
+                    type: 'cashapp',
+                    onFileGrantId: 'mocked_onFileGrantId',
+                    cashtag: '$mocked_cashtag',
+                    customerId: 'mocked_customerId',
+                },
+                storePaymentMethod: true,
+                recurringProcessingModel: 'CardOnFile',
+            });
+
+            adyenCheckout.createPaymentRequest(createArgs());
+
+            const paymentRequest = getSentPaymentRequest();
+            expect(paymentRequest.paymentMethod.onFileGrantId).toEqual(
+                'mocked_onFileGrantId',
+            );
+            expect(paymentRequest.storePaymentMethod).toBeUndefined();
+            expect(paymentRequest.recurringProcessingModel).toBeUndefined();
+        });
+
+        it('should leave a stored Cash App payment untouched', () => {
+            AdyenHelper.createAdyenRequestObject.mockReturnValue({
+                paymentMethod: {
+                    type: 'cashapp',
+                    storedPaymentMethodId: 'mocked_storedPaymentMethodId',
+                },
+                recurringProcessingModel: 'CardOnFile',
+                shopperInteraction: 'ContAuth',
+            });
+
+            adyenCheckout.createPaymentRequest(createArgs());
+
+            const paymentRequest = getSentPaymentRequest();
+            expect(paymentRequest.paymentMethod.storedPaymentMethodId).toEqual(
+                'mocked_storedPaymentMethodId',
+            );
+            expect(paymentRequest.storePaymentMethod).toBeUndefined();
+            expect(paymentRequest.recurringProcessingModel).toEqual('CardOnFile');
+            expect(paymentRequest.shopperInteraction).toEqual('ContAuth');
+        });
+
+        it('should still tokenise other payment methods', () => {
+            AdyenHelper.createAdyenRequestObject.mockReturnValue({
+                paymentMethod: { type: 'scheme' },
+            });
+
+            adyenCheckout.createPaymentRequest(createArgs());
+
+            const paymentRequest = getSentPaymentRequest();
+            expect(paymentRequest.storePaymentMethod).toBe(true);
+            expect(paymentRequest.recurringProcessingModel).toEqual('CardOnFile');
+        });
+    })
 })
