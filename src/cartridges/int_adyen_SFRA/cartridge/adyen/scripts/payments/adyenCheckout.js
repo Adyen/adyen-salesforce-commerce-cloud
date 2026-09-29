@@ -278,11 +278,34 @@ function createPaymentRequest(args) {
     paymentRequest.paymentMethod.subtype = 'redirect';
   }
 
+  const isCashApp = paymentMethodType === constants.PAYMENTMETHODS.CASHAPP;
+  const tokenisationEnabled = AdyenConfigs.getAdyenTokenisationEnabled();
+
   // Set tokenisation
-  if (AdyenConfigs.getAdyenTokenisationEnabled()) {
+  // Cash App is excluded: its recurring details (onFileGrantId, cashtag) have to be
+  // granted by the shopper in the component, so the component state decides whether
+  // this payment tokenises. createAdyenRequestObject already applies CardOnFile then.
+  if (tokenisationEnabled && !isCashApp) {
     paymentRequest.storePaymentMethod = true;
     paymentRequest.recurringProcessingModel =
       constants.RECURRING_PROCESSING_MODEL.CARD_ON_FILE;
+  }
+
+  if (isCashApp && paymentRequest.storePaymentMethod) {
+    const hasOnFileDetails =
+      paymentRequest.paymentMethod?.onFileGrantId &&
+      paymentRequest.paymentMethod?.cashtag;
+    if (
+      !tokenisationEnabled ||
+      !hasOnFileDetails ||
+      !paymentRequest.shopperReference
+    ) {
+      AdyenLogs.warning_log(
+        'Cash App payment cannot be tokenised, falling back to a one-time payment',
+      );
+      delete paymentRequest.storePaymentMethod;
+      delete paymentRequest.recurringProcessingModel;
+    }
   }
   AdyenHelper.setPaymentTransactionType(
     paymentInstrument,
