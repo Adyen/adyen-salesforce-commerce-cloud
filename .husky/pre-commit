@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
-npm run check-branch-name
-npm run lint
-npm run check-logs
+pnpm run check-branch-name
+pnpm run lint
+pnpm run check-logs
