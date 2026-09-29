@@ -48,9 +48,19 @@ jobs:
       - name: Install SFRA dependencies
         working-directory: storefront-reference-architecture
         run: npm install
+      # SFRA 5 and 6 only build on the legacy Node in inputs.node_version, so the
+      # toolchain switches to pnpm on Node 20 only after their install finishes.
+      - name: Install pnpm
+        uses: pnpm/action-setup@fc06bc1257f339d1d5d8b3a19a8cae5388b55320 # v4.4.0
+        with:
+          package_json_file: adyen-salesforce-commerce-cloud/package.json
+      - name: Switch to Node.js 20 for the cartridge build
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
       - name: Install Adyen SFCC dependencies
         working-directory: adyen-salesforce-commerce-cloud
-        run: npm install
+        run: pnpm install --frozen-lockfile
       - name: Create dw.json file
         working-directory: adyen-salesforce-commerce-cloud
         env:
@@ -67,16 +77,16 @@ jobs:
           }' >> dw.json
       - name: Transpile the code
         working-directory: adyen-salesforce-commerce-cloud
-        run: npm run transpile
+        run: pnpm run transpile
       - name: Compile the code
         working-directory: adyen-salesforce-commerce-cloud
-        run: npm run compile:js
+        run: pnpm run compile:js
       - name: Build the cartridge
         working-directory: adyen-salesforce-commerce-cloud
-        run: npm run uploadCartridge > output-sfra.txt
+        run: pnpm run uploadCartridge > output-sfra.txt
       - name: Check build result
         working-directory: adyen-salesforce-commerce-cloud
-        run: npm run check-build:sfra
+        run: pnpm run check-build:sfra
       - name: Install Salesforce CLI
         run: npm install -g sfcc-ci
       - name: Zip site_import
