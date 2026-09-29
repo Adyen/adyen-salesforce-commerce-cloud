@@ -11,11 +11,11 @@ overrides:
   glob-parent: 6.0.2
   yargs-parser: 21.1.1
   braces: 3.0.3
-  jszip: 3.8.0
+  jszip: 3.10.2
   merge: 2.1.1
   got: 12.6.1
   get-func-name: 3.0.0
-  tough-cookie: 4.1.3
+  tough-cookie: 4.1.4
   form-data: 4.0.6
   tmp: 0.2.7
   uuid: 11.1.1
@@ -4775,8 +4775,8 @@ packages:
     resolution: {integrity: sha512-65P7iz6X5yEr1cwcgvQxbbIw7Uk3gOy5dIdtZ4rDveLqhrdJP+Li/Hx6tyK0NEb+2GCyneCMJiGqrADCSNk8sQ==}
     engines: {node: '>=8.0'}
 
-  tough-cookie@4.1.3:
-    resolution: {integrity: sha512-aX/y5pVRkfRnfmuX+OdbSdXvPe6ieKX/G2s7e98f4poJHnqH3281gDPm/metm6E/WRamfx7WC4HUqkWHfQHprw==}
+  tough-cookie@4.1.4:
+    resolution: {integrity: sha512-Loo5UUvLD9ScZ6jh8beX1T6sO1w2/MpCRpEP7V280GKMVUQ0Jzar2U3UJPsrdbziLEMMhu3Ujnq//rhiFuIeag==}
     engines: {node: '>=6'}
 
   tr46@3.0.0:
@@ -9143,7 +9143,7 @@ snapshots:
       parse5: 7.3.0
       saxes: 6.0.0
       symbol-tree: 3.2.4
-      tough-cookie: 4.1.3
+      tough-cookie: 4.1.4
       w3c-xmlserializer: 4.0.0
       webidl-conversions: 7.0.0
       whatwg-encoding: 2.0.0
@@ -10787,7 +10787,7 @@ snapshots:
     dependencies:
       is-number: 7.0.0
 
-  tough-cookie@4.1.3:
+  tough-cookie@4.1.4:
     dependencies:
       psl: 1.15.0
       punycode: 2.3.1

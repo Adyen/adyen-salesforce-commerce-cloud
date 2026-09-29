@@ -65,7 +65,7 @@ jobs:
       # SFRA 5 and 6 only build on the legacy Node in inputs.node_version, so the
       # toolchain switches to pnpm on Node 20 only after their install finishes.
       - name: Install pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@fc06bc1257f339d1d5d8b3a19a8cae5388b55320 # v4.4.0
         with:
           package_json_file: adyen-salesforce-commerce-cloud/package.json
       - name: Switch to Node.js 20 for the cartridge build
@@ -116,7 +116,7 @@ jobs:
         with:
           path: adyen-salesforce-commerce-cloud
       - name: Install pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@fc06bc1257f339d1d5d8b3a19a8cae5388b55320 # v4.4.0
         with:
           package_json_file: adyen-salesforce-commerce-cloud/tests/playwright/package.json
       - name: setup Node 20

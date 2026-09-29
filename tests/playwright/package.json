@@ -4,6 +4,9 @@
   "description": "e2e tests for Adyen SalesForce Cartridges",
   "main": "index.js",
   "packageManager": "pnpm@10.20.0",
+  "engines": {
+    "node": ">=20"
+  },
   "dependencies": {
     "dotenv": "^16.5.0"
   },
