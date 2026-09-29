@@ -42,6 +42,7 @@ module.exports = {
     SEPADIRECTDEBIT: 'sepadirectdebit',
     GIFTCARD: 'giftcard',
     FASTLANE: 'fastlane',
+    CASHAPP: 'cashapp',
   },
 
   CAN_SKIP_SUMMARY_PAGE: [
