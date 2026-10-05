@@ -694,7 +694,6 @@
                 <attribute attribute-id="Adyen_ApplePay_DomainAssociation"/>
                 <attribute attribute-id="Adyen_Hmac_Key"/>
                 <attribute attribute-id="Adyen_klarnaWidget"/>
-                <attribute attribute-id="Adyen_SFRA6_Compatibility"/>
                 <attribute attribute-id="Adyen_notification_user"/>
                 <attribute attribute-id="Adyen_notification_password"/>
                 <attribute attribute-id="Adyen_GooglePayMerchantID"/>
