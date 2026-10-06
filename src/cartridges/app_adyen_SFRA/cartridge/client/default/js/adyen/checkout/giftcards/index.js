@@ -87,7 +87,10 @@ async function removeGiftCards() {
     store.componentsObj?.giftcard?.node.unmount('component_giftcard');
   }
 
-  document.dispatchEvent(new Event('checkout:renderPaymentMethod'));
+  $('body').trigger('checkout:renderPaymentMethod', {
+    email: document.querySelector('.customer-summary-email')?.textContent,
+    amount: response.amount,
+  });
 }
 
 function giftCardBrands() {
@@ -389,7 +392,17 @@ function createElementsToShowRemainingGiftCardAmount() {
   pricingContainer.appendChild(mainContainer);
 }
 
-function showGiftCardErrorMessage() {
+function clearGiftCardErrorMessage() {
+  const { giftCardsInfoMessageContainer } = getGiftCardElements();
+  if (!giftCardsInfoMessageContainer) return;
+
+  giftCardsInfoMessageContainer.innerHTML = '';
+  giftCardsInfoMessageContainer.classList.remove(
+    'gift-cards-info-message-container',
+  );
+}
+
+function showGiftCardErrorMessage(message = window.giftCardErrorMessage) {
   const { giftCardsInfoMessageContainer } = getGiftCardElements();
   if (!giftCardsInfoMessageContainer) return;
 
@@ -404,7 +417,7 @@ function showGiftCardErrorMessage() {
   giftCardsErrorMessage.setAttribute('role', 'alert');
 
   const errorMessage = document.createElement('span');
-  errorMessage.textContent = window.giftCardErrorMessage;
+  errorMessage.textContent = message;
   giftCardsErrorMessage.appendChild(errorMessage);
 
   giftCardsInfoMessageContainer.appendChild(giftCardsErrorMessage);
@@ -492,6 +505,7 @@ module.exports = {
   createElementsToShowRemainingGiftCardAmount,
   renderGiftCardSelectForm,
   showGiftCardErrorMessage,
+  clearGiftCardErrorMessage,
   giftCardBrands,
   clearGiftCardsContainer,
   attachGiftCardCancelListener,

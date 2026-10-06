@@ -33,6 +33,18 @@ function responseContainsErrors(response) {
   );
 }
 
+function getGiftCardErrorMessage(resultCode) {
+  const messageKeys = {
+    [constants.RESULTCODES.REFUSED]: 'message.error.giftcard.refused',
+    [constants.RESULTCODES.CANCELLED]: 'message.error.giftcard.cancelled',
+  };
+  return Resource.msg(
+    messageKeys[resultCode] || 'message.error.giftcard',
+    'error',
+    null,
+  );
+}
+
 function makePartialPayment(req, res, next) {
   try {
     const request = JSON.parse(req.form.data);
@@ -67,8 +79,17 @@ function makePartialPayment(req, res, next) {
     const response = doPartialPaymentsCall(partialPaymentRequest);
 
     if (responseContainsErrors(response)) {
-      const errorMsg = `partial payment request did not go through .. resultCode: ${response?.resultCode}`;
-      throw new AdyenError(errorMsg);
+      const resultCode = response?.resultCode;
+      // Refusal reasons are diagnostic only and must not reach the shopper.
+      AdyenLogs.error_log(
+        `Gift card partial payment not authorised. resultCode: ${resultCode}, refusalReason: ${response?.refusalReason}, refusalReasonCode: ${response?.refusalReasonCode}, pspReference: ${response?.pspReference}`,
+      );
+      res.json({
+        error: true,
+        resultCode,
+        errorMessage: getGiftCardErrorMessage(resultCode),
+      });
+      return next();
     }
 
     const discountAmount = new Money(

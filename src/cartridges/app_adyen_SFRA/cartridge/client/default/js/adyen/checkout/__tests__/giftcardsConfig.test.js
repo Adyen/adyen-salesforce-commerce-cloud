@@ -126,8 +126,54 @@ describe('gift card failures', () => {
 
     await config.onOrderRequest(jest.fn(), reject, { paymentMethod: {} });
 
-    expect(reject).toHaveBeenCalled();
+    expect(reject).toHaveBeenCalledWith(expect.any(Error));
     expect(shownErrorMessage().textContent).toBe(GIFT_CARD_ERROR_MESSAGE);
+  });
+});
+
+describe('gift card refusal', () => {
+  const REFUSED_MESSAGE = 'mocked_refusedMessage';
+  const refusedResponse = {
+    error: true,
+    resultCode: 'Refused',
+    errorMessage: REFUSED_MESSAGE,
+  };
+
+  it('shows the server provided message when the gift card is refused', async () => {
+    const config = createConfig(jest.fn(async () => refusedResponse));
+
+    await expect(config.makePartialPayment({})).rejects.toMatchObject({
+      resultCode: 'Refused',
+      errorMessage: REFUSED_MESSAGE,
+    });
+    expect(shownErrorMessage().textContent).toBe(REFUSED_MESSAGE);
+    expect(shownErrorMessage().getAttribute('role')).toBe('alert');
+  });
+
+  it('propagates the refusal to the order request', async () => {
+    const reject = jest.fn();
+    const config = createConfig(jest.fn(async () => refusedResponse));
+    store.adyenOrderDataCreated = true;
+
+    await config.onOrderRequest(jest.fn(), reject, { paymentMethod: {} });
+
+    expect(reject).toHaveBeenCalledTimes(1);
+    expect(reject).toHaveBeenCalledWith(
+      expect.objectContaining({ resultCode: 'Refused' }),
+    );
+    expect(shownErrorMessage().textContent).toBe(REFUSED_MESSAGE);
+  });
+
+  it('clears the error message when the shopper edits the gift card', async () => {
+    const config = createConfig(jest.fn(async () => refusedResponse));
+    await expect(config.makePartialPayment({})).rejects.toThrow();
+
+    config.getConfig().onChange({ isValid: false, data: {} });
+
+    expect(shownErrorMessage()).toBeNull();
+    expect(
+      document.querySelector('#giftCardsInfoMessage').classList,
+    ).not.toContain('gift-cards-info-message-container');
   });
 });
 

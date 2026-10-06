@@ -2,6 +2,7 @@ const {
   getGiftCardElements,
   renderAddedGiftCard,
   showGiftCardErrorMessage,
+  clearGiftCardErrorMessage,
   showGiftCardCancelButton,
   attachGiftCardCancelListener,
   createElementsToShowRemainingGiftCardAmount,
@@ -132,6 +133,7 @@ class GiftCardConfig {
       showPayButton: true,
 
       onChange: (state) => {
+        clearGiftCardErrorMessage();
         this.store.updateSelectedPayment(GIFTCARD, 'isValid', state.isValid);
         this.store.updateSelectedPayment(GIFTCARD, 'stateData', state.data);
       },
@@ -202,8 +204,13 @@ class GiftCardConfig {
     }
 
     if (response.error) {
-      showGiftCardErrorMessage();
-      throw new Error(`Partial payment error ${response?.error}`);
+      showGiftCardErrorMessage(response?.errorMessage);
+      const error = new Error(
+        `Partial payment error ${response?.resultCode ?? response?.error}`,
+      );
+      error.resultCode = response?.resultCode;
+      error.errorMessage = response?.errorMessage;
+      throw error;
     }
 
     const { giftCards, ...rest } = response;
@@ -234,7 +241,7 @@ class GiftCardConfig {
       });
       this.handlePartialPaymentSuccess();
     } catch (error) {
-      reject();
+      reject(error);
     }
   }
 }

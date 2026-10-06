@@ -270,8 +270,65 @@ describe('partial payment', () => {
     expect(currentBasket.custom.adyenGiftCards).toBeUndefined();
     expect(res.json).toHaveBeenCalledWith({
       error: true,
-      errorType: 'AdyenError',
+      resultCode: 'Refused',
+      errorMessage: 'mocked_message.error.giftcard.refused',
     });
     expect(AdyenLogs.error_log).toHaveBeenCalled();
   });
+
+  it('should log refusal diagnostics without exposing them to the shopper', () => {
+    AdyenHelper.executeCall.mockReturnValueOnce({
+      resultCode: 'Refused',
+      refusalReason: 'Not enough balance',
+      refusalReasonCode: '12',
+      pspReference: 'mocked_refusedPspReference',
+    });
+    const next = jest.fn();
+
+    makePartialPayment(req, res, next);
+
+    const [logMessage] = AdyenLogs.error_log.mock.calls[0];
+    expect(logMessage).toContain('resultCode: Refused');
+    expect(logMessage).toContain('refusalReason: Not enough balance');
+    expect(logMessage).toContain('refusalReasonCode: 12');
+    expect(logMessage).toContain('pspReference: mocked_refusedPspReference');
+    const [response] = res.json.mock.calls[0];
+    expect(JSON.stringify(response)).not.toContain('Not enough balance');
+    expect(next).toHaveBeenCalledTimes(1);
+  });
+
+  it('should return the cancelled message when the payment is cancelled', () => {
+    AdyenHelper.executeCall.mockReturnValueOnce({ resultCode: 'Cancelled' });
+
+    makePartialPayment(req, res, jest.fn());
+
+    expect(res.json).toHaveBeenCalledWith({
+      error: true,
+      resultCode: 'Cancelled',
+      errorMessage: 'mocked_message.error.giftcard.cancelled',
+    });
+  });
+
+  it.each([
+    ['an unknown result code', { resultCode: 'Error' }, 'Error'],
+    [
+      'a failed service call',
+      { error: true, args: { adyenErrorMessage: 'declined' } },
+      undefined,
+    ],
+  ])(
+    'should return the generic message for %s',
+    (_, response, resultCode) => {
+      AdyenHelper.executeCall.mockReturnValueOnce(response);
+
+      makePartialPayment(req, res, jest.fn());
+
+      expect(res.json).toHaveBeenCalledWith({
+        error: true,
+        resultCode,
+        errorMessage: 'mocked_message.error.giftcard',
+      });
+      expect(currentBasket.custom.adyenGiftCards).toBeUndefined();
+    },
+  );
 });
