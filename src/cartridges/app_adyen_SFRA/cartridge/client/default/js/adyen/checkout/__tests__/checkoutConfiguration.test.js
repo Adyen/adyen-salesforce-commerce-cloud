@@ -10,6 +10,7 @@ const {
 const KlarnaConfig = require("../paymentMethodsConfiguration/klarna/klarnaConfig");
 const GooglePayConfig = require("../paymentMethodsConfiguration/googlePay/googlePayConfig");
 const GiftCardsConfig = require("../paymentMethodsConfiguration/giftcards/giftcardsConfig");
+const CashAppConfig = require("../paymentMethodsConfiguration/cashapp/cashappConfig");
 
 let card;
 let paypal;
@@ -271,6 +272,25 @@ describe('Checkout Configuration', () => {
       });
       cashapp.onSubmit({ data: {} });
       expect($.ajax).toHaveBeenCalledTimes(1);
+    });
+
+    it('does not request storage when tokenisation is unavailable', () => {
+      expect(window.showCashAppStoreDetails).toBeFalsy();
+      expect(cashapp.storePaymentMethod).toBeUndefined();
+    });
+
+    it('requests the on-file grant when tokenisation is enabled', () => {
+      window.showCashAppStoreDetails = true;
+      const config = new CashAppConfig(helpers).getConfig();
+      expect(config.storePaymentMethod).toBe(true);
+      delete window.showCashAppStoreDetails;
+    });
+
+    it('does not request the on-file grant when tokenisation is disabled', () => {
+      window.showCashAppStoreDetails = false;
+      const config = new CashAppConfig(helpers).getConfig();
+      expect(config.storePaymentMethod).toBeUndefined();
+      delete window.showCashAppStoreDetails;
     });
   });
 

@@ -12,6 +12,8 @@ function posHandle(basket) {
       constants.METHOD_ADYEN_POS,
       basket.totalGrossPrice,
     );
+    paymentInstrument.custom.adyenMainPaymentInstrument =
+      constants.METHOD_ADYEN_POS;
     paymentInstrument.custom.adyenPaymentMethod = 'POS Terminal';
   });
 

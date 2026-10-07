@@ -9,34 +9,67 @@ function removeAllPaymentInstruments(currentBasket) {
   });
 }
 
+function resolveCardBrand(paymentInformation, stateData) {
+  return (
+    paymentInformation.cardType ||
+    // co-branded cards carry the shopper's brand selection in the state data
+    stateData?.paymentMethod?.brand ||
+    stateData?.paymentMethod?.srcScheme
+  );
+}
+
+function resolveSfccCardType(paymentInformation, cardBrand) {
+  if (paymentInformation.creditCardToken) {
+    return paymentInformation.cardType;
+  }
+  return cardBrand ? AdyenHelper.getSfccCardType(cardBrand) : '';
+}
+
+function setCardPaymentMethod(paymentInstrument, paymentMethodNames) {
+  const { sfccCardType, cardBrand, adyenPaymentMethod } = paymentMethodNames;
+  // brands missing from card-type-mapping.json must not blank the attributes
+  const paymentMethodName = sfccCardType || cardBrand || adyenPaymentMethod;
+  if (!paymentMethodName) {
+    return;
+  }
+  paymentInstrument.custom.adyenPaymentMethod = paymentMethodName;
+  paymentInstrument.custom[`${constants.OMS_NAMESPACE}__Adyen_Payment_Method`] =
+    paymentMethodName;
+}
+
+function setStoredCardFields(paymentInformation, paymentInstrument) {
+  const firstTwoDigitsFromCurrentYear =
+    AdyenHelper.getFirstTwoNumbersFromYear();
+  const expirationYear =
+    firstTwoDigitsFromCurrentYear * 100 + paymentInformation.expirationYear;
+  paymentInstrument.setCreditCardExpirationMonth(
+    paymentInformation.expirationMonth,
+  );
+  paymentInstrument.setCreditCardExpirationYear(expirationYear);
+  paymentInstrument.setCreditCardToken(paymentInformation.creditCardToken);
+}
+
 function convertToSfccCardType(paymentInformation, paymentInstrument) {
   const stateData = JSON.parse(paymentInformation.stateData);
-  const cardType =
-    paymentInformation.cardType || stateData?.paymentMethod?.srcScheme;
-  const sfccCardType = !paymentInformation.creditCardToken
-    ? AdyenHelper.getSfccCardType(cardType)
-    : paymentInformation.cardType;
+  const cardBrand = resolveCardBrand(paymentInformation, stateData);
+  const sfccCardType = resolveSfccCardType(paymentInformation, cardBrand);
 
   paymentInstrument.setCreditCardNumber(paymentInformation.cardNumber);
-  paymentInstrument.setCreditCardType(sfccCardType);
+  if (sfccCardType) {
+    paymentInstrument.setCreditCardType(sfccCardType);
+  }
   if (paymentInformation.cardHolder) {
     paymentInstrument.setCreditCardHolder(paymentInformation.cardHolder);
   }
 
-  paymentInstrument.custom.adyenPaymentMethod = sfccCardType;
-  paymentInstrument.custom[`${constants.OMS_NAMESPACE}__Adyen_Payment_Method`] =
-    sfccCardType;
+  setCardPaymentMethod(paymentInstrument, {
+    sfccCardType,
+    cardBrand,
+    adyenPaymentMethod: paymentInformation.adyenPaymentMethod,
+  });
 
   if (paymentInformation.creditCardToken) {
-    const firstTwoDigitsFromCurrentYear =
-      AdyenHelper.getFirstTwoNumbersFromYear();
-    const expirationYear =
-      firstTwoDigitsFromCurrentYear * 100 + paymentInformation.expirationYear;
-    paymentInstrument.setCreditCardExpirationMonth(
-      paymentInformation.expirationMonth,
-    );
-    paymentInstrument.setCreditCardExpirationYear(expirationYear);
-    paymentInstrument.setCreditCardToken(paymentInformation.creditCardToken);
+    setStoredCardFields(paymentInformation, paymentInstrument);
   }
 }
 

@@ -1,4 +1,6 @@
 import { chromium, expect } from '@playwright/test';
+import { guestCheckoutEmail } from '../data/checkoutEmail.mjs';
+import { fillShippingForm } from './shippingForm.mjs';
 export default class CheckoutPageSFRA {
   constructor(page) {
     this.page = page;
@@ -107,7 +109,22 @@ export default class CheckoutPageSFRA {
 
     await this.navigateToCheckout(locale);
     await this.setEmail(email);
+
+    /* The customer stage POSTs to CheckoutServices-SubmitCustomer and the
+    shipping stage is only re-rendered once that response comes back, so tie the
+    click to it rather than letting the next step race the re-render. This stays
+    best effort on purpose: setShopperDetails gates on the form being usable,
+    which is the condition that actually has to hold. */
+    const submitCustomer = this.page
+      .waitForResponse(
+        (response) =>
+          response.url().includes('CheckoutServices-SubmitCustomer'),
+        { timeout: 15000 },
+      )
+      .catch(() => undefined);
+
     await this.checkoutGuest.click();
+    await submitCustomer;
   };
 
   getCheckoutUrl(locale) {
@@ -120,6 +137,9 @@ export default class CheckoutPageSFRA {
 
   navigateToPdp = async (locale) => {
     await this.consentButton.click();
+    /* Dismissing the consent banner can start its own navigation, which aborts
+    a goto issued straight after it with net::ERR_ABORTED. */
+    await this.page.waitForLoadState('load');
     await this.page.goto(`/s/RefArch/25599638M.html?lang=${locale}`);
   };
 
@@ -134,58 +154,33 @@ export default class CheckoutPageSFRA {
   setShopperDetails = async (shopperDetails) => {
     await this.customerInfoSection.waitFor({ visible: true });
 
-
-    await this.checkoutPageUserFirstNameInput.type(
-      shopperDetails.shopperName.firstName,
-    );
-    await this.checkoutPageUserLastNameInput.type(
-      shopperDetails.shopperName.lastName,
-    );
-    await this.checkoutPageUserStreetInput.type(shopperDetails.address.street);
-    await this.checkoutPageUserHouseNumberInput.type(
-      shopperDetails.address.houseNumberOrName,
-    );
-    await this.checkoutPageUserCityInput.type(shopperDetails.address.city);
-    await this.checkoutPageUserPostCodeInput.type(
-      shopperDetails.address.postalCode,
-    );
-
-    await this.checkoutPageUserCountrySelect.selectOption(
-      shopperDetails.address.country,
-    );
-
-    await this.checkoutPageUserTelephoneInput.type(shopperDetails.telephone);
-
-
-    if (await this.checkoutPageUserStateSelect.isVisible()) {
-      await this.checkoutPageUserStateSelect.selectOption({ index: 1 })
-      if (shopperDetails.address.stateOrProvince !== '') {
-        await this.checkoutPageUserStateSelect.selectOption(
-          shopperDetails.address.stateOrProvince,
-        );
-      }
-    }
+    await fillShippingForm(this, shopperDetails);
 
     this.shippingSubmit.scrollIntoViewIfNeeded({ timeout: 5000 });
     await this.submitShipping();
   };
 
-  setEmail = async (email = 'test@adyenTest.com') => {
-    /* After filling the shopper details, clicking "Next" has an autoscroll
-    feature, which leads the email field to be missed, hence the flakiness.
-    Waiting until the full page load prevents this situation */
-    await this.page.waitForLoadState('networkidle');
-    await this.checkoutPageUserEmailInput.fill('');
-    await this.checkoutPageUserEmailInput.fill(email);
+  setEmail = async (email = guestCheckoutEmail()) => {
+    /* Clicking "Next" autoscrolls and remounts the guest form, which discards a
+    value that was filled too early. Retrying until the value sticks survives
+    that remount. The storefront keeps background requests in flight and never
+    reaches networkidle, so waiting on that load state hung instead. */
+    await expect(async () => {
+      await this.checkoutPageUserEmailInput.fill(email);
+      await expect(this.checkoutPageUserEmailInput).toHaveValue(email);
+    }).toPass({ timeout: 30000 });
   };
 
   submitShipping = async () => {
-    await this.page.waitForLoadState('networkidle');
     await this.shippingSubmit.click();
-    await this.page.waitForNavigation({ waitUntil: "networkidle" });
 
-    // Ugly wait since the submit button takes time to mount.
-    await new Promise(r => setTimeout(r, 2000));
+    /* The payment stage mounts asynchronously, so wait for its submit button to
+    appear rather than for a load state: the storefront never reaches
+    networkidle, which used to consume the entire test timeout here. */
+    await this.submitPaymentButton.waitFor({ state: 'visible' });
+
+    // The Adyen component inside the payment stage still needs to mount.
+    await this.page.waitForTimeout(2000);
   };
 
   submitPayment = async () => {

@@ -87,7 +87,10 @@ async function removeGiftCards() {
     store.componentsObj?.giftcard?.node.unmount('component_giftcard');
   }
 
-  document.dispatchEvent(new Event('checkout:renderPaymentMethod'));
+  $('body').trigger('checkout:renderPaymentMethod', {
+    email: document.querySelector('.customer-summary-email')?.textContent,
+    amount: response.amount,
+  });
 }
 
 function giftCardBrands() {
@@ -389,25 +392,35 @@ function createElementsToShowRemainingGiftCardAmount() {
   pricingContainer.appendChild(mainContainer);
 }
 
-function showGiftCardInfoMessage() {
-  const messageText = store.partialPaymentsOrderObj.message;
+function clearGiftCardErrorMessage() {
   const { giftCardsInfoMessageContainer } = getGiftCardElements();
+  if (!giftCardsInfoMessageContainer) return;
+
   giftCardsInfoMessageContainer.innerHTML = '';
   giftCardsInfoMessageContainer.classList.remove(
     'gift-cards-info-message-container',
   );
-  if (!messageText) return;
-  const giftCardsInfoMessage = document.createElement('div');
-  giftCardsInfoMessage.classList.add(
-    'adyen-checkout__alert-message',
-    'adyen-checkout__alert-message--warning',
-  );
-  giftCardsInfoMessage.setAttribute('role', 'alert');
+}
 
-  const infoMessage = document.createElement('span');
-  infoMessage.textContent = messageText;
-  giftCardsInfoMessage.appendChild(infoMessage);
-  giftCardsInfoMessageContainer.appendChild(giftCardsInfoMessage);
+function showGiftCardErrorMessage(message = window.giftCardErrorMessage) {
+  const { giftCardsInfoMessageContainer } = getGiftCardElements();
+  if (!giftCardsInfoMessageContainer) return;
+
+  giftCardsInfoMessageContainer.innerHTML = '';
+
+  const giftCardsErrorMessage = document.createElement('div');
+  giftCardsErrorMessage.id = 'giftCardErrorMessage';
+  giftCardsErrorMessage.classList.add(
+    'adyen-checkout__alert-message',
+    'adyen-checkout__alert-message--error',
+  );
+  giftCardsErrorMessage.setAttribute('role', 'alert');
+
+  const errorMessage = document.createElement('span');
+  errorMessage.textContent = message;
+  giftCardsErrorMessage.appendChild(errorMessage);
+
+  giftCardsInfoMessageContainer.appendChild(giftCardsErrorMessage);
   giftCardsInfoMessageContainer.classList.add(
     'gift-cards-info-message-container',
   );
@@ -457,9 +470,6 @@ async function applyGiftCards() {
     store.addedGiftCards.forEach((card) => {
       renderAddedGiftCard(card);
     });
-    if (store.addedGiftCards?.length) {
-      showGiftCardInfoMessage();
-    }
     store.checkout.options.amount =
       store.addedGiftCards[store.addedGiftCards.length - 1].remainingAmount;
     showGiftCardCancelButton(true);
@@ -494,7 +504,8 @@ module.exports = {
   showGiftCardWarningMessage,
   createElementsToShowRemainingGiftCardAmount,
   renderGiftCardSelectForm,
-  showGiftCardInfoMessage,
+  showGiftCardErrorMessage,
+  clearGiftCardErrorMessage,
   giftCardBrands,
   clearGiftCardsContainer,
   attachGiftCardCancelListener,

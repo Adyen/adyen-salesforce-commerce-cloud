@@ -29,7 +29,7 @@ function computeBundledProducts(initialBundledProducts, isBundlePdp) {
 function isBundleDetailPage() {
   return Boolean(
     document.querySelector('.product-bundle') ||
-      document.querySelector('.bundle-item'),
+    document.querySelector('.bundle-item'),
   );
 }
 

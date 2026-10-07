@@ -1,11 +1,28 @@
+class OrderPaymentInstrument {
+  constructor(custom = {}) {
+    this.custom = custom;
+  }
+}
+
 global.dw = {
   order: {
     Order: {
       PAYMENT_STATUS_PAID: 'MOCKED_PAID',
       EXPORT_STATUS_READY: 'MOCKED_READY',
     },
+    OrderPaymentInstrument,
   },
 };
+
+// SFCC pipeline exit codes, provided by the platform at runtime
+global.PIPELET_NEXT = 2;
+global.PIPELET_ERROR = 1;
+
+global.empty = (value) =>
+  value === null ||
+  value === undefined ||
+  value === '' ||
+  (Array.isArray(value) && !value.length);
 global.showStoreDetails = true;
 global.$ = require('jquery');
 
@@ -18,7 +35,10 @@ global.session = {
   },
 };
 
-global.request = { getLocale: jest.fn(() => 'nl_NL') };
+global.request = {
+  getLocale: jest.fn(() => 'nl_NL'),
+  setLocale: jest.fn(() => true),
+};
 
 global.customer = { profile: { customerNo: 'mocked_customerNo' } };
 

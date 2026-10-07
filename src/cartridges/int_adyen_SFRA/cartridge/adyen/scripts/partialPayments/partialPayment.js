@@ -33,6 +33,18 @@ function responseContainsErrors(response) {
   );
 }
 
+function getGiftCardErrorMessage(resultCode) {
+  const messageKeys = {
+    [constants.RESULTCODES.REFUSED]: 'message.error.giftcard.refused',
+    [constants.RESULTCODES.CANCELLED]: 'message.error.giftcard.cancelled',
+  };
+  return Resource.msg(
+    messageKeys[resultCode] || 'message.error.giftcard',
+    'error',
+    null,
+  );
+}
+
 function makePartialPayment(req, res, next) {
   try {
     const request = JSON.parse(req.form.data);
@@ -46,10 +58,17 @@ function makePartialPayment(req, res, next) {
       brand,
       type: 'giftcard',
     };
-    const { order } = JSON.parse(currentBasket.custom.partialPaymentOrderData);
+    if (!currentBasket?.custom?.partialPaymentOrderData) {
+      throw new AdyenError('No partial payment order data found');
+    }
+
+    const partialPaymentOrderData = JSON.parse(
+      currentBasket.custom.partialPaymentOrderData,
+    );
+    const { order } = partialPaymentOrderData;
     const partialPaymentRequest = {
       merchantAccount: AdyenConfigs.getAdyenMerchantAccount(),
-      amount: JSON.parse(session.privacy.giftCardBalance),
+      amount: JSON.parse(currentBasket.custom.adyenGiftCardBalance),
       reference: currentBasket.custom.adyenGiftCardsOrderNo,
       paymentMethod,
       order,
@@ -60,18 +79,18 @@ function makePartialPayment(req, res, next) {
     const response = doPartialPaymentsCall(partialPaymentRequest);
 
     if (responseContainsErrors(response)) {
-      const errorMsg = `partial payment request did not go through .. resultCode: ${response?.resultCode}`;
-      throw new AdyenError(errorMsg);
+      const resultCode = response?.resultCode;
+      // Refusal reasons are diagnostic only and must not reach the shopper.
+      AdyenLogs.error_log(
+        `Gift card partial payment not authorised. resultCode: ${resultCode}, refusalReason: ${response?.refusalReason}, refusalReasonCode: ${response?.refusalReasonCode}, pspReference: ${response?.pspReference}`,
+      );
+      res.json({
+        error: true,
+        resultCode,
+        errorMessage: getGiftCardErrorMessage(resultCode),
+      });
+      return next();
     }
-
-    Transaction.wrap(() => {
-      session.privacy.giftCardResponse = JSON.stringify({
-        ...response.order,
-        ...response.amount,
-        paymentMethod: response.paymentMethod,
-        brand: giftCardBrand,
-      }); // entire response exceeds string length
-    });
 
     const discountAmount = new Money(
       response.amount.value,
@@ -82,14 +101,7 @@ function makePartialPayment(req, res, next) {
       response.order.remainingAmount.currency,
     );
 
-    // Update cached session data
-    const partialPaymentAmounts = JSON.parse(
-      session.privacy.partialPaymentAmounts,
-    );
-    partialPaymentAmounts.remainingAmount = response?.order?.remainingAmount;
-    session.privacy.partialPaymentAmounts = JSON.stringify(
-      partialPaymentAmounts,
-    );
+    partialPaymentOrderData.remainingAmount = response?.order?.remainingAmount;
 
     const divideBy = AdyenHelper.getDivisorForCurrency(remainingAmount);
     const remainingAmountFormatted = remainingAmount
@@ -131,11 +143,11 @@ function makePartialPayment(req, res, next) {
     Transaction.wrap(() => {
       currentBasket.custom.adyenGiftCards = JSON.stringify(addedGiftCards);
       currentBasket.custom.partialPaymentOrderData = JSON.stringify({
+        ...partialPaymentOrderData,
         order: {
           orderData: response?.order?.orderData,
           pspReference: response?.order?.pspReference,
         },
-        ...partialPaymentAmounts,
       });
     });
 

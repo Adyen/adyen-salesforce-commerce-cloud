@@ -1,5 +1,6 @@
 <isif condition="${pdict.adyen && pdict.adyen.adyenGivingAvailable}">
     <isset name="AdyenHelper" value="${require('*/cartridge/adyen/utils/adyenHelper')}" scope="pdict"/>
+    <isset name="localeHelper" value="${require('*/cartridge/adyen/utils/localeHelper')}" scope="pdict"/>
     <link rel="stylesheet" type="text/css" href="${pdict.AdyenHelper.getCheckoutCSS()}"/>
     <script src="${pdict.AdyenHelper.getCheckoutUrl()}" type="text/javascript"></script>
     <input type="hidden" id="adyen-token" name="${pdict.csrf.tokenName}" value="${pdict.csrf.token}"/>
@@ -9,12 +10,12 @@
     </isscript>
     <script>
         window.Configuration = {
-                locale: '${request.locale}',
+                locale: '${pdict.localeHelper.getShopperLocale(request.locale)}',
                 clientKey: '${pdict.adyen.clientKey}',
                 environment: '${pdict.adyen.environment}'
         };
         window.donateURL = "${URLUtils.https('Adyen-Donate')}";
-        window.countryCode = window.Configuration.locale.slice(-2);
+        window.countryCode = '${pdict.localeHelper.getCountryCode(request.locale)}';
         window.givingConfig = {
                 orderNo: '${pdict.order.orderNumber}',
                 orderToken: '${pdict.adyen.orderToken}',

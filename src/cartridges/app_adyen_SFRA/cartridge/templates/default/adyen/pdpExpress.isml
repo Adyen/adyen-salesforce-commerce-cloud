@@ -1,0 +1,3 @@
+<isinclude template="adyen/adyenExpressMetadata" />
+<input type="hidden" id="adyen-token" name="${pdict.csrf.tokenName}" value="${pdict.csrf.token}"/>
+<div id="express-payment-buttons"></div>

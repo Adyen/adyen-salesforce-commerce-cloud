@@ -1,6 +1,7 @@
 class CashAppConfig {
   constructor(helpers) {
     this.showPayButton = true;
+    this.storePaymentMethod = !!window.showCashAppStoreDetails;
     this.helpers = helpers;
   }
 
@@ -11,6 +12,7 @@ class CashAppConfig {
 
   getConfig = () => ({
     showPayButton: this.showPayButton,
+    ...(this.storePaymentMethod && { storePaymentMethod: true }),
     onSubmit: this.onSubmit,
   });
 }

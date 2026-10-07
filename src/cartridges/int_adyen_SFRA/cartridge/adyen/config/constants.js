@@ -42,6 +42,7 @@ module.exports = {
     SEPADIRECTDEBIT: 'sepadirectdebit',
     GIFTCARD: 'giftcard',
     FASTLANE: 'fastlane',
+    CASHAPP: 'cashapp',
   },
 
   CAN_SKIP_SUMMARY_PAGE: [
@@ -161,6 +162,11 @@ module.exports = {
   },
   FRAUD_STATUS_AMBER: 'AMBER',
 
+  LOCALE: {
+    DEFAULT_ID: 'default',
+    FALLBACK_ID: 'en_US',
+  },
+
   MERCHANT_APPLICATION_NAME: 'adyen-salesforce-commerce-cloud',
   EXTERNAL_PLATFORM_NAME: 'SalesforceCommerceCloud',
   EXTERNAL_PLATFORM_VERSION: 'SFRA',
@@ -170,5 +176,5 @@ module.exports = {
 
   CHECKOUT_COMPONENT_VERSION: '6.35.0',
   CHECKOUT_API_VERSION: 'v72',
-  VERSION: '26.3.0',
+  VERSION: '26.4.0',
 };

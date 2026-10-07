@@ -326,6 +326,13 @@ jest.mock(
 );
 
 jest.mock(
+  '*/cartridge/adyen/utils/localeHelper',
+  () =>
+    require('../src/cartridges/int_adyen_SFRA/cartridge/adyen/utils/localeHelper'),
+  { virtual: true },
+);
+
+jest.mock(
   '*/cartridge/adyen/utils/dcapHelper',
   () =>
     require('../src/cartridges/int_adyen_SFRA/cartridge/adyen/utils/dcapHelper'),
@@ -455,6 +462,13 @@ jest.mock(
   '*/cartridge/adyen/config/constants',
   () =>
     require('../src/cartridges/int_adyen_SFRA/cartridge/adyen/config/constants'),
+  { virtual: true },
+);
+
+jest.mock(
+  '*/cartridge/adyen/config/card-type-mapping.json',
+  () =>
+    require('../src/cartridges/int_adyen_SFRA/cartridge/adyen/config/card-type-mapping.json'),
   { virtual: true },
 );
 
@@ -589,6 +603,13 @@ jest.mock(
   '*/cartridge/utils/constants',
   () =>
     require('../src/cartridges/int_adyen_webhooks/cartridge/utils/constants'),
+  { virtual: true },
+);
+
+jest.mock(
+  '*/cartridge/utils/customObjectHelper',
+  () =>
+    require('../src/cartridges/int_adyen_webhooks/cartridge/utils/customObjectHelper'),
   { virtual: true },
 );
 

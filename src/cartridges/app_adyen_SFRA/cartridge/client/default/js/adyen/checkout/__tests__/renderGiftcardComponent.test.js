@@ -1,6 +1,13 @@
 /**
  * @jest-environment jsdom
  */
+jest.mock('../../commons/httpClient', () => ({
+  httpClient: jest.fn(async () => ({
+    resultCode: 'Received',
+    amount: { currency: 'EUR', value: 1000 },
+  })),
+}));
+
 const {
   removeGiftCards,
   renderAddedGiftCard,
@@ -8,6 +15,7 @@ const {
   showGiftCardWarningMessage,
 } = require('../giftcards');
 const store = require('../../../../../../config/store');
+const { httpClient } = require('../../commons/httpClient');
 
 jest.mock('../../commons');
 jest.mock('../../../../../../config/store');
@@ -67,6 +75,30 @@ describe.only('Render gift card', () => {
     );
     removeGiftCards();
     expect(document.querySelector('#biggerContainer')).toBeNull;
+  });
+
+  it('should rerender payment methods with the full amount after removing gift cards', async () => {
+    document.body.innerHTML +=
+      '<span class="customer-summary-email">mocked@email.com</span>';
+    const renderPaymentMethodListener = jest.fn();
+    $('body').on('checkout:renderPaymentMethod', renderPaymentMethodListener);
+
+    await removeGiftCards();
+
+    expect(httpClient).toHaveBeenCalled();
+    expect(renderPaymentMethodListener).toHaveBeenCalledTimes(1);
+    expect(renderPaymentMethodListener).toHaveBeenCalledWith(
+      expect.anything(),
+      {
+        email: 'mocked@email.com',
+        amount: { currency: 'EUR', value: 1000 },
+      },
+    );
+    expect(store.checkout.options.amount).toEqual({
+      currency: 'EUR',
+      value: 1000,
+    });
+    $('body').off('checkout:renderPaymentMethod');
   });
 
   it('should show a warning message if more items are added to cart later', async () => {

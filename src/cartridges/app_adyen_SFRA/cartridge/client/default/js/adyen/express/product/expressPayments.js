@@ -84,10 +84,15 @@ function getPaymentMethodConfig(adyenPaymentMethods, paymentMethodType) {
 async function getProductPrice(productId, quantity = 1) {
   const response = await calculateProductPrice(productId, quantity);
 
-  if (response.success) {
+  const totalAmount = response?.totalAmount;
+  if (
+    response?.success &&
+    Number.isSafeInteger(totalAmount?.minorUnitValue) &&
+    totalAmount.minorUnitValue >= 0
+  ) {
     return {
-      value: Math.round(response.totalAmount.value * 100), // Convert to minor units (cents)
-      currency: response.totalAmount.currencyCode,
+      value: totalAmount.minorUnitValue,
+      currency: totalAmount.currencyCode,
     };
   }
   return null;
@@ -152,6 +157,10 @@ function renderApplePayButton() {
       initialAmount,
     );
     const applePayComponent = await applePay.getComponent();
+    // getComponent resolves to null when Apple Pay is not available on the device
+    if (!applePayComponent) {
+      return;
+    }
     applePayComponent.mount(button);
   });
 }

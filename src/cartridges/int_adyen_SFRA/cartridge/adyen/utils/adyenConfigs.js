@@ -67,6 +67,10 @@ const adyenConfigsObj = {
     return getCustomPreference('Adyen_IntegratorName');
   },
 
+  getAdyenDefaultLocale() {
+    return getCustomPreference('Adyen_DefaultLocale');
+  },
+
   getAdyenClientKey() {
     return getCustomPreference('Adyen_ClientKey');
   },

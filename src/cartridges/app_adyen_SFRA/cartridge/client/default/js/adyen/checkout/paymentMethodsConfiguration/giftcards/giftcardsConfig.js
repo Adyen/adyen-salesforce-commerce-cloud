@@ -1,7 +1,8 @@
 const {
   getGiftCardElements,
   renderAddedGiftCard,
-  showGiftCardInfoMessage,
+  showGiftCardErrorMessage,
+  clearGiftCardErrorMessage,
   showGiftCardCancelButton,
   attachGiftCardCancelListener,
   createElementsToShowRemainingGiftCardAmount,
@@ -76,9 +77,11 @@ class GiftCardConfig {
       ) {
         resolve(data);
       } else {
+        showGiftCardErrorMessage();
         reject();
       }
     } catch (error) {
+      showGiftCardErrorMessage();
       reject();
     }
   };
@@ -102,9 +105,13 @@ class GiftCardConfig {
         if (data.resultCode === 'Success') {
           this.store.adyenOrderDataCreated = true;
           await this.makeGiftCardPaymentRequest(paymentMethod, reject);
+        } else {
+          showGiftCardErrorMessage();
+          reject();
         }
       }
     } catch (error) {
+      showGiftCardErrorMessage();
       reject();
     }
   }
@@ -126,6 +133,7 @@ class GiftCardConfig {
       showPayButton: true,
 
       onChange: (state) => {
+        clearGiftCardErrorMessage();
         this.store.updateSelectedPayment(GIFTCARD, 'isValid', state.isValid);
         this.store.updateSelectedPayment(GIFTCARD, 'stateData', state.data);
       },
@@ -175,41 +183,46 @@ class GiftCardConfig {
 
     this.store.addedGiftCards.forEach(renderAddedGiftCard);
 
-    if (this.store.addedGiftCards?.length) {
-      showGiftCardInfoMessage();
-    }
-
     showGiftCardCancelButton(true);
     attachGiftCardCancelListener();
     createElementsToShowRemainingGiftCardAmount();
   }
 
-  makePartialPayment(requestData) {
-    // eslint-disable-next-line no-async-promise-executor
-    return new Promise(async (resolve, reject) => {
-      const response = await this.httpClient({
+  async makePartialPayment(requestData) {
+    let response;
+    try {
+      response = await this.httpClient({
         url: window.partialPaymentUrl,
         method: 'POST',
         data: {
           data: JSON.stringify(requestData),
         },
       });
-      if (response.error) {
-        reject(new Error(`Partial payment error ${response?.error}`));
-      } else {
-        const { giftCards, ...rest } = response;
-        this.store.checkout.options.amount = rest.remainingAmount;
-        this.store.adyenOrderDataCreated = rest.orderCreated;
-        this.store.partialPaymentsOrderObj = rest;
-        sessionStorage.setItem('partialPaymentsObj', JSON.stringify(rest));
-        this.store.addedGiftCards = giftCards;
-        this.helpers.setOrderFormData(response);
-        $('body').trigger('checkout:renderPaymentMethod', {
-          email: document.querySelector('.customer-summary-email')?.textContent,
-          amount: rest.remainingAmount,
-        });
-        resolve();
-      }
+    } catch (error) {
+      showGiftCardErrorMessage();
+      throw error;
+    }
+
+    if (response.error) {
+      showGiftCardErrorMessage(response?.errorMessage);
+      const error = new Error(
+        `Partial payment error ${response?.resultCode ?? response?.error}`,
+      );
+      error.resultCode = response?.resultCode;
+      error.errorMessage = response?.errorMessage;
+      throw error;
+    }
+
+    const { giftCards, ...rest } = response;
+    this.store.checkout.options.amount = rest.remainingAmount;
+    this.store.adyenOrderDataCreated = rest.orderCreated;
+    this.store.partialPaymentsOrderObj = rest;
+    sessionStorage.setItem('partialPaymentsObj', JSON.stringify(rest));
+    this.store.addedGiftCards = giftCards;
+    this.helpers.setOrderFormData(response);
+    $('body').trigger('checkout:renderPaymentMethod', {
+      email: document.querySelector('.customer-summary-email')?.textContent,
+      amount: rest.remainingAmount,
     });
   }
 
@@ -228,7 +241,7 @@ class GiftCardConfig {
       });
       this.handlePartialPaymentSuccess();
     } catch (error) {
-      reject();
+      reject(error);
     }
   }
 }

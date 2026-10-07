@@ -1,13 +1,14 @@
 <input type="hidden" id="adyen-token" name="${pdict.csrf.tokenName}" value="${pdict.csrf.token}"/>
 <isset name="AdyenHelper" value="${require('*/cartridge/adyen/utils/adyenHelper')}" scope="page"/>
 <isset name="AdyenConfigs" value="${require('*/cartridge/adyen/utils/adyenConfigs')}" scope="page" />
+<isset name="localeHelper" value="${require('*/cartridge/adyen/utils/localeHelper')}" scope="page" />
 <script src="${AdyenHelper.getCheckoutUrl()}" type="text/javascript"></script>
 <link rel="stylesheet" type="text/css" href="${AdyenHelper.getCheckoutCSS()}"/>
 <link rel="stylesheet" type="text/css" href="${URLUtils.staticURL('/css/adyenCss.css')}" />
 <isif condition="${request.getHttpQueryString() && request.getHttpQueryString().indexOf('amazonCheckoutSessionId') > -1} ">
     <script type="text/javascript">
         window.clientKey = "${AdyenConfigs.getAdyenClientKey()}";
-        window.locale = "${request.locale}";
+        window.locale = "${localeHelper.getShopperLocale(request.locale)}";
         window.saveShopperDetailsURL = "${URLUtils.https('Adyen-SaveExpressShopperDetails')}";
         window.returnUrl = "${URLUtils.https('Checkout-Begin', 'stage', 'payment')}";
         window.getExpressPaymentMethodsURL = "${URLUtils.https('Adyen-GetExpressPaymentMethods')}";
@@ -16,10 +17,10 @@
         window.amazonCheckoutSessionId = amazonCheckoutSessionId;
 
         window.Configuration = {
-          locale: '${request.locale}',
+          locale: '${localeHelper.getShopperLocale(request.locale)}',
           clientKey: "${AdyenConfigs.getAdyenClientKey()}",
           environment: "${AdyenConfigs.getAdyenEnvironment()}",
-          countryCode: '${request.locale}'.slice(-2),
+          countryCode: '${localeHelper.getCountryCode(request.locale)}',
         };
         window.basketAmount = "${AdyenHelper.getBasketAmount()}".replace(/&quot;/g, '\"');
         window.adyenClientKey = "${AdyenConfigs.getAdyenClientKey()}";

@@ -2,7 +2,9 @@
 <isset name="AdyenHelper" value="${require('*/cartridge/adyen/utils/adyenHelper')}" scope="pdict"/>
 <isset name="adyenKlarnaWidgetEnabled" value="${pdict.AdyenConfigs.getKlarnaInlineWidgetEnabled()}" scope="page"/>
 <isset name="adyenRecurringPaymentsEnabled" value="${pdict.AdyenConfigs.getAdyenRecurringPaymentsEnabled()}" scope="page"/>
+<isset name="adyenTokenisationEnabled" value="${pdict.AdyenConfigs.getAdyenTokenisationEnabled() === true}" scope="page"/>
 <isset name="AdyenConstants" value="${require('*/cartridge/adyen/config/constants')}" scope="page"/>
+<isset name="localeHelper" value="${require('*/cartridge/adyen/utils/localeHelper')}" scope="page"/>
 <script src="https://pay.google.com/gp/p/js/pay.js"></script>
 <isset name="ShowConfirmationPaymentFromComponent" value="${URLUtils.https('Adyen-ShowConfirmationPaymentFromComponent')}" scope="page"/>
 
@@ -10,10 +12,10 @@
 <script src="${pdict.AdyenHelper.getCheckoutUrl()}" type="text/javascript"></script>
 <script>
       window.Configuration = {
-          locale: '${request.locale}',
+          locale: '${localeHelper.getShopperLocale(request.locale)}',
           clientKey: '${pdict.adyen.clientKey}',
           environment: '${pdict.adyen.environment}',
-          countryCode: '${request.locale}'.slice(-2),
+          countryCode: '${localeHelper.getCountryCode(request.locale)}',
       };
       window.adyenClientKey = '${pdict.adyen.adyenClientKey}';
       window.returnURL = "${URLUtils.https('Checkout-Begin', 'stage', 'payment')}";
@@ -40,6 +42,7 @@
       window.cancelGiftCardResource = "${Resource.msg('cancel.giftCard', 'adyen', null)}";
 
       window.giftCardWarningMessage = "${Resource.msg('message.error.giftcard.removed', 'error', null)}";
+      window.giftCardErrorMessage = "${Resource.msg('message.error.giftcard', 'error', null)}";
       window.removeGiftCardButtonText = "${Resource.msg('remove.giftCard', 'adyen', null)}";
 </script>
 
@@ -66,6 +69,7 @@
          window.merchantAccount = '${pdict.adyen.merchantAccount}';
          window.customerEmail = '${pdict.AdyenHelper.getCustomerEmail()}';
          var showStoreDetails = ${customer.authenticated && adyenRecurringPaymentsEnabled};
+         window.showCashAppStoreDetails = ${adyenTokenisationEnabled};
     </script>
 
      <isset name="AdyenHelper" value="${require('*/cartridge/adyen/utils/adyenHelper')}" scope="pdict"/>

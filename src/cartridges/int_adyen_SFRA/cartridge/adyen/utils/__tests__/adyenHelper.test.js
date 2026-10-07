@@ -343,3 +343,124 @@ describe('validateStateData', () => {
     expect(invalidFields).toHaveLength(0);
   });
 });
+
+describe('getSfccCardType', () => {
+  const { getSfccCardType } = require('../adyenHelper');
+  const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('maps a known brand to the SFCC card type', () => {
+    expect(getSfccCardType('visa')).toBe('Visa');
+  });
+
+  it('maps the co-branded US debit brands', () => {
+    expect(getSfccCardType('maestro_usa')).toBe('Maestro');
+    expect(getSfccCardType('pulse')).toBe('Pulse');
+    expect(getSfccCardType('pulse_pinless')).toBe('Pulse');
+  });
+
+  it('ignores the wallet suffix Adyen appends to the brand', () => {
+    expect(getSfccCardType('visa_applepay')).toBe('Visa');
+    expect(getSfccCardType('mc_googlepay')).toBe('Mastercard');
+    expect(getSfccCardType('maestro_usa_samsungpay')).toBe('Maestro');
+  });
+
+  it('returns an empty string and warns for an unmapped brand', () => {
+    expect(getSfccCardType('unmapped_brand')).toBe('');
+    expect(AdyenLogs.warning_log).toHaveBeenCalledWith(
+      expect.stringContaining('unmapped_brand'),
+    );
+  });
+
+  it('throws when no brand is passed', () => {
+    expect(() => getSfccCardType('')).toThrow();
+  });
+});
+
+describe('setPaymentInstrumentFields', () => {
+  const { setPaymentInstrumentFields } = require('../adyenHelper');
+  const constants = require('*/cartridge/adyen/config/constants');
+
+  const omsPaymentMethodField = `${constants.OMS_NAMESPACE}__Adyen_Payment_Method`;
+  const omsVariantField = `${constants.OMS_NAMESPACE}__Adyen_Payment_Method_Variant`;
+
+  const createPaymentInstrument = (custom) =>
+    new dw.order.OrderPaymentInstrument(custom);
+
+  it('sets the passed payment method on a card payment', () => {
+    const paymentInstrument = createPaymentInstrument({
+      adyenPaymentMethod: 'Credit Card',
+    });
+
+    setPaymentInstrumentFields(
+      paymentInstrument,
+      { paymentMethod: { type: 'scheme' } },
+      'Maestro',
+    );
+
+    expect(paymentInstrument.custom.adyenPaymentMethod).toBe('Maestro');
+    expect(paymentInstrument.custom[omsPaymentMethodField]).toBe('Maestro');
+    expect(paymentInstrument.custom.Adyen_Payment_Method_Variant).toBe(
+      'scheme',
+    );
+    expect(paymentInstrument.custom[omsVariantField]).toBe('scheme');
+  });
+
+  it('keeps the resolved card brand when called without a payment method', () => {
+    const paymentInstrument = createPaymentInstrument({
+      adyenPaymentMethod: 'maestro_usa',
+      [omsPaymentMethodField]: 'maestro_usa',
+    });
+
+    setPaymentInstrumentFields(paymentInstrument, {
+      paymentMethod: { type: 'scheme' },
+    });
+
+    expect(paymentInstrument.custom.adyenPaymentMethod).toBe('maestro_usa');
+    expect(paymentInstrument.custom[omsPaymentMethodField]).toBe('maestro_usa');
+  });
+
+  it('falls back to the component type when the card has no payment method yet', () => {
+    const paymentInstrument = createPaymentInstrument({
+      adyenPaymentMethod: '',
+    });
+
+    setPaymentInstrumentFields(paymentInstrument, {
+      paymentMethod: { type: 'scheme' },
+    });
+
+    expect(paymentInstrument.custom.adyenPaymentMethod).toBe('scheme');
+    expect(paymentInstrument.custom[omsPaymentMethodField]).toBe('scheme');
+  });
+
+  it('sets the component type for non card payment methods', () => {
+    const paymentInstrument = createPaymentInstrument({
+      adyenPaymentMethod: 'PayPal label',
+    });
+
+    setPaymentInstrumentFields(paymentInstrument, {
+      paymentMethod: { type: 'paypal' },
+    });
+
+    expect(paymentInstrument.custom.adyenPaymentMethod).toBe('PayPal label');
+    expect(paymentInstrument.custom[omsPaymentMethodField]).toBe('PayPal');
+    expect(paymentInstrument.custom.Adyen_Payment_Method_Variant).toBe(
+      'paypal',
+    );
+  });
+
+  it('does nothing for a payment instrument that is not an order payment instrument', () => {
+    const paymentInstrument = { custom: {} };
+
+    setPaymentInstrumentFields(
+      paymentInstrument,
+      { paymentMethod: { type: 'scheme' } },
+      'Maestro',
+    );
+
+    expect(paymentInstrument.custom).toEqual({});
+  });
+});
