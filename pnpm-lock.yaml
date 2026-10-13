@@ -109,8 +109,8 @@ importers:
         specifier: ^29.3.1
         version: 29.7.0
       jquery:
-        specifier: ^3.6.3
-        version: 3.7.1
+        specifier: ^4.0.0
+        version: 4.0.0
       mocha:
         specifier: ^10.1.0
         version: 10.8.2
@@ -3352,8 +3352,8 @@ packages:
     resolution: {integrity: sha512-ekilCSN1jwRvIbgeg/57YFh8qQDNbwDb9xT/qu2DAHbFFZUicIl4ygVaAvzveMhMVr3LnpSKTNnwt8PoOfmKhQ==}
     hasBin: true
 
-  jquery@3.7.1:
-    resolution: {integrity: sha512-m4avr8yL8kmFN8psrbFFFmB/If14iN5o9nw/NgnnM+kybDJpRsAynV2BsfpTYrTRysYUdADVD7CkUUizgkpLfg==}
+  jquery@4.0.0:
+    resolution: {integrity: sha512-TXCHVR3Lb6TZdtw1l3RTLf8RBWVGexdxL6AC8/e0xZKEpBflBsjh9/8LXw+dkNFuOyW9B7iB3O1sP7hS0Kiacg==}
 
   js-tokens@4.0.0:
     resolution: {integrity: sha512-RdJUflcE3cUzKiMqQgsCu06FPu9UdIJO0beYbPhHN4k6apgJtifcoCtT9bcxOpYBtpD2kCM6Sbzg4CausW/PKQ==}
@@ -9110,7 +9110,7 @@ snapshots:
 
   jiti@2.6.1: {}
 
-  jquery@3.7.1: {}
+  jquery@4.0.0: {}
 
   js-tokens@4.0.0: {}
 
