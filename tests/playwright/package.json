@@ -8,10 +8,10 @@
     "node": ">=20"
   },
   "dependencies": {
-    "dotenv": "^16.5.0"
+    "dotenv": "^16.6.1"
   },
   "devDependencies": {
-    "@playwright/test": "^1.55.1"
+    "@playwright/test": "^1.63.0"
   },
   "scripts": {
     "test": "pnpm exec playwright test",

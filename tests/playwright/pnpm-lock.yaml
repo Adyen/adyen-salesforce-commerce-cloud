@@ -9,11 +9,11 @@ importers:
   .:
     dependencies:
       dotenv:
-        specifier: ^16.5.0
+        specifier: ^16.6.1
         version: 16.6.1
     devDependencies:
       '@playwright/test':
-        specifier: ^1.55.1
+        specifier: ^1.63.0
         version: 1.63.0
 
 packages:
