@@ -1,1 +1,17 @@
+# Default owners: one code owner review for anything not listed below.
 * @amihajlovski @dcardos @shanikantsingh @shubhamk67 @shubhamvijaivargiya @zenit2001
+
+# High-risk paths. These always require a human approval, even when automated
+# review, security review, and CI are green. An automated reviewer's approval
+# never counts as that approval. Narrow each list to the maintainers responsible
+# for that area.
+
+# Webhook / notification handling (HMAC verification, order and payment state)
+/src/cartridges/int_adyen_webhooks/ @amihajlovski @dcardos @shanikantsingh @shubhamk67 @shubhamvijaivargiya @zenit2001
+
+# Core payment logic (checkout, payment requests, hooks registration)
+/src/cartridges/int_adyen_SFRA/ @amihajlovski @dcardos @shanikantsingh @shubhamk67 @shubhamvijaivargiya @zenit2001
+
+# CI, release automation, and repo tooling
+/.github/ @amihajlovski @dcardos @shanikantsingh @shubhamk67 @shubhamvijaivargiya @zenit2001
+
