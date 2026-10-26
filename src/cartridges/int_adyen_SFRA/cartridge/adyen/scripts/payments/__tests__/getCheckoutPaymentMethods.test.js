@@ -258,6 +258,28 @@ describe('getCheckoutPaymentMethods', () => {
       });
     });
 
+    it('matches BNPL families by prefix, including variants without an underscore', () => {
+      mockBundle(genericBundle);
+      const body = run('NL', ['afterpaytouch', 'afterpay_default', 'moneybookers']);
+      expect(body.disclaimerMessages).toEqual({
+        afterpaytouch: genericDisclaimer,
+        afterpay_default: genericDisclaimer,
+      });
+    });
+
+    it('skips payment methods without a type instead of failing', () => {
+      mockBundle(genericBundle);
+      getPaymentMethods.getMethods.mockReturnValueOnce({
+        paymentMethods: [{}, { type: 'klarna' }],
+        storedPaymentMethods: [],
+      });
+      BasketMgr.getCurrentBasket.mockReturnValueOnce(basketShippingTo('DE'));
+      getCheckoutPaymentMethods(req, res, next);
+      const body = res.json.mock.calls[0][0];
+      expect(body.error).toBeUndefined();
+      expect(body.disclaimerMessages).toEqual({ klarna: genericDisclaimer });
+    });
+
     it('omits disclaimers outside EU/UK', () => {
       mockBundle(genericBundle);
       const body = run('US', ['klarna_account', 'affirm']);

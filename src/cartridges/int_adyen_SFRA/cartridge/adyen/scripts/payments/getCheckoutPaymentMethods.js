@@ -62,22 +62,32 @@ const getDisclaimerFor = (key) => {
 // exact txVariant -> method family -> generic 'bnpl'. Whole entries are
 // resolved (not individual fields) so a specific message never gets a
 // generic link.
+const resolveBnplDisclaimer = (type) => {
+  if (!type) {
+    return null;
+  }
+  // Prefix match: covers klarna_*, facilypay_*, afterpaytouch, ... without
+  // false positives such as 'oney' inside 'moneybookers'.
+  const family = constants.BNPL_PAYMENT_METHODS.find(
+    (method) => type.indexOf(method) === 0,
+  );
+  if (!family) {
+    return null;
+  }
+  return (
+    getDisclaimerFor(type) ||
+    getDisclaimerFor(family) ||
+    getDisclaimerFor('bnpl')
+  );
+};
+
 const getBnplDisclaimers = (countryCode, paymentMethods) => {
   if (!constants.DISCLAIMER_COUNTRIES.includes(countryCode)) {
     return null;
   }
   const disclaimers = {};
-  paymentMethods.forEach(({ type }) => {
-    const family = constants.BNPL_PAYMENT_METHODS.find(
-      (method) => type.indexOf(method) > -1,
-    );
-    if (!family) {
-      return;
-    }
-    const disclaimer =
-      getDisclaimerFor(type) ||
-      getDisclaimerFor(family) ||
-      getDisclaimerFor('bnpl');
+  paymentMethods.forEach(({ type } = {}) => {
+    const disclaimer = resolveBnplDisclaimer(type);
     if (disclaimer) {
       disclaimers[type] = disclaimer;
     }
