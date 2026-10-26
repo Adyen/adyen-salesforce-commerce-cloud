@@ -411,4 +411,46 @@ describe('Klarna', () => {
     document.querySelector = querySelector;
   });
 });
+
+describe('BNPL disclaimer', () => {
+  const disclaimerMessage = {
+    message: 'Borrowing money costs money. See %{link}',
+    linkText: 'more information',
+    link: 'https://www.example.com/bnpl-terms',
+  };
+  const paymentMethodsResponse = (extra = {}) => ({
+    amount: { value: 150, currency: 'EUR' },
+    AdyenPaymentMethods: {
+      paymentMethods: [
+        { type: 'klarna_account' },
+        { type: 'riverty' },
+        { type: 'scheme' },
+        { type: 'paypal' },
+      ],
+    },
+    ...extra,
+  });
+
+  it('attaches the disclaimer to BNPL payment methods only', async () => {
+    await setCheckoutConfiguration({
+      email: window.customerEmail,
+      paymentMethodsResponse: paymentMethodsResponse({ disclaimerMessage }),
+    });
+    const config = store.paymentMethodsConfiguration;
+    expect(config.klarna_account.disclaimerMessage).toEqual(disclaimerMessage);
+    expect(config.riverty).toEqual({ disclaimerMessage });
+    expect(config.scheme.disclaimerMessage).toBeUndefined();
+    expect(config.paypal.disclaimerMessage).toBeUndefined();
+  });
+
+  it('leaves configurations unchanged without a disclaimer', async () => {
+    await setCheckoutConfiguration({
+      email: window.customerEmail,
+      paymentMethodsResponse: paymentMethodsResponse(),
+    });
+    const config = store.paymentMethodsConfiguration;
+    expect(config.klarna_account.disclaimerMessage).toBeUndefined();
+    expect(config.riverty).toBeUndefined();
+  });
+});
 });

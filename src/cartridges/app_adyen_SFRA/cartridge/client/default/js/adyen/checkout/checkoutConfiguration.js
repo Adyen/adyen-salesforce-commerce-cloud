@@ -60,6 +60,20 @@ async function setCheckoutConfiguration({
     amount || paymentMethodsResponse.amount,
     paymentMethodsResponse.AdyenPaymentMethods,
   );
+  const { disclaimerMessage } = paymentMethodsResponse;
+  if (disclaimerMessage && AdyenPaymentMethods?.paymentMethods) {
+    // Attached per BNPL method so the disclaimer does not appear on cards/wallets.
+    AdyenPaymentMethods.paymentMethods
+      .filter((pm) =>
+        constants.BNPL_PAYMENT_METHODS.some((m) => pm.type?.indexOf(m) > -1),
+      )
+      .forEach((pm) => {
+        paymentMethodsConfiguration[pm.type] = {
+          ...paymentMethodsConfiguration[pm.type],
+          disclaimerMessage,
+        };
+      });
+  }
   store.checkoutConfiguration = {
     ...store.checkoutConfiguration,
     showPayButton: false,

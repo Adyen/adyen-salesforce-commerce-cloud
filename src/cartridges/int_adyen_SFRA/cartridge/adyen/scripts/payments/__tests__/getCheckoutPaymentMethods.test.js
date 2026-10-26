@@ -1,5 +1,6 @@
 /* eslint-disable global-require */
 const BasketMgr = require('dw/order/BasketMgr');
+const Resource = require('dw/web/Resource');
 const AdyenLogs = require('*/cartridge/adyen/logs/adyenCustomLogs');
 const getCheckoutPaymentMethods = require('*/cartridge/adyen/scripts/payments/getCheckoutPaymentMethods');
 const getPaymentMethods = require('*/cartridge/adyen/scripts/payments/adyenGetPaymentMethods');
@@ -18,6 +19,7 @@ beforeEach(() => {
     json: jest.fn(),
   };
   next = jest.fn();
+  Resource.msg.mockImplementation(() => '');
 });
 
 afterEach(() => {
@@ -135,6 +137,13 @@ describe('getCheckoutPaymentMethods', () => {
   });
 
    it('does not return AdyenPaymentMethods', () => {
+      BasketMgr.getCurrentBasket.mockReturnValueOnce({
+        getDefaultShipment: jest.fn(() => ({ shippingAddress: null })),
+        getTotalGrossPrice: jest.fn(() => ({
+          currencyCode: 'EUR',
+          isAvailable: jest.fn(() => true),
+        })),
+      });
       getPaymentMethods.getMethods.mockImplementationOnce(() => {throw new Error('mock error')});
       getCheckoutPaymentMethods(req, res, next);
       expect(res.json).toHaveBeenCalledWith({
@@ -143,4 +152,71 @@ describe('getCheckoutPaymentMethods', () => {
       expect(AdyenLogs.fatal_log).toHaveBeenCalled();
       expect(next).toHaveBeenCalled();
    });
+
+  describe('BNPL disclaimer', () => {
+    const bundle = {
+      'disclaimer.message.bnpl': 'Borrowing money costs money. See %{link}',
+      'disclaimer.linkText.bnpl': 'more information',
+      'disclaimer.link.bnpl': 'https://www.example.com/bnpl-terms',
+    };
+    const mockBundle = (values) => {
+      Resource.msg.mockImplementation((key) => values[key] || '');
+    };
+    const basketShippingTo = (country) => ({
+      getDefaultShipment: jest.fn(() => ({
+        shippingAddress: {
+          getCountryCode: jest.fn(() => ({ value: country })),
+        },
+      })),
+      getTotalGrossPrice: jest.fn(() => ({
+        currencyCode: 'EUR',
+        value: '1000',
+        isAvailable: jest.fn(() => true),
+      })),
+    });
+    const responseBody = () => res.json.mock.calls[0][0];
+
+    it('includes the disclaimer for EU shipping countries when the bundle is populated', () => {
+      mockBundle(bundle);
+      BasketMgr.getCurrentBasket.mockReturnValueOnce(basketShippingTo('DE'));
+      getCheckoutPaymentMethods(req, res, next);
+      expect(responseBody().disclaimerMessage).toEqual({
+        message: 'Borrowing money costs money. See %{link}',
+        linkText: 'more information',
+        link: 'https://www.example.com/bnpl-terms',
+      });
+    });
+
+    it('includes the disclaimer for GB', () => {
+      mockBundle(bundle);
+      BasketMgr.getCurrentBasket.mockReturnValueOnce(basketShippingTo('GB'));
+      getCheckoutPaymentMethods(req, res, next);
+      expect(responseBody().disclaimerMessage).toBeDefined();
+    });
+
+    it('omits the disclaimer outside EU/UK', () => {
+      mockBundle(bundle);
+      BasketMgr.getCurrentBasket.mockReturnValueOnce(basketShippingTo('US'));
+      getCheckoutPaymentMethods(req, res, next);
+      expect(responseBody()).not.toHaveProperty('disclaimerMessage');
+    });
+
+    it('omits the disclaimer when the bundle is empty', () => {
+      BasketMgr.getCurrentBasket.mockReturnValueOnce(basketShippingTo('DE'));
+      getCheckoutPaymentMethods(req, res, next);
+      expect(responseBody()).not.toHaveProperty('disclaimerMessage');
+    });
+
+    it('omits the link when only one of linkText/link is set', () => {
+      mockBundle({
+        'disclaimer.message.bnpl': 'Borrowing money costs money.',
+        'disclaimer.linkText.bnpl': 'more information',
+      });
+      BasketMgr.getCurrentBasket.mockReturnValueOnce(basketShippingTo('FR'));
+      getCheckoutPaymentMethods(req, res, next);
+      expect(responseBody().disclaimerMessage).toEqual({
+        message: 'Borrowing money costs money.',
+      });
+    });
+  });
 });

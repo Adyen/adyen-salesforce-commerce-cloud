@@ -1,5 +1,6 @@
 const BasketMgr = require('dw/order/BasketMgr');
 const Locale = require('dw/util/Locale');
+const Resource = require('dw/web/Resource');
 const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
 const translations = require('*/cartridge/config/adyenTranslations');
 const paymentMethodTitles = require('*/cartridge/config/adyenPaymentMethodTitles');
@@ -47,6 +48,19 @@ const supportedStoredPaymentMethods = (storedPaymentMethods) =>
       )
     : [];
 
+const getBnplDisclaimer = (countryCode) => {
+  if (!constants.DISCLAIMER_COUNTRIES.includes(countryCode)) {
+    return null;
+  }
+  const message = Resource.msg('disclaimer.message.bnpl', 'bnpl', '');
+  if (!message) {
+    return null;
+  }
+  const linkText = Resource.msg('disclaimer.linkText.bnpl', 'bnpl', '');
+  const link = Resource.msg('disclaimer.link.bnpl', 'bnpl', '');
+  return { message, ...(linkText && link ? { linkText, link } : {}) };
+};
+
 function getCheckoutPaymentMethods(req, res, next) {
   try {
     const currentBasket = BasketMgr.getCurrentBasket();
@@ -76,6 +90,8 @@ function getCheckoutPaymentMethods(req, res, next) {
       return 0;
     });
 
+    const disclaimerMessage = getBnplDisclaimer(countryCode);
+
     res.json({
       AdyenPaymentMethods: {
         paymentMethods: sortedPaymentMethods,
@@ -92,6 +108,7 @@ function getCheckoutPaymentMethods(req, res, next) {
       amount: { value: paymentAmount.value, currency },
       countryCode,
       applicationInfo: AdyenHelper.getApplicationInfo(),
+      ...(disclaimerMessage ? { disclaimerMessage } : {}),
     });
   } catch (error) {
     AdyenLogs.fatal_log('Failed to fetch payment methods', error);
