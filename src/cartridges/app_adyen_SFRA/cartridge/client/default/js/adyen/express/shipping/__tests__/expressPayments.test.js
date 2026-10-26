@@ -214,7 +214,7 @@ describe('Shipping Express Payments', () => {
         AdyenPaymentMethods: {
           paymentMethods: [
             { type: 'paypal', configuration: {} },
-            { type: 'applepay', configuration: {} },
+            { type: 'applepay', configuration: {}, brands: ['visa', 'mc'] },
             { type: 'googlepay', configuration: {} },
           ],
         },
@@ -229,6 +229,39 @@ describe('Shipping Express Payments', () => {
       expect(document.getElementById('paypal-container')).toBeTruthy();
       expect(document.getElementById('applepay-container')).toBeTruthy();
       expect(document.getElementById('googlepay-container')).toBeTruthy();
+      expect(ApplePay).toHaveBeenCalledWith(
+        {},
+        ['visa', 'mc'],
+        {},
+        {},
+        false,
+      );
+    });
+  });
+
+  describe('renderApplePayButtonListener', () => {
+    it('should not create Apple Pay when the response has no paymentMethods', async () => {
+      const unhandledRejections = [];
+      const onUnhandledRejection = (reason) => unhandledRejections.push(reason);
+      process.on('unhandledRejection', onUnhandledRejection);
+
+      mockHttpClient.mockResolvedValue({
+        shippingExpressMethods: ['applepay'],
+        AdyenPaymentMethods: {},
+        applicationInfo: {},
+        adyenTranslations: {},
+      });
+
+      try {
+        await expressPayments.init();
+        await new Promise((resolve) => setTimeout(resolve, 10));
+      } finally {
+        process.off('unhandledRejection', onUnhandledRejection);
+      }
+
+      expect(document.getElementById('applepay-container')).toBeTruthy();
+      expect(ApplePay).not.toHaveBeenCalled();
+      expect(unhandledRejections).toEqual([]);
     });
   });
 
