@@ -65,6 +65,25 @@ module.exports = {
     'clearpay',
   ],
 
+  BNPL_PAYMENT_METHODS: [
+    'klarna',
+    'riverty',
+    'ratepay',
+    'afterpay',
+    'affirm',
+    'zip',
+    'clearpay',
+    'atome',
+    'facilypay',
+    'alma',
+    'scalapay',
+    'oney',
+    'paypo',
+    'walley',
+    'in3',
+    'twisto',
+  ],
+
   L23_PAYMENT_METHODS: ['applepay', 'googlepay', 'paywithgoogle', 'scheme'],
 
   // EU-27 + GB: markets where BNPL checkout disclaimers apply (EU CCD2 / UK).

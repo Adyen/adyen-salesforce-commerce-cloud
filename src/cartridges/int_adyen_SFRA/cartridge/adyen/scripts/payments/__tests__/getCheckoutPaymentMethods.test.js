@@ -154,13 +154,19 @@ describe('getCheckoutPaymentMethods', () => {
    });
 
   describe('BNPL disclaimer', () => {
-    const bundle = {
-      'disclaimer.message.bnpl': 'Borrowing money costs money. See %{link}',
-      'disclaimer.linkText.bnpl': 'more information',
+    const genericBundle = {
+      'disclaimer.message.bnpl': 'Generic message. See %{link}',
+      'disclaimer.linkText.bnpl': 'generic terms',
       'disclaimer.link.bnpl': 'https://www.example.com/bnpl-terms',
     };
     const mockBundle = (values) => {
       Resource.msg.mockImplementation((key) => values[key] || '');
+    };
+    const mockPaymentMethods = (types) => {
+      getPaymentMethods.getMethods.mockReturnValueOnce({
+        paymentMethods: types.map((type) => ({ type })),
+        storedPaymentMethods: [],
+      });
     };
     const basketShippingTo = (country) => ({
       getDefaultShipment: jest.fn(() => ({
@@ -174,48 +180,109 @@ describe('getCheckoutPaymentMethods', () => {
         isAvailable: jest.fn(() => true),
       })),
     });
-    const responseBody = () => res.json.mock.calls[0][0];
-
-    it('includes the disclaimer for EU shipping countries when the bundle is populated', () => {
-      mockBundle(bundle);
-      BasketMgr.getCurrentBasket.mockReturnValueOnce(basketShippingTo('DE'));
+    const run = (country, types) => {
+      mockPaymentMethods(types);
+      BasketMgr.getCurrentBasket.mockReturnValueOnce(basketShippingTo(country));
       getCheckoutPaymentMethods(req, res, next);
-      expect(responseBody().disclaimerMessage).toEqual({
-        message: 'Borrowing money costs money. See %{link}',
-        linkText: 'more information',
-        link: 'https://www.example.com/bnpl-terms',
+      return res.json.mock.calls[0][0];
+    };
+    const genericDisclaimer = {
+      message: 'Generic message. See %{link}',
+      linkText: 'generic terms',
+      link: 'https://www.example.com/bnpl-terms',
+    };
+
+    it('maps the generic disclaimer to every BNPL method for EU countries', () => {
+      mockBundle(genericBundle);
+      const body = run('DE', ['klarna_account', 'riverty', 'scheme', 'paypal']);
+      expect(body.disclaimerMessages).toEqual({
+        klarna_account: genericDisclaimer,
+        riverty: genericDisclaimer,
       });
     });
 
-    it('includes the disclaimer for GB', () => {
-      mockBundle(bundle);
-      BasketMgr.getCurrentBasket.mockReturnValueOnce(basketShippingTo('GB'));
-      getCheckoutPaymentMethods(req, res, next);
-      expect(responseBody().disclaimerMessage).toBeDefined();
+    it('includes disclaimers for GB', () => {
+      mockBundle(genericBundle);
+      const body = run('GB', ['clearpay']);
+      expect(body.disclaimerMessages).toEqual({ clearpay: genericDisclaimer });
     });
 
-    it('omits the disclaimer outside EU/UK', () => {
-      mockBundle(bundle);
-      BasketMgr.getCurrentBasket.mockReturnValueOnce(basketShippingTo('US'));
-      getCheckoutPaymentMethods(req, res, next);
-      expect(responseBody()).not.toHaveProperty('disclaimerMessage');
+    it('prefers the family entry over the generic one', () => {
+      mockBundle({
+        ...genericBundle,
+        'disclaimer.message.klarna': 'Klarna message',
+      });
+      const body = run('NL', ['klarna', 'klarna_paynow', 'riverty']);
+      expect(body.disclaimerMessages).toEqual({
+        klarna: { message: 'Klarna message' },
+        klarna_paynow: { message: 'Klarna message' },
+        riverty: genericDisclaimer,
+      });
     });
 
-    it('omits the disclaimer when the bundle is empty', () => {
-      BasketMgr.getCurrentBasket.mockReturnValueOnce(basketShippingTo('DE'));
-      getCheckoutPaymentMethods(req, res, next);
-      expect(responseBody()).not.toHaveProperty('disclaimerMessage');
+    it('prefers the exact txVariant entry over family and generic', () => {
+      mockBundle({
+        ...genericBundle,
+        'disclaimer.message.facilypay': 'Facilypay message',
+        'disclaimer.message.facilypay_3x': '3x message',
+        'disclaimer.linkText.facilypay_3x': '3x terms',
+        'disclaimer.link.facilypay_3x': 'https://www.example.com/3x',
+      });
+      const body = run('FR', ['facilypay_3x', 'facilypay_4x']);
+      expect(body.disclaimerMessages).toEqual({
+        facilypay_3x: {
+          message: '3x message',
+          linkText: '3x terms',
+          link: 'https://www.example.com/3x',
+        },
+        facilypay_4x: { message: 'Facilypay message' },
+      });
+    });
+
+    it('does not borrow the generic link for a more specific message', () => {
+      mockBundle({
+        ...genericBundle,
+        'disclaimer.message.riverty': 'Riverty message',
+      });
+      const body = run('DE', ['riverty']);
+      expect(body.disclaimerMessages).toEqual({
+        riverty: { message: 'Riverty message' },
+      });
+    });
+
+    it('only includes methods that resolve to a disclaimer', () => {
+      mockBundle({ 'disclaimer.message.klarna': 'Klarna message' });
+      const body = run('DE', ['klarna_account', 'riverty']);
+      expect(body.disclaimerMessages).toEqual({
+        klarna_account: { message: 'Klarna message' },
+      });
+    });
+
+    it('omits disclaimers outside EU/UK', () => {
+      mockBundle(genericBundle);
+      const body = run('US', ['klarna_account', 'affirm']);
+      expect(body).not.toHaveProperty('disclaimerMessages');
+    });
+
+    it('omits disclaimers when the bundle is empty', () => {
+      const body = run('DE', ['klarna_account', 'riverty']);
+      expect(body).not.toHaveProperty('disclaimerMessages');
+    });
+
+    it('omits disclaimers when no BNPL method is offered', () => {
+      mockBundle(genericBundle);
+      const body = run('DE', ['scheme', 'ideal']);
+      expect(body).not.toHaveProperty('disclaimerMessages');
     });
 
     it('omits the link when only one of linkText/link is set', () => {
       mockBundle({
-        'disclaimer.message.bnpl': 'Borrowing money costs money.',
-        'disclaimer.linkText.bnpl': 'more information',
+        'disclaimer.message.bnpl': 'Generic message.',
+        'disclaimer.linkText.bnpl': 'generic terms',
       });
-      BasketMgr.getCurrentBasket.mockReturnValueOnce(basketShippingTo('FR'));
-      getCheckoutPaymentMethods(req, res, next);
-      expect(responseBody().disclaimerMessage).toEqual({
-        message: 'Borrowing money costs money.',
+      const body = run('FR', ['alma']);
+      expect(body.disclaimerMessages).toEqual({
+        alma: { message: 'Generic message.' },
       });
     });
   });

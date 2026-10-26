@@ -413,11 +413,12 @@ describe('Klarna', () => {
 });
 
 describe('BNPL disclaimer', () => {
-  const disclaimerMessage = {
+  const klarnaDisclaimer = {
     message: 'Borrowing money costs money. See %{link}',
     linkText: 'more information',
     link: 'https://www.example.com/bnpl-terms',
   };
+  const rivertyDisclaimer = { message: 'Riverty message' };
   const paymentMethodsResponse = (extra = {}) => ({
     amount: { value: 150, currency: 'EUR' },
     AdyenPaymentMethods: {
@@ -431,19 +432,24 @@ describe('BNPL disclaimer', () => {
     ...extra,
   });
 
-  it('attaches the disclaimer to BNPL payment methods only', async () => {
+  it('attaches each disclaimer to its own payment method', async () => {
     await setCheckoutConfiguration({
       email: window.customerEmail,
-      paymentMethodsResponse: paymentMethodsResponse({ disclaimerMessage }),
+      paymentMethodsResponse: paymentMethodsResponse({
+        disclaimerMessages: {
+          klarna_account: klarnaDisclaimer,
+          riverty: rivertyDisclaimer,
+        },
+      }),
     });
     const config = store.paymentMethodsConfiguration;
-    expect(config.klarna_account.disclaimerMessage).toEqual(disclaimerMessage);
-    expect(config.riverty).toEqual({ disclaimerMessage });
+    expect(config.klarna_account.disclaimerMessage).toEqual(klarnaDisclaimer);
+    expect(config.riverty).toEqual({ disclaimerMessage: rivertyDisclaimer });
     expect(config.scheme.disclaimerMessage).toBeUndefined();
     expect(config.paypal.disclaimerMessage).toBeUndefined();
   });
 
-  it('leaves configurations unchanged without a disclaimer', async () => {
+  it('leaves configurations unchanged without disclaimers', async () => {
     await setCheckoutConfiguration({
       email: window.customerEmail,
       paymentMethodsResponse: paymentMethodsResponse(),
