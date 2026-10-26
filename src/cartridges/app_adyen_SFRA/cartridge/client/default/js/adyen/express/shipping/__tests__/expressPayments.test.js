@@ -214,7 +214,7 @@ describe('Shipping Express Payments', () => {
         AdyenPaymentMethods: {
           paymentMethods: [
             { type: 'paypal', configuration: {} },
-            { type: 'applepay', configuration: {} },
+            { type: 'applepay', configuration: {}, brands: ['visa', 'mc'] },
             { type: 'googlepay', configuration: {} },
           ],
         },
@@ -229,6 +229,13 @@ describe('Shipping Express Payments', () => {
       expect(document.getElementById('paypal-container')).toBeTruthy();
       expect(document.getElementById('applepay-container')).toBeTruthy();
       expect(document.getElementById('googlepay-container')).toBeTruthy();
+      expect(ApplePay).toHaveBeenCalledWith(
+        {},
+        ['visa', 'mc'],
+        {},
+        {},
+        false,
+      );
     });
   });
 

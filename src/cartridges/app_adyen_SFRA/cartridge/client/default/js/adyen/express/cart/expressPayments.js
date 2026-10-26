@@ -97,12 +97,16 @@ async function renderApplePayButtonListener(e, response) {
     } = {},
     button,
   } = response;
-  const applePayConfig = getPaymentMethodConfig(AdyenPaymentMethods, APPLE_PAY);
+  const applePayMethod = AdyenPaymentMethods?.paymentMethods.find(
+    (pm) => pm.type === APPLE_PAY,
+  );
+  const applePayConfig = applePayMethod?.configuration;
   if (!applePayConfig) {
     return;
   }
   const applePay = new ApplePay(
     applePayConfig,
+    applePayMethod?.brands,
     applicationInfo,
     adyenTranslations,
     false,

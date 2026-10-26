@@ -32,6 +32,7 @@ describe('ApplePay class', () => {
     });
     applePay = new ApplePay(
       { merchantName: 'Test Merchant' },
+      ['visa', 'mc'],
       { applicationInfo: 'Test Info' },
       { 'en-US': {} },
       true,
@@ -49,6 +50,24 @@ describe('ApplePay class', () => {
     expect(applePay.showPayButton).toBe(true);
     expect(applePay.isExpress).toBe(true);
     expect(applePay.isExpressPdp).toBe(true);
+    expect(applePay.brands).toEqual(['visa', 'mc']);
+  });
+
+  it('should include brands in the component config', () => {
+    const config = applePay.getConfig();
+    expect(config.brands).toEqual(['visa', 'mc']);
+    expect(config.configuration).toEqual({ merchantName: 'Test Merchant' });
+  });
+
+  it('should leave brands undefined when none are provided', () => {
+    const applePayWithoutBrands = new ApplePay(
+      { merchantName: 'Test Merchant' },
+      undefined,
+      { applicationInfo: 'Test Info' },
+      { 'en-US': {} },
+      false,
+    );
+    expect(applePayWithoutBrands.getConfig().brands).toBeUndefined();
   });
 
   it('should format customer object correctly', async () => {
@@ -226,6 +245,11 @@ describe('ApplePay class', () => {
 
     await applePay.getComponent();
     expect(window.AdyenWeb.createComponent).toHaveBeenCalledTimes(1);
+    expect(window.AdyenWeb.createComponent).toHaveBeenCalledWith(
+      'applepay',
+      undefined,
+      expect.objectContaining({ brands: ['visa', 'mc'] }),
+    );
   });
 
   it('should return null when the component is not available', async () => {

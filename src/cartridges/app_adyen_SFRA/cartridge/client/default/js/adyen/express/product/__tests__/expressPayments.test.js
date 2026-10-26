@@ -34,7 +34,7 @@ describe('PDP Express Payments', () => {
   const paymentMethodsResponse = {
     AdyenPaymentMethods: {
       paymentMethods: [
-        { type: 'applepay', configuration: {} },
+        { type: 'applepay', configuration: {}, brands: ['visa', 'mc'] },
         { type: 'paypal', configuration: {} },
       ],
     },
@@ -96,7 +96,7 @@ describe('PDP Express Payments', () => {
 
     await renderPaymentButtons();
 
-    expect(mockApplePay).toHaveBeenCalledWith({}, {}, {}, true, {
+    expect(mockApplePay).toHaveBeenCalledWith({}, ['visa', 'mc'], {}, {}, true, {
       value: 10990,
       currency: 'BHD',
     });
@@ -118,7 +118,7 @@ describe('PDP Express Payments', () => {
 
     await renderPaymentButtons();
 
-    expect(mockApplePay).toHaveBeenCalledWith({}, {}, {}, true, {
+    expect(mockApplePay).toHaveBeenCalledWith({}, ['visa', 'mc'], {}, {}, true, {
       value: 0,
       currency: 'BHD',
     });
@@ -133,7 +133,7 @@ describe('PDP Express Payments', () => {
 
     await renderPaymentButtons();
 
-    expect(mockApplePay).toHaveBeenCalledWith({}, {}, {}, true, {
+    expect(mockApplePay).toHaveBeenCalledWith({}, ['visa', 'mc'], {}, {}, true, {
       value: 0,
       currency: 'BHD',
     });
