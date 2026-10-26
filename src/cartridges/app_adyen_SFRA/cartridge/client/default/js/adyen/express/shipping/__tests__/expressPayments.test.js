@@ -239,6 +239,32 @@ describe('Shipping Express Payments', () => {
     });
   });
 
+  describe('renderApplePayButtonListener', () => {
+    it('should not create Apple Pay when the response has no paymentMethods', async () => {
+      const unhandledRejections = [];
+      const onUnhandledRejection = (reason) => unhandledRejections.push(reason);
+      process.on('unhandledRejection', onUnhandledRejection);
+
+      mockHttpClient.mockResolvedValue({
+        shippingExpressMethods: ['applepay'],
+        AdyenPaymentMethods: {},
+        applicationInfo: {},
+        adyenTranslations: {},
+      });
+
+      try {
+        await expressPayments.init();
+        await new Promise((resolve) => setTimeout(resolve, 10));
+      } finally {
+        process.off('unhandledRejection', onUnhandledRejection);
+      }
+
+      expect(document.getElementById('applepay-container')).toBeTruthy();
+      expect(ApplePay).not.toHaveBeenCalled();
+      expect(unhandledRejections).toEqual([]);
+    });
+  });
+
   describe('registerRenderers', () => {
     it('should register all event handlers on init', async () => {
       const onSpy = jest.spyOn($.fn, 'on');
