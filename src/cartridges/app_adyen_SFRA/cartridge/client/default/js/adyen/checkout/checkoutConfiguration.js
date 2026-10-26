@@ -60,6 +60,15 @@ async function setCheckoutConfiguration({
     amount || paymentMethodsResponse.amount,
     paymentMethodsResponse.AdyenPaymentMethods,
   );
+  const { disclaimerMessages } = paymentMethodsResponse;
+  if (disclaimerMessages) {
+    Object.entries(disclaimerMessages).forEach(([type, disclaimerMessage]) => {
+      paymentMethodsConfiguration[type] = {
+        ...paymentMethodsConfiguration[type],
+        disclaimerMessage,
+      };
+    });
+  }
   store.checkoutConfiguration = {
     ...store.checkoutConfiguration,
     showPayButton: false,
