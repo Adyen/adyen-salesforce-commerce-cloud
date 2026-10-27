@@ -80,7 +80,30 @@ async function setCheckoutConfiguration({
   );
 }
 
+async function updateCheckoutAmount(amount, email) {
+  try {
+    store.checkoutConfiguration = { ...store.checkoutConfiguration, amount };
+    // Without shouldReinitializeCheckout: false, Adyen Web remounts every
+    // component. Remounting the Card while Click to Pay is identifying the
+    // shopper starts identity validation again and sends a second OTP.
+    await store.checkout.update(
+      { amount },
+      { shouldReinitializeCheckout: false },
+    );
+    store.paymentMethodsConfiguration = getPaymentMethodsConfiguration(
+      email,
+      amount,
+      store.checkoutConfiguration.paymentMethodsResponse,
+    );
+    return true;
+  } catch (error) {
+    $('body').trigger('checkout:renderPaymentMethod', { email, amount });
+    return false;
+  }
+}
+
 module.exports = {
   setCheckoutConfiguration,
+  updateCheckoutAmount,
   actionHandler,
 };

@@ -6,6 +6,7 @@ const helpers = require('../helpers');
 const httpClient = require('../../commons/httpClient');
 const {
   setCheckoutConfiguration,
+  updateCheckoutAmount,
 } = require('../checkoutConfiguration');
 const KlarnaConfig = require("../paymentMethodsConfiguration/klarna/klarnaConfig");
 const GooglePayConfig = require("../paymentMethodsConfiguration/googlePay/googlePayConfig");
@@ -379,8 +380,54 @@ describe('Checkout Configuration', () => {
   })
 });
 
-describe('Klarna', () => {
-  it('handles onSubmit', () => {
+  describe('updateCheckoutAmount', () => {
+    const newAmount = { value: 2000, currency: 'USD' };
+
+    afterEach(() => {
+      $('body').off('checkout:renderPaymentMethod');
+    });
+
+    it('updates the amount without reinitializing or remounting components', async () => {
+      const schemeNode = { update: jest.fn() };
+      const applePayNode = { update: jest.fn() };
+      store.checkout = { update: jest.fn().mockResolvedValue({}) };
+      store.componentsObj = {
+        scheme: { node: schemeNode },
+        applepay: { node: applePayNode },
+      };
+      window.AdyenWeb.AdyenCheckout.mockClear();
+
+      const result = await updateCheckoutAmount(newAmount, window.customerEmail);
+
+      expect(result).toBe(true);
+      expect(window.AdyenWeb.AdyenCheckout).not.toHaveBeenCalled();
+      expect(store.checkout.update).toHaveBeenCalledWith(
+        { amount: newAmount },
+        { shouldReinitializeCheckout: false },
+      );
+      expect(schemeNode.update).not.toHaveBeenCalled();
+      expect(applePayNode.update).not.toHaveBeenCalled();
+      expect(store.checkoutConfiguration.amount).toEqual(newAmount);
+      expect(store.paymentMethodsConfiguration.applepay.amount).toEqual(newAmount);
+    });
+
+    it('falls back to a full render when an update throws', async () => {
+      const listener = jest.fn();
+      $('body').on('checkout:renderPaymentMethod', listener);
+      store.checkout = { update: jest.fn().mockRejectedValue(new Error('fail')) };
+
+      const result = await updateCheckoutAmount(newAmount, window.customerEmail);
+
+      expect(result).toBe(false);
+      expect(listener).toHaveBeenCalledTimes(1);
+      expect(listener.mock.calls[0][1]).toEqual({
+        email: window.customerEmail,
+        amount: newAmount,
+      });
+    });
+  });
+
+describe('Klarna', () => {  it('handles onSubmit', () => {
     klarna = new KlarnaConfig(helpers, window.klarnaWidgetEnabled).getConfig();
     document.body.innerHTML = `
       <div id="lb_klarna">Klarna</div>
