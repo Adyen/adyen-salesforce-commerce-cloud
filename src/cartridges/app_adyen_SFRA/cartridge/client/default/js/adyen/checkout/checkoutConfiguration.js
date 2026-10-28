@@ -82,12 +82,12 @@ async function setCheckoutConfiguration({
 
 // A Card remount in these Click to Pay states either starts identity
 // validation again (a second OTP) or clears the OTP the shopper is typing.
-const CLICK_TO_PAY_BUSY_STATES = [
+const CLICK_TO_PAY_BUSY_STATES = new Set([
   'Idle',
   'Loading',
   'ShopperIdentified',
   'OneTimePassword',
-];
+]);
 
 function getInstallmentOptions(cardConfig) {
   return cardConfig?.installmentOptions || {};
@@ -96,7 +96,7 @@ function getInstallmentOptions(cardConfig) {
 function canRemountCard(cardNode) {
   return (
     typeof cardNode?.update === 'function' &&
-    !CLICK_TO_PAY_BUSY_STATES.includes(cardNode.clickToPayService?.state)
+    !CLICK_TO_PAY_BUSY_STATES.has(cardNode.clickToPayService?.state)
   );
 }
 
@@ -142,6 +142,7 @@ async function updateCheckoutAmount(amount, email) {
     );
     return true;
   } catch (error) {
+    // Handled by falling back to a full render with the new amount.
     $('body').trigger('checkout:renderPaymentMethod', { email, amount });
     return false;
   }

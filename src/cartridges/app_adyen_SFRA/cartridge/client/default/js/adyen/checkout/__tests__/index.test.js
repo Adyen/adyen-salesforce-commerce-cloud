@@ -184,6 +184,19 @@ describe('checkout index', () => {
     expect(renderCheckout).toHaveBeenCalledTimes(2);
   });
 
+  it('fetches payment methods for a render request before the initial load', async () => {
+    getPaymentMethods.mockResolvedValueOnce(buildResponse());
+
+    $('body').trigger('checkout:renderPaymentMethod', {
+      email: 'shopper@example.com',
+    });
+    await flush();
+
+    expect(getPaymentMethods).toHaveBeenCalledTimes(1);
+    expect(renderCheckout).toHaveBeenCalledTimes(1);
+    expect(window.arePaymentMethodsRendering).toBe(false);
+  });
+
   it('renders only once when two refreshes arrive together', async () => {
     getPaymentMethods.mockResolvedValue(buildResponse());
 

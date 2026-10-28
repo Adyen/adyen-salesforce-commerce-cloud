@@ -123,10 +123,14 @@ function canUpdateInPlace(forceRender, email) {
   );
 }
 
-async function processRequest(request) {
-  if (request.refetch) {
+async function loadPaymentMethods(refetch) {
+  if (refetch || !paymentMethodsResponse) {
     paymentMethodsResponse = await getPaymentMethods();
   }
+}
+
+async function processRequest(request) {
+  await loadPaymentMethods(request.refetch);
   const email = resolveEmail(request);
   // Rebuilding the checkout creates a new Card, which starts a new Click to
   // Pay session and sends the shopper another OTP.
@@ -418,7 +422,7 @@ function registerUpdateCheckoutView() {
       shipping[0].shippingAddress?.countryCode.value !==
         paymentMethodsResponse?.countryCode
     ) {
-      refreshPaymentMethods(data?.order?.orderEmail);
+      await refreshPaymentMethods(data?.order?.orderEmail);
     }
     billing.methods.updatePaymentInformation(data.order, data.options);
   });
