@@ -6,6 +6,7 @@ const helpers = require('../helpers');
 const httpClient = require('../../commons/httpClient');
 const {
   setCheckoutConfiguration,
+  actionHandler,
 } = require('../checkoutConfiguration');
 const KlarnaConfig = require("../paymentMethodsConfiguration/klarna/klarnaConfig");
 const GooglePayConfig = require("../paymentMethodsConfiguration/googlePay/googlePayConfig");
@@ -409,6 +410,55 @@ describe('Klarna', () => {
     expect(document.querySelector).toHaveBeenCalledWith('#additionalDetailsHidden');
     expect(document.querySelector).toHaveBeenCalledWith('#showConfirmationForm');
     document.querySelector = querySelector;
+  });
+});
+
+describe('actionHandler', () => {
+  let mount;
+  let originalModal;
+
+  beforeEach(() => {
+    document.body.innerHTML = `
+      <div class="modal fade" id="action-modal" role="dialog">
+        <div class="modal-dialog" id="adyenModalDialog">
+          <div class="invisible" id="cancelQrMethodsButton">
+            <button id="cancelQrMethodsButtonStyling"></button>
+          </div>
+          <div id="action-container"></div>
+        </div>
+      </div>
+    `;
+    originalModal = $.fn.modal;
+    $.fn.modal = jest.fn();
+    // adyen-web replaces the contents of the mount target
+    mount = jest.fn((selector) => {
+      document.querySelector(selector).innerHTML = '<div class="adyen-checkout__qr-loader"></div>';
+    });
+    window.AdyenWeb = {
+      AdyenCheckout: jest.fn(async () => ({
+        createFromAction: jest.fn(() => ({ mount })),
+      })),
+    };
+  });
+
+  afterEach(() => {
+    $.fn.modal = originalModal;
+  });
+
+  it('keeps the cancel button visible after mounting a QR code action', async () => {
+    await actionHandler({ type: 'qrCode' });
+    const cancelButton = document.getElementById('cancelQrMethodsButton');
+    expect(mount).toHaveBeenCalledWith('#action-container');
+    expect(cancelButton).not.toBeNull();
+    expect(cancelButton.classList.contains('invisible')).toBe(false);
+    expect($.fn.modal).toHaveBeenCalledWith({ backdrop: 'static', keyboard: false });
+  });
+
+  it('keeps the cancel button hidden for non QR code actions', async () => {
+    await actionHandler({ type: 'threeDS2' });
+    const cancelButton = document.getElementById('cancelQrMethodsButton');
+    expect(cancelButton).not.toBeNull();
+    expect(cancelButton.classList.contains('invisible')).toBe(true);
   });
 });
 });
