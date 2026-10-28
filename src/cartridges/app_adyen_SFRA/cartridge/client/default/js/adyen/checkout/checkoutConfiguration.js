@@ -80,6 +80,46 @@ async function setCheckoutConfiguration({
   );
 }
 
+// A Card remount in these Click to Pay states either starts identity
+// validation again (a second OTP) or clears the OTP the shopper is typing.
+const CLICK_TO_PAY_BUSY_STATES = [
+  'Idle',
+  'Loading',
+  'ShopperIdentified',
+  'OneTimePassword',
+];
+
+function getInstallmentOptions(cardConfig) {
+  return cardConfig?.installmentOptions || {};
+}
+
+function canRemountCard(cardNode) {
+  return (
+    typeof cardNode?.update === 'function' &&
+    !CLICK_TO_PAY_BUSY_STATES.includes(cardNode.clickToPayService?.state)
+  );
+}
+
+/**
+ * Installment options are filtered by amount when the card config is built, so
+ * they only change when the new amount crosses a configured minimum. Updating
+ * them needs a Card remount, which is skipped while Click to Pay is busy with
+ * the shopper; the next full render picks up the new options then.
+ */
+function updateCardInstallments(previousConfig, nextConfig) {
+  const nextOptions = getInstallmentOptions(nextConfig);
+  const isChanged =
+    JSON.stringify(getInstallmentOptions(previousConfig)) !==
+    JSON.stringify(nextOptions);
+  const cardNode = store.componentsObj?.scheme?.node;
+  if (isChanged && canRemountCard(cardNode)) {
+    cardNode.update({
+      installmentOptions: nextOptions,
+      showInstallmentAmounts: !!nextConfig?.showInstallmentAmounts,
+    });
+  }
+}
+
 async function updateCheckoutAmount(amount, email) {
   try {
     store.checkoutConfiguration = { ...store.checkoutConfiguration, amount };
@@ -90,10 +130,15 @@ async function updateCheckoutAmount(amount, email) {
       { amount },
       { shouldReinitializeCheckout: false },
     );
+    const previousCardConfig = store.paymentMethodsConfiguration?.scheme;
     store.paymentMethodsConfiguration = getPaymentMethodsConfiguration(
       email,
       amount,
       store.checkoutConfiguration.paymentMethodsResponse,
+    );
+    updateCardInstallments(
+      previousCardConfig,
+      store.paymentMethodsConfiguration.scheme,
     );
     return true;
   } catch (error) {

@@ -10,7 +10,7 @@ const billing = require('../../checkout/billing');
 const { httpClient } = require('../commons/httpClient');
 const { getPaymentMethods } = require('../commons');
 const { GIFTCARD } = require('../../../../../config/constants');
-const { renderGiftCards } = require('./giftcards');
+const { renderGiftCards, removeGiftCardsIfInvalid } = require('./giftcards');
 const { addStores } = require('./pos');
 const helpers = require('./helpers');
 const {
@@ -131,7 +131,15 @@ async function processRequest(request) {
   // Rebuilding the checkout creates a new Card, which starts a new Click to
   // Pay session and sends the shopper another OTP.
   if (canUpdateInPlace(request.forceRender, email)) {
-    await updateCheckoutAmount(paymentMethodsResponse.amount, email);
+    const isUpdated = await updateCheckoutAmount(
+      paymentMethodsResponse.amount,
+      email,
+    );
+    // A full render re-checks applied gift cards; an in-place update must too,
+    // otherwise the partial payment order keeps the old basket total.
+    if (isUpdated && store.addedGiftCards?.length) {
+      await removeGiftCardsIfInvalid();
+    }
     return;
   }
   await renderPaymentMethods({ email, amount: request.amount });

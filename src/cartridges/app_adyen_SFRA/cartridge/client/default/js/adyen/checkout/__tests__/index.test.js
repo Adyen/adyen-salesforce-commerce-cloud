@@ -3,7 +3,10 @@
  */
 jest.mock('../../commons', () => ({ getPaymentMethods: jest.fn() }));
 jest.mock('../renderPaymentMethod', () => ({ renderCheckout: jest.fn() }));
-jest.mock('../giftcards', () => ({ renderGiftCards: jest.fn() }));
+jest.mock('../giftcards', () => ({
+  renderGiftCards: jest.fn(),
+  removeGiftCardsIfInvalid: jest.fn(),
+}));
 jest.mock('../pos', () => ({ addStores: jest.fn() }));
 jest.mock('../fastlane', () => ({
   mountFastlaneWatermark: jest.fn(),
@@ -47,6 +50,7 @@ describe('checkout index', () => {
   let checkoutInstance;
   let schemeNode;
   let applePayNode;
+  let removeGiftCardsIfInvalid;
 
   beforeEach(() => {
     jest.resetModules();
@@ -65,6 +69,8 @@ describe('checkout index', () => {
     store.checkout = null;
     store.componentsObj = {};
     store.fastlane = {};
+    store.addedGiftCards = null;
+    ({ removeGiftCardsIfInvalid } = require('../giftcards'));
     ({ getPaymentMethods } = require('../../commons'));
     ({ renderCheckout } = require('../renderPaymentMethod'));
     renderCheckout.mockImplementation(async () => {
@@ -190,6 +196,32 @@ describe('checkout index', () => {
     expect(window.AdyenWeb.AdyenCheckout).toHaveBeenCalledTimes(1);
     expect(getPaymentMethods).toHaveBeenCalledTimes(2);
     expect(window.arePaymentMethodsRendering).toBe(false);
+  });
+
+  it('re-checks applied gift cards after an in-place update', async () => {
+    await renderInitially();
+    store.addedGiftCards = [{ orderAmount: { value: 1000, currency: 'USD' } }];
+    getPaymentMethods.mockResolvedValueOnce(
+      buildResponse({ amount: { value: 1500, currency: 'USD' } }),
+    );
+
+    selectShippingMethod();
+    await flush();
+
+    expect(removeGiftCardsIfInvalid).toHaveBeenCalledTimes(1);
+    expect(renderCheckout).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not check gift cards when none are applied', async () => {
+    await renderInitially();
+    getPaymentMethods.mockResolvedValueOnce(
+      buildResponse({ amount: { value: 1500, currency: 'USD' } }),
+    );
+
+    selectShippingMethod();
+    await flush();
+
+    expect(removeGiftCardsIfInvalid).not.toHaveBeenCalled();
   });
 
   it('builds the same signature regardless of method order', () => {

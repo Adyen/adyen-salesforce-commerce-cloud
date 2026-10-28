@@ -425,9 +425,79 @@ describe('Checkout Configuration', () => {
         amount: newAmount,
       });
     });
+
+    describe('card installments', () => {
+      const installmentsEmail = 'installments@example.com';
+
+      beforeEach(async () => {
+        window.Configuration = { environment: 'TEST', locale: 'pt_BR' };
+        window.installments = JSON.stringify([
+          [1000, 3, ['visa']],
+          [3000, 6, ['visa']],
+        ]);
+        await setCheckoutConfiguration({
+          email: installmentsEmail,
+          paymentMethodsResponse: { amount: { value: 1500, currency: 'BRL' } },
+        });
+        store.checkout = { update: jest.fn().mockResolvedValue({}) };
+      });
+
+      afterEach(() => {
+        delete window.installments;
+        window.Configuration = { environment: 'TEST' };
+      });
+
+      const mountCard = (clickToPayState) => {
+        const node = {
+          update: jest.fn(),
+          clickToPayService: clickToPayState ? { state: clickToPayState } : undefined,
+        };
+        store.componentsObj = { scheme: { node } };
+        return node;
+      };
+
+      it('remounts the Card with new installment options when the amount crosses a minimum', async () => {
+        const node = mountCard('Ready');
+
+        await updateCheckoutAmount({ value: 3500, currency: 'BRL' }, installmentsEmail);
+
+        expect(node.update).toHaveBeenCalledTimes(1);
+        const { installmentOptions, showInstallmentAmounts } = node.update.mock.calls[0][0];
+        expect(installmentOptions.visa.values).toEqual([1, 3, 6]);
+        expect(showInstallmentAmounts).toBe(true);
+      });
+
+      it('remounts the Card when Click to Pay is not available', async () => {
+        const node = mountCard('NotAvailable');
+
+        await updateCheckoutAmount({ value: 3500, currency: 'BRL' }, installmentsEmail);
+
+        expect(node.update).toHaveBeenCalledTimes(1);
+      });
+
+      it('does not remount the Card when the installment options stay the same', async () => {
+        const node = mountCard('Ready');
+
+        await updateCheckoutAmount({ value: 2000, currency: 'BRL' }, installmentsEmail);
+
+        expect(node.update).not.toHaveBeenCalled();
+      });
+
+      it.each(['Idle', 'Loading', 'ShopperIdentified', 'OneTimePassword'])(
+        'does not remount the Card while Click to Pay is in state %s',
+        async (state) => {
+          const node = mountCard(state);
+
+          await updateCheckoutAmount({ value: 3500, currency: 'BRL' }, installmentsEmail);
+
+          expect(node.update).not.toHaveBeenCalled();
+        },
+      );
+    });
   });
 
-describe('Klarna', () => {  it('handles onSubmit', () => {
+describe('Klarna', () => {
+  it('handles onSubmit', () => {
     klarna = new KlarnaConfig(helpers, window.klarnaWidgetEnabled).getConfig();
     document.body.innerHTML = `
       <div id="lb_klarna">Klarna</div>
