@@ -69,4 +69,12 @@ describe('Begin', () => {
     begin(req, res, jest.fn());
     expect(Transaction.wrap).toHaveBeenCalled();
   })
+  it('should not attempt to restore cart when the cached order cannot be found', () => {
+    req.session.privacyCache.get.mockImplementationOnce(() => 'stale_orderNo');
+    BasketMgr.getAllProductLineItems.mockImplementationOnce(() => []);
+    OrderMgr.getOrder.mockReturnValueOnce(null);
+    begin(req, res, jest.fn());
+    expect(OrderMgr.failOrder).not.toHaveBeenCalled();
+    expect(res.setViewData).toHaveBeenCalled();
+  });
 });
