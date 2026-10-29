@@ -19,16 +19,18 @@ module.exports = function (api) {
 
                     exclude: [
                         /cartridge[\\/]client[\\/]/,
-                        /cartridge[\\/]static[\\/]/
+                        /cartridge[\\/]static[\\/]/,
                     ],
 
                     plugins: [
                         "@babel/plugin-transform-block-scoping",
+
                         path.resolve(
                             __dirname,
                             'babel-plugins',
                             'transform-readable-optional-chaining.js'
                         ),
+
                         [
                             '@babel/plugin-transform-object-rest-spread',
                             {
@@ -43,19 +45,6 @@ module.exports = function (api) {
                             }
                         ]
                     ]
-                },
-                {
-                    test: /app_adyen_SFRA[\\/]cartridge[\\/]config[\\/]store\.js$/,
-
-                    plugins: [
-                        [
-                            '@babel/plugin-proposal-decorators',
-                            {
-                                legacy: true
-                            }
-                        ],
-                        '@babel/plugin-proposal-class-properties'
-                    ]
                 }
             ],
 
@@ -63,7 +52,8 @@ module.exports = function (api) {
                 '**/*.test.js',
                 '**/*.test.js.snap',
                 'src/cartridges/adyen_controllers_changes/**',
-                'src/cartridges/bm_adyen/cartridge/static/**'
+                'src/cartridges/bm_adyen/cartridge/static/**',
+                'src/cartridges/app_adyen_SFRA/cartridge/config/store.js'
             ]
         };
     }
