@@ -411,4 +411,52 @@ describe('Klarna', () => {
     document.querySelector = querySelector;
   });
 });
+
+describe('BNPL disclaimer', () => {
+  const klarnaDisclaimer = {
+    message: 'Borrowing money costs money. See %{link}',
+    linkText: 'more information',
+    link: 'https://www.example.com/bnpl-terms',
+  };
+  const rivertyDisclaimer = { message: 'Riverty message' };
+  const paymentMethodsResponse = (extra = {}) => ({
+    amount: { value: 150, currency: 'EUR' },
+    AdyenPaymentMethods: {
+      paymentMethods: [
+        { type: 'klarna_account' },
+        { type: 'riverty' },
+        { type: 'scheme' },
+        { type: 'paypal' },
+      ],
+    },
+    ...extra,
+  });
+
+  it('attaches each disclaimer to its own payment method', async () => {
+    await setCheckoutConfiguration({
+      email: window.customerEmail,
+      paymentMethodsResponse: paymentMethodsResponse({
+        disclaimerMessages: {
+          klarna_account: klarnaDisclaimer,
+          riverty: rivertyDisclaimer,
+        },
+      }),
+    });
+    const config = store.paymentMethodsConfiguration;
+    expect(config.klarna_account.disclaimerMessage).toEqual(klarnaDisclaimer);
+    expect(config.riverty).toEqual({ disclaimerMessage: rivertyDisclaimer });
+    expect(config.scheme.disclaimerMessage).toBeUndefined();
+    expect(config.paypal.disclaimerMessage).toBeUndefined();
+  });
+
+  it('leaves configurations unchanged without disclaimers', async () => {
+    await setCheckoutConfiguration({
+      email: window.customerEmail,
+      paymentMethodsResponse: paymentMethodsResponse(),
+    });
+    const config = store.paymentMethodsConfiguration;
+    expect(config.klarna_account.disclaimerMessage).toBeUndefined();
+    expect(config.riverty).toBeUndefined();
+  });
+});
 });
