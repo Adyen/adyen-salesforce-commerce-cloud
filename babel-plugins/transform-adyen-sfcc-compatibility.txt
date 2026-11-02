@@ -1,6 +1,6 @@
 'use strict';
 
-module.exports = function transformReadableOptionalChaining({ types: t }) {
+module.exports = function transformAdyenSfccCompatibility({ types: t }) {
     function clone(node) {
         return t.cloneNode(node, true);
     }
@@ -140,25 +140,6 @@ module.exports = function transformReadableOptionalChaining({ types: t }) {
     }
 
     /**
-     * Returns true when a parameter default can be removed without
-     * adding an initialization statement.
-     *
-     * Examples:
-     *
-     *     attemptId = null
-     *     value = undefined
-     */
-    function isRemovableParameterDefault(node) {
-        return (
-            t.isNullLiteral(node) ||
-            (
-                t.isIdentifier(node) &&
-                node.name === 'undefined'
-            )
-        );
-    }
-
-    /**
      * Converts function default parameters into readable initialization
      * statements suitable for SFCC server-side code.
      *
@@ -273,196 +254,127 @@ module.exports = function transformReadableOptionalChaining({ types: t }) {
         );
     }
 
-    /**
-     * Returns true when a default value does not need an explicit
-     * assignment in the generated SFCC code.
-     */
-    function isRemovableDefault(node) {
-        return (
-            t.isNullLiteral(node) ||
-            (
-                t.isIdentifier(node) &&
-                node.name === 'undefined'
-            )
-        );
-    }
-
-    /**
-     * Builds a member expression for one property in an object pattern.
-     */
-    function buildPropertyAccess(source, property) {
-        return t.memberExpression(
-            clone(source),
-            clone(property.key),
-            property.computed
-        );
-    }
-
-    /**
-     * Recursively converts an object pattern into ordinary property
-     * assignments.
+        /**
+     * Converts unsupported defaults inside object destructuring while
+     * preserving the destructuring itself.
      *
      * Example:
      *
-     *     {
-     *         response: {
-     *             resultCode
-     *         }
-     *     }
+     *     var {
+     *         paymentMethod = null
+     *     } = source;
      *
      * becomes:
      *
-     *     var resultCode = source.response.resultCode;
+     *     var {
+     *         paymentMethod
+     *     } = source;
+     *
+     * Meaningful defaults are moved into an explicit falsy check:
+     *
+     *     var {
+     *         quantity = 1
+     *     } = source;
+     *
+     * becomes:
+     *
+     *     var {
+     *         quantity
+     *     } = source;
+     *
+     *     if (!quantity) {
+     *         quantity = 1;
+     *     }
      */
-    function collectObjectPatternDeclarations(
-        path,
-        pattern,
-        source,
-        declarations,
-        defaultStatements
-    ) {
-        pattern.properties.forEach((property) => {
-            if (t.isRestElement(property)) {
-                throw path.buildCodeFrameError(
-                    'Object rest properties must be transformed before ' +
-                    'the readable destructuring transform.'
-                );
-            }
-
-            if (!t.isObjectProperty(property)) {
-                throw path.buildCodeFrameError(
-                    'Unsupported object destructuring property.'
-                );
-            }
-
-            const propertyAccess = buildPropertyAccess(
-                source,
-                property
-            );
-
-            if (t.isObjectPattern(property.value)) {
-                collectObjectPatternDeclarations(
-                    path,
-                    property.value,
-                    propertyAccess,
-                    declarations,
-                    defaultStatements
-                );
-
-                return;
-            }
-
-            if (t.isAssignmentPattern(property.value)) {
-                const identifier = property.value.left;
-                const defaultValue = property.value.right;
-
-                if (!t.isIdentifier(identifier)) {
-                    throw path.buildCodeFrameError(
-                        'Only identifier defaults are supported by the ' +
-                        'readable destructuring transform.'
-                    );
-                }
-
-                declarations.push(
-                    t.variableDeclarator(
-                        clone(identifier),
-                        propertyAccess
-                    )
-                );
-
-                if (!isRemovableDefault(defaultValue)) {
-                    defaultStatements.push(
-                        t.ifStatement(
-                            t.unaryExpression(
-                                '!',
-                                clone(identifier)
-                            ),
-                            t.blockStatement([
-                                t.expressionStatement(
-                                    t.assignmentExpression(
-                                        '=',
-                                        clone(identifier),
-                                        clone(defaultValue)
-                                    )
-                                )
-                            ])
-                        )
-                    );
-                }
-
-                return;
-            }
-
-            if (!t.isIdentifier(property.value)) {
-                throw path.buildCodeFrameError(
-                    'Unsupported nested destructuring value.'
-                );
-            }
-
-            declarations.push(
-                t.variableDeclarator(
-                    clone(property.value),
-                    propertyAccess
-                )
-            );
-        });
-    }
-
-    /**
-     * Converts object-destructuring variable declarations into readable
-     * direct property assignments.
-     */
-    function transformObjectDestructuring(path) {
-        const declarations = [];
+    function transformObjectDestructuringDefaults(path) {
         const defaultStatements = [];
         let changed = false;
 
         path.node.declarations.forEach((declaration) => {
             if (!t.isObjectPattern(declaration.id)) {
-                declarations.push(
-                    clone(declaration)
-                );
-
                 return;
             }
 
-            if (!declaration.init) {
-                declarations.push(
-                    clone(declaration)
+            declaration.id.properties.forEach((property) => {
+                if (
+                    !t.isObjectProperty(property) ||
+                    !t.isAssignmentPattern(property.value)
+                ) {
+                    return;
+                }
+
+                const assignment = property.value;
+
+                if (!t.isIdentifier(assignment.left)) {
+                    throw path.buildCodeFrameError(
+                        'Destructuring defaults must use an identifier.'
+                    );
+                }
+
+                changed = true;
+
+                const identifier = clone(
+                    assignment.left
                 );
 
-                return;
-            }
+                const defaultValue = clone(
+                    assignment.right
+                );
 
-            changed = true;
+                /*
+                 * Keep the destructuring property but remove the
+                 * unsupported default assignment.
+                 */
+                property.value = clone(identifier);
+                property.shorthand =
+                    !property.computed &&
+                    t.isIdentifier(property.key) &&
+                    property.key.name === identifier.name;
 
-            collectObjectPatternDeclarations(
-                path,
-                declaration.id,
-                declaration.init,
-                declarations,
-                defaultStatements
-            );
+                /*
+                 * null and undefined defaults do not require an
+                 * explicit replacement for this SFCC build.
+                 */
+                if (
+                    t.isNullLiteral(defaultValue) ||
+                    (
+                        t.isIdentifier(defaultValue) &&
+                        defaultValue.name === 'undefined'
+                    )
+                ) {
+                    return;
+                }
+
+                defaultStatements.push(
+                    t.ifStatement(
+                        t.unaryExpression(
+                            '!',
+                            clone(identifier)
+                        ),
+                        t.blockStatement([
+                            t.expressionStatement(
+                                t.assignmentExpression(
+                                    '=',
+                                    clone(identifier),
+                                    defaultValue
+                                )
+                            )
+                        ])
+                    )
+                );
+            });
         });
 
-        if (!changed) {
+        if (
+            !changed ||
+            defaultStatements.length === 0
+        ) {
             return;
         }
 
-        const replacement = [];
-
-        if (declarations.length) {
-            replacement.push(
-                t.variableDeclaration(
-                    path.node.kind,
-                    declarations
-                )
-            );
-        }
-
-        replacement.push(...defaultStatements);
-
-        path.replaceWithMultiple(replacement);
+        path.insertAfter(
+            defaultStatements
+        );
     }
 
     function removeAdyenHeader(comments) {
@@ -800,8 +712,84 @@ module.exports = function transformReadableOptionalChaining({ types: t }) {
         ]);
     }
 
+    /**
+     * Converts Object.hasOwn() into an SFCC-compatible property check.
+     *
+     * Example:
+     *
+     *     Object.hasOwn(object, key)
+     *
+     * becomes:
+     *
+     *     Object.prototype.hasOwnProperty.call(object, key)
+     */
+    function transformObjectHasOwn(path) {
+        const callee = path.node.callee;
+
+        if (
+            !t.isMemberExpression(callee) ||
+            callee.computed ||
+            !t.isIdentifier(
+                callee.object,
+                {
+                    name: 'Object'
+                }
+            ) ||
+            !t.isIdentifier(
+                callee.property,
+                {
+                    name: 'hasOwn'
+                }
+            )
+        ) {
+            return;
+        }
+
+        /*
+         * Do not transform Object.hasOwn() when Object is a locally
+         * declared variable or function parameter.
+         */
+        if (path.scope.getBinding('Object')) {
+            return;
+        }
+
+        if (path.node.arguments.length !== 2) {
+            throw path.buildCodeFrameError(
+                'Object.hasOwn() must have exactly two arguments.'
+            );
+        }
+
+        const objectArgument = clone(
+            path.node.arguments[0]
+        );
+
+        const propertyArgument = clone(
+            path.node.arguments[1]
+        );
+
+        path.replaceWith(
+            t.callExpression(
+                t.memberExpression(
+                    t.memberExpression(
+                        t.memberExpression(
+                            t.identifier('Object'),
+                            t.identifier('prototype')
+                        ),
+                        t.identifier('hasOwnProperty')
+                    ),
+                    t.identifier('call')
+                ),
+                [
+                    objectArgument,
+                    propertyArgument
+                ]
+            )
+        );
+    }
+
+
     return {
-        name: 'transform-readable-optional-chaining',
+        name: 'transform-adyen-sfcc-compatibility',
 
         manipulateOptions(_options, parserOpts) {
             parserOpts.plugins = parserOpts.plugins || [];
@@ -815,6 +803,12 @@ module.exports = function transformReadableOptionalChaining({ types: t }) {
             Program: {
                 enter(path) {
                     removeAdyenHeaders(path);
+                }
+            },
+
+            VariableDeclaration: {
+                exit(path) {
+                    transformObjectDestructuringDefaults(path);
                 }
             },
 
@@ -836,12 +830,6 @@ module.exports = function transformReadableOptionalChaining({ types: t }) {
                 }
             },
 
-            VariableDeclaration: {
-                exit(path) {
-                    transformObjectDestructuring(path);
-                }
-            },
-
             Function: {
                 enter(path) {
                     transformDefaultParameters(path);
@@ -852,7 +840,13 @@ module.exports = function transformReadableOptionalChaining({ types: t }) {
                 exit(path) {
                     transformForOfToIterator(path);
                 }
-            }
+            },
+
+            CallExpression: {
+                exit(path) {
+                    transformObjectHasOwn(path);
+                }
+            },
         }
     };
 };

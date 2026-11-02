@@ -22,13 +22,17 @@ module.exports = function (api) {
                         /cartridge[\\/]static[\\/]/,
                     ],
 
+                    assumptions: {
+                        setComputedProperties: true
+                    },
+
                     plugins: [
                         "@babel/plugin-transform-block-scoping",
 
                         path.resolve(
                             __dirname,
                             'babel-plugins',
-                            'transform-readable-optional-chaining.js'
+                            'transform-adyen-sfcc-compatibility.js'
                         ),
 
                         [
@@ -43,7 +47,8 @@ module.exports = function (api) {
                             {
                                 loose: true
                             }
-                        ]
+                        ],
+                        '@babel/plugin-transform-computed-properties',
                     ]
                 }
             ],
