@@ -10,6 +10,7 @@ jest.mock('../../commons/httpClient', () => ({
 
 const {
   removeGiftCards,
+  removeGiftCardsIfInvalid,
   renderAddedGiftCard,
   renderGiftCardSelectForm,
   showGiftCardWarningMessage,
@@ -134,5 +135,62 @@ describe.only('Render gift card', () => {
     const giftCardUl = document.querySelector('#giftCardUl');
     expect(giftCardsSelect).toMatchSnapshot();
     expect(giftCardUl).toMatchSnapshot();
+  });
+
+  describe('removeGiftCardsIfInvalid', () => {
+    const orderAmount = { currency: 'EUR', value: 5000 };
+    const future = new Date(Date.now() + 60 * 60 * 1000).toISOString();
+    const past = new Date(Date.now() - 60 * 60 * 1000).toISOString();
+    let renderPaymentMethodListener;
+
+    beforeEach(() => {
+      document.body.innerHTML += `
+        <div class="card-body order-total-summary"></div>
+        <span class="customer-summary-email">mocked@email.com</span>
+      `;
+      renderPaymentMethodListener = jest.fn();
+      $('body').on('checkout:renderPaymentMethod', renderPaymentMethodListener);
+      httpClient.mockClear();
+    });
+
+    afterEach(() => {
+      $('body').off('checkout:renderPaymentMethod');
+    });
+
+    it('keeps the gift cards when the basket total is unchanged', async () => {
+      store.addedGiftCards = [{ orderAmount, expiresAt: future }];
+      httpClient.mockResolvedValueOnce({ basketAmount: { ...orderAmount } });
+
+      const removed = await removeGiftCardsIfInvalid();
+
+      expect(removed).toBe(false);
+      expect(httpClient).toHaveBeenCalledTimes(1);
+      expect(renderPaymentMethodListener).not.toHaveBeenCalled();
+      expect(document.querySelector('#giftCardWarningMessage')).toBeNull();
+    });
+
+    it('removes the gift cards and warns when the basket total changed', async () => {
+      store.addedGiftCards = [{ orderAmount, expiresAt: future }];
+      httpClient.mockResolvedValueOnce({
+        basketAmount: { currency: 'EUR', value: 5500 },
+      });
+
+      const removed = await removeGiftCardsIfInvalid();
+
+      expect(removed).toBe(true);
+      expect(renderPaymentMethodListener).toHaveBeenCalledTimes(1);
+      expect(document.querySelector('#giftCardWarningMessage')).toBeTruthy();
+    });
+
+    it('removes the gift cards without a warning when the partial payment expired', async () => {
+      store.addedGiftCards = [{ orderAmount, expiresAt: past }];
+      httpClient.mockResolvedValueOnce({ basketAmount: { ...orderAmount } });
+
+      const removed = await removeGiftCardsIfInvalid();
+
+      expect(removed).toBe(true);
+      expect(renderPaymentMethodListener).toHaveBeenCalledTimes(1);
+      expect(document.querySelector('#giftCardWarningMessage')).toBeNull();
+    });
   });
 });
