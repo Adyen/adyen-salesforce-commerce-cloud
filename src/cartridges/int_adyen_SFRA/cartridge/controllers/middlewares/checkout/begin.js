@@ -26,7 +26,8 @@ function shouldRestoreBasket(cachedOrderNumber) {
 function restoreBasket(cachedOrderNumber, cachedOrderToken) {
   const currentOrder = OrderMgr.getOrder(cachedOrderNumber, cachedOrderToken);
   // if order status is CREATED we can fail it and restore basket
-  if (currentOrder.status.value === Order.ORDER_STATUS_CREATED) {
+  // (getOrder returns null for a stale cache entry or a mismatched token)
+  if (currentOrder?.status?.value === Order.ORDER_STATUS_CREATED) {
     Transaction.wrap(() => {
       currentOrder.trackOrderChange(
         'Failing order so cart can be restored; Shopper navigated back to checkout.',
