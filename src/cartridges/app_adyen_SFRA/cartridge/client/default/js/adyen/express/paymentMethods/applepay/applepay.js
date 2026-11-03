@@ -8,6 +8,7 @@ const { createTemporaryBasket } = require('../../../commons');
 class ApplePay {
   constructor(
     config,
+    brands,
     applicationInfo,
     adyenTranslations,
     isExpressPdp,
@@ -32,6 +33,7 @@ class ApplePay {
     this.selectShippingMethodUrl = selectShippingMethodUrl;
     this.applicationInfo = applicationInfo;
     this.config = config;
+    this.brands = brands;
     this.customerData = null;
     this.billingData = null;
     this.translations = adyenTranslations;
@@ -283,6 +285,8 @@ class ApplePay {
   getConfig() {
     return {
       configuration: this.config,
+      // Adyen Web maps brands to Apple Pay supportedNetworks; without them it falls back to its default networks
+      brands: this.brands,
       showPayButton: this.showPayButton,
       amount: this.amount,
       isExpress: this.isExpress,

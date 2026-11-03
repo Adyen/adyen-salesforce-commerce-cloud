@@ -1,6 +1,7 @@
 const store = require('../../../../../config/store');
 const {
   setCheckoutConfiguration,
+  updateCheckoutAmount,
   actionHandler,
 } = require('./checkoutConfiguration');
 const { renderCheckout } = require('./renderPaymentMethod');
@@ -9,7 +10,7 @@ const billing = require('../../checkout/billing');
 const { httpClient } = require('../commons/httpClient');
 const { getPaymentMethods } = require('../commons');
 const { GIFTCARD } = require('../../../../../config/constants');
-const { renderGiftCards } = require('./giftcards');
+const { renderGiftCards, removeGiftCardsIfInvalid } = require('./giftcards');
 const { addStores } = require('./pos');
 const helpers = require('./helpers');
 const {
@@ -21,6 +22,8 @@ const {
 
 let paymentMethodsResponse = null;
 let isFastlaneRendering = false;
+let lastRenderSignature = null;
+let queuedRequest = null;
 
 function checkForError() {
   const name = 'paymentError';
@@ -62,29 +65,135 @@ async function renderGiftCardsIfEnabled() {
   }
 }
 
-async function registerRenderPaymentMethodListener() {
-  $('body').on('checkout:renderPaymentMethod', async (e, response) => {
-    const { email, amount } = response;
-    const { showFastlane, shopperEmail } = paymentMethodsResponse;
-    const { fastlane } = store;
-
-    if (fastlane.component && showFastlane && shopperEmail) {
-      await renderFastlane(shopperEmail);
-    }
-
-    await setCheckoutConfiguration({
-      email,
-      paymentMethodsResponse,
-      amount,
-    });
-    await renderCheckout(paymentMethodsResponse);
-    await renderGiftCardsIfEnabled();
-    if (window.activeTerminalApiStores) {
-      addStores(window.activeTerminalApiStores);
-    }
-    $('body').trigger('checkout:selectFirstPaymentMethod');
-    window.arePaymentMethodsRendering = false;
+function getRenderSignature(response, email) {
+  const { paymentMethods = [], storedPaymentMethods = [] } =
+    response?.AdyenPaymentMethods || {};
+  return JSON.stringify({
+    paymentMethods: paymentMethods
+      .map((pm) => `${pm.type}:${pm.brand || ''}`)
+      .sort(),
+    storedPaymentMethods: storedPaymentMethods.map((pm) => pm.id).sort(),
+    countryCode: response?.countryCode,
+    email: email || '',
   });
+}
+
+async function renderPaymentMethods({ email, amount }) {
+  const { showFastlane, shopperEmail } = paymentMethodsResponse;
+  const { fastlane } = store;
+
+  if (fastlane.component && showFastlane && shopperEmail) {
+    await renderFastlane(shopperEmail);
+  }
+
+  await setCheckoutConfiguration({
+    email,
+    paymentMethodsResponse,
+    amount,
+  });
+  await renderCheckout(paymentMethodsResponse);
+  await renderGiftCardsIfEnabled();
+  if (window.activeTerminalApiStores) {
+    addStores(window.activeTerminalApiStores);
+  }
+  $('body').trigger('checkout:selectFirstPaymentMethod');
+  lastRenderSignature = getRenderSignature(paymentMethodsResponse, email);
+}
+
+function hasRenderedComponents() {
+  return (
+    !!store.checkout &&
+    !!lastRenderSignature &&
+    Object.keys(store.componentsObj || {}).length > 0
+  );
+}
+
+function resolveEmail({ email, refetch }) {
+  if (refetch && email === undefined) {
+    return paymentMethodsResponse?.shopperEmail;
+  }
+  return email;
+}
+
+function canUpdateInPlace(forceRender, email) {
+  return (
+    !forceRender &&
+    hasRenderedComponents() &&
+    getRenderSignature(paymentMethodsResponse, email) === lastRenderSignature
+  );
+}
+
+async function loadPaymentMethods(refetch) {
+  if (refetch || !paymentMethodsResponse) {
+    paymentMethodsResponse = await getPaymentMethods();
+  }
+}
+
+async function processRequest(request) {
+  await loadPaymentMethods(request.refetch);
+  const email = resolveEmail(request);
+  // Rebuilding the checkout creates a new Card, which starts a new Click to
+  // Pay session and sends the shopper another OTP.
+  if (canUpdateInPlace(request.forceRender, email)) {
+    const isUpdated = await updateCheckoutAmount(
+      paymentMethodsResponse.amount,
+      email,
+    );
+    // A full render re-checks applied gift cards; an in-place update must too,
+    // otherwise the partial payment order keeps the old basket total.
+    if (isUpdated && store.addedGiftCards?.length) {
+      await removeGiftCardsIfInvalid();
+    }
+    return;
+  }
+  await renderPaymentMethods({ email, amount: request.amount });
+}
+
+function mergeRequests(queued, incoming) {
+  // A queued full render keeps its email and amount when a refresh arrives.
+  const base = queued.forceRender && !incoming.forceRender ? queued : incoming;
+  return {
+    ...base,
+    refetch: queued.refetch || incoming.refetch,
+    forceRender: queued.forceRender || incoming.forceRender,
+  };
+}
+
+async function schedule(request) {
+  if (window.arePaymentMethodsRendering) {
+    queuedRequest = queuedRequest
+      ? mergeRequests(queuedRequest, request)
+      : request;
+    return;
+  }
+  window.arePaymentMethodsRendering = true;
+  try {
+    await processRequest(request);
+  } catch (error) {
+    // A failed refresh must not block the requests queued behind it.
+  } finally {
+    window.arePaymentMethodsRendering = false;
+  }
+  if (queuedRequest) {
+    const next = queuedRequest;
+    queuedRequest = null;
+    await schedule(next);
+  }
+}
+
+function refreshPaymentMethods(email) {
+  return schedule({ email, refetch: true, forceRender: false });
+}
+
+async function registerRenderPaymentMethodListener() {
+  $('body').on('checkout:renderPaymentMethod', (e, response) =>
+    schedule({
+      email: response?.email,
+      amount: response?.amount,
+      refetch: false,
+      forceRender: true,
+    }),
+  );
 }
 
 function assignPaymentMethodValue() {
@@ -300,10 +409,7 @@ function handlePaymentAction() {
       settings.url &&
       settings.url.includes('CheckoutShippingServices-SelectShippingMethod');
     if (isSelectShippingMethod && xhr.status === 200) {
-      paymentMethodsResponse = await getPaymentMethods();
-      $('body').trigger('checkout:renderPaymentMethod', {
-        email: paymentMethodsResponse.shopperEmail,
-      });
+      await refreshPaymentMethods();
     }
   });
 }
@@ -316,10 +422,7 @@ function registerUpdateCheckoutView() {
       shipping[0].shippingAddress?.countryCode.value !==
         paymentMethodsResponse?.countryCode
     ) {
-      paymentMethodsResponse = await getPaymentMethods();
-      $('body').trigger('checkout:renderPaymentMethod', {
-        email: data?.order?.orderEmail,
-      });
+      await refreshPaymentMethods(data?.order?.orderEmail);
     }
     billing.methods.updatePaymentInformation(data.order, data.options);
   });
@@ -380,5 +483,7 @@ module.exports = {
   registerEmailChangeHandler,
   registerRenderPaymentMethodListener,
   registerFirstPaymentMethod,
+  refreshPaymentMethods,
+  getRenderSignature,
   init,
 };
