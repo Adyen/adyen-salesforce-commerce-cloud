@@ -21,6 +21,8 @@
     "transpile": "BABEL_ENV=cartridge babel ./src/cartridges -d ./cartridges --delete-dir-on-start --copy-files --no-copy-ignored --extensions .js,.test.js,.snap && pnpm run copy:store && pnpm run pretty",
     "build": "pnpm run transpile && pnpm run compile:js && pnpm run uploadCartridge",
     "test": "jest ./src",
+    "test:source": "SFCC_TEST_TARGET=source jest --runInBand",
+    "test:transpiled": "SFCC_TEST_TARGET=transpiled jest --runInBand",
     "test:watch": "jest ./src --watch",
     "test:coverage": "jest ./src --coverage",
     "test:coverageHTML": "jest ./src --coverage --coverageDirectory='coverage'",

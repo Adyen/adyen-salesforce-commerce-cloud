@@ -4,6 +4,7 @@
     "./jest/sfccPathSetup.js",
     "./jest/sfccCartridgeMocks"
   ],
+  "resolver": "./jest/transpiledResolver.js",
   "transformIgnorePatterns": [
     ".test.(?!(js|js.snap)/)"
   ]
