@@ -261,6 +261,21 @@ describe('AdyenCheckout', () => {
             });
         });
 
+        it.each([
+            ['a plain Error', new Error('Something internal went wrong')],
+            ['a TypeError', new TypeError("Cannot read properties of undefined (reading 'value')")],
+            ['a SyntaxError', new SyntaxError('Unexpected token o in JSON at position 1')],
+        ])('should return the generic message for %s', (_scenario, error) => {
+            failPaymentsCallWith(error);
+
+            const response = adyenCheckout.createPaymentRequest(createArgs());
+
+            expect(response).toEqual({
+                error: true,
+                adyenErrorMessage: GENERIC_MESSAGE,
+            });
+        });
+
         it('should keep the message of a non-service error', () => {
             const args = createArgs();
             AdyenHelper.getCurrencyValueForApi

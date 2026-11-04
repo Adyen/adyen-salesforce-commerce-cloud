@@ -275,6 +275,31 @@ describe('executeCall', () => {
       expect(error.adyenErrorResponse).toBeNull();
     });
 
+    it('marks an empty response as a service error', () => {
+      callResult.isOk.mockReturnValue(true);
+      callResult.object.getText.mockReturnValue('');
+
+      const error = getThrownError();
+
+      expect(error.message).toBe(
+        `No correct response from ${constants.SERVICE.PAYMENT} service call`,
+      );
+      expect(error.isServiceError).toBe(true);
+      expect(error.adyenErrorResponse).toBeNull();
+    });
+
+    it('marks a missing service object as a service error', () => {
+      adyenHelper.getService.mockReturnValue(null);
+
+      const error = getThrownError();
+
+      expect(error.message).toBe(
+        `Could not create ${constants.SERVICE.PAYMENT} service object`,
+      );
+      expect(error.isServiceError).toBe(true);
+      expect(error.adyenErrorResponse).toBeNull();
+    });
+
     it('keeps the full diagnostic message for the logs', () => {
       const errorText = JSON.stringify(errorBody);
       callResult.getErrorMessage.mockReturnValue(errorText);
