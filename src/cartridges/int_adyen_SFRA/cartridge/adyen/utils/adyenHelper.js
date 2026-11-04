@@ -43,6 +43,14 @@ const {
 const { AdyenError } = require('*/cartridge/adyen/logs/adyenError');
 const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 
+function parseErrorResponse(errorText) {
+  try {
+    return JSON.parse(errorText);
+  } catch (e) {
+    return null;
+  }
+}
+
 /* eslint no-var: off */
 const adyenHelperObj = {
   // Create the service config used to make calls to the Adyen Checkout API (used for all services)
@@ -1004,11 +1012,16 @@ const adyenHelperObj = {
     }
 
     if (!callResult.isOk()) {
-      throw new AdyenError(
+      const serviceError = new AdyenError(
         `${serviceType} service call error code${callResult
           .getError()
           .toString()} Error => ResponseStatus: ${callResult.getStatus()} | ResponseErrorText: ${callResult.getErrorMessage()} | ResponseText: ${callResult.getMsg()}`,
       );
+      serviceError.isServiceError = true;
+      serviceError.adyenErrorResponse = parseErrorResponse(
+        callResult.getErrorMessage(),
+      );
+      throw serviceError;
     }
 
     const resultObject = callResult.object;

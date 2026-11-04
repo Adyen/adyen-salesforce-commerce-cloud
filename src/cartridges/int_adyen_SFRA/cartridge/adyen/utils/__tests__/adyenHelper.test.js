@@ -232,6 +232,61 @@ describe('executeCall', () => {
     service.call.mock.calls.forEach(([body]) => expect(body).toBe(firstBody));
   });
 
+  describe('when the service call fails', () => {
+    const errorBody = {
+      status: 422,
+      errorCode: '14_0417',
+      message: 'Missing payment method details: cashtag',
+      errorType: 'validation',
+      pspReference: 'mocked_psp',
+    };
+
+    const getThrownError = () => {
+      try {
+        adyenHelper.executeCall(constants.SERVICE.PAYMENT, {});
+      } catch (error) {
+        return error;
+      }
+      throw new Error('executeCall did not throw');
+    };
+
+    beforeEach(() => {
+      callResult.isOk.mockReturnValue(false);
+      callResult.getError.mockReturnValue(422);
+      callResult.getStatus.mockReturnValue('ERROR');
+      callResult.getMsg.mockReturnValue('Unprocessable Entity');
+    });
+
+    it('attaches the parsed error response when the error text is JSON', () => {
+      callResult.getErrorMessage.mockReturnValue(JSON.stringify(errorBody));
+
+      const error = getThrownError();
+
+      expect(error.isServiceError).toBe(true);
+      expect(error.adyenErrorResponse).toEqual(errorBody);
+    });
+
+    it('sets the error response to null when the error text is not JSON', () => {
+      callResult.getErrorMessage.mockReturnValue('<html>Bad Gateway</html>');
+
+      const error = getThrownError();
+
+      expect(error.isServiceError).toBe(true);
+      expect(error.adyenErrorResponse).toBeNull();
+    });
+
+    it('keeps the full diagnostic message for the logs', () => {
+      const errorText = JSON.stringify(errorBody);
+      callResult.getErrorMessage.mockReturnValue(errorText);
+
+      const error = getThrownError();
+
+      expect(error.message).toBe(
+        `${constants.SERVICE.PAYMENT} service call error code422 Error => ResponseStatus: ERROR | ResponseErrorText: ${errorText} | ResponseText: Unprocessable Entity`,
+      );
+    });
+  });
+
   it('substitutes the checkout API version placeholder', () => {
     adyenHelper.executeCall(constants.SERVICE.PAYMENT, {});
 
