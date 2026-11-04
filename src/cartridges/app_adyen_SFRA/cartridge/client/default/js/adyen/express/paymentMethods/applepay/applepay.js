@@ -241,7 +241,7 @@ class ApplePay {
         const shippingMethodsStructured =
           shippingMethodsData.shippingMethods.map((sm) => ({
             label: sm.displayName,
-            detail: sm.description,
+            detail: sm.description || '',
             identifier: sm.ID,
             amount: `${sm.shippingCost.value}`,
           }));
