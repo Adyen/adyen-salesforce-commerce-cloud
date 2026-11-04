@@ -236,6 +236,29 @@ describe('ApplePay class', () => {
     expect($.ajax).toHaveBeenCalledTimes(1);
   });
 
+  it('should default shipping method detail to an empty string when description is missing', async () => {
+    const resolve = jest.fn();
+    const reject = jest.fn();
+    applePay.getShippingMethod = jest.fn().mockResolvedValue({
+      shippingMethods: [
+        { ID: 'withDesc', displayName: 'Ground', description: 'Order received within 7-10 business days', shippingCost: { value: 5 } },
+        { ID: 'undefinedDesc', displayName: 'Express', shippingCost: { value: 10 } },
+        { ID: 'nullDesc', displayName: 'Overnight', description: null, shippingCost: { value: 20 } },
+      ],
+    });
+    applePay.selectShippingMethod = jest.fn().mockResolvedValue({
+      grandTotalAmount: { value: 100, currency: 'USD' },
+    });
+    await applePay.onShippingContactSelected(resolve, reject, { shippingContact: {} });
+    expect(reject).not.toHaveBeenCalled();
+    const { newShippingMethods } = resolve.mock.calls[0][0];
+    expect(newShippingMethods.map((sm) => sm.detail)).toEqual([
+      'Order received within 7-10 business days',
+      '',
+      '',
+    ]);
+  });
+
   it('should get component correctly', async () => {
     const initializeCheckout = jest.fn();
     initializeCheckout.mockResolvedValueOnce({});
