@@ -196,6 +196,101 @@ describe('AdyenCheckout', () => {
         });
     });
 
+    describe('payment call errors', () => {
+        const GENERIC_MESSAGE = 'mocked_confirm.error.declined';
+
+        function serviceError(errorText) {
+            let adyenErrorResponse;
+            try {
+                adyenErrorResponse = JSON.parse(errorText);
+            } catch (e) {
+                adyenErrorResponse = null;
+            }
+            return Object.assign(
+                new Error(
+                    `AdyenPayment service call error code422 Error => ResponseStatus: ERROR | ResponseErrorText: ${errorText} | ResponseText: Unprocessable Entity`,
+                ),
+                { isServiceError: true, adyenErrorResponse },
+            );
+        }
+
+        function failPaymentsCallWith(error) {
+            AdyenHelper.executeCall.mockImplementationOnce(() => {
+                throw error;
+            });
+        }
+
+        afterEach(() => {
+            AdyenHelper.executeCall.mockClear();
+        });
+
+        it('should return only the Adyen message for a service error', () => {
+            failPaymentsCallWith(serviceError(JSON.stringify({
+                status: 422,
+                errorCode: '14_0417',
+                message: 'Missing payment method details: cashtag',
+                errorType: 'validation',
+                pspReference: 'mocked_psp',
+            })));
+
+            const response = adyenCheckout.createPaymentRequest(createArgs());
+
+            expect(response).toEqual({
+                error: true,
+                adyenErrorMessage: 'Missing payment method details: cashtag',
+            });
+            const serialized = JSON.stringify(response);
+            expect(serialized).not.toContain('mocked_psp');
+            expect(serialized).not.toContain('14_0417');
+        });
+
+        it.each([
+            ['malformed JSON', '{"message": "Missing'],
+            ['an empty body', ''],
+            ['a body without a message', JSON.stringify({ errorCode: '14_0417', pspReference: 'mocked_psp' })],
+            ['an object message', JSON.stringify({ message: { pspReference: 'mocked_psp' } })],
+            ['a numeric message', JSON.stringify({ message: 422 })],
+        ])('should return the generic message for a service error with %s', (_scenario, errorText) => {
+            failPaymentsCallWith(serviceError(errorText));
+
+            const response = adyenCheckout.createPaymentRequest(createArgs());
+
+            expect(response).toEqual({
+                error: true,
+                adyenErrorMessage: GENERIC_MESSAGE,
+            });
+        });
+
+        it.each([
+            ['a plain Error', new Error('Something internal went wrong')],
+            ['a TypeError', new TypeError("Cannot read properties of undefined (reading 'value')")],
+            ['a SyntaxError', new SyntaxError('Unexpected token o in JSON at position 1')],
+        ])('should return the generic message for %s', (_scenario, error) => {
+            failPaymentsCallWith(error);
+
+            const response = adyenCheckout.createPaymentRequest(createArgs());
+
+            expect(response).toEqual({
+                error: true,
+                adyenErrorMessage: GENERIC_MESSAGE,
+            });
+        });
+
+        it('should keep the message of a non-service error', () => {
+            const args = createArgs();
+            AdyenHelper.getCurrencyValueForApi
+                .mockReturnValueOnce({ getValueOrNull: () => 1000 })
+                .mockReturnValueOnce({ getValueOrNull: () => 2000 });
+
+            const response = adyenCheckout.createPaymentRequest(args);
+
+            expect(response).toEqual({
+                error: true,
+                adyenErrorMessage: 'Amounts dont match',
+            });
+        });
+    });
+
     describe('device fingerprint', () => {
         beforeEach(() => {
             session.privacy.adyenFingerprint = null;
