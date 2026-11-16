@@ -33,6 +33,7 @@ jest.mock('../../commons/httpClient', () => ({
 }))
 
 beforeEach(async () => {
+  jest.restoreAllMocks();
   jest.clearAllMocks();
   querySelector = document.querySelector;
   window.Configuration = { environment: 'TEST' };
@@ -111,8 +112,13 @@ describe('Checkout Configuration', () => {
     });
   });
   describe('PayPal', () => {
-    it('handles onSubmit', () => {
+    it('handles onSubmit', async () => {
       const stateData = { foo: 'bar' };
+      const response = { fullResponse: { resultCode: 'Authorised' } };
+      const actions = { resolve: jest.fn(), reject: jest.fn() };
+      jest
+        .spyOn(helpers, 'paymentFromComponent')
+        .mockResolvedValueOnce(response);
       document.body.innerHTML = `
         <div id="lb_paypal">PayPal</div>
         <div id="adyenPaymentMethodName"></div>
@@ -120,13 +126,107 @@ describe('Checkout Configuration', () => {
       `;
       store.selectedMethod = 'paypal';
       store.componentsObj = { paypal: { stateData: { foo: 'bar' } } };
-      paypal.onSubmit({ data: stateData });
+      await paypal.onSubmit({ data: stateData }, {}, actions);
       expect(document.getElementById('adyenStateData').value).toBe(
         JSON.stringify(stateData),
       );
+      expect(helpers.paymentFromComponent).toHaveBeenCalledWith(
+        stateData,
+        {},
+        { handleComponentChanges: false },
+      );
+      expect(actions.resolve).toHaveBeenCalledWith(response.fullResponse);
     });
 
-    it('handles onError', () => {
+    it('settles a refused payment so the PayPal modal can close', async () => {
+      const stateData = { paymentMethod: { type: 'paypal' } };
+      const response = {
+        paymentError: true,
+        fullResponse: { resultCode: 'Refused' },
+      };
+      const actions = { resolve: jest.fn(), reject: jest.fn() };
+      jest
+        .spyOn(helpers, 'paymentFromComponent')
+        .mockResolvedValueOnce(response);
+      document.body.innerHTML = '<input id="adyenStateData">';
+
+      await paypal.onSubmit({ data: stateData }, {}, actions);
+
+      expect(actions.resolve).toHaveBeenCalledWith(response.fullResponse);
+      expect(actions.reject).not.toHaveBeenCalled();
+    });
+
+    it('rejects the PayPal flow when the payment request fails', async () => {
+      const error = new Error('Payment request failed');
+      const actions = { resolve: jest.fn(), reject: jest.fn() };
+      jest
+        .spyOn(helpers, 'paymentFromComponent')
+        .mockRejectedValueOnce(error);
+      document.body.innerHTML = '<input id="adyenStateData">';
+
+      await paypal.onSubmit({ data: {} }, {}, actions);
+
+      expect(actions.reject).toHaveBeenCalledWith(error);
+      expect(actions.resolve).not.toHaveBeenCalled();
+    });
+
+    it('cleans up the order when PayPal reports a failed payment', async () => {
+      const component = { setStatus: jest.fn() };
+      const paymentFromComponent = jest
+        .spyOn(helpers, 'paymentFromComponent')
+        .mockResolvedValueOnce({});
+      document.body.innerHTML = `
+        <input id="merchantReference" value="00001234">
+        <input id="orderToken" value="order-token">
+        <form id="showConfirmationForm"></form>
+      `;
+      document.querySelector('#showConfirmationForm').submit = jest.fn();
+      store.paypalTerminatedEarly = true;
+
+      await paypal.onPaymentFailed({}, component);
+
+      expect(paymentFromComponent).toHaveBeenCalledWith(
+        {
+          cancelTransaction: true,
+          merchantReference: '00001234',
+          orderToken: 'order-token',
+        },
+        component,
+      );
+      expect(store.paypalTerminatedEarly).toBe(false);
+      expect(component.setStatus).toHaveBeenCalledWith('ready');
+      expect(document.querySelector('#showConfirmationForm').submit).toHaveBeenCalled();
+
+      await paypal.onError(new Error('Payment failed'), component);
+
+      expect(paymentFromComponent).toHaveBeenCalledTimes(1);
+      expect(component.setStatus).toHaveBeenCalledTimes(1);
+      expect(document.querySelector('#showConfirmationForm').submit).toHaveBeenCalledTimes(1);
+    });
+
+    it('continues failed-payment handling when order cleanup fails', async () => {
+      const component = { setStatus: jest.fn() };
+      jest
+        .spyOn(helpers, 'paymentFromComponent')
+        .mockRejectedValueOnce(new Error('Cleanup failed'));
+      document.body.innerHTML = `
+        <input id="merchantReference" value="00001234">
+        <input id="orderToken" value="order-token">
+        <form id="showConfirmationForm"></form>
+      `;
+      document.querySelector('#showConfirmationForm').submit = jest.fn();
+      store.paypalTerminatedEarly = true;
+
+      await paypal.onPaymentFailed({}, component);
+
+      expect(component.setStatus).toHaveBeenCalledWith('ready');
+      expect(document.querySelector('#showConfirmationForm').submit).toHaveBeenCalled();
+    });
+
+    it('handles onError', async () => {
+      jest
+        .spyOn(helpers, 'paymentFromComponent')
+        .mockResolvedValueOnce({});
       document.body.innerHTML = `
         <div id="showConfirmationForm"></div>
       `;
@@ -138,7 +238,7 @@ describe('Checkout Configuration', () => {
       store.paypalTerminatedEarly = true;
       const error = new Error('Test error'); 
       const component = { setStatus: jest.fn() }; 
-      paypal.onError(error, component);
+      await paypal.onError(error, component);
       expect(store.paypalTerminatedEarly).toBe(false);
       expect(component.setStatus).toBeCalledWith('ready');
       expect(document.querySelector('#showConfirmationForm').submit).toBeCalled();
