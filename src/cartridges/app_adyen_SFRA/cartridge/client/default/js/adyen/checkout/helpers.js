@@ -26,7 +26,7 @@ function handleComponentChanges(response, component) {
  * Makes an ajax call to the controller function PaymentFromComponent.
  * Used by certain payment methods like paypal
  */
-async function paymentFromComponent(data, component = {}) {
+async function paymentFromComponent(data, component = {}, options = {}) {
   const requestData = store.partialPaymentsOrderObj
     ? { ...data, partialPaymentsOrder: store.partialPaymentsOrderObj }
     : data;
@@ -38,7 +38,9 @@ async function paymentFromComponent(data, component = {}) {
     },
   });
   setOrderFormData(response);
-  handleComponentChanges(response, component);
+  if (options.handleComponentChanges !== false) {
+    handleComponentChanges(response, component);
+  }
   return response;
 }
 
