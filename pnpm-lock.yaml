@@ -85,8 +85,8 @@ importers:
         specifier: ^15.0.0
         version: 15.0.0(eslint-plugin-import@2.32.0(eslint@8.57.1))(eslint@8.57.1)
       eslint-config-prettier:
-        specifier: ^9.1.2
-        version: 9.1.2(eslint@8.57.1)
+        specifier: ^10.0.0
+        version: 10.1.8(eslint@8.57.1)
       eslint-formatter-pretty:
         specifier: ^6.0.1
         version: 6.0.1
@@ -98,7 +98,7 @@ importers:
         version: 2.32.0(eslint@8.57.1)
       eslint-plugin-prettier:
         specifier: ^5.5.6
-        version: 5.5.6(@types/eslint@8.56.12)(eslint-config-prettier@9.1.2(eslint@8.57.1))(eslint@8.57.1)(prettier@3.9.8)
+        version: 5.5.6(@types/eslint@8.56.12)(eslint-config-prettier@10.1.8(eslint@8.57.1))(eslint@8.57.1)(prettier@3.9.8)
       husky:
         specifier: ^8.0.3
         version: 8.0.3
@@ -2304,8 +2304,8 @@ packages:
       eslint: ^7.32.0 || ^8.2.0
       eslint-plugin-import: ^2.25.2
 
-  eslint-config-prettier@9.1.2:
-    resolution: {integrity: sha512-iI1f+D2ViGn+uvv5HuHVUamg8ll4tN+JRHGc6IJi4TP9Kl976C57fzPXgseXNs8v0iA8aSJpHsTWjDb9QJamGQ==}
+  eslint-config-prettier@10.1.8:
+    resolution: {integrity: sha512-82GZUjRS0p/jganf6q1rEO25VSoHH0hKPCTrgillPjdI/3bgBhAE1QzHrHTizjpRvy6pGAvKjDJtk2pF9NDq8w==}
     hasBin: true
     peerDependencies:
       eslint: '>=7.0.0'
@@ -7717,7 +7717,7 @@ snapshots:
       object.entries: 1.1.9
       semver: 6.3.1
 
-  eslint-config-prettier@9.1.2(eslint@8.57.1):
+  eslint-config-prettier@10.1.8(eslint@8.57.1):
     dependencies:
       eslint: 8.57.1
 
@@ -7786,7 +7786,7 @@ snapshots:
       - eslint-import-resolver-webpack
       - supports-color
 
-  eslint-plugin-prettier@5.5.6(@types/eslint@8.56.12)(eslint-config-prettier@9.1.2(eslint@8.57.1))(eslint@8.57.1)(prettier@3.9.8):
+  eslint-plugin-prettier@5.5.6(@types/eslint@8.56.12)(eslint-config-prettier@10.1.8(eslint@8.57.1))(eslint@8.57.1)(prettier@3.9.8):
     dependencies:
       eslint: 8.57.1
       prettier: 3.9.8
@@ -7794,7 +7794,7 @@ snapshots:
       synckit: 0.11.13
     optionalDependencies:
       '@types/eslint': 8.56.12
-      eslint-config-prettier: 9.1.2(eslint@8.57.1)
+      eslint-config-prettier: 10.1.8(eslint@8.57.1)
 
   eslint-rule-docs@1.1.235: {}
 
