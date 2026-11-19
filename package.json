@@ -51,7 +51,7 @@
     "@commitlint/cli": "^19.8.1",
     "@commitlint/config-conventional": "^19.8.1",
     "@types/jest": "^29.5.14",
-    "babel-loader": "^9.2.1",
+    "babel-loader": "^10.0.0",
     "chai": "^4.5.0",
     "css-loader": "^6.11.0",
     "eslint": "^8.57.1",
