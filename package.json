@@ -33,7 +33,7 @@
   },
   "packageManager": "pnpm@10.20.0",
   "engines": {
-    "node": ">=18.12"
+    "node": ">=20.0.0"
   },
   "dependencies": {
     "mobx": "^6.16.1",
