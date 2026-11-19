@@ -452,7 +452,12 @@ function renderGiftCardLogo(imagePath) {
   }
 }
 
-async function applyGiftCards() {
+/**
+ * Cancels the partial payment order when it expired or when the basket total
+ * changed since the gift cards were applied.
+ * @returns {Promise<boolean>} true when the gift cards were removed
+ */
+async function removeGiftCardsIfInvalid() {
   const now = new Date().toISOString();
 
   const isPartialPaymentExpired = store.addedGiftCards.some(
@@ -462,10 +467,19 @@ async function applyGiftCards() {
 
   if (isPartialPaymentExpired) {
     await removeGiftCards();
-  } else if (cartModified) {
+    return true;
+  }
+  if (cartModified) {
     await removeGiftCards();
     showGiftCardWarningMessage();
-  } else {
+    return true;
+  }
+  return false;
+}
+
+async function applyGiftCards() {
+  const removed = await removeGiftCardsIfInvalid();
+  if (!removed) {
     clearGiftCardsContainer();
     store.addedGiftCards.forEach((card) => {
       renderAddedGiftCard(card);
@@ -511,6 +525,7 @@ module.exports = {
   attachGiftCardCancelListener,
   showGiftCardCancelButton,
   applyGiftCards,
+  removeGiftCardsIfInvalid,
   renderGiftCardLogo,
   isCartModified,
   renderGiftCards,

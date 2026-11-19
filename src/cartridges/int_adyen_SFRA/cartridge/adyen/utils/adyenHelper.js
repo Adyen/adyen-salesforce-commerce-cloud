@@ -43,6 +43,23 @@ const {
 const { AdyenError } = require('*/cartridge/adyen/logs/adyenError');
 const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 
+function parseErrorResponse(errorText) {
+  try {
+    return JSON.parse(errorText);
+  } catch (e) {
+    return null;
+  }
+}
+
+function createServiceError(message, errorText) {
+  const serviceError = new AdyenError(message);
+  serviceError.isServiceError = true;
+  serviceError.adyenErrorResponse = errorText
+    ? parseErrorResponse(errorText)
+    : null;
+  return serviceError;
+}
+
 /* eslint no-var: off */
 const adyenHelperObj = {
   // Create the service config used to make calls to the Adyen Checkout API (used for all services)
@@ -967,7 +984,7 @@ const adyenHelperObj = {
   executeCall(serviceType, requestObject, checkoutAttemptID = '') {
     const service = this.getService(serviceType);
     if (service === null) {
-      throw new AdyenError(`Could not create ${serviceType} service object`);
+      throw createServiceError(`Could not create ${serviceType} service object`);
     }
 
     const serviceApiVersion = service
@@ -1004,16 +1021,17 @@ const adyenHelperObj = {
     }
 
     if (!callResult.isOk()) {
-      throw new AdyenError(
+      throw createServiceError(
         `${serviceType} service call error code${callResult
           .getError()
           .toString()} Error => ResponseStatus: ${callResult.getStatus()} | ResponseErrorText: ${callResult.getErrorMessage()} | ResponseText: ${callResult.getMsg()}`,
+        callResult.getErrorMessage(),
       );
     }
 
     const resultObject = callResult.object;
     if (!resultObject || !resultObject.getText()) {
-      throw new AdyenError(
+      throw createServiceError(
         `No correct response from ${serviceType} service call`,
       );
     }

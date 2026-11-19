@@ -2,6 +2,7 @@ const BasketMgr = require('dw/order/BasketMgr');
 const PaymentMgr = require('dw/order/PaymentMgr');
 const Transaction = require('dw/system/Transaction');
 const OrderMgr = require('dw/order/OrderMgr');
+const Order = require('dw/order/Order');
 const URLUtils = require('dw/web/URLUtils');
 const Money = require('dw/value/Money');
 const adyenCheckout = require('*/cartridge/adyen/scripts/payments/adyenCheckout');
@@ -133,9 +134,12 @@ function handleCancellation(res, next, reqDataObj) {
     reqDataObj.merchantReference,
     reqDataObj.orderToken,
   );
-  failOrder(order);
+  // The order is already failed when the basket was restored from another tab
+  if (order?.status?.value === Order.ORDER_STATUS_CREATED) {
+    failOrder(order);
+  }
   const currentBasket = BasketMgr.getCurrentBasket();
-  const giftCardsAdded = currentBasket.custom?.adyenGiftCards
+  const giftCardsAdded = currentBasket?.custom?.adyenGiftCards
     ? JSON.parse(currentBasket.custom.adyenGiftCards)
     : null;
   if (giftCardsAdded) {
@@ -182,6 +186,22 @@ function handleKlarnaInlinePayment(result, reqDataObj) {
   }
 }
 
+// Lets Checkout-Begin restore the basket if the shopper navigates
+// back from the PayPal popup that iOS Safari opens as a new tab.
+// Limited to PayPal: other component methods (QR codes, MB WAY) keep the order
+// CREATED while the shopper is still paying, so restoring would fail it.
+// Express PDP uses a temporary basket, so there is nothing to restore.
+function cacheOrderForBasketRestore(req, order, reqDataObj, isExpressPdp) {
+  if (
+    isExpressPdp ||
+    reqDataObj.paymentMethod?.type !== constants.PAYMENTMETHODS.PAYPAL
+  ) {
+    return;
+  }
+  req.session.privacyCache.set('currentOrderNumber', order.orderNo);
+  req.session.privacyCache.set('currentOrderToken', order.orderToken);
+}
+
 /**
  * Make a payment from inside a component, skipping the summary page. (paypal, QRcodes, MBWay)
  */
@@ -226,6 +246,7 @@ function paymentFromComponent(req, res, next) {
     handleExpressPayment(reqDataObj, currentBasket);
     const order = AdyenHelper.createOrder(currentBasket);
     session.privacy.orderNo = order.orderNo;
+    cacheOrderForBasketRestore(req, order, reqDataObj, isExpressPdp);
 
     let result;
     Transaction.wrap(() => {

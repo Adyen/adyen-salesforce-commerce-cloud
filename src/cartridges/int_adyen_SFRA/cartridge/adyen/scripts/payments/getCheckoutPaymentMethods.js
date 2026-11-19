@@ -1,5 +1,6 @@
 const BasketMgr = require('dw/order/BasketMgr');
 const Locale = require('dw/util/Locale');
+const Resource = require('dw/web/Resource');
 const AdyenHelper = require('*/cartridge/adyen/utils/adyenHelper');
 const translations = require('*/cartridge/config/adyenTranslations');
 const paymentMethodTitles = require('*/cartridge/config/adyenPaymentMethodTitles');
@@ -47,6 +48,53 @@ const supportedStoredPaymentMethods = (storedPaymentMethods) =>
       )
     : [];
 
+const getDisclaimerFor = (key) => {
+  const message = Resource.msg(`disclaimer.message.${key}`, 'bnpl', '');
+  if (!message) {
+    return null;
+  }
+  const linkText = Resource.msg(`disclaimer.linkText.${key}`, 'bnpl', '');
+  const link = Resource.msg(`disclaimer.link.${key}`, 'bnpl', '');
+  return { message, ...(linkText && link ? { linkText, link } : {}) };
+};
+
+// Resolves each BNPL txVariant to the most specific configured entry:
+// exact txVariant -> method family -> generic 'bnpl'. Whole entries are
+// resolved (not individual fields) so a specific message never gets a
+// generic link.
+const resolveBnplDisclaimer = (type) => {
+  if (!type) {
+    return null;
+  }
+  // Prefix match: covers klarna_*, facilypay_*, afterpaytouch, ... without
+  // false positives such as 'oney' inside 'moneybookers'.
+  const family = constants.BNPL_PAYMENT_METHODS.find(
+    (method) => type.indexOf(method) === 0,
+  );
+  if (!family) {
+    return null;
+  }
+  return (
+    getDisclaimerFor(type) ||
+    getDisclaimerFor(family) ||
+    getDisclaimerFor('bnpl')
+  );
+};
+
+const getBnplDisclaimers = (countryCode, paymentMethods) => {
+  if (!constants.DISCLAIMER_COUNTRIES.includes(countryCode)) {
+    return null;
+  }
+  const disclaimers = {};
+  paymentMethods.forEach(({ type } = {}) => {
+    const disclaimer = resolveBnplDisclaimer(type);
+    if (disclaimer) {
+      disclaimers[type] = disclaimer;
+    }
+  });
+  return Object.keys(disclaimers).length ? disclaimers : null;
+};
+
 function getCheckoutPaymentMethods(req, res, next) {
   try {
     const currentBasket = BasketMgr.getCurrentBasket();
@@ -76,6 +124,11 @@ function getCheckoutPaymentMethods(req, res, next) {
       return 0;
     });
 
+    const disclaimerMessages = getBnplDisclaimers(
+      countryCode,
+      sortedPaymentMethods,
+    );
+
     res.json({
       AdyenPaymentMethods: {
         paymentMethods: sortedPaymentMethods,
@@ -92,6 +145,7 @@ function getCheckoutPaymentMethods(req, res, next) {
       amount: { value: paymentAmount.value, currency },
       countryCode,
       applicationInfo: AdyenHelper.getApplicationInfo(),
+      ...(disclaimerMessages ? { disclaimerMessages } : {}),
     });
   } catch (error) {
     AdyenLogs.fatal_log('Failed to fetch payment methods', error);

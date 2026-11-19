@@ -141,6 +141,28 @@ function doPaymentsCall(order, paymentInstrument, paymentRequest) {
   return paymentResponse;
 }
 
+// Service errors carry the raw Adyen response (pspReference, errorCode, ...),
+// so only its human-readable message may reach the shopper. Any other error
+// that is not an AdyenError is unexpected and its message stays in the logs.
+function getShopperErrorMessage(error) {
+  const genericMessage = Resource.msg(
+    'confirm.error.declined',
+    'checkout',
+    null,
+  );
+  const responseMessage = error?.adyenErrorResponse?.message;
+  if (typeof responseMessage === 'string' && responseMessage) {
+    return responseMessage;
+  }
+  if (error?.isServiceError) {
+    return genericMessage;
+  }
+  if (error instanceof AdyenError) {
+    return error.message;
+  }
+  return genericMessage;
+}
+
 // eslint-disable-next-line complexity
 function createPaymentRequest(args) {
   const order = args.Order;
@@ -317,9 +339,7 @@ function createPaymentRequest(args) {
     AdyenLogs.error_log('Payment call failed:', error);
     return {
       error: true,
-      adyenErrorMessage:
-        error.message ||
-        Resource.msg('confirm.error.declined', 'checkout', null),
+      adyenErrorMessage: getShopperErrorMessage(error),
     };
   }
 }

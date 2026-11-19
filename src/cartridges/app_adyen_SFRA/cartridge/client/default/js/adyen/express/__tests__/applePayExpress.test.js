@@ -32,6 +32,7 @@ describe('ApplePay class', () => {
     });
     applePay = new ApplePay(
       { merchantName: 'Test Merchant' },
+      ['visa', 'mc'],
       { applicationInfo: 'Test Info' },
       { 'en-US': {} },
       true,
@@ -49,6 +50,24 @@ describe('ApplePay class', () => {
     expect(applePay.showPayButton).toBe(true);
     expect(applePay.isExpress).toBe(true);
     expect(applePay.isExpressPdp).toBe(true);
+    expect(applePay.brands).toEqual(['visa', 'mc']);
+  });
+
+  it('should include brands in the component config', () => {
+    const config = applePay.getConfig();
+    expect(config.brands).toEqual(['visa', 'mc']);
+    expect(config.configuration).toEqual({ merchantName: 'Test Merchant' });
+  });
+
+  it('should leave brands undefined when none are provided', () => {
+    const applePayWithoutBrands = new ApplePay(
+      { merchantName: 'Test Merchant' },
+      undefined,
+      { applicationInfo: 'Test Info' },
+      { 'en-US': {} },
+      false,
+    );
+    expect(applePayWithoutBrands.getConfig().brands).toBeUndefined();
   });
 
   it('should format customer object correctly', async () => {
@@ -217,6 +236,29 @@ describe('ApplePay class', () => {
     expect($.ajax).toHaveBeenCalledTimes(1);
   });
 
+  it('should default shipping method detail to an empty string when description is missing', async () => {
+    const resolve = jest.fn();
+    const reject = jest.fn();
+    applePay.getShippingMethod = jest.fn().mockResolvedValue({
+      shippingMethods: [
+        { ID: 'withDesc', displayName: 'Ground', description: 'Order received within 7-10 business days', shippingCost: { value: 5 } },
+        { ID: 'undefinedDesc', displayName: 'Express', shippingCost: { value: 10 } },
+        { ID: 'nullDesc', displayName: 'Overnight', description: null, shippingCost: { value: 20 } },
+      ],
+    });
+    applePay.selectShippingMethod = jest.fn().mockResolvedValue({
+      grandTotalAmount: { value: 100, currency: 'USD' },
+    });
+    await applePay.onShippingContactSelected(resolve, reject, { shippingContact: {} });
+    expect(reject).not.toHaveBeenCalled();
+    const { newShippingMethods } = resolve.mock.calls[0][0];
+    expect(newShippingMethods.map((sm) => sm.detail)).toEqual([
+      'Order received within 7-10 business days',
+      '',
+      '',
+    ]);
+  });
+
   it('should get component correctly', async () => {
     const initializeCheckout = jest.fn();
     initializeCheckout.mockResolvedValueOnce({});
@@ -226,6 +268,11 @@ describe('ApplePay class', () => {
 
     await applePay.getComponent();
     expect(window.AdyenWeb.createComponent).toHaveBeenCalledTimes(1);
+    expect(window.AdyenWeb.createComponent).toHaveBeenCalledWith(
+      'applepay',
+      undefined,
+      expect.objectContaining({ brands: ['visa', 'mc'] }),
+    );
   });
 
   it('should return null when the component is not available', async () => {

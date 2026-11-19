@@ -44,7 +44,6 @@
    window.makeExpressPaymentsCall = "${URLUtils.https('Adyen-MakeExpressPaymentsCall')}";
    window.makeExpressPaymentDetailsCall = "${URLUtils.https('Adyen-MakeExpressPaymentDetailsCall')}";
    window.saveShopperData = "${URLUtils.https('Adyen-SaveShopperData')}";
-   window.paypalUpdateOrder = "${URLUtils.https('Adyen-paypalUpdateOrder')}";
    window.paypalReviewPageEnabled = ${AdyenConfigs.isPayPalExpressReviewPageEnabled()};
    window.checkoutReviewUrl = "${URLUtils.https('Adyen-CheckoutReview')}";
    window.saveExpressPaymentDataUrl = "${URLUtils.https('Adyen-SaveExpressPaymentData')}";

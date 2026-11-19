@@ -27,6 +27,20 @@ describe('Helpers', () => {
     expect(component.handleAction).toBeCalledWith(data.fullResponse.action);
   });
 
+  it('leaves component changes to Adyen Web actions when requested', async () => {
+    const data = {
+      fullResponse: { action: 'mocked_action' },
+      paymentMethod: 'mocked_paymentMethod',
+    };
+    $.ajax = jest.fn().mockReturnValue(data);
+
+    await paymentFromComponent(data, component, {
+      handleComponentChanges: false,
+    });
+
+    expect(component.handleAction).not.toHaveBeenCalled();
+  });
+
   it('  should make payment ajax call that fails', async () => {
     document.body.innerHTML = `
         <div id="adyenPaymentMethodName"></div>

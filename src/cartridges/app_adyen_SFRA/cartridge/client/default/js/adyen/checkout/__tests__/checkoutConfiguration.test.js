@@ -4,8 +4,11 @@
 const store = require('../../../../../../config/store');
 const helpers = require('../helpers');
 const httpClient = require('../../commons/httpClient');
+const constants = require('../../../../../../config/constants');
 const {
   setCheckoutConfiguration,
+  actionHandler,
+  updateCheckoutAmount,
 } = require('../checkoutConfiguration');
 const KlarnaConfig = require("../paymentMethodsConfiguration/klarna/klarnaConfig");
 const GooglePayConfig = require("../paymentMethodsConfiguration/googlePay/googlePayConfig");
@@ -30,6 +33,7 @@ jest.mock('../../commons/httpClient', () => ({
 }))
 
 beforeEach(async () => {
+  jest.restoreAllMocks();
   jest.clearAllMocks();
   querySelector = document.querySelector;
   window.Configuration = { environment: 'TEST' };
@@ -108,8 +112,13 @@ describe('Checkout Configuration', () => {
     });
   });
   describe('PayPal', () => {
-    it('handles onSubmit', () => {
+    it('handles onSubmit', async () => {
       const stateData = { foo: 'bar' };
+      const response = { fullResponse: { resultCode: 'Authorised' } };
+      const actions = { resolve: jest.fn(), reject: jest.fn() };
+      jest
+        .spyOn(helpers, 'paymentFromComponent')
+        .mockResolvedValueOnce(response);
       document.body.innerHTML = `
         <div id="lb_paypal">PayPal</div>
         <div id="adyenPaymentMethodName"></div>
@@ -117,13 +126,107 @@ describe('Checkout Configuration', () => {
       `;
       store.selectedMethod = 'paypal';
       store.componentsObj = { paypal: { stateData: { foo: 'bar' } } };
-      paypal.onSubmit({ data: stateData });
+      await paypal.onSubmit({ data: stateData }, {}, actions);
       expect(document.getElementById('adyenStateData').value).toBe(
         JSON.stringify(stateData),
       );
+      expect(helpers.paymentFromComponent).toHaveBeenCalledWith(
+        stateData,
+        {},
+        { handleComponentChanges: false },
+      );
+      expect(actions.resolve).toHaveBeenCalledWith(response.fullResponse);
     });
 
-    it('handles onError', () => {
+    it('settles a refused payment so the PayPal modal can close', async () => {
+      const stateData = { paymentMethod: { type: 'paypal' } };
+      const response = {
+        paymentError: true,
+        fullResponse: { resultCode: 'Refused' },
+      };
+      const actions = { resolve: jest.fn(), reject: jest.fn() };
+      jest
+        .spyOn(helpers, 'paymentFromComponent')
+        .mockResolvedValueOnce(response);
+      document.body.innerHTML = '<input id="adyenStateData">';
+
+      await paypal.onSubmit({ data: stateData }, {}, actions);
+
+      expect(actions.resolve).toHaveBeenCalledWith(response.fullResponse);
+      expect(actions.reject).not.toHaveBeenCalled();
+    });
+
+    it('rejects the PayPal flow when the payment request fails', async () => {
+      const error = new Error('Payment request failed');
+      const actions = { resolve: jest.fn(), reject: jest.fn() };
+      jest
+        .spyOn(helpers, 'paymentFromComponent')
+        .mockRejectedValueOnce(error);
+      document.body.innerHTML = '<input id="adyenStateData">';
+
+      await paypal.onSubmit({ data: {} }, {}, actions);
+
+      expect(actions.reject).toHaveBeenCalledWith(error);
+      expect(actions.resolve).not.toHaveBeenCalled();
+    });
+
+    it('cleans up the order when PayPal reports a failed payment', async () => {
+      const component = { setStatus: jest.fn() };
+      const paymentFromComponent = jest
+        .spyOn(helpers, 'paymentFromComponent')
+        .mockResolvedValueOnce({});
+      document.body.innerHTML = `
+        <input id="merchantReference" value="00001234">
+        <input id="orderToken" value="order-token">
+        <form id="showConfirmationForm"></form>
+      `;
+      document.querySelector('#showConfirmationForm').submit = jest.fn();
+      store.paypalTerminatedEarly = true;
+
+      await paypal.onPaymentFailed({}, component);
+
+      expect(paymentFromComponent).toHaveBeenCalledWith(
+        {
+          cancelTransaction: true,
+          merchantReference: '00001234',
+          orderToken: 'order-token',
+        },
+        component,
+      );
+      expect(store.paypalTerminatedEarly).toBe(false);
+      expect(component.setStatus).toHaveBeenCalledWith('ready');
+      expect(document.querySelector('#showConfirmationForm').submit).toHaveBeenCalled();
+
+      await paypal.onError(new Error('Payment failed'), component);
+
+      expect(paymentFromComponent).toHaveBeenCalledTimes(1);
+      expect(component.setStatus).toHaveBeenCalledTimes(1);
+      expect(document.querySelector('#showConfirmationForm').submit).toHaveBeenCalledTimes(1);
+    });
+
+    it('continues failed-payment handling when order cleanup fails', async () => {
+      const component = { setStatus: jest.fn() };
+      jest
+        .spyOn(helpers, 'paymentFromComponent')
+        .mockRejectedValueOnce(new Error('Cleanup failed'));
+      document.body.innerHTML = `
+        <input id="merchantReference" value="00001234">
+        <input id="orderToken" value="order-token">
+        <form id="showConfirmationForm"></form>
+      `;
+      document.querySelector('#showConfirmationForm').submit = jest.fn();
+      store.paypalTerminatedEarly = true;
+
+      await paypal.onPaymentFailed({}, component);
+
+      expect(component.setStatus).toHaveBeenCalledWith('ready');
+      expect(document.querySelector('#showConfirmationForm').submit).toHaveBeenCalled();
+    });
+
+    it('handles onError', async () => {
+      jest
+        .spyOn(helpers, 'paymentFromComponent')
+        .mockResolvedValueOnce({});
       document.body.innerHTML = `
         <div id="showConfirmationForm"></div>
       `;
@@ -135,7 +238,7 @@ describe('Checkout Configuration', () => {
       store.paypalTerminatedEarly = true;
       const error = new Error('Test error'); 
       const component = { setStatus: jest.fn() }; 
-      paypal.onError(error, component);
+      await paypal.onError(error, component);
       expect(store.paypalTerminatedEarly).toBe(false);
       expect(component.setStatus).toBeCalledWith('ready');
       expect(document.querySelector('#showConfirmationForm').submit).toBeCalled();
@@ -379,6 +482,122 @@ describe('Checkout Configuration', () => {
   })
 });
 
+  describe('updateCheckoutAmount', () => {
+    const newAmount = { value: 2000, currency: 'USD' };
+
+    afterEach(() => {
+      $('body').off('checkout:renderPaymentMethod');
+    });
+
+    it('updates the amount without reinitializing or remounting components', async () => {
+      const schemeNode = { update: jest.fn() };
+      const applePayNode = { update: jest.fn() };
+      store.checkout = { update: jest.fn().mockResolvedValue({}) };
+      store.componentsObj = {
+        scheme: { node: schemeNode },
+        applepay: { node: applePayNode },
+      };
+      window.AdyenWeb.AdyenCheckout.mockClear();
+
+      const result = await updateCheckoutAmount(newAmount, window.customerEmail);
+
+      expect(result).toBe(true);
+      expect(window.AdyenWeb.AdyenCheckout).not.toHaveBeenCalled();
+      expect(store.checkout.update).toHaveBeenCalledWith(
+        { amount: newAmount },
+        { shouldReinitializeCheckout: false },
+      );
+      expect(schemeNode.update).not.toHaveBeenCalled();
+      expect(applePayNode.update).not.toHaveBeenCalled();
+      expect(store.checkoutConfiguration.amount).toEqual(newAmount);
+      expect(store.paymentMethodsConfiguration.applepay.amount).toEqual(newAmount);
+    });
+
+    it('falls back to a full render when an update throws', async () => {
+      const listener = jest.fn();
+      $('body').on('checkout:renderPaymentMethod', listener);
+      store.checkout = { update: jest.fn().mockRejectedValue(new Error('fail')) };
+
+      const result = await updateCheckoutAmount(newAmount, window.customerEmail);
+
+      expect(result).toBe(false);
+      expect(listener).toHaveBeenCalledTimes(1);
+      expect(listener.mock.calls[0][1]).toEqual({
+        email: window.customerEmail,
+        amount: newAmount,
+      });
+    });
+
+    describe('card installments', () => {
+      const installmentsEmail = 'installments@example.com';
+
+      beforeEach(async () => {
+        window.Configuration = { environment: 'TEST', locale: 'pt_BR' };
+        window.installments = JSON.stringify([
+          [1000, 3, ['visa']],
+          [3000, 6, ['visa']],
+        ]);
+        await setCheckoutConfiguration({
+          email: installmentsEmail,
+          paymentMethodsResponse: { amount: { value: 1500, currency: 'BRL' } },
+        });
+        store.checkout = { update: jest.fn().mockResolvedValue({}) };
+      });
+
+      afterEach(() => {
+        delete window.installments;
+        window.Configuration = { environment: 'TEST' };
+      });
+
+      const mountCard = (clickToPayState) => {
+        const node = {
+          update: jest.fn(),
+          clickToPayService: clickToPayState ? { state: clickToPayState } : undefined,
+        };
+        store.componentsObj = { scheme: { node } };
+        return node;
+      };
+
+      it('remounts the Card with new installment options when the amount crosses a minimum', async () => {
+        const node = mountCard('Ready');
+
+        await updateCheckoutAmount({ value: 3500, currency: 'BRL' }, installmentsEmail);
+
+        expect(node.update).toHaveBeenCalledTimes(1);
+        const { installmentOptions, showInstallmentAmounts } = node.update.mock.calls[0][0];
+        expect(installmentOptions.visa.values).toEqual([1, 3, 6]);
+        expect(showInstallmentAmounts).toBe(true);
+      });
+
+      it('remounts the Card when Click to Pay is not available', async () => {
+        const node = mountCard('NotAvailable');
+
+        await updateCheckoutAmount({ value: 3500, currency: 'BRL' }, installmentsEmail);
+
+        expect(node.update).toHaveBeenCalledTimes(1);
+      });
+
+      it('does not remount the Card when the installment options stay the same', async () => {
+        const node = mountCard('Ready');
+
+        await updateCheckoutAmount({ value: 2000, currency: 'BRL' }, installmentsEmail);
+
+        expect(node.update).not.toHaveBeenCalled();
+      });
+
+      it.each(['Idle', 'Loading', 'ShopperIdentified', 'OneTimePassword'])(
+        'does not remount the Card while Click to Pay is in state %s',
+        async (state) => {
+          const node = mountCard(state);
+
+          await updateCheckoutAmount({ value: 3500, currency: 'BRL' }, installmentsEmail);
+
+          expect(node.update).not.toHaveBeenCalled();
+        },
+      );
+    });
+  });
+
 describe('Klarna', () => {
   it('handles onSubmit', () => {
     klarna = new KlarnaConfig(helpers, window.klarnaWidgetEnabled).getConfig();
@@ -409,6 +628,103 @@ describe('Klarna', () => {
     expect(document.querySelector).toHaveBeenCalledWith('#additionalDetailsHidden');
     expect(document.querySelector).toHaveBeenCalledWith('#showConfirmationForm');
     document.querySelector = querySelector;
+  });
+});
+
+  describe('actionHandler', () => {
+    let mount;
+    let originalModal;
+
+    beforeEach(() => {
+      document.body.innerHTML = `
+        <div class="modal fade" id="action-modal" role="dialog">
+          <div class="modal-dialog" id="adyenModalDialog">
+            <div class="invisible" id="cancelQrMethodsButton">
+              <button id="cancelQrMethodsButtonStyling"></button>
+            </div>
+            <div id="action-container"></div>
+          </div>
+        </div>
+      `;
+      originalModal = $.fn.modal;
+      $.fn.modal = jest.fn();
+      // adyen-web replaces the contents of the mount target
+      mount = jest.fn((selector) => {
+        document.querySelector(selector).innerHTML = '<div class="adyen-checkout__qr-loader"></div>';
+      });
+      window.AdyenWeb = {
+        AdyenCheckout: jest.fn(async () => ({
+          createFromAction: jest.fn(() => ({ mount })),
+        })),
+      };
+    });
+
+    afterEach(() => {
+      $.fn.modal = originalModal;
+    });
+
+    it('keeps the cancel button visible after mounting a QR code action', async () => {
+      await actionHandler({ type: constants.ACTIONTYPE.QRCODE });
+      const cancelButton = document.getElementById('cancelQrMethodsButton');
+      expect(mount).toHaveBeenCalledWith('#action-container');
+      expect(cancelButton).not.toBeNull();
+      expect(cancelButton.classList.contains('invisible')).toBe(false);
+      expect($.fn.modal).toHaveBeenCalledWith({ backdrop: 'static', keyboard: false });
+    });
+
+    it('keeps the cancel button hidden for non QR code actions', async () => {
+      await actionHandler({ type: 'threeDS2' });
+      const cancelButton = document.getElementById('cancelQrMethodsButton');
+      expect(cancelButton).not.toBeNull();
+      expect(cancelButton.classList.contains('invisible')).toBe(true);
+    });
+  });
+
+describe('BNPL disclaimer', () => {
+  const klarnaDisclaimer = {
+    message: 'Borrowing money costs money. See %{link}',
+    linkText: 'more information',
+    link: 'https://www.example.com/bnpl-terms',
+  };
+  const rivertyDisclaimer = { message: 'Riverty message' };
+  const paymentMethodsResponse = (extra = {}) => ({
+    amount: { value: 150, currency: 'EUR' },
+    AdyenPaymentMethods: {
+      paymentMethods: [
+        { type: 'klarna_account' },
+        { type: 'riverty' },
+        { type: 'scheme' },
+        { type: 'paypal' },
+      ],
+    },
+    ...extra,
+  });
+
+  it('attaches each disclaimer to its own payment method', async () => {
+    await setCheckoutConfiguration({
+      email: window.customerEmail,
+      paymentMethodsResponse: paymentMethodsResponse({
+        disclaimerMessages: {
+          klarna_account: klarnaDisclaimer,
+          riverty: rivertyDisclaimer,
+        },
+      }),
+    });
+    const config = store.paymentMethodsConfiguration;
+    expect(config.klarna_account.disclaimerMessage).toEqual(klarnaDisclaimer);
+    expect(config.riverty).toEqual({ disclaimerMessage: rivertyDisclaimer });
+    expect(config.scheme.disclaimerMessage).toBeUndefined();
+    expect(config.paypal.disclaimerMessage).toBeUndefined();
+  });
+
+  it('leaves configurations unchanged without disclaimers', async () => {
+    await setCheckoutConfiguration({
+      email: window.customerEmail,
+      paymentMethodsResponse: paymentMethodsResponse(),
+    });
+    const config = store.paymentMethodsConfiguration;
+    expect(config.klarna_account.disclaimerMessage).toBeUndefined();
+    expect(config.riverty).toBeUndefined();
   });
 });
 });
